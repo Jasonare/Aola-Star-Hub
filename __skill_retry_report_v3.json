@@ -1,0 +1,137 @@
+{
+  "zero_before": 21,
+  "recovered_count": 18,
+  "still_zero_count": 3,
+  "recovered": [
+    {
+      "idx": 50,
+      "id": "4474",
+      "url": "http://aola.100bt.com/tujian/4474.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 74,
+      "id": "4549",
+      "url": "http://aola.100bt.com/tujian/4549.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 79,
+      "id": "4564",
+      "url": "http://aola.100bt.com/tujian/4564.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 89,
+      "id": "4594",
+      "url": "http://aola.100bt.com/tujian/4594.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 95,
+      "id": "4612",
+      "url": "http://aola.100bt.com/tujian/4612.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 104,
+      "id": "4639",
+      "url": "http://aola.100bt.com/tujian/4639.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 105,
+      "id": "4642",
+      "url": "http://aola.100bt.com/tujian/4642.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 106,
+      "id": "4645",
+      "url": "http://aola.100bt.com/tujian/4645.html",
+      "skill_rows": 13
+    },
+    {
+      "idx": 107,
+      "id": "4648",
+      "url": "http://aola.100bt.com/tujian/4648.html",
+      "skill_rows": 13
+    },
+    {
+      "idx": 113,
+      "id": "4666",
+      "url": "http://aola.100bt.com/tujian/4666.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 121,
+      "id": "4690",
+      "url": "http://aola.100bt.com/tujian/4690.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 123,
+      "id": "4696",
+      "url": "http://aola.100bt.com/tujian/4696.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 153,
+      "id": "4786",
+      "url": "http://aola.100bt.com/tujian/4786.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 158,
+      "id": "4801",
+      "url": "http://aola.100bt.com/tujian/4801.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 178,
+      "id": "4861",
+      "url": "http://aola.100bt.com/tujian/4861.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 188,
+      "id": "4891",
+      "url": "http://aola.100bt.com/tujian/4891.html",
+      "skill_rows": 17
+    },
+    {
+      "idx": 213,
+      "id": "4966",
+      "url": "http://aola.100bt.com/tujian/4966.html",
+      "skill_rows": 16
+    },
+    {
+      "idx": 218,
+      "id": "4981",
+      "url": "http://aola.100bt.com/tujian/4981.html",
+      "skill_rows": 16
+    }
+  ],
+  "still_zero": [
+    {
+      "idx": 69,
+      "id": "4531",
+      "url": "http://aola.100bt.com/tujian/4531.html",
+      "reason": "no_skill_rows"
+    },
+    {
+      "idx": 96,
+      "id": "4615",
+      "url": "http://aola.100bt.com/tujian/4615.html",
+      "reason": "no_skill_rows"
+    },
+    {
+      "idx": 210,
+      "id": "4957",
+      "url": "http://aola.100bt.com/tujian/4957.html",
+      "reason": "no_skill_rows"
+    }
+  ],
+  "output_xlsx": "C:\\工作娱乐\\Aola-Star-Hub\\原系亚比_100bt_编号_技能_种族值_skill_retry_v3.xlsx",
+  "zero_id_list": "C:\\工作娱乐\\Aola-Star-Hub\\__zero_skill_id_list.txt"
+}

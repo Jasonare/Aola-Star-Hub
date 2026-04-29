@@ -1,0 +1,420 @@
+{
+  "ts": "2026-04-22T14:51:32.554Z",
+  "range": [
+    1,
+    796
+  ],
+  "dexTotal": 796,
+  "indexCount": 3642,
+  "matched": 388,
+  "noMatchCount": 408,
+  "uniqueUrlCount": 312,
+  "parsedUrlCount": 312,
+  "fetchErrorCount": 0,
+  "updated": 796,
+  "skillsHit": 203,
+  "raceHit": 243,
+  "noMatch": [
+    {
+      "dexId": 1,
+      "name": "兔小子"
+    },
+    {
+      "dexId": 2,
+      "name": "犀利兔"
+    },
+    {
+      "dexId": 5,
+      "name": "吉拉狮"
+    },
+    {
+      "dexId": 7,
+      "name": "滴滴"
+    },
+    {
+      "dexId": 8,
+      "name": "露滴"
+    },
+    {
+      "dexId": 11,
+      "name": "雪咪兔"
+    },
+    {
+      "dexId": 13,
+      "name": "炎蘑菇"
+    },
+    {
+      "dexId": 14,
+      "name": "熔炎怪"
+    },
+    {
+      "dexId": 16,
+      "name": "闪光河豚"
+    },
+    {
+      "dexId": 17,
+      "name": "电击河豚"
+    },
+    {
+      "dexId": 19,
+      "name": "半沙之子"
+    },
+    {
+      "dexId": 20,
+      "name": "半沙拳手"
+    },
+    {
+      "dexId": 22,
+      "name": "小花苞"
+    },
+    {
+      "dexId": 23,
+      "name": "小花蝶"
+    },
+    {
+      "dexId": 25,
+      "name": "依灵"
+    },
+    {
+      "dexId": 26,
+      "name": "依舞"
+    },
+    {
+      "dexId": 28,
+      "name": "变色蜥蜴"
+    },
+    {
+      "dexId": 29,
+      "name": "变色刺龙"
+    },
+    {
+      "dexId": 31,
+      "name": "大嘴鲨"
+    },
+    {
+      "dexId": 32,
+      "name": "巨齿鲨"
+    },
+    {
+      "dexId": 34,
+      "name": "小石怪"
+    },
+    {
+      "dexId": 35,
+      "name": "隆咚石"
+    },
+    {
+      "dexId": 37,
+      "name": "小伊莎"
+    },
+    {
+      "dexId": 38,
+      "name": "伊莎贝尔"
+    },
+    {
+      "dexId": 40,
+      "name": "小角虫"
+    },
+    {
+      "dexId": 41,
+      "name": "木角虫"
+    },
+    {
+      "dexId": 43,
+      "name": "小冰犬"
+    },
+    {
+      "dexId": 44,
+      "name": "冰角犬"
+    },
+    {
+      "dexId": 46,
+      "name": "火丁"
+    },
+    {
+      "dexId": 47,
+      "name": "火霍仔"
+    },
+    {
+      "dexId": 50,
+      "name": "克林纳"
+    },
+    {
+      "dexId": 52,
+      "name": "毛毛球"
+    },
+    {
+      "dexId": 55,
+      "name": "小鼠蝠"
+    },
+    {
+      "dexId": 56,
+      "name": "尖翼蝠"
+    },
+    {
+      "dexId": 59,
+      "name": "扭扭蛇"
+    },
+    {
+      "dexId": 61,
+      "name": "库多兽"
+    },
+    {
+      "dexId": 62,
+      "name": "库多"
+    },
+    {
+      "dexId": 64,
+      "name": "小火炉"
+    },
+    {
+      "dexId": 65,
+      "name": "火炉怪"
+    },
+    {
+      "dexId": 67,
+      "name": "乌拉"
+    },
+    {
+      "dexId": 68,
+      "name": "乌可拉"
+    },
+    {
+      "dexId": 70,
+      "name": "斯多鼠"
+    },
+    {
+      "dexId": 71,
+      "name": "斯多恩"
+    },
+    {
+      "dexId": 73,
+      "name": "可拉蟹"
+    },
+    {
+      "dexId": 74,
+      "name": "哥拉蟹"
+    },
+    {
+      "dexId": 78,
+      "name": "铁甲卫士"
+    },
+    {
+      "dexId": 79,
+      "name": "六眼灵"
+    },
+    {
+      "dexId": 80,
+      "name": "夜眼怪"
+    },
+    {
+      "dexId": 82,
+      "name": "木木鸟"
+    },
+    {
+      "dexId": 83,
+      "name": "琉璃鸟"
+    },
+    {
+      "dexId": 86,
+      "name": "冰刺艾司"
+    },
+    {
+      "dexId": 88,
+      "name": "圆角羊"
+    },
+    {
+      "dexId": 89,
+      "name": "锐角羊龙"
+    },
+    {
+      "dexId": 91,
+      "name": "木面仔"
+    },
+    {
+      "dexId": 92,
+      "name": "木面人"
+    },
+    {
+      "dexId": 95,
+      "name": "坚壳库巴"
+    },
+    {
+      "dexId": 97,
+      "name": "火宝宝"
+    },
+    {
+      "dexId": 98,
+      "name": "小火娃"
+    },
+    {
+      "dexId": 100,
+      "name": "合金铁人"
+    },
+    {
+      "dexId": 101,
+      "name": "合金战士"
+    },
+    {
+      "dexId": 104,
+      "name": "红霜月"
+    },
+    {
+      "dexId": 106,
+      "name": "小黄蜂"
+    },
+    {
+      "dexId": 107,
+      "name": "赤眼黄蜂"
+    },
+    {
+      "dexId": 112,
+      "name": "小时"
+    },
+    {
+      "dexId": 115,
+      "name": "小刀蚁"
+    },
+    {
+      "dexId": 118,
+      "name": "骑士战马"
+    },
+    {
+      "dexId": 119,
+      "name": "鲁阿鲁"
+    },
+    {
+      "dexId": 121,
+      "name": "机甲护卫"
+    },
+    {
+      "dexId": 122,
+      "name": "机甲战士"
+    },
+    {
+      "dexId": 124,
+      "name": "圆尾蝎"
+    },
+    {
+      "dexId": 125,
+      "name": "刺锤蝎"
+    },
+    {
+      "dexId": 129,
+      "name": "彩羽贝拉"
+    },
+    {
+      "dexId": 131,
+      "name": "坚翼卡伦"
+    },
+    {
+      "dexId": 133,
+      "name": "魅影娃娃"
+    },
+    {
+      "dexId": 134,
+      "name": "魅影幽灵"
+    },
+    {
+      "dexId": 136,
+      "name": "毛毛"
+    },
+    {
+      "dexId": 137,
+      "name": "嘻哈鸟"
+    },
+    {
+      "dexId": 139,
+      "name": "先锋小子"
+    },
+    {
+      "dexId": 140,
+      "name": "冲刺先锋"
+    },
+    {
+      "dexId": 142,
+      "name": "冰蓝蓝"
+    },
+    {
+      "dexId": 143,
+      "name": "冰雾蓝"
+    },
+    {
+      "dexId": 145,
+      "name": "绿叶鹿"
+    },
+    {
+      "dexId": 146,
+      "name": "桃花鹿"
+    },
+    {
+      "dexId": 149,
+      "name": "数码魔方"
+    },
+    {
+      "dexId": 152,
+      "name": "雷云嘟嘟"
+    },
+    {
+      "dexId": 154,
+      "name": "闪电球"
+    },
+    {
+      "dexId": 155,
+      "name": "闪电星"
+    },
+    {
+      "dexId": 157,
+      "name": "大眼仔"
+    },
+    {
+      "dexId": 158,
+      "name": "鬼脸仔"
+    },
+    {
+      "dexId": 160,
+      "name": "扁扁"
+    },
+    {
+      "dexId": 161,
+      "name": "电扁扁"
+    },
+    {
+      "dexId": 163,
+      "name": "托雷"
+    },
+    {
+      "dexId": 166,
+      "name": "乌羽"
+    },
+    {
+      "dexId": 167,
+      "name": "乌羽飞雀"
+    },
+    {
+      "dexId": 169,
+      "name": "妞妞"
+    },
+    {
+      "dexId": 170,
+      "name": "雅妞"
+    },
+    {
+      "dexId": 172,
+      "name": "小木龙"
+    },
+    {
+      "dexId": 173,
+      "name": "积木龙"
+    },
+    {
+      "dexId": 175,
+      "name": "七彩小丑"
+    },
+    {
+      "dexId": 176,
+      "name": "扑克小丑"
+    }
+  ],
+  "fetchErrors": []
+}

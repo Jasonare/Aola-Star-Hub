@@ -1,0 +1,63 @@
+		<div class="m-bd-sear">
+				<div id="search_jl">
+					<input class="stxt" name="" value="请输入要搜索的亚比名称">
+					<input class="sbtn" type="button" value="" name="">
+				</div>
+			</div>
+			<div class="m-filter1">
+				<div class="m-filter-hd">按类别：</div>
+				<div class="m-filter-bd m-filter-bd1" id="dtype">
+					<a href="" id="allyabi" class="on">全部</a>					
+					<a rel="37" href="" id="guangqishidai">光启时代</a><!-- 引用织梦自定属性：公共属性一att=37 -->				
+					<a rel="17" href="" id="xinghui">星辉</a>
+					<a rel="16" href="" id="yiciyuanyabi">异次元</a>
+					<a rel="15" href="" id="chuanqiyabi">传奇</a>
+					<a rel="14" href="" id="chaoxijuexing">超系&amp;神迹</a>
+					<a rel="13" href="" id="jiujijinhua">究极进化</a>
+					<!-- <a rel="12" href="" id="shengyubaofa">圣域爆发</a> -->
+					<a rel="9"  href="" id="chaojijinhua">超进化</a>
+					<!--<a rel="11" href="" id="shouhuzhe">守护者</a>-->
+				</div>
+			</div>
+			<div class="m-filter2">
+				<div class="m-filter-hd">按字母：	</div>
+				<div class="m-filter-bd m-filter-bd2" id="g_tab_zimu">
+					<a rel="A" href="">A</a>
+					<a rel="B" href="">B</a>
+					<a rel="C" href="">C</a>
+					<a rel="D" href="">D</a>
+					<a rel="E" href="">E</a>
+					<a rel="F" href="">F</a>
+					<a rel="G" href="">G</a>
+					<a rel="H" href="">H</a>
+					<a rel="J" href="">J</a>
+					<a rel="K" href="">K</a>
+					<a rel="L" href="">L</a>
+					<a rel="M" href="">M</a>
+					<a rel="N" href="">N</a>
+					<a rel="O" href="">O</a>
+					<a rel="P" href="">P</a>
+					<a rel="Q" href="">Q</a>
+					<a rel="R" href="">R</a>
+					<a rel="S" href="">S</a>
+					<a rel="T" href="">T</a>
+					<a rel="W" href="">W</a>
+					<a rel="X" href="">X</a>
+					<a rel="Y" href="">Y</a>
+					<a rel="Z" href="">Z</a>
+				</div>
+			</div>
+			<div class="m-filter3">
+				<div class="m-filter-hd">按系别：	</div>
+				<div class="m-filter-bd m-filter-bd3">
+					<ul id="g_tab">
+						<li class="on"><a href=""><img src="//newsimg.5054399.com/aolaxing/v5/inner/images/xb1.gif">全部</a></li>
+						<li><a rel="2799" href=""><img src="//newsimg.5054399.com/aolaxing/v5/inner/images/xb2.gif">木系</a></li>
+						<li><a rel="2796" href=""><img src="//newsimg.5054399.com/aolaxing/v5/inner/images/xb3.gif">水系</a></li>
+						<li><a rel="2795" href=""><img src="//newsimg.5054399.com/aolaxing/v5/inner/images/xb4.gif">火系</a></li>
+						<li><a rel="2800" href=""><img src="//newsimg.5054399.com/aolaxing/v5/inner/images/xb5.gif">土系</a></li>
+						<li><a rel="2797" href=""><img src="//newsimg.5054399.com/aolaxing/v5/inner/images/xb6.gif">冰系</a></li>
+						<li><a rel="2804" href=""><img src="//newsimg.5054399.com/aolaxing/v5/inner/images/xb7.gif">电系</a></li>
+						<li><a rel="2801" href=""><img src="//newsimg.5054399.com/aolaxing/v5/inner/images/xb8.gif">数码系</a></li>
+						<li><a rel="2798" href=""><img src="//newsimg.5054399.com/aolaxing/v5/inner/images/xb9.gif">机械系</a></li>
+						<li><a rel="2921" href=""><img src="//newsimg.5054399.com/aolaxing/v5/inner/images/xb1

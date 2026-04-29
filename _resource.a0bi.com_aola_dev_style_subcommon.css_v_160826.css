@@ -1,0 +1,178 @@
+﻿/*å¬å±å¸å±Start*/
+html{background: url(img_s/subComBg.jpg) repeat #102651;}
+/*templaterow2_top*/
+.wbg {position: relative;}
+.wtopbg{ background: url(img_s/subtopbgg.jpg) repeat-x; }
+.topbg{ background: url(img_s/subtopbg.jpg) no-repeat top center; height: 170px; }
+
+.templaterow2_top .logo{ position: absolute; width: 158px; height: 64px; background-image: url(img_d/alphasp32.png?v=2); background-position: 0 -160px; top: 20px; left: 7px; _background-image: url(img_d/alphasp8.png?v=2); }
+.templaterow2_top .catInfo{ position: absolute; left: 172px; top: 29px; }
+.templaterow2_top .catTitle{margin-top: 13px;color: #FFCC00; font-family: "Microsoft Yahei","é»ä½"; font-size: 30px; font-weight: bold; }
+.templaterow2_top .catDesc{ color: white; font-family: "Microsoft Yahei","é»ä½"; }
+.templaterow2_top .btns{ position: absolute; right: 27px; top: 20px; }
+.templaterow2_top .favBtn{ background-image: url(img_d/alphasp32.png?v=2); display:block; height: 41px; width: 102px; margin-bottom: 5px; _background-image: url(img_d/alphasp8.png?v=2); }
+.templaterow2_top .downBtn{ background-image: url(img_d/alphasp32.png?v=2); background-position: 0px -48px; display:block; height: 42px; width: 124px; _background-image: url(img_d/alphasp8.png?v=2); }
+.templaterow2_top .navbar{ padding-top: 120px; }
+.templaterow2_top .navLink{ margin-left: -13px; }
+.templaterow2_top .searchCtrl{ margin-top: 8px; }
+
+/*template_column2*/
+.template_column2{ width:980px; margin:0 auto; position: relative;}
+.template_column2_0{ width:700px; }
+.template_column2_1{ width: 260px;_overflow:hidden; position: absolute; right: 0; top: 0; }
+/*å¬å±å¸å±END*/
+
+/*å¬å±æ¨¡åStart*/
+/*è¾¹æ ææ°äºæ¯*/
+.sidezxybItem{ float:left; display: inline; margin: 5px 0 5px 6px; }
+/*è¾¹æ å¹¿å*/
+.sidebar_ad img{ display:block; width:100%; }
+/*è¿å¥å¥¥æ*/
+#intoaolaBtn {background: url(img_d/sp01-8.png) -120px -717px;position: relative;height: 233px;}
+#intoaolaBtn object{ display: block; width: 188px; margin: 0 auto; height: 188px;}
+#intoaolaBtn .sinaweibo,
+#intoaolaBtn .qqweibo{ background: url(img_d/sp01-8.png); position: absolute; width: 128px; height: 40px; }
+#intoaolaBtn .sinaweibo{ background-position: 0px -1045px; bottom: 0px; }
+#intoaolaBtn .sinaweibo:hover{ background-position: 0px -980px; }
+#intoaolaBtn .qqweibo{ right: 0; bottom: 0; background-position: -132px -1045px; }
+#intoaolaBtn .qqweibo:hover{ background-position: -132px -980px; }
+
+#winxin{background:url(img_d/weixin.jpg) no-repeat;height: 216px;}
+#winxin .link{display: block;height: 34px;}
+
+/*æç« ç¸å³è§é¢*/
+#artRelativeSp .shipinItem { float: left; margin: 0px 0px 0px 30px; }
+
+.intoAolaShipinBtn,.intoAolaBtn{ background: url(img_d/sp01-8.png); width: 102px; height: 26px; text-indent: -10000px; }
+.intoAolaShipinBtn{ background-position: 0px -1154px; }
+.intoAolaBtn { background-position: -107px -1154px; }
+/*å¬å±æ¨¡åEnd*/
+
+/*çåè°æ´20151014*/
+#yczq .bread{display: block;width:700px;}
+#yczq .zgwbox .tougaoBtn{margin: -22px 27px 0 0;}
+#yczq #pagination{padding: 30px 0;}
+#yczq .zul {padding: 0;}
+
+.zul .normalArticleItem{display:block;float: none;width:624px;max-width:none;height:auto;padding:28px 35px;border-bottom:1px solid #185d8f;  white-space: normal;}
+.normalArticleItem .title{display: block;float: none;width: 624px;font-family: "Microsoft Yahei";color: #fff;font-size: 20px;}
+.normalArticleItem .title strong{font-weight: normal;}
+.normalArticleItem .des{color:#429dc7;}
+.normalArticleItem .des .imp{float: none;color:#99ffff;}
+.normalArticleItem:hover{background:#133d69;text-decoration: none;}
+.normalArticleItem:hover .title{color:#99ffff;}
+
+#importantEnter{background:url(img_s/enterLink.jpg) no-repeat;}
+/*ç­é¨è¯é¢*/
+#hotTopicList{margin-top: 6px;padding-top: 14px;}
+#hotTopicList .item{display:block;width: 224px;padding-bottom:10px;margin:0 auto;}
+#hotTopicList .item:hover .txt{text-decoration: underline;}
+#hotTopicList .icon,.hotGameRankList .icon{width: 19px;height: 19px;line-height: 18px;margin-right: 7px;overflow: hidden;background:#077eb5;font-size:16px;color:#fff;font-family: Tahoma;}
+#hotTopicList .icon1,.hotGameRankList .icon1{background:#ff6600;}
+#hotTopicList .icon2,.hotGameRankList .icon2{background:#cc6600;}
+#hotTopicList .icon3,.hotGameRankList .icon3{background:#cc9900;}
+#hotTopicList .txt{width: 195px;color:#fff;}
+#hotTopicList .tt{ background-position: 0px -550px; width: 100px; }
+#hotTopicList .box_g,#guessYouLike .box_g{padding-top:12px;}
+/*çä½ åæ¬¢*/
+#guessYouLike{margin-top: 20px;}
+#guessYouLike .slikeWrp{margin-top: 10px;}
+#guessYouLike .item{margin:0 auto 12px;*margin-left:0px;}
+
+.zul .itemHide{display:none;}
+
+/*ç­é¨å°æ¸¸æ*/
+#hotGameRankList{margin:0px;padding:0px;}
+#hotGameRankList .box_t{background: url(img_d/smallGame.png);}
+#hotGameRankList .box_t {
+    background-position: 0 -145px;
+    height: 38px;
+}
+#hotGameRankList .box_g{padding:5px 15px;}
+.hotGameRank{width:230px;margin:0 auto;padding-bottom: 10px;}
+.hotGameRank li{width:100%;padding:8px 0;border-bottom: 1px #1c7db5 dashed;}
+.hotGameRank .icon,.hotGameRank .imgWrp,.hotGameRank .txt{display: inline-block;vertical-align: middle;}
+.hotGameRank .icon{width:18px;height:18px;text-align: center;}
+.hotGameRank .imgWrp,.hotGameRank .img{width:30px;height:30px;}
+.hotGameRank .imgWrp{margin: 0 7px 0 3px;}
+.hotGameRank .txt{display: inline;*display: inline-block;font-size:14px;color:#fff;text-align: left;}
+
+/*ææ°æç« -æ°ä¿®æ¹*/
+#newArticleList .box_t .tt {
+    text-indent: -9999px;
+    background: url(img_d/newTujian/word_newArticle.png) no-repeat 0 0;
+    width: 79px;
+    height: 20px;
+    margin: 13px 0 0 10px;
+}
+#newArticleList .box_g ul {
+    margin: 0 auto;
+    padding-top: 5px;
+}
+#newArticleList .box_g li {
+    color: #fff;
+    border-bottom: 1px #1982B1 dashed;
+    overflow: hidden;
+    list-style: none;
+    margin: 0 5px;
+    padding: 0 5px;
+}
+#newArticleList .box_g li a {
+    color: #fff;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: left;
+    height: 29px;
+    line-height: 29px;
+    font-family: 'Microsoft Yahei';
+}
+
+/**ææ°è§é¢**/
+#newVideoList .box_t .tt {
+    text-indent: -9999px;
+    background: url(img_d/newTujian/word_newVideo.png) no-repeat 0 0;
+    width: 79px;
+    height: 20px;
+    margin: 13px 0 0 10px;
+}
+
+#newVideoList ul {
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#newVideoList li {
+    width: 110px;
+    height: 106px;
+    position: relative;
+    margin: 10px 5px;
+    background: #077eb5;
+}
+
+#newVideoList .item img,
+#newVideoList .obg {
+    display: block;
+    height: 75px;
+    width: 100px;
+    object-fit: cover;
+    margin: 5px;
+    /* background: #00aaff; */
+}
+
+#newVideoList .item img {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+#newVideoList .item .name {
+    font-size: 14px;
+    color: #fff;
+    font-family: "Microsoft Yahei";
+    line-height: 16px;
+}

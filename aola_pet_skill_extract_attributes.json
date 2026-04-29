@@ -1,0 +1,210 @@
+[
+  {
+    "attr_id": 0,
+    "attr_name": "普通"
+  },
+  {
+    "attr_id": 1,
+    "attr_name": "格斗"
+  },
+  {
+    "attr_id": 2,
+    "attr_name": "飞行"
+  },
+  {
+    "attr_id": 3,
+    "attr_name": "毒"
+  },
+  {
+    "attr_id": 4,
+    "attr_name": "爬行"
+  },
+  {
+    "attr_id": 5,
+    "attr_name": "土"
+  },
+  {
+    "attr_id": 6,
+    "attr_name": "虫"
+  },
+  {
+    "attr_id": 7,
+    "attr_name": "数码"
+  },
+  {
+    "attr_id": 8,
+    "attr_name": "机械"
+  },
+  {
+    "attr_id": 9,
+    "attr_name": "火"
+  },
+  {
+    "attr_id": 10,
+    "attr_name": "水"
+  },
+  {
+    "attr_id": 11,
+    "attr_name": "木"
+  },
+  {
+    "attr_id": 12,
+    "attr_name": "电"
+  },
+  {
+    "attr_id": 13,
+    "attr_name": "神秘"
+  },
+  {
+    "attr_id": 14,
+    "attr_name": "冰"
+  },
+  {
+    "attr_id": 15,
+    "attr_name": "上古"
+  },
+  {
+    "attr_id": 16,
+    "attr_name": "暗黑"
+  },
+  {
+    "attr_id": 17,
+    "attr_name": "数码2"
+  },
+  {
+    "attr_id": 18,
+    "attr_name": "光明"
+  },
+  {
+    "attr_id": 19,
+    "attr_name": "龙"
+  },
+  {
+    "attr_id": 20,
+    "attr_name": "圣灵"
+  },
+  {
+    "attr_id": 21,
+    "attr_name": "神兵"
+  },
+  {
+    "attr_id": 22,
+    "attr_name": "王"
+  },
+  {
+    "attr_id": 23,
+    "attr_name": "超数码"
+  },
+  {
+    "attr_id": 24,
+    "attr_name": "超木"
+  },
+  {
+    "attr_id": 25,
+    "attr_name": "超水"
+  },
+  {
+    "attr_id": 26,
+    "attr_name": "超火"
+  },
+  {
+    "attr_id": 27,
+    "attr_name": "超土"
+  },
+  {
+    "attr_id": 28,
+    "attr_name": "超电"
+  },
+  {
+    "attr_id": 29,
+    "attr_name": "超光"
+  },
+  {
+    "attr_id": 30,
+    "attr_name": "超暗"
+  },
+  {
+    "attr_id": 31,
+    "attr_name": "超龙"
+  },
+  {
+    "attr_id": 32,
+    "attr_name": "超上古"
+  },
+  {
+    "attr_id": 33,
+    "attr_name": "超圣灵"
+  },
+  {
+    "attr_id": 34,
+    "attr_name": "超王"
+  },
+  {
+    "attr_id": 35,
+    "attr_name": "完全"
+  },
+  {
+    "attr_id": 36,
+    "attr_name": "超乾坤"
+  },
+  {
+    "attr_id": 37,
+    "attr_name": "超神"
+  },
+  {
+    "attr_id": 38,
+    "attr_name": "超时空"
+  },
+  {
+    "attr_id": 39,
+    "attr_name": "超神秘"
+  },
+  {
+    "attr_id": 40,
+    "attr_name": "湮灭"
+  },
+  {
+    "attr_id": 41,
+    "attr_name": "仙灵"
+  },
+  {
+    "attr_id": 42,
+    "attr_name": "黯星"
+  },
+  {
+    "attr_id": 43,
+    "attr_name": "虚境"
+  },
+  {
+    "attr_id": 44,
+    "attr_name": "永恒"
+  },
+  {
+    "attr_id": 45,
+    "attr_name": "超神兵"
+  },
+  {
+    "attr_id": 46,
+    "attr_name": "超格斗"
+  },
+  {
+    "attr_id": 47,
+    "attr_name": "超飞行"
+  },
+  {
+    "attr_id": 48,
+    "attr_name": "生命"
+  },
+  {
+    "attr_id": 49,
+    "attr_name": "不朽"
+  },
+  {
+    "attr_id": 50,
+    "attr_name": "超上古·逆"
+  },
+  {
+    "attr_id": 51,
+    "attr_name": "逆光"
+  }
+]

@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aola Star Hub</title>
+  
+  <style>
+    body {
+      background:
+        radial-gradient(circle at 8% 16%, rgba(63, 131, 248, 0.12), transparent 30%),
+        radial-gradient(circle at 92% 84%, rgba(244, 114, 182, 0.12), transparent 30%),
+        linear-gradient(180deg, #f8fbff 0%, #eff5ff 100%);
+    }
+    .scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+    .scrollbar::-webkit-scrollbar-thumb { background: #b5c4e8; border-radius: 999px; }
+    .scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .element-icon { display: inline-block; border-radius: 999px; vertical-align: middle; flex: 0 0 auto; }
+    @keyframes evoRing { 0% { transform: scale(0.6); opacity: 1; } 100% { transform: scale(1.45); opacity: 0; } }
+    @keyframes evoFlash { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes battleShakeLeft {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(10px); }
+      50% { transform: translateX(-8px); }
+      75% { transform: translateX(6px); }
+      100% { transform: translateX(0); }
+    }
+    @keyframes battleShakeRight {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      50% { transform: translateX(8px); }
+      75% { transform: translateX(-6px); }
+      100% { transform: translateX(0); }
+    }
+    @keyframes battleSkillFloat {
+      0% { opacity: 0; transform: translateY(-12px) scale(0.96); }
+      10% { opacity: 1; transform: translateY(0) scale(1); }
+      85% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-12px) scale(1.03); }
+    }
+    @keyframes battleDamagePop {
+      0% { opacity: 0; transform: translateY(-2px) scale(0.7); }
+      20% { opacity: 1; transform: translateY(-14px) scale(1.06); }
+      100% { opacity: 0; transform: translateY(-34px) scale(0.92); }
+    }
+    @keyframes comboHitRise {
+      0% { opacity: 0; transform: translateY(8px) scale(0.82); }
+      20% { opacity: 1; transform: translateY(-10px) scale(1); }
+      100% { opacity: 0; transform: translateY(-52px) scale(0.96); }
+    }
+    @keyframes comboTotalPop {
+      0% { opacity: 0; transform: translateY(-4px) scale(0.76); }
+      20% { opacity: 1; transform: translateY(-16px) scale(1.08); }
+      100% { opacity: 0; transform: translateY(-40px) scale(0.94); }
+    }
+    @keyframes battleCritGlow {
+      0% { opacity: 0; transform: translateY(-2px) scale(0.65); text-shadow: 0 0 0 rgba(251,191,36,0); }
+      25% { opacity: 1; transform: translateY(-16px) scale(1.12); text-shadow: 0 0 16px rgba(251,191,36,0.85); }
+      100% { opacity: 0; transform: translateY(-40px) scale(0.94); text-shadow: 0 0 8px rgba(251,191,36,0.25); }
+    }
+    @keyframes evoBurst {
+      0% { opacity: 0.15; transform: scale(0.4); filter: blur(1px); }
+      35% { opacity: 1; transform: scale(1.12); filter: blur(0); }
+      100% { opacity: 0; transform: scale(1.55); filter: blur(2px); }
+    }
+    @keyframes evoBeam {
+      0% { opacity: 0; transform: translateY(24px) scaleY(0.7); }
+      25% { opacity: 1; transform: translateY(0) scaleY(1); }
+      100% { opacity: 0; transform: translateY(-24px) scaleY(1.25); }
+    }
+    @keyframes petBob {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+      100% { transform: translateY(0); }
+    }
+    .evo-ring { animation: evoRing 1s ease-out forwards; }
+    .evo-flash { animation: evoFlash 0.85s ease-out forwards; }
+    .battle-shake-left { animation: battleShakeLeft 0.32s ease-in-out; }
+    .battle-shake-right { animation: battleShakeRight 0.32s ease-in-out; }
+    .battle-skill-float { animation: battleSkillFloat 1.05s ease-out forwards; }
+    .battle-damage-pop { animation: battleDamagePop 0.85s ease-out forwards; }
+    .battle-combo-hit { animation: comboHitRise 2s ease-out forwards; }
+    .battle-combo-total { animation: comboTotalPop 1.2s ease-out forwards; }
+    .battle-crit-pop { animation: battleCritGlow 1s ease-out forwards; }
+    .pet-bob { animation: petBob 1.7s ease-in-out infinite; transform-origin: center bottom; }
+    .evo-burst { animation: evoBurst 1.1s ease-out forwards; }
+    .evo-beam { animation: evoBeam 1.25s ease-out infinite; }
+  </style>
+<script>
+(function(){
+  function show(msg){
+    try{
+      var d=document.createElement('div');
+      d.style.position='fixed'; d.style.left='8px'; d.style.right='8px'; d.style.bottom='8px'; d.style.zIndex='99999';
+      d.style.background='rgba(127,29,29,.95)'; d.style.color='#fff'; d.style.padding='8px 10px'; d.style.borderRadius='8px';
+      d.style.font='12px/1.4 Consolas,monospace'; d.style.whiteSpace='pre-wrap'; d.textContent=msg;
+      document.body.appendChild(d);
+    }catch(_){ }
+  }
+  window.__aolaScriptDiag = { loaded: [], failed: [] };
+  document.addEventListener('error', function(e){
+    var t=e&&e.target;
+    if(t && t.tagName==='SCRIPT'){
+      var src=t.getAttribute('src')||'';
+      window.__aolaScriptDiag.failed.push(src);
+      show('[SCRIPT LOAD ERROR]\n'+src);
+    }
+  }, true);
+})();
+</script>
+</head>
+<body class="text-slate-800 min-h-screen">
+<script src="./aola-star-crash.js"></script>
+<div id="app" class="max-w-[1700px] mx-auto p-4 md:p-6">
+  <header class="rounded-3xl border border-white bg-white/90 shadow-lg px-5 py-4 mb-5">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Aola Star Hub</h1>
+        <p class="text-sm font-bold text-slate-500 mt-1">鍥鹃壌 | 鎸戞垬婵€娲?| 5 鍒嗛挓瀛靛寲 | 鎶€鑳?4 瑁呴厤 | 20/40 绾ц繘鍖?/p>
+        <p class="text-xs text-slate-400 font-bold mt-1">缁忛獙鍏紡锛氫激瀹充笌鑳藉姏鎸夊ゥ鎷夋槦瀵规垬瑙勫垯缁撶畻锛岃儨鍒╃粡楠岄殢鐩爣绛夌骇鎻愬崌銆?/p>
+      </div>
+      <div class="grid grid-cols-4 gap-2 text-center min-w-[360px]">
+        <div class="rounded-xl bg-blue-50 border border-blue-100 py-2">
+          <div class="text-[10px] font-bold text-blue-400">婵€娲诲浘閴?/div>
+          <div class="text-lg font-black text-blue-700">{{ activatedDexCount }}/{{ dexTotal }}</div>
+        </div>
+        <div class="rounded-xl bg-emerald-50 border border-emerald-100 py-2">
+          <div class="text-[10px] font-bold text-emerald-400">浜氭瘮浠撳簱</div>
+          <div class="text-lg font-black text-emerald-700">{{ warehouseCount }}</div>
+        </div>
+        <div class="rounded-xl bg-indigo-50 border border-indigo-100 py-2">
+          <div class="text-[10px] font-bold text-indigo-400">浜氭瘮鑳屽寘</div>
+          <div class="text-lg font-black text-indigo-700">{{ bagCount }}/6</div>
+        </div>
+        <div class="rounded-xl bg-amber-50 border border-amber-100 py-2">
+          <div class="text-[10px] font-bold text-amber-500">瀛靛寲涓泲</div>
+          <div class="text-lg font-black text-amber-700">{{ state.eggs.length }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-3 flex items-center gap-2">
+      <button
+        @click="openDexPanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-white border border-slate-300 text-slate-700"
+      >
+        鎵撳紑鍥鹃壌
+      </button>
+      <button
+        @click="openGuardianPanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-amber-50 border border-amber-300 text-amber-700"
+      >
+        瀹堟姢鑰?      </button>
+      <button
+        @click="openWarehousePanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-white border border-slate-300 text-slate-700"
+      >
+        鎵撳紑浠撳簱
+      </button>
+      <button
+        @click="openShopPanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-emerald-50 border border-emerald-300 text-emerald-700"
+      >
+        浜氭瘮鍟嗗簵
+      </button>
+      <button
+        @click="openElementPanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-white border border-slate-300 text-slate-700"
+      >
+        灞炴€у厠鍒跺叧绯?      </button>
+      <span class="text-xs font-bold text-slate-400">鎻愮ず锛氭寫鎴樿幏鑳滃彲婵€娲诲浘閴村苟鑾峰彇浜氭瘮铔嬨€?/span>
+    </div>
+  </header>
+
+  <div class="space-y-5">
+    <section class="flex flex-col gap-5">
+      <div class="rounded-3xl border border-white bg-white/88 shadow-lg p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-black text-slate-900">浜氭瘮鑳屽寘锛?鏍硷級</h3>
+          <button @click="resetProgress" class="text-xs font-black text-rose-500 hover:text-rose-700">閲嶇疆杩涘害</button>
+        </div>
+
+        <div class="rounded-2xl border border-indigo-100 bg-indigo-50 p-3 mb-4">
+          <div class="text-xs font-black text-indigo-500 mb-2">浜氭瘮鑳屽寘</div>
+          <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
+            <div
+              v-for="slot in bagSlots"
+              :key="slot.idx"
+              class="rounded-xl border bg-white p-3 min-h-[180px]"
+              :class="slot.pet ? 'border-indigo-200' : 'border-dashed border-slate-300'"
+            >
+              <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center gap-1">
+                  <div class="text-[10px] font-black text-slate-500">#{{ slot.idx + 1 }}</div>
+                  <template v-if="slot.pet">
+                    <span v-for="(el, idx) in petElementList(slot.pet)" :key="'bag_slot_el_' + slot.idx + '_' + idx + '_' + el" class="element-icon" :style="petElementIconStyle(el, 14)" :title="el || ''"></span>
+                  </template>
+                </div>
+                <div v-if="slot.idx === 0" class="text-[10px] font-black text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">棣栧疇</div>
+              </div>
+              <template v-if="slot.pet">
+                <button @click="openPetDetailModal(petId(slot.pet))" class="w-full text-left">
+                  <div class="flex items-center gap-3">
+                    <img :src="petCurrentForm(slot.pet).img" @error="withFallback" class="w-24 h-24 object-contain pet-bob shrink-0">
+                    <div class="min-w-0">
+                      <div class="text-base font-black text-slate-800 leading-tight break-words">{{ petDisplayName(slot.pet) }}</div>
+                      <div class="text-sm font-bold text-slate-500 mt-1">Lv.{{ slot.pet.level }}</div>
+                    </div>
+                  </div>
+                </button>
+                <div class="mt-2">
+                  <div class="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                    <div class="h-full bg-emerald-500" :style="{ width: expPercent(slot.pet) + '%' }"></div>
+                  </div>
+                  <div class="text-[10px] font-bold text-slate-400 mt-1">EXP {{ slot.pet.exp }} / {{ expRequired(slot.pet.level) }}</div>
+                </div>
+                <div class="mt-2 flex gap-1">
+                  <button
+                    @click="useAsAttacker(petId(slot.pet))"
+                    class="flex-1 h-7 rounded-lg text-[10px] font-black"
+                    :class="slot.idx === 0 ? 'bg-emerald-500 text-white' : 'bg-emerald-50 text-emerald-700'"
+                  >璁鹃瀹?/button>
+                  <button @click="removeFromBag(slot.idx)" class="h-7 px-2 rounded-lg text-[10px] font-black bg-rose-50 text-rose-600">绉诲嚭</button>
+                </div>
+                <div class="mt-1 flex gap-1">
+                  <button
+                    @click="moveBagLeft(slot.idx)"
+                    :disabled="slot.idx === 0"
+                    class="flex-1 h-6 rounded text-[10px] font-black bg-slate-100 text-slate-700 disabled:opacity-50"
+                  >宸︾Щ</button>
+                  <button
+                    @click="moveBagRight(slot.idx)"
+                    :disabled="slot.idx === 5"
+                    class="flex-1 h-6 rounded text-[10px] font-black bg-slate-100 text-slate-700 disabled:opacity-50"
+                  >鍙崇Щ</button>
+                </div>
+              </template>
+            <div v-else class="h-full flex items-center justify-center text-[11px] font-bold text-slate-400">绌轰綅</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="rounded-3xl border border-white bg-white/88 shadow-lg p-4">
+          <h3 class="text-lg font-black text-slate-900 mb-3">鏈€杩戝鎴樿褰?/h3>
+          <div v-if="state.battleLog.length === 0" class="text-sm font-bold text-slate-400">鏆傛棤璁板綍銆?/div>
+          <div v-else class="space-y-2 max-h-[245px] overflow-y-auto pr-1 scrollbar">
+            <div v-for="row in safeBattleLog" :key="rowId(row)" class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold">
+              <div class="flex items-center justify-between gap-2">
+                <span :class="row.win ? 'text-emerald-600' : 'text-rose-500'">{{ row.win ? '鑳滃埄' : '澶辫触' }}</span>
+                <span class="text-slate-400">{{ row.time }}</span>
+              </div>
+              <div class="text-slate-700 mt-1 truncate">{{ row.attacker }}(Lv.{{ row.attackerLevel }}) 鎸戞垬 {{ row.target }}(Lv.{{ row.targetLevel }})锛岃幏寰?{{ row.expGain }} EXP</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-3xl border border-white bg-white/88 shadow-lg p-4">
+          <h3 class="text-lg font-black text-slate-900 mb-3">瀛靛寲涓績锛? 鍒嗛挓锛?/h3>
+          <div v-if="state.eggs.length === 0" class="text-sm font-bold text-slate-400">褰撳墠娌℃湁瀛靛寲涓殑浜氭瘮铔嬨€?/div>
+          <div v-else class="space-y-2 max-h-[245px] overflow-y-auto pr-1 scrollbar">
+            <div v-for="egg in safeEggs" :key="eggId(egg)" class="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2">
+              <div class="flex items-center justify-between gap-2">
+                <div>
+                  <div class="text-sm font-black text-amber-900">{{ egg.speciesName }} 铔?/div>
+                  <div class="text-[11px] font-bold text-amber-700">鍓╀綑锛歿{ formatRemain(egg.hatchAt - nowTs) }}</div>
+                </div>
+                <button
+                  @click="hatchEgg(eggId(egg))"
+                  :disabled="egg.hatchAt > nowTs"
+                  :class="[
+                    'h-8 px-3 rounded-lg text-xs font-black',
+                    egg.hatchAt <= nowTs ? 'bg-emerald-500 text-white' : 'bg-amber-200 text-amber-500 cursor-not-allowed'
+                  ]"
+                >
+                  {{ egg.hatchAt <= nowTs ? '绔嬪嵆瀛靛寲' : '瀛靛寲涓? }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div v-if="replaceSkillCtx && selectedPet" class="fixed inset-0 z-[72] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" @click="cancelReplaceSkill">
+    <div class="w-full max-w-md rounded-2xl border border-white bg-white p-4 shadow-2xl" @click.stop>
+      <div class="text-base font-black text-slate-900">鎶€鑳芥Ы宸叉弧锛岄€夋嫨涓€涓妧鑳芥浛鎹?/div>
+      <div class="text-xs font-bold text-slate-500 mt-1">鏂版妧鑳斤細{{ replaceSkillCtx.newSkill }}</div>
+      <div class="mt-3 space-y-2">
+        <button
+          v-for="oldSkill in selectedPet.equippedSkills"
+          :key="oldSkill"
+          @click="confirmReplaceSkill(oldSkill)"
+          class="w-full h-9 rounded-lg border border-slate-200 bg-slate-50 text-left px-3 text-sm font-black text-slate-700 hover:border-indigo-300"
+        >
+          鏇挎崲 {{ oldSkill }}
+        </button>
+      </div>
+      <div class="mt-3 text-right">
+        <button @click="cancelReplaceSkill" class="h-8 px-3 rounded-lg bg-slate-100 text-slate-600 text-xs font-black">鍙栨秷</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="state.showDexPanel" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeDexPanel">
+    <div class="w-full max-w-5xl h-[82vh] rounded-3xl border border-white bg-white shadow-2xl p-4 flex flex-col" @click.stop>
+      <div class="flex items-center justify-between gap-2 mb-3">
+        <h2 class="text-lg font-black text-slate-900">浜氭瘮鍥鹃壌</h2>
+        <div class="flex items-center gap-2">
+          <input
+            v-model="dexSearch"
+            type="text"
+            placeholder="鎼滅储浜氭瘮鍚嶇О"
+            class="w-48 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+          <select
+            v-model="dexElementFilter"
+            class="h-9 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option v-for="opt in dexElementOptions" :key="'dex_' + opt" :value="opt">{{ opt }}</option>
+          </select>
+          <button @click="closeDexPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">鍏抽棴</button>
+        </div>
+      </div>
+      <div class="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-black text-amber-700">
+        鎻愮ず锛氭寫鎴樿幏鑳滃彲婵€娲诲浘閴村苟鑾峰彇浜氭瘮铔嬨€?      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 overflow-y-auto pr-1 scrollbar flex-1">
+        <button
+          v-for="entry in filteredDex"
+          :key="entry.dexId"
+          @click="canChallengeFromDex(entry) ? selectDexAndOpenTarget(entry.dexId) : null"
+          :disabled="!canChallengeFromDex(entry)"
+          :class="[
+            'relative rounded-2xl border bg-white p-2 text-left transition-all h-[152px]',
+            state.selectedDexId === entry.dexId ? 'border-blue-400 ring-2 ring-blue-100 shadow-md' : 'border-slate-200 hover:border-blue-300',
+            !canChallengeFromDex(entry) ? 'opacity-70 cursor-not-allowed' : ''
+          ]"
+        >
+          <div class="absolute top-2 left-2 flex items-center gap-1.5">
+            <div class="text-[10px] font-black bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-lg">#{{ entry.dexId }}</div>
+            <span class="element-icon" :style="petElementIconStyle(entry.element, 18)" :title="entry.element || ''"></span>
+            <span v-if="entry.subElement && entry.subElement !== entry.element" class="element-icon" :style="petElementIconStyle(entry.subElement, 18)" :title="entry.subElement || ''"></span>
+          </div>
+          <div class="absolute top-2 right-2 text-[10px] font-black px-1.5 py-0.5 rounded-lg" :class="statusClass(entry)">{{ dexStatus(entry) }}</div>
+          <div class="h-24 mt-5 flex items-center justify-center">
+            <img :src="entry.image" @error="withFallback" class="max-w-[82px] max-h-[82px] object-contain">
+          </div>
+          <div class="text-xs font-black text-slate-700 truncate mt-1">{{ entry.name }}</div>
+          <div v-if="!canChallengeFromDex(entry)" class="text-[10px] font-black text-amber-600 mt-1">瀹堟姢鑰呬笓灞炴寫鎴?/div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showGuardianPanel" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeGuardianPanel">
+    <div class="w-full max-w-4xl rounded-3xl border border-white bg-white shadow-2xl p-4" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-black text-slate-900">鎸戞垬瀹堟姢鑰?/h3>
+        <button @click="closeGuardianPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">鍏抽棴</button>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <button
+          v-for="entry in guardianDexEntries"
+          :key="'guardian_' + entry.dexId"
+          @click="openGuardianChallengePanel(entry.dexId)"
+          class="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-left hover:border-amber-400"
+        >
+          <div class="h-20 flex items-center justify-center">
+            <img :src="entry.image" @error="withFallback" class="max-w-[72px] max-h-[72px] object-contain">
+          </div>
+          <div class="text-xs font-black text-amber-800 truncate mt-1">{{ entry.name }}</div>
+          <div class="text-[10px] font-bold text-amber-600 mt-1">鐐瑰嚮杩涘叆瀹堟姢鑰呮寫鎴?/div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showGuardianChallengePanel && selectedGuardianEntry" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeGuardianChallengePanel">
+    <div class="w-full max-w-2xl rounded-3xl border border-white bg-white shadow-2xl p-4" @click.stop>
+      <div class="flex items-center justify-between gap-2 mb-3">
+        <h3 class="text-lg font-black text-slate-900">鎸戞垬瀹堟姢鑰?/h3>
+        <button @click="closeGuardianChallengePanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">鍏抽棴</button>
+      </div>
+      <div class="grid grid-cols-[220px_1fr] gap-4">
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center">
+          <img :src="selectedGuardianEntry.image" @error="withFallback" class="w-44 h-44 object-contain mx-auto">
+          <div class="mt-2 text-sm font-black text-slate-800 truncate">{{ selectedGuardianEntry.name }}</div>
+          <button @click="openSelectedGuardianDetail" class="mt-2 w-full h-8 px-2 rounded-lg text-[11px] font-black bg-emerald-50 text-emerald-700">鏌ョ湅璇︽儏</button>
+        </div>
+        <div class="space-y-3">
+          <div class="rounded-xl border border-amber-100 bg-amber-50 p-3 text-xs font-bold text-amber-700">瀹堟姢鑰呮寫鎴樹负杩炵画鍏冲崱妯″紡锛?0绾ц捣锛岄€愬叧鎻愬崌鑷?00绾э紱鍏ㄩ儴鍑昏触鍚庤幏寰椾簹姣旇泲銆?/div>
+          <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs font-bold text-slate-600">瀹堟姢鑰呮寫鎴樹腑锛屽畧鎶よ€呬綋鍔涚鏃忓€煎浐瀹氫负500锛屽叾浠栫鏃忓€间笉鍙樸€?/div>
+          <button @click="confirmGuardianChallenge" :disabled="bagPets.length === 0" class="w-full h-11 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black disabled:opacity-50 disabled:cursor-not-allowed">寮€濮嬫寫鎴樺畧鎶よ€?/button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showTargetPanel && selectedDexEntry" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeTargetPanel">
+    <div class="w-full max-w-2xl rounded-3xl border border-white bg-white shadow-2xl p-4" @click.stop>
+      <div class="flex items-center justify-between gap-2 mb-3">
+        <h3 class="text-lg font-black text-slate-900">鎸戞垬鐩爣</h3>
+        <button @click="closeTargetPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">鍏抽棴</button>
+      </div>
+      <div class="grid grid-cols-[220px_1fr] gap-4">
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center">
+          <img :src="(selectedChallengeForm && selectedChallengeForm.image) || selectedDexEntry.image" @error="withFallback" class="w-44 h-44 object-contain mx-auto">
+          <div class="mt-2 text-sm font-black text-slate-800 truncate">{{ (selectedChallengeForm && selectedChallengeForm.name) || selectedDexEntry.name }}</div>
+          <button @click="openSelectedDexDetail" class="mt-2 w-full h-8 px-2 rounded-lg text-[11px] font-black bg-emerald-50 text-emerald-700">鏌ョ湅璇︽儏</button>
+        </div>
+        <div class="space-y-3">
+          <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-500">
+            鐩爣绛夌骇
+            <input v-model.number="state.targetLevel" type="number" :min="selectedChallengeLevelRange.min" :max="selectedChallengeLevelRange.max" class="mt-1 w-full text-sm font-black bg-transparent focus:outline-none">
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="rounded-xl border border-blue-100 bg-blue-50 p-2 font-bold text-blue-800">鑳滃埄缁忛獙锛歿{ predictedWinExp }}</div>
+            <div class="rounded-xl border border-slate-200 bg-slate-100 p-2 font-bold text-slate-600">澶辫触缁忛獙锛歿{ predictedLoseExp }}</div>
+          </div>
+          <div class="rounded-xl border border-indigo-100 bg-indigo-50 p-2 text-xs font-bold text-indigo-700">灞炴€у€嶇巼锛歿{ predictedElementFactor.toFixed(2) }}x</div>
+          <div class="rounded-xl border border-emerald-100 bg-emerald-50 p-2 text-xs font-bold text-emerald-700">{{ predictedElementText }}</div>
+          <div v-if="selectedDexChallengeLocked" class="rounded-xl border border-amber-100 bg-amber-50 p-2 text-xs font-bold text-amber-700">褰撳墠浠呭紑鏀剧紪鍙?-796鐨勪簹姣旀寫鎴?/div>
+          <button @click="startChallenge" :disabled="bagPets.length === 0 || selectedDexChallengeLocked" class="w-full h-11 rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white font-black disabled:opacity-50 disabled:cursor-not-allowed">鍙戣捣鎸戞垬</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showWarehousePanel" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeWarehousePanel">
+    <div class="w-full max-w-6xl h-[82vh] rounded-3xl border border-white bg-white shadow-2xl p-4 flex flex-col" @click.stop>
+      <div class="flex items-center justify-between gap-2 mb-3">
+        <h2 class="text-lg font-black text-slate-900">浜氭瘮浠撳簱</h2>
+        <div class="flex items-center gap-2">
+          <input
+            v-model="warehouseSearch"
+            type="text"
+            placeholder="鎸夊悕绉扮瓫閫?
+            class="w-48 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-400"
+          >
+          <select
+            v-model="warehouseElementFilter"
+            class="h-9 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+          >
+            <option v-for="opt in warehouseElementOptions" :key="opt" :value="opt">{{ opt }}</option>
+          </select>
+          <button @click="closeWarehousePanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">鍏抽棴</button>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 overflow-y-auto pr-1 scrollbar flex-1 content-start auto-rows-max">
+        <div
+          v-for="pet in filteredWarehousePets"
+          :key="petId(pet)"
+          :class="[
+            'relative rounded-2xl border bg-white p-2 text-left transition-all h-fit',
+            state.selectedPetId === petId(pet) ? 'border-emerald-400 ring-2 ring-emerald-100 shadow-md' : 'border-slate-200 hover:border-emerald-300'
+          ]"
+        >
+          <div v-if="isEvolving(petId(pet))" class="absolute inset-0 pointer-events-none">
+            <div class="absolute inset-0 bg-white/40 evo-flash"></div>
+            <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border-4 border-yellow-300 evo-ring"></div>
+          </div>
+          <div class="flex items-center gap-2">
+            <img :src="petCurrentForm(pet).img" @error="withFallback" class="w-12 h-12 object-contain pet-bob">
+            <div class="min-w-0 flex-1">
+              <div class="text-xs font-black text-slate-800 truncate">{{ petDisplayName(pet) }}</div>
+              <div class="text-[11px] font-bold text-slate-400 truncate">绉嶆棌锛歿{ pet.speciesName }}</div>
+              <div class="mt-1">
+                <span v-for="(el, idx) in petElementList(pet)" :key="'wh_el_' + petId(pet) + '_' + idx + '_' + el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el || ''"></span>
+              </div>
+              <div class="text-[11px] font-bold text-slate-500 mt-1">Lv.{{ pet.level }}</div>
+            </div>
+          </div>
+          <div class="mt-2">
+            <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
+              <div class="h-full bg-emerald-500" :style="{ width: expPercent(pet) + '%' }"></div>
+            </div>
+            <div class="text-[10px] font-bold text-slate-400 mt-1">EXP {{ pet.exp }} / {{ expRequired(pet.level) }}</div>
+          </div>
+          <div class="mt-2 flex items-center gap-1">
+            <button
+              @click="addToBag(petId(pet))"
+              class="w-full h-8 px-2 rounded-lg text-[11px] font-black bg-indigo-50 text-indigo-700"
+            >鏀惧叆鑳屽寘</button>
+          </div>
+          <button @click="openPetDetailModal(petId(pet))" class="mt-1 w-full h-8 px-2 rounded-lg text-[11px] font-black bg-emerald-50 text-emerald-700">鏌ョ湅璇︽儏</button>
+        </div>
+        <div v-if="filteredWarehousePets.length === 0" class="col-span-full text-sm font-bold text-slate-400 py-8 text-center">褰撳墠绛涢€変笅鏆傛棤浜氭瘮銆?/div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showShopPanel" class="fixed inset-0 z-[70] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeShopPanel">
+    <div class="w-full max-w-3xl rounded-3xl border border-white bg-white shadow-2xl p-4" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-black text-slate-900">浜氭瘮鍟嗗簵</h2>
+        <button @click="closeShopPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">鍏抽棴</button>
+      </div>
+      <div class="inline-flex rounded-2xl border border-slate-200 bg-slate-50 p-1 mb-3">
+        <button @click="shopTab='shop'" class="h-8 px-4 rounded-xl text-xs font-black transition-all" :class="shopTab==='shop' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'">浜氭瘮鍟嗗簵</button>
+        <button @click="shopTab='items'" class="h-8 px-4 rounded-xl text-xs font-black transition-all" :class="shopTab==='items' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'">浜氭瘮閬撳叿</button>
+      </div>
+      <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 mb-3">
+        <div class="text-xs font-black text-slate-500 mb-1">鐩爣浜氭瘮</div>
+        <select v-model="shopTargetPetId" class="w-full h-9 rounded-lg border border-slate-300 bg-white px-2 text-sm font-bold text-slate-700">
+          <option v-for="u in shopTargetOptions" :key="'shop_pet_'+u.id" :value="u.id">{{ u.name }}锛圠v.{{ u.level }}锛?/option>
+        </select>
+      </div>
+      <div v-if="shopTab==='shop'" class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
+        <div v-for="it in shopItems" :key="'shop_item_'+it.id" class="rounded-2xl border border-emerald-100 bg-emerald-50 p-3 flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-sm font-black text-slate-800 truncate">{{ it.name }}</div>
+            <div class="text-[11px] font-bold text-slate-500 mt-1">{{ it.desc }}</div>
+            <div class="text-[11px] font-black text-emerald-700 mt-1">浠锋牸锛歿{ it.price }}锛堝厤璐癸級</div>
+          </div>
+          <button @click="buyShopItem(it.id)" class="h-9 px-4 rounded-xl bg-emerald-600 text-white text-sm font-black hover:bg-emerald-500">
+            璐拱
+          </button>
+        </div>
+      </div>
+      <div v-else class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
+        <div v-for="it in itemInventoryRows" :key="'item_row_'+it.id" class="rounded-2xl border border-indigo-100 bg-indigo-50 p-3 flex items-center justify-between gap-3">
+          <div class="w-11 h-11 rounded-xl border border-indigo-200 bg-white flex items-center justify-center text-sm font-black shadow-sm"
+               :class="it.id.includes('pp_bean') ? 'text-sky-600' : (it.id.includes('hp_candy') ? 'text-rose-600' : 'text-slate-600')">
+            {{ it.id.includes('pp_bean') ? 'PP' : (it.id.includes('hp_candy') ? 'HP' : 'ITEM') }}
+          </div>
+          <div class="min-w-0">
+            <div class="text-sm font-black text-slate-800 truncate">{{ it.name }}</div>
+            <div class="text-[11px] font-bold text-slate-500 mt-1">{{ it.desc }}</div>
+            <div class="text-[11px] font-black text-indigo-700 mt-1">鍓╀綑锛歿{ it.count }}</div>
+          </div>
+          <button @click="useShopItem(it.id)" class="h-9 px-4 rounded-xl bg-indigo-600 text-white text-sm font-black hover:bg-indigo-500">
+            浣跨敤
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showPetDetailModal" class="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4" @click="closePetDetailModal">
+    <div class="w-full max-w-4xl h-[84vh] rounded-[28px] border border-cyan-200/70 bg-[linear-gradient(160deg,#ffffff,#f8fbff)] shadow-[0_28px_80px_rgba(15,23,42,0.45)] p-5 flex flex-col" @click.stop>
+      <div class="flex items-center justify-between gap-2 mb-4">
+        <h3 class="text-xl font-black text-slate-900 tracking-wide">浜氭瘮璇︽儏</h3>
+        <button @click="closePetDetailModal" class="h-9 px-4 rounded-xl bg-slate-900 text-white text-sm font-black hover:bg-slate-700">鍏抽棴</button>
+      </div>
+      <template v-if="selectedPet">
+        <div class="mb-4 rounded-3xl border border-indigo-100 bg-gradient-to-r from-indigo-50 via-cyan-50 to-emerald-50 px-4 py-3">
+          <div class="flex items-center gap-3">
+            <img :src="selectedPetDetailVisual.img" @error="withFallback" class="w-16 h-16 object-contain drop-shadow">
+            <div class="min-w-0">
+              <div class="text-base font-black text-slate-800 truncate">{{ selectedPetDetailVisual.name }}</div>
+              <div class="text-xs font-bold text-slate-500">Lv.{{ selectedPet.level }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="inline-flex rounded-2xl border border-slate-200 bg-slate-50 p-1 mb-4 overflow-x-auto">
+          <button @click="setInfoTab('skills')" class="h-8 px-3 rounded-xl text-xs font-black transition-all" :class="selectedInfoTab === 'skills' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'">鎶€鑳芥爮</button>
+          <button @click="setInfoTab('ability')" class="h-8 px-3 rounded-xl text-xs font-black transition-all" :class="selectedInfoTab === 'ability' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'">鑳藉姏鏍?/button>
+          <button @click="setInfoTab('talent')" class="h-8 px-3 rounded-xl text-xs font-black transition-all" :class="selectedInfoTab === 'talent' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'">澶╄祴鏍?/button>
+          <button @click="setInfoTab('study')" class="h-8 px-3 rounded-xl text-xs font-black transition-all" :class="selectedInfoTab === 'study' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'">瀛︿範鍔涙爮</button>
+          <button @click="setInfoTab('race')" class="h-8 px-3 rounded-xl text-xs font-black transition-all" :class="selectedInfoTab === 'race' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'">绉嶆棌鍊兼爮</button>
+        </div>
+        <div class="overflow-y-auto pr-1 scrollbar flex-1 rounded-2xl border border-slate-100 bg-white/70 p-3">
+          <template v-if="selectedInfoTab === 'skills'">
+            <div class="grid grid-cols-2 gap-2 mb-3">
+              <div v-for="idx in [0,1,2,3]" :key="'modal_'+idx" class="h-9 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/70 px-2 flex items-center text-xs font-black text-slate-700 truncate">
+                {{ selectedPetEquippedSkills[idx] || '绌烘妧鑳芥Ы' }}
+              </div>
+            </div>
+            <div class="space-y-2">
+              <div v-for="skill in availableSkillsForSelectedPet" :key="'modal_skill_' + safeSkillName(skill)" @click="inspectSkill(safeSkillName(skill))" :class="['w-full rounded-xl border px-3 py-2 text-left transition-all', selectedSkillName === safeSkillName(skill) ? 'border-indigo-400 ring-2 ring-indigo-100 bg-indigo-50/50' : 'border-slate-200 bg-white hover:border-indigo-300']" role="button" tabindex="0">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <template v-if="skillTypeMeta(safeSkillType(skill)).icon">
+                      <img :src="skillTypeMeta(safeSkillType(skill)).icon" class="w-4 h-4 object-contain" :alt="skillTypeMeta(safeSkillType(skill)).label">
+                    </template>
+                    <span class="text-sm font-black text-slate-800 truncate">{{ safeSkillName(skill) }}</span>
+                  </div>
+                  <div class="flex items-center gap-1 shrink-0">
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-black">Lv{{ skill.level }}</span>
+                    <button
+                      @click.stop="toggleEquipSkill(safeSkillName(skill))"
+                      class="h-6 px-2 rounded text-[10px] font-black"
+                      :class="hasEquippedSkill(selectedPet, safeSkillName(skill)) ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-indigo-50 text-indigo-700 border border-indigo-200'"
+                    >{{ hasEquippedSkill(selectedPet, safeSkillName(skill)) ? '鍗镐笅' : '瑁呴厤' }}</button>
+                  </div>
+                </div>
+                <div class="mt-1 flex items-center gap-2 text-[11px] font-bold text-slate-500">
+                  <span>{{ skillTypeMeta(safeSkillType(skill)).label }}</span>
+                  <span>| 绫诲瀷 {{ skillAttackTypeLabel(safeSkillType(skill)) }}</span>
+                  <span>| 濞佸姏 {{ safeSkillPower(skill) }}</span>
+                  <span>| PP {{ safeSkillPP(skill) }}</span>
+                  <span>| 鍛戒腑 {{ safeSkillAccuracy(skill) }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <template v-if="selectedSkillDetail">
+                <div class="text-sm font-black text-slate-800">{{ selectedSkillDetail.name }}</div>
+                <div class="text-[11px] font-bold text-slate-500 mt-1">鎻忚堪锛歿{ selectedSkillDetail.desc || '鏆傛棤鎻忚堪' }}</div>
+              </template>
+              <div v-else class="text-[11px] font-bold text-slate-400">鐐瑰嚮鎶€鑳藉彲鏌ョ湅鎶€鑳芥弿杩般€?/div>
+            </div>
+          </template>
+          <template v-else-if="selectedInfoTab === 'ability'">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+              <template v-if="selectedAbilityStats">
+                <div class="text-xs font-black text-slate-500 mb-2">鑳藉姏鍊硷紙鎸夊ゥ鎷夋槦瀹樻柟鍏紡锛?/div>
+                <div class="grid grid-cols-2 gap-2 text-xs font-black">
+                  <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5 text-slate-700">鏀诲嚮锛歿{ selectedAbilityStats.atk }}</div>
+                  <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5 text-slate-700">浣撳姏锛歿{ selectedAbilityStats.hp }}</div>
+                  <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5 text-slate-700">鐗规敾锛歿{ selectedAbilityStats.spAtk }}</div>
+                  <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5 text-slate-700">闃插尽锛歿{ selectedAbilityStats.def }}</div>
+                  <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5 text-slate-700">鐗归槻锛歿{ selectedAbilityStats.spDef }}</div>
+                  <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5 text-slate-700">閫熷害锛歿{ selectedAbilityStats.speed }}</div>
+                </div>
+                <div class="mt-2 text-[11px] font-black text-indigo-700">鎬诲拰锛歿{ selectedAbilityStats.total }}</div>
+              </template>
+              <div v-else class="text-[11px] font-bold text-slate-400">璇ヤ簹姣旀殏鏃犺兘鍔涘€兼暟鎹€?/div>
+            </div>
+          </template>
+          <template v-else-if="selectedInfoTab === 'talent'">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+              <div class="text-xs font-black text-slate-500 mb-2">澶╄祴锛?-62锛?/div>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="text-[11px] font-black text-slate-600">鏀诲嚮
+                  <input :value="selectedPetTalent.atk" @input="setTalentValue('atk', $event.target.value)" type="number" min="0" max="62" class="mt-1 w-full h-8 rounded-lg border border-slate-200 px-2 text-xs font-black">
+                </label>
+                <label class="text-[11px] font-black text-slate-600">浣撳姏
+                  <input :value="selectedPetTalent.hp" @input="setTalentValue('hp', $event.target.value)" type="number" min="0" max="62" class="mt-1 w-full h-8 rounded-lg border border-slate-200 px-2 text-xs font-black">
+                </label>
+                <label class="text-[11px] font-black text-slate-600">鐗规敾
+                  <input :value="selectedPetTalent.spAtk" @input="setTalentValue('spAtk', $event.target.value)" type="number" min="0" max="62" class="mt-1 w-full h-8 rounded-lg border border-slate-200 px-2 text-xs font-black">
+                </label>
+                <label class="text-[11px] font-black text-slate-600">闃插尽
+                  <input :value="selectedPetTalent.def" @input="setTalentValue('def', $event.target.value)" type="number" min="0" max="62" class="mt-1 w-full h-8 rounded-lg border border-slate-200 px-2 text-xs font-black">
+                </label>
+                <label class="text-[11px] font-black text-slate-600">鐗归槻
+                  <input :value="selectedPetTalent.spDef" @input="setTalentValue('spDef', $event.target.value)" type="number" min="0" max="62" class="mt-1 w-full h-8 rounded-lg border border-slate-200 px-2 text-xs font-black">
+                </label>
+                <label class="text-[11px] font-black text-slate-600">閫熷害
+                  <input :value="selectedPetTalent.speed" @input="setTalentValue('speed', $event.target.value)" type="number" min="0" max="62" class="mt-1 w-full h-8 rounded-lg border border-slate-200 px-2 text-xs font-black">
+                </label>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="selectedInfoTab === 'study'">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+              <div class="text-xs font-black text-slate-500 mb-2">瀛︿範鍔涳紙鍗曢」 0-255锛屾€诲拰 510锛?/div>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="text-[11px] font-black text-slate-600">鏀诲嚮
+                  <input :value="selectedPetStudy.atk" @input="setStudyValue('atk', $event.target.value)" type="number" min="0" max="255" class="mt-1 w-full h-8 rounded-lg border border-slate-200 px-2 text-xs font-black">
+                </label>
+                <label class="text-[11px] font-black text-slate-600">浣撳姏
+                  <input :value="selectedPetStudy.hp" @input="setStudyValue('hp', $event.target.value)" type="number" min="0" max="255" class="mt-1 w-full h-8 rounded-lg border border-slate-200 px-2 text-xs font-black">
+                </label>
+                <label class="text-[11px] font-black text-slate-600">鐗规敾
+                  <input :value="selectedPetStudy.spAtk" @input="setStudyValue('spAtk', $event.target.value)" type="number" min="0" max="255" class="mt-1 w-full h-8 rounded-lg border border-slate-200 px-2 text-xs font-black">
+                </label>
+                <label class="text-[11px] font-black text-slate-600">闃插尽
+                  <input :value="selectedPetStudy.def" @input="setStudyValue('def', $event.target.value)" type="number" min="0" max="255" class="mt-1 w-full h-8 rounded-lg border border-slate-200 px-2 text-xs font-black">
+                </label>
+                <label class="text-[11px] font-black text-slate-600">鐗归槻
+                  <input :value="selectedPetStudy.spDef" @input="setStudyValue('spDef', $event.target.value)" type="number" min="0" max="255" class="mt-1 w-full h-8 rounded-lg border border-slate-200 px-2 text-xs font-black">
+                </label>
+                <label class="text-[11px] font-black text-slate-600">閫熷害
+                  <input :value="selectedPetStudy.speed" @input="setStudyValue('speed', $event.target.value)" type="number" min="0" max="255" class="mt-1 w-full h-8 rounded-lg border border-slate-200 px-2 text-xs font-black">
+                </label>
+              </div>
+              <div class="mt-2 text-[11px] font-black text-indigo-700">瀛︿範鍔涙€诲拰锛歿{ selectedStudyTotal }} / 510</div>
+            </div>
+          </template>
+          <template v-else>
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+              <template v-if="selectedRaceStats">
+                <div class="text-xs font-black text-slate-500 mb-2">绉嶆棌鍊?/div>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-xs font-bold text-slate-700">
+                    <thead>
+                      <tr class="bg-slate-100 text-slate-500">
+                        <th class="py-1 px-2 text-left rounded-l-lg">浣撳姏</th>
+                        <th class="py-1 px-2 text-left">鏀诲嚮</th>
+                        <th class="py-1 px-2 text-left">闃插尽</th>
+                        <th class="py-1 px-2 text-left">鐗规敾</th>
+                        <th class="py-1 px-2 text-left">鐗归槻</th>
+                        <th class="py-1 px-2 text-left rounded-r-lg">閫熷害</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="py-2 px-2">{{ selectedRaceStats.hp }}</td>
+                        <td class="py-2 px-2">{{ selectedRaceStats.atk }}</td>
+                        <td class="py-2 px-2">{{ selectedRaceStats.def }}</td>
+                        <td class="py-2 px-2">{{ selectedRaceStats.spAtk }}</td>
+                        <td class="py-2 px-2">{{ selectedRaceStats.spDef }}</td>
+                        <td class="py-2 px-2">{{ selectedRaceStats.speed }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="mt-2 text-[11px] font-black text-indigo-700">鎬诲拰锛歿{ selectedRaceStats.total }}</div>
+              </template>
+              <div v-else class="text-[11px] font-bold text-slate-400">璇ヤ簹姣旀殏鏃犵鏃忓€兼暟鎹€?/div>
+            </div>
+          </template>
+        </div>
+      </template>
+      <div v-else class="text-sm font-bold text-slate-400">璇峰厛閫夋嫨涓€鍙簹姣斻€?/div>
+    </div>
+  </div>
+
+  <div v-if="bagReplaceCtx" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" @click="cancelReplaceBag">
+    <div class="w-full max-w-md rounded-2xl border border-white bg-white p-4 shadow-2xl" @click.stop>
+      <div class="text-base font-black text-slate-900">鑳屽寘宸叉弧锛岄€夋嫨瑕佹浛鎹㈢殑鑳屽寘浣?/div>
+      <div class="text-xs font-bold text-slate-500 mt-1">灏嗘斁鍏ワ細{{ petDisplayName(safeActivePets.find((p) => p.id === bagReplaceCtx.incomingPetId) || {}) }}</div>
+      <div class="mt-3 space-y-2">
+        <button
+          v-for="slot in bagSlots"
+          :key="'replace_slot_' + slot.idx"
+          @click="replaceBagSlot(slot.idx)"
+          class="w-full h-10 rounded-lg border border-slate-200 bg-slate-50 text-left px-3 text-sm font-black text-slate-700 hover:border-indigo-300"
+        >
+          鏇挎崲 #{{ slot.idx + 1 }}锛歿{ slot.pet ? petDisplayName(slot.pet) : '绌轰綅' }}
+        </button>
+      </div>
+      <div class="mt-3 text-right">
+        <button @click="cancelReplaceBag" class="h-8 px-3 rounded-lg bg-slate-100 text-slate-600 text-xs font-black">鍙栨秷</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showElementPanel" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeElementPanel">
+    <div class="w-full max-w-5xl rounded-3xl border border-white bg-white shadow-2xl p-4" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-black text-slate-900">灞炴€у厠鍒跺叧绯?/h3>
+        <button @click="closeElementPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">鍏抽棴</button>
+      </div>
+      <img :src="elementRelationImage" @error="withFallback" class="w-full max-h-[74vh] object-contain rounded-2xl border border-slate-200 bg-slate-50">
+    </div>
+  </div>
+
+  <div v-if="battleScene && battleScene.open" class="fixed inset-0 z-50 bg-slate-900/85 backdrop-blur-sm p-2 md:p-4" @click="closeBattleScene">
+    <div class="w-full h-full rounded-3xl border border-slate-700 overflow-hidden shadow-2xl relative bg-[radial-gradient(circle_at_18%_20%,#1e40af_0%,#0f172a_36%,#020617_100%)]" @click.stop>
+      <div class="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_70%_28%,rgba(125,211,252,0.9),transparent_42%),radial-gradient(circle_at_30%_76%,rgba(56,189,248,0.55),transparent_50%)]"></div>
+      <div v-if="battleScene.fxSkillText" class="absolute top-4 left-4 z-20 rounded-2xl border border-cyan-300/60 bg-cyan-400/25 px-5 py-2 text-sm font-black text-cyan-100 shadow-[0_8px_24px_rgba(34,211,238,0.25)] battle-skill-float">{{ battleScene.fxSkillText }}</div>
+
+      <div class="absolute right-6 md:right-10 top-[44%] -translate-y-1/2 z-10 w-[46%] max-w-[560px]">
+        <div class="w-full rounded-2xl border border-white/25 bg-white/10 backdrop-blur px-4 py-3 mb-3">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1 min-w-0">
+              <div class="text-white text-lg font-black truncate">{{ battleScene.attackerName }}</div>
+              <div class="flex items-center gap-1">
+                <span v-for="b in battleAttackerStatusBadges" :key="'atk_st_' + b.key" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white" :title="b.desc">{{ b.label }}{{ b.turns }}</span>
+                <span
+                  v-for="b in battleAttackerTimedEffects"
+                  :key="'atk_fx_' + b.key"
+                  :class="['px-1.5 py-0.5 rounded text-[10px] font-black text-white', b.tone === 'debuff' ? 'bg-rose-500/75' : 'bg-emerald-500/70']"
+                  :title="b.desc"
+                >{{ b.label }}{{ b.turns }}</span>
+              </div>
+            </div>
+            <div class="text-cyan-100 text-xs font-black">Lv.{{ battleScene.attackerLevel }}</div>
+          </div>
+          <div class="mt-1 flex flex-wrap gap-1">
+            <span v-for="s in battleAttackerStageText" :key="'atk_stage_' + s.key" :class="['px-1.5 py-0.5 rounded border text-[10px] font-black', s.cls]">{{ s.text }}</span>
+          </div>
+          <div class="mt-2 h-3 rounded-full bg-white/20 overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" :style="{ width: hpPercent(battleScene.attackerHp, battleScene.attackerMaxHp) + '%' }"></div>
+          </div>
+          <div class="mt-1 text-xs font-black text-cyan-100">HP {{ battleScene.attackerHp }}/{{ battleScene.attackerMaxHp }}</div>
+        </div>
+        <div :class="['relative h-[320px] flex items-end justify-start', battleScene.fxAttackerShake ? 'battle-shake-left' : '']">
+          <img :src="battleScene.attackerImage" @error="withFallback" class="max-w-full max-h-full object-contain scale-x-[-1] drop-shadow-[0_18px_24px_rgba(0,0,0,0.45)]">
+          <div v-if="battleScene.fxAttackerSkillText" class="absolute top-[-8px] left-1/2 -translate-x-1/2 rounded-xl border border-cyan-300/60 bg-cyan-400/20 px-3 py-1 text-sm font-black text-cyan-100 battle-skill-float">{{ battleScene.fxAttackerSkillText }}</div>
+          <div v-for="(hit, idx) in (battleScene.comboHitsOnAttacker || [])" :key="'atk_combo_'+idx" class="absolute top-8 left-1/2 -translate-x-1/2 text-2xl font-black text-rose-200 [text-shadow:0_2px_8px_rgba(0,0,0,.45)] battle-combo-hit" :style="{ animationDelay: (idx * 0.28) + 's' }">{{ hit }}</div>
+          <div v-if="battleScene.comboTotalOnAttacker" class="absolute top-4 left-[62%] text-[42px] font-black text-rose-300 [text-shadow:0_2px_14px_rgba(0,0,0,.5)] battle-combo-total" :style="{ animationDelay: (battleScene.comboTotalDelayOnAttacker || 0) + 's' }">{{ battleScene.comboTotalOnAttacker }}</div>
+          <div v-if="battleScene.damageOnAttacker" :class="['absolute top-6 left-1/2 -translate-x-1/2 text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.critOnAttacker ? 'text-amber-300 battle-crit-pop' : 'text-rose-300 battle-damage-pop']">{{ battleScene.damageOnAttacker }}</div>
+          <div v-if="battleScene.healOnAttacker" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnAttacker }}</div>
+          <div v-if="battleScene.ppOnAttacker" class="absolute top-20 left-1/2 -translate-x-1/2 text-2xl font-black text-sky-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-skill-float">{{ battleScene.ppOnAttacker }}</div>
+          <div v-if="battleScene.damageTagOnAttacker" class="absolute top-16 left-1/2 -translate-x-1/2 rounded-lg px-2 py-0.5 text-xs font-black text-white bg-slate-800/80 border border-white/30 battle-skill-float">{{ battleScene.damageTagOnAttacker }}</div>
+          <div v-if="battleScene.critOnAttacker" class="absolute top-2 left-1/2 -translate-x-1/2 rounded-lg px-2 py-0.5 text-xs font-black text-amber-200 bg-amber-500/30 border border-amber-300/60 battle-skill-float">鏆村嚮</div>
+        </div>
+      </div>
+
+      <div class="absolute left-6 md:left-10 top-8 z-10 w-[40%] max-w-[500px]">
+        <div class="w-full rounded-2xl border border-white/25 bg-white/10 backdrop-blur px-4 py-3 mb-3">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1 min-w-0">
+              <div class="text-white text-lg font-black truncate">{{ battleScene.targetName }}</div>
+              <div class="flex items-center gap-1">
+                <span v-for="b in battleTargetStatusBadges" :key="'tar_st_' + b.key" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white" :title="b.desc">{{ b.label }}{{ b.turns }}</span>
+                <span
+                  v-for="b in battleTargetTimedEffects"
+                  :key="'tar_fx_' + b.key"
+                  :class="['px-1.5 py-0.5 rounded text-[10px] font-black text-white', b.tone === 'debuff' ? 'bg-rose-500/75' : 'bg-emerald-500/70']"
+                  :title="b.desc"
+                >{{ b.label }}{{ b.turns }}</span>
+              </div>
+            </div>
+            <div class="text-cyan-100 text-xs font-black">Lv.{{ battleScene.targetLevel }}</div>
+          </div>
+          <div class="mt-1 flex flex-wrap gap-1">
+            <span v-for="s in battleTargetStageText" :key="'tar_stage_' + s.key" :class="['px-1.5 py-0.5 rounded border text-[10px] font-black', s.cls]">{{ s.text }}</span>
+          </div>
+          <div class="mt-2 h-3 rounded-full bg-white/20 overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" :style="{ width: hpPercent(battleScene.targetHp, battleScene.targetMaxHp) + '%' }"></div>
+          </div>
+          <div class="mt-1 text-xs font-black text-cyan-100">HP {{ battleScene.targetHp }}/{{ battleScene.targetMaxHp }}</div>
+        </div>
+        <div :class="['relative h-[250px] flex items-end justify-end', battleScene.fxTargetShake ? 'battle-shake-right' : '']">
+          <img :src="battleScene.targetImage" @error="withFallback" class="max-w-full max-h-full object-contain drop-shadow-[0_18px_24px_rgba(0,0,0,0.45)]">
+          <div v-for="(hit, idx) in (battleScene.comboHitsOnTarget || [])" :key="'tar_combo_'+idx" class="absolute top-8 left-1/2 -translate-x-1/2 text-2xl font-black text-rose-200 [text-shadow:0_2px_8px_rgba(0,0,0,.45)] battle-combo-hit" :style="{ animationDelay: (idx * 0.28) + 's' }">{{ hit }}</div>
+          <div v-if="battleScene.comboTotalOnTarget" class="absolute top-4 left-[62%] text-[42px] font-black text-rose-300 [text-shadow:0_2px_14px_rgba(0,0,0,.5)] battle-combo-total" :style="{ animationDelay: (battleScene.comboTotalDelayOnTarget || 0) + 's' }">{{ battleScene.comboTotalOnTarget }}</div>
+          <div v-if="battleScene.damageOnTarget" :class="['absolute top-6 left-1/2 -translate-x-1/2 text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.critOnTarget ? 'text-amber-300 battle-crit-pop' : 'text-rose-300 battle-damage-pop']">{{ battleScene.damageOnTarget }}</div>
+          <div v-if="battleScene.healOnTarget" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnTarget }}</div>
+          <div v-if="battleScene.damageTagOnTarget" class="absolute top-16 left-1/2 -translate-x-1/2 rounded-lg px-2 py-0.5 text-xs font-black text-white bg-slate-800/80 border border-white/30 battle-skill-float">{{ battleScene.damageTagOnTarget }}</div>
+          <div v-if="battleScene.critOnTarget" class="absolute top-2 left-1/2 -translate-x-1/2 rounded-lg px-2 py-0.5 text-xs font-black text-amber-200 bg-amber-500/30 border border-amber-300/60 battle-skill-float">鏆村嚮</div>
+        </div>
+        <div class="mt-2 rounded-xl border border-slate-500 bg-slate-900/65 p-3">
+          <div class="text-[11px] font-black text-slate-300 mb-2">鎸戞垬鐩爣鏈€缁堣兘鍔涘€?/div>
+          <div class="grid grid-cols-3 gap-1 text-[11px] font-bold text-slate-200">
+            <div>HP {{ battleScene.targetAbility.hp }}</div>
+            <div>鏀诲嚮 {{ battleScene.targetAbility.atk }}</div>
+            <div>闃插尽 {{ battleAbilityNow('target','def') }}</div>
+            <div>鐗规敾 {{ battleScene.targetAbility.spAtk }}</div>
+            <div>鐗归槻 {{ battleScene.targetAbility.spDef }}</div>
+            <div>閫熷害 {{ battleScene.targetAbility.speed }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="absolute right-6 md:right-10 bottom-6 z-20 w-[46%] max-w-[640px] rounded-3xl border border-cyan-300/35 bg-slate-800/90 p-5 shadow-[0_20px_45px_rgba(15,23,42,0.5)]">
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="text-xl font-black text-white tracking-wide">鎶€鑳介潰鏉?/h4>
+          <div class="flex items-center gap-2">
+            <button @click="openBattleSkillPanel" :disabled="battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-cyan-600 text-white text-sm font-black disabled:opacity-45 shadow-md">鎶€鑳?/button>
+            <button @click="openBattleItemPanel" :disabled="battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-emerald-600 text-white text-sm font-black disabled:opacity-45 shadow-md">閬撳叿</button>
+            <button @click="openSwitchPanel('manual')" :disabled="battleSceneAvailablePets.length === 0 || battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-indigo-600 text-white text-sm font-black disabled:opacity-45 shadow-md">鎹㈠疇</button>
+            <button @click="closeBattleScene" class="h-9 px-4 rounded-xl bg-slate-700/95 border border-slate-400 text-slate-100 text-sm font-black shadow-md hover:bg-slate-600">鎾ら€€</button>
+          </div>
+        </div>
+        <div v-if="battleActionTab === 'skills'" class="space-y-2 max-h-[280px] overflow-auto scrollbar pr-1">
+          <button
+            v-for="skill in battleSceneSkills"
+            :key="'battle_skill_' + safeSkillName(skill)"
+            @click="castBattleSkill(safeSkillName(skill))"
+            :disabled="!canCastBattleSkill(safeSkillName(skill))"
+            class="w-full rounded-2xl border border-slate-600 bg-slate-700/85 px-4 py-3 text-left disabled:opacity-45 disabled:cursor-not-allowed hover:border-cyan-300 hover:bg-slate-700"
+            :title="skillBattleDesc(skill)"
+          >
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <div class="text-sm font-black text-white truncate">{{ safeSkillName(skill) }}</div>
+                <div class="text-[11px] font-bold text-slate-300">{{ safeSkillType(skill) }}</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs font-black text-cyan-200">濞佸姏 {{ safeSkillPower(skill) > 0 ? safeSkillPower(skill) : '-' }}</div>
+                <div class="text-xs font-black text-slate-300">{{ skill.pp }}/{{ skill.ppMax }}</div>
+              </div>
+            </div>
+          </button>
+        </div>
+        <div v-else class="space-y-2 max-h-[280px] overflow-auto scrollbar pr-1">
+          <div v-for="it in itemInventoryRows.filter(x => x.id !== 'max_level_fruit')" :key="'battle_item_'+it.id" class="rounded-2xl border border-slate-500 bg-slate-800/95 px-3 py-2 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <div class="w-9 h-9 rounded-lg border border-slate-500 bg-slate-700 flex items-center justify-center text-xs font-black"
+                   :class="it.id.includes('pp_bean') ? 'text-sky-300' : 'text-rose-300'">
+                {{ it.id.includes('pp_bean') ? 'PP' : 'HP' }}
+              </div>
+              <div class="min-w-0">
+                <div class="text-sm font-black text-slate-100">{{ it.name }}</div>
+                <div class="text-[11px] font-bold text-slate-300">{{ it.desc }}</div>
+                <div class="text-[11px] font-black text-cyan-200">鍓╀綑锛歿{ it.count }}</div>
+              </div>
+            </div>
+            <button @click="useShopItem(it.id)" :disabled="it.count <= 0 || battleScene.ended || battleScene.isActing" class="h-8 px-3 rounded-lg bg-emerald-600 text-white text-xs font-black disabled:opacity-45">浣跨敤</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="absolute left-6 md:left-10 bottom-6 z-20 w-[42%] max-w-[620px] rounded-3xl border border-indigo-300/35 bg-slate-900/78 p-5 shadow-[0_20px_45px_rgba(15,23,42,0.5)]">
+        <div class="text-sm font-black text-slate-200 mb-2 tracking-wide">鎴樻枟鏃ュ織</div>
+        <div ref="battleSceneLogRef" class="max-h-[280px] overflow-auto scrollbar pr-1">
+          <div v-for="(line, idx) in battleScene.logs" :key="'battle_log_' + idx" class="text-xs font-bold text-slate-200 mb-1">{{ line }}</div>
+        </div>
+        <div v-if="battleScene.ended" class="mt-3 rounded-xl border p-3" :class="battleScene.win ? 'border-emerald-400/60 bg-emerald-500/10' : 'border-rose-400/60 bg-rose-500/10'">
+          <div :class="['text-base font-black', battleScene.win ? 'text-emerald-300' : 'text-rose-300']">{{ battleScene.win ? '鎸戞垬鎴愬姛' : '鎸戞垬澶辫触' }}</div>
+          <div class="text-xs font-bold text-slate-200 mt-1">{{ battleScene.summary }}</div>
+          <div class="text-xs font-bold text-slate-300 mt-1">鑾峰緱缁忛獙锛歿{ battleScene.expGain }}</div>
+          <div v-if="battleScene.unlockText" class="text-xs font-black text-cyan-200 mt-1">{{ battleScene.unlockText }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="battleResult" class="fixed inset-0 z-[55] bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBattleResult">
+    <div class="w-full max-w-2xl rounded-3xl border border-white bg-white p-5 shadow-2xl" @click.stop>
+      <h4 :class="['text-2xl font-black text-center', battleResult.win ? 'text-emerald-600' : 'text-rose-500']">{{ battleResult.win ? '鎸戞垬鎴愬姛' : '鎸戞垬澶辫触' }}</h4>
+      <p class="mt-2 text-sm font-bold text-slate-600 text-center">{{ battleResult.summary }}</p>
+      <p class="mt-1 text-xs font-bold text-slate-400 text-center">鑾峰緱缁忛獙锛歿{ battleResult.expGain }}</p>
+      <p v-if="battleResult.unlockText" class="mt-1 text-xs font-black text-blue-600 text-center">{{ battleResult.unlockText }}</p>
+      <div v-if="battleResult.expDistribution && battleResult.expDistribution.length > 0" class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+        <div class="text-sm font-black text-slate-800 mb-2">鑳屽寘缁忛獙缁撶畻</div>
+        <div class="max-h-[260px] overflow-auto scrollbar pr-1 space-y-2">
+          <div v-for="row in battleResult.expDistribution" :key="'exp_row_' + row.petId" class="rounded-xl border px-3 py-2" :class="row.evolved ? 'border-amber-300 bg-amber-50' : 'border-slate-200 bg-white'">
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0 flex items-center gap-2">
+                <img :src="row.image" @error="withFallback" class="w-10 h-10 object-contain rounded-lg bg-slate-100 border border-slate-200">
+                <template>
+                  <span v-for="(el, idx) in petElementList(row)" :key="'exp_el_' + row.petId + '_' + idx + '_' + el" class="element-icon w-4 h-4" :style="petElementIconStyle(el, 16)"></span>
+                </template>
+                <div>
+                <div class="text-sm font-black text-slate-800 truncate">{{ row.name }}</div>
+                <div class="text-xs font-bold text-slate-500">Lv.{{ row.beforeLevel }} 鈫?Lv.{{ row.afterLevel }}</div>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-black text-emerald-600">+{{ row.gainedExp }} EXP</div>
+                <div v-if="row.evolved" class="inline-block mt-1 px-2 py-0.5 rounded-full text-[11px] font-black text-amber-700 border border-amber-300 bg-amber-100 evo-flash">杩涘寲鍙Е鍙?/div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <button @click="closeBattleResult" class="h-10 px-6 rounded-xl bg-slate-900 text-white font-black">鍏抽棴</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="activeEvolution" class="fixed inset-0 z-[58] bg-slate-900/85 backdrop-blur-sm flex items-center justify-center p-4" @click="closeEvolutionModal">
+    <div class="w-full max-w-xl rounded-3xl border border-white bg-[linear-gradient(180deg,#0f172a,#1e293b)] p-5 shadow-2xl relative overflow-hidden" @click.stop>
+      <div class="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_50%_20%,rgba(125,211,252,0.7),transparent_45%),radial-gradient(circle_at_50%_80%,rgba(250,204,21,0.5),transparent_50%)]"></div>
+      <h4 class="relative text-2xl font-black text-center text-amber-200">浜氭瘮杩涘寲</h4>
+      <p class="relative mt-1 text-xs font-bold text-center text-cyan-100">{{ activeEvolution.beforeName }} 杩涘寲涓?{{ activeEvolution.afterName }}</p>
+      <div class="relative mt-4 grid grid-cols-3 items-center gap-3">
+        <div class="text-center">
+          <img :src="activeEvolution.beforeImage" @error="withFallback" class="mx-auto w-28 h-28 object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,0.45)]">
+          <div class="text-xs font-black text-slate-200 mt-1">{{ activeEvolution.beforeName }}</div>
+        </div>
+        <div class="relative h-32 flex items-center justify-center">
+          <div class="absolute w-24 h-24 rounded-full bg-amber-300/30 evo-burst"></div>
+          <div class="absolute w-14 h-32 bg-gradient-to-t from-cyan-200/0 via-cyan-200/70 to-amber-200/0 evo-beam"></div>
+          <div class="text-2xl font-black text-amber-200">鈫?/div>
+        </div>
+        <div class="text-center">
+          <img :src="activeEvolution.afterImage" @error="withFallback" class="mx-auto w-28 h-28 object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,0.45)]">
+          <div class="text-xs font-black text-slate-200 mt-1">{{ activeEvolution.afterName }}</div>
+        </div>
+      </div>
+      <div class="relative mt-4 text-center">
+        <button @click="closeEvolutionModal" class="h-10 px-6 rounded-xl bg-amber-400 text-slate-900 font-black hover:bg-amber-300">纭杩涘寲</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showSwitchPanel && battleScene" class="fixed inset-0 z-[56] bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4" @click="closeSwitchPanel">
+    <div class="w-full max-w-lg rounded-3xl border border-white bg-white p-4 shadow-2xl" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <h4 class="text-lg font-black text-slate-900">閫夋嫨涓嬩竴鍙笂鍦轰簹姣?/h4>
+        <button @click="closeSwitchPanel" :disabled="switchPanelMode === 'forced'" class="h-8 px-3 rounded-lg bg-slate-100 text-slate-700 text-xs font-black disabled:opacity-50">鍏抽棴</button>
+      </div>
+      <div class="space-y-2 max-h-[50vh] overflow-auto scrollbar pr-1">
+        <button
+          v-for="u in battleScene.team"
+          :key="'pick_switch_' + u.id"
+          @click="switchBattlePet(u.id)"
+          :disabled="u.id === battleScene.currentAttackerId || u.hp <= 0"
+          :class="[
+            'w-full rounded-xl border px-3 py-2 text-left',
+            u.id === battleScene.currentAttackerId ? 'bg-slate-100 text-slate-400 border-slate-300' : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-300',
+            u.hp <= 0 ? 'opacity-45 cursor-not-allowed' : ''
+          ]"
+        >
+          <div class="flex items-center gap-2">
+            <template>
+              <span v-for="(el, idx) in petElementList(u)" :key="'switch_el_' + u.id + '_' + idx + '_' + el" class="element-icon w-5 h-5" :style="petElementIconStyle(el, 20)"></span>
+            </template>
+            <img :src="u.image" @error="withFallback" class="w-10 h-10 object-contain rounded">
+            <div class="min-w-0">
+              <div class="text-sm font-black truncate">{{ u.name }}</div>
+              <div class="text-xs font-bold">Lv.{{ u.level }} / HP {{ u.hp }}/{{ u.maxHp }}</div>
+            </div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="toast.show" class="fixed top-5 left-1/2 -translate-x-1/2 z-[60]">
+    <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+  </div>
+</div>
+
+<script src="./aola-dex-1-100.js?v=20260422-03" onload="window.__aolaScriptDiag&&window.__aolaScriptDiag.loaded.push(this.src)" onerror="window.__aolaScriptDiag&&window.__aolaScriptDiag.failed.push(this.src)"></script>
+<script src="./aola-species-data.js?v=20260427-15" onload="window.__aolaScriptDiag&&window.__aolaScriptDiag.loaded.push(this.src)" onerror="window.__aolaScriptDiag&&window.__aolaScriptDiag.failed.push(this.src)"></script>
+<script src="./aola-skill-data.js?v=20260427-15" onload="window.__aolaScriptDiag&&window.__aolaScriptDiag.loaded.push(this.src)" onerror="window.__aolaScriptDiag&&window.__aolaScriptDiag.failed.push(this.src)"></script>
+<script src="./aola-evolution-chains.js?v=20260428-01" onload="window.__aolaScriptDiag&&window.__aolaScriptDiag.loaded.push(this.src)" onerror="window.__aolaScriptDiag&&window.__aolaScriptDiag.failed.push(this.src)"></script>
+<script src="./vendor/vue.global.prod.js" onload="window.__aolaScriptDiag&&window.__aolaScriptDiag.loaded.push(this.src)" onerror="window.__aolaScriptDiag&&window.__aolaScriptDiag.failed.push(this.src)"></script>
+<script src="./aola-star-app.js?v=20260428-02" onload="window.__aolaScriptDiag&&window.__aolaScriptDiag.loaded.push(this.src)" onerror="window.__aolaScriptDiag&&window.__aolaScriptDiag.failed.push(this.src)"></script>
+</body>
+</html>
+
+
+
+
+

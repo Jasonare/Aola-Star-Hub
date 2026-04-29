@@ -1,0 +1,176 @@
+{
+  "\u5927\u5e08\u5154": [
+    {
+      "name": "\u567c\u556a\u4e71\u51fb",
+      "type": "\u666e\u901a\u7cfb/\u666e\u901a\u653b\u51fb",
+      "power": 80,
+      "pp": 35,
+      "level": 0
+    },
+    {
+      "name": "\u751f\u547d\u957f\u6cb3",
+      "type": "\u6728\u7cfb/\u7279\u6b8a\u653b\u51fb",
+      "power": 80,
+      "pp": 15,
+      "level": 4
+    },
+    {
+      "name": "\u53f6\u5203\u62bd\u51fb",
+      "type": "\u6728\u7cfb/\u666e\u901a\u653b\u51fb",
+      "power": 110,
+      "pp": 25,
+      "level": 8
+    },
+    {
+      "name": "\u6c99\u6797\u6bd2\u6c14",
+      "type": "\u6bd2\u7cfb/\u5c5e\u6027\u653b\u51fb",
+      "power": -1,
+      "pp": 35,
+      "level": 12
+    },
+    {
+      "name": "\u9488\u53f6\u66b4\u96e8",
+      "type": "\u6728\u7cfb/\u7279\u6b8a\u653b\u51fb",
+      "power": 120,
+      "pp": 20,
+      "level": 16
+    },
+    {
+      "name": "\u81ea\u7136\u529b\u91cf",
+      "type": "\u666e\u901a\u7cfb/\u666e\u901a\u653b\u51fb",
+      "power": 140,
+      "pp": 20,
+      "level": 20
+    },
+    {
+      "name": "\u68a6\u4e4b\u8f6e\u56de",
+      "type": "\u6728\u7cfb/\u5c5e\u6027\u653b\u51fb",
+      "power": -1,
+      "pp": 15,
+      "level": 24
+    },
+    {
+      "name": "\u51fb\u5012",
+      "type": "\u666e\u901a\u7cfb/\u666e\u901a\u653b\u51fb",
+      "power": 160,
+      "pp": 20,
+      "level": 28
+    }
+  ],
+  "\u7206\u7130\u5409\u62c9": [
+    {
+      "name": "\u80cc\u6454",
+      "type": "\u666e\u901a\u7cfb/\u666e\u901a\u653b\u51fb",
+      "power": 80,
+      "pp": 35,
+      "level": 0
+    },
+    {
+      "name": "\u661f\u706b",
+      "type": "\u706b\u7cfb/\u7279\u6b8a\u653b\u51fb",
+      "power": 80,
+      "pp": 25,
+      "level": 4
+    },
+    {
+      "name": "\u706b\u6d77\u711a\u70e7",
+      "type": "\u706b\u7cfb/\u7279\u6b8a\u653b\u51fb",
+      "power": 30,
+      "pp": 15,
+      "level": 8
+    },
+    {
+      "name": "\u7834\u68a6\u62f3",
+      "type": "\u683c\u6597\u7cfb/\u666e\u901a\u653b\u51fb",
+      "power": 120,
+      "pp": 10,
+      "level": 12
+    },
+    {
+      "name": "\u706b\u7130\u7259",
+      "type": "\u706b\u7cfb/\u666e\u901a\u653b\u51fb",
+      "power": 130,
+      "pp": 15,
+      "level": 16
+    },
+    {
+      "name": "\u706b\u795e\u795d\u798f",
+      "type": "\u706b\u7cfb/\u5c5e\u6027\u653b\u51fb",
+      "power": -1,
+      "pp": 5,
+      "level": 20
+    },
+    {
+      "name": "\u70c8\u706b\u62f3",
+      "type": "\u706b\u7cfb/\u666e\u901a\u653b\u51fb",
+      "power": 150,
+      "pp": 15,
+      "level": 24
+    },
+    {
+      "name": "\u706b\u4e91",
+      "type": "\u706b\u7cfb/\u7279\u6b8a\u653b\u51fb",
+      "power": 160,
+      "pp": 15,
+      "level": 28
+    }
+  ],
+  "\u9732\u897f\u4e9a": [
+    {
+      "name": "\u5229\u722a\u5f3a\u51fb",
+      "type": "\u666e\u901a\u7cfb/\u666e\u901a\u653b\u51fb",
+      "power": 80,
+      "pp": 20,
+      "level": 0
+    },
+    {
+      "name": "\u6025\u901f\u6c34\u5f39",
+      "type": "\u6c34\u7cfb/\u666e\u901a\u653b\u51fb",
+      "power": 80,
+      "pp": 20,
+      "level": 4
+    },
+    {
+      "name": "\u865a\u5f31\u5149\u7ebf",
+      "type": "\u666e\u901a\u7cfb/\u5c5e\u6027\u653b\u51fb",
+      "power": -1,
+      "pp": 40,
+      "level": 8
+    },
+    {
+      "name": "\u6df7\u4e71\u6c34\u6ce2",
+      "type": "\u6c34\u7cfb/\u7279\u6b8a\u653b\u51fb",
+      "power": 120,
+      "pp": 20,
+      "level": 12
+    },
+    {
+      "name": "\u6fc0\u6d41\u846c",
+      "type": "\u6c34\u7cfb/\u7279\u6b8a\u653b\u51fb",
+      "power": 130,
+      "pp": 20,
+      "level": 16
+    },
+    {
+      "name": "\u6d77\u6d6a\u5486\u54ee",
+      "type": "\u6c34\u7cfb/\u7279\u6b8a\u653b\u51fb",
+      "power": 130,
+      "pp": 10,
+      "level": 20
+    },
+    {
+      "name": "\u6fc0\u53d1\u529b\u91cf",
+      "type": "\u666e\u901a\u7cfb/\u666e\u901a\u653b\u51fb",
+      "power": 140,
+      "pp": 20,
+      "level": 24
+    },
+    {
+      "name": "\u6c34\u795e\u795d\u798f",
+      "type": "\u6c34\u7cfb/\u5c5e\u6027\u653b\u51fb",
+      "power": -1,
+      "pp": 5,
+      "level": 28
+    }
+  ]
+}

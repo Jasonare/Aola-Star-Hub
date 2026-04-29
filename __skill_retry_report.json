@@ -1,0 +1,133 @@
+{
+  "zero_before": 21,
+  "recovered_count": 3,
+  "still_zero_count": 21,
+  "recovered": [
+    {
+      "idx": 69,
+      "url": "http://aola.100bt.com/tujian/4531.html",
+      "count": 16,
+      "title": "奥拉星电击拳仔 鬼脸仔 大眼仔技能表配招练级"
+    },
+    {
+      "idx": 96,
+      "url": "http://aola.100bt.com/tujian/4615.html",
+      "count": 16,
+      "title": "奥拉星飞行魔书 绿皮书克 书克技能表配招练级"
+    },
+    {
+      "idx": 210,
+      "url": "http://aola.100bt.com/tujian/4957.html",
+      "count": 16,
+      "title": "奥拉星电击拳怪 鬼脸怪 大眼怪技能表配招练级"
+    }
+  ],
+  "still_zero": [
+    {
+      "idx": 50,
+      "url": "http://aola.100bt.com/tujian/4474.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 69,
+      "url": "http://aola.100bt.com/tujian/4531.html",
+      "reason": "Invalid value '4531' for dtype 'int64'"
+    },
+    {
+      "idx": 74,
+      "url": "http://aola.100bt.com/tujian/4549.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 79,
+      "url": "http://aola.100bt.com/tujian/4564.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 89,
+      "url": "http://aola.100bt.com/tujian/4594.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 95,
+      "url": "http://aola.100bt.com/tujian/4612.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 96,
+      "url": "http://aola.100bt.com/tujian/4615.html",
+      "reason": "Invalid value '4615' for dtype 'int64'"
+    },
+    {
+      "idx": 104,
+      "url": "http://aola.100bt.com/tujian/4639.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 105,
+      "url": "http://aola.100bt.com/tujian/4642.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 106,
+      "url": "http://aola.100bt.com/tujian/4645.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 107,
+      "url": "http://aola.100bt.com/tujian/4648.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 113,
+      "url": "http://aola.100bt.com/tujian/4666.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 121,
+      "url": "http://aola.100bt.com/tujian/4690.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 123,
+      "url": "http://aola.100bt.com/tujian/4696.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 153,
+      "url": "http://aola.100bt.com/tujian/4786.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 158,
+      "url": "http://aola.100bt.com/tujian/4801.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 178,
+      "url": "http://aola.100bt.com/tujian/4861.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 188,
+      "url": "http://aola.100bt.com/tujian/4891.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 210,
+      "url": "http://aola.100bt.com/tujian/4957.html",
+      "reason": "Invalid value '4957' for dtype 'int64'"
+    },
+    {
+      "idx": 213,
+      "url": "http://aola.100bt.com/tujian/4966.html",
+      "reason": "no skill rows parsed"
+    },
+    {
+      "idx": 218,
+      "url": "http://aola.100bt.com/tujian/4981.html",
+      "reason": "no skill rows parsed"
+    }
+  ],
+  "output": "C:\\工作娱乐\\Aola-Star-Hub\\原系亚比_100bt_编号_技能_种族值_skill_retry.xlsx"
+}

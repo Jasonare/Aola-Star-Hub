@@ -1,0 +1,510 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aola Star Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background:
+        radial-gradient(circle at 8% 16%, rgba(63, 131, 248, 0.12), transparent 30%),
+        radial-gradient(circle at 92% 84%, rgba(244, 114, 182, 0.12), transparent 30%),
+        linear-gradient(180deg, #f8fbff 0%, #eff5ff 100%);
+    }
+    .scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+    .scrollbar::-webkit-scrollbar-thumb { background: #b5c4e8; border-radius: 999px; }
+    .scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .element-icon { display: inline-block; border-radius: 999px; vertical-align: middle; flex: 0 0 auto; }
+    @keyframes evoRing { 0% { transform: scale(0.6); opacity: 1; } 100% { transform: scale(1.45); opacity: 0; } }
+    @keyframes evoFlash { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+    .evo-ring { animation: evoRing 1s ease-out forwards; }
+    .evo-flash { animation: evoFlash 0.85s ease-out forwards; }
+    @keyframes petBob { 0% { transform: translateY(0); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0); } }
+    .pet-bob { animation: petBob 2.4s ease-in-out infinite; }
+  </style>
+</head>
+<body class="text-slate-800 min-h-screen">
+<script src="./aola-star-crash.js"></script>
+<div id="app" class="max-w-[1700px] mx-auto p-4 md:p-6">
+  <header class="rounded-3xl border border-white bg-white/90 shadow-lg px-5 py-4 mb-5">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Aola Star Hub</h1>
+        <p class="text-sm font-bold text-slate-500 mt-1">图鉴 1-{{ dexTotal }} | 挑战激活 | 5 分钟孵化 | 技能 4 装配 | 20/40 级进化</p>
+        <p class="text-xs text-slate-400 font-bold mt-1">经验公式：每级所需 EXP = 60 + 18L + 8L^1.45（L 为当前等级）</p>
+      </div>
+      <div class="grid grid-cols-4 gap-2 text-center min-w-[360px]">
+        <div class="rounded-xl bg-blue-50 border border-blue-100 py-2">
+          <div class="text-[10px] font-bold text-blue-400">激活图鉴</div>
+          <div class="text-lg font-black text-blue-700">{{ activatedDexCount }}/{{ dexTotal }}</div>
+        </div>
+        <div class="rounded-xl bg-emerald-50 border border-emerald-100 py-2">
+          <div class="text-[10px] font-bold text-emerald-400">亚比仓库</div>
+          <div class="text-lg font-black text-emerald-700">{{ warehouseCount }}</div>
+        </div>
+        <div class="rounded-xl bg-indigo-50 border border-indigo-100 py-2">
+          <div class="text-[10px] font-bold text-indigo-400">亚比背包</div>
+          <div class="text-lg font-black text-indigo-700">{{ bagCount }}/6</div>
+        </div>
+        <div class="rounded-xl bg-amber-50 border border-amber-100 py-2">
+          <div class="text-[10px] font-bold text-amber-500">孵化中蛋</div>
+          <div class="text-lg font-black text-amber-700">{{ state.eggs.length }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-3 flex items-center gap-2">
+      <button
+        @click="openDexPanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-white border border-slate-300 text-slate-700"
+      >
+        亚比图鉴
+      </button>
+      <button
+        @click="openWarehousePanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-white border border-slate-300 text-slate-700"
+      >
+        亚比仓库
+      </button>
+      <button
+        @click="openShopPanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-emerald-50 border border-emerald-300 text-emerald-700"
+      >
+        亚比商店/道具
+      </button>
+      <button
+        @click="openGuardianPanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-amber-50 border border-amber-300 text-amber-700"
+      >
+        守护者挑战
+      </button>
+      <button
+        @click="openElementPanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-white border border-slate-300 text-slate-700"
+      >
+        属性克制关系
+      </button>
+      <span class="text-xs font-bold text-slate-400">点击图鉴并选择亚比后，才会显示挑战目标信息。</span>
+    </div>
+  </header>
+
+  <div class="space-y-5">
+    <section class="flex flex-col gap-5">
+      <div class="rounded-3xl border border-white bg-white/88 shadow-lg p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-black text-slate-900">亚比背包（6格）</h3>
+          <button @click="resetProgress" class="text-xs font-black text-rose-500 hover:text-rose-700">重置进度</button>
+        </div>
+
+        <div class="rounded-2xl border border-indigo-100 bg-indigo-50 p-3 mb-4">
+          <div class="text-xs font-black text-indigo-500 mb-2">亚比背包</div>
+          <div class="grid grid-cols-6 gap-2">
+            <div
+              v-for="slot in bagSlots"
+              :key="slot.idx"
+              class="rounded-xl border bg-white p-2 min-h-[138px]"
+              :class="slot.pet ? 'border-indigo-200' : 'border-dashed border-slate-300'"
+            >
+              <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center gap-1">
+                  <div v-if="slot.pet" class="text-[10px] font-black text-slate-500">#{{ slot.pet.dexId }}</div>
+                  <span v-if="slot.pet" class="element-icon" :style="petElementIconStyle(slot.pet.element, 16)" :title="slot.pet.element || ''"></span>
+                  <span v-if="slot.pet && slot.pet.subElement" class="element-icon" :style="petElementIconStyle(slot.pet.subElement, 16)" :title="slot.pet.subElement || ''"></span>
+                </div>
+                <div v-if="slot.idx === 0" class="text-[10px] font-black text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">首宠</div>
+              </div>
+              <template v-if="slot.pet">
+                <button @click="openPetDetailModal(petId(slot.pet))" class="w-full text-left">
+                  <div class="flex items-center gap-2">
+                    <img :src="petCurrentForm(slot.pet).img" @error="withFallback" class="w-[80px] h-[80px] object-contain pet-bob">
+                    <div class="min-w-0 ml-1">
+                      <div class="text-base font-black text-slate-800 truncate">{{ petDisplayName(slot.pet) }}</div>
+                      <div class="text-xs font-bold text-slate-500">Lv.{{ slot.pet.level }}</div>
+                    </div>
+                  </div>
+                </button>
+                <div class="mt-2">
+                  <div class="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                    <div class="h-full bg-emerald-500" :style="{ width: expPercent(slot.pet) + '%' }"></div>
+                  </div>
+                  <div class="text-[10px] font-bold text-slate-400 mt-1">EXP {{ slot.pet.exp }} / {{ expRequired(slot.pet.level) }}</div>
+                </div>
+                <div class="mt-2 flex gap-1">
+                  <button
+                    @click="useAsAttacker(petId(slot.pet))"
+                    class="flex-1 h-7 rounded-lg text-[10px] font-black"
+                    :class="slot.idx === 0 ? 'bg-emerald-500 text-white' : 'bg-emerald-50 text-emerald-700'"
+                  >设首宠</button>
+                  <button @click="removeFromBag(slot.idx)" class="flex-1 h-7 rounded-lg text-[10px] font-black bg-rose-50 text-rose-600">移出</button>
+                </div>
+                <div class="mt-1 flex gap-1">
+                  <button
+                    @click="moveBagLeft(slot.idx)"
+                    :disabled="slot.idx === 0"
+                    class="flex-1 h-6 rounded text-[10px] font-black bg-slate-100 text-slate-700 disabled:opacity-50"
+                  >左移</button>
+                  <button
+                    @click="moveBagRight(slot.idx)"
+                    :disabled="slot.idx === 5"
+                    class="flex-1 h-6 rounded text-[10px] font-black bg-slate-100 text-slate-700 disabled:opacity-50"
+                  >右移</button>
+                </div>
+              </template>
+              <div v-else class="h-full flex items-center justify-center text-[11px] font-bold text-slate-400">空位</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="rounded-3xl border border-white bg-white/88 shadow-lg p-4">
+          <h3 class="text-lg font-black text-slate-900 mb-3">最近对战记录</h3>
+          <div v-if="state.battleLog.length === 0" class="text-sm font-bold text-slate-400">暂无记录。</div>
+          <div v-else class="space-y-2 max-h-[245px] overflow-y-auto pr-1 scrollbar">
+            <div v-for="row in safeBattleLog" :key="rowId(row)" class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold">
+              <div class="flex items-center justify-between gap-2">
+                <span :class="row.win ? 'text-emerald-600' : 'text-rose-500'">{{ row.win ? '胜利' : '失败' }}</span>
+                <span class="text-slate-400">{{ row.time }}</span>
+              </div>
+              <div class="text-slate-700 mt-1 truncate">{{ row.attacker }}(Lv.{{ row.attackerLevel }}) 挑战 {{ row.target }}(Lv.{{ row.targetLevel }})，获得 {{ row.expGain }} EXP</div>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-3xl border border-white bg-white/88 shadow-lg p-4">
+          <h3 class="text-lg font-black text-slate-900 mb-3">亚比蛋孵化（5 分钟）</h3>
+          <div v-if="state.eggs.length === 0" class="text-sm font-bold text-slate-400">当前没有孵化中的亚比蛋。</div>
+          <div v-else class="space-y-2 max-h-[245px] overflow-y-auto pr-1 scrollbar">
+            <div v-for="egg in safeEggs" :key="eggId(egg)" class="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2">
+              <div class="flex items-center justify-between gap-2">
+                <div>
+                  <div class="text-sm font-black text-amber-900">{{ egg.speciesName }} 蛋</div>
+                  <div class="text-[11px] font-bold text-amber-700">剩余：{{ formatRemain(egg.hatchAt - nowTs) }}</div>
+                </div>
+                <button
+                  @click="hatchEgg(eggId(egg))"
+                  :disabled="egg.hatchAt > nowTs"
+                  :class="[
+                    'h-8 px-3 rounded-lg text-xs font-black',
+                    egg.hatchAt <= nowTs ? 'bg-emerald-500 text-white' : 'bg-amber-200 text-amber-500 cursor-not-allowed'
+                  ]"
+                >
+                  {{ egg.hatchAt <= nowTs ? '立即孵化' : '孵化中' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </section>
+  </div>
+
+
+
+  
+
+  <div v-show="state.showDexPanel" style="display:none" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeDexPanel">
+    <div class="w-full max-w-6xl h-[760px] rounded-3xl border border-white bg-white p-4 shadow-2xl flex flex-col" @click.stop>
+      <div class="flex items-center gap-2 mb-3">
+        <input v-model="dexSearch" placeholder="搜索亚比名称" class="flex-1 h-9 rounded-lg border border-slate-300 px-3 text-sm font-bold">
+        <select v-model="dexElementFilter" class="h-9 rounded-lg border border-slate-300 px-2 text-sm font-bold">
+          <option v-for="opt in dexElementOptions" :key="opt" :value="opt">{{ opt }}</option>
+        </select>
+        <button @click="closeDexPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+      </div>
+      <div class="rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2 text-[11px] font-black text-indigo-700 mb-3">
+        图鉴提示：只有击败某亚比的最终形态，才会获得该亚比蛋。守护者亚比请从【守护者挑战】入口挑战。
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-2 flex-1 overflow-y-auto pr-1 scrollbar">
+        <button v-for="entry in filteredDex" :key="'dex_'+entry.dexId" @click="canChallengeFromDex(entry) ? (selectDex(entry.dexId), closeDexPanel()) : null" class="rounded-xl border bg-white p-2 text-left min-h-[164px]" :class="canChallengeFromDex(entry) ? 'border-slate-200 hover:border-indigo-300' : 'border-amber-300 bg-amber-50 cursor-not-allowed'">
+          <div class="flex items-center gap-1 mb-1">
+            <div class="text-[10px] font-black text-slate-500">#{{ entry.dexId }}</div>
+            <span class="element-icon" :style="petElementIconStyle(entry.element, 15)" :title="entry.element || ''"></span>
+            <span v-if="entry.subElement" class="element-icon" :style="petElementIconStyle(entry.subElement, 15)" :title="entry.subElement || ''"></span>
+            <span v-if="!canChallengeFromDex(entry)" class="ml-auto text-[10px] font-black text-amber-700">守护者</span>
+          </div>
+          <img :src="entry.image" @error="withFallback" class="w-20 h-20 object-contain mx-auto">
+          <div class="text-sm font-black text-slate-800 text-center mt-1 break-words leading-4">{{ entry.name }}</div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="selectedDexEntry" class="fixed inset-0 z-[75] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="state.selectedDexId = null">
+    <div class="w-full max-w-3xl rounded-3xl border border-white bg-white p-4 shadow-2xl" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-black text-slate-900">图鉴挑战信息</h3>
+        <button @click="state.selectedDexId = null" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <div class="relative rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center">
+          <div class="absolute top-2 left-2 flex items-center gap-1">
+            <div class="text-[10px] font-black text-slate-500">#{{ selectedDexEntry.dexId }}</div>
+            <span class="element-icon" :style="petElementIconStyle(selectedDexEntry.element, 18)" :title="selectedDexEntry.element || ''"></span>
+            <span v-if="selectedDexEntry.subElement" class="element-icon" :style="petElementIconStyle(selectedDexEntry.subElement, 18)" :title="selectedDexEntry.subElement || ''"></span>
+          </div>
+          <img :src="selectedDexEntry.image" @error="withFallback" class="w-28 h-28 object-contain mx-auto">
+          <div class="mt-2 text-sm font-black text-slate-800 truncate">{{ selectedDexEntry.name }}</div>
+          <button @click="openSelectedDexDetail" class="mt-2 h-8 px-3 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-black">查看详情</button>
+        </div>
+        <div class="space-y-3">
+          <label class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-500">
+            目标等级 (1-100)
+            <input v-model.number="state.targetLevel" type="number" min="1" max="100" class="mt-1 w-full text-sm font-black bg-transparent focus:outline-none">
+          </label>
+          <div class="rounded-xl border border-indigo-100 bg-indigo-50 p-2 text-xs font-bold text-indigo-700">属性倍率：{{ predictedElementFactor.toFixed(2) }}x</div>
+          <div class="rounded-xl border border-emerald-100 bg-emerald-50 p-2 text-xs font-bold text-emerald-700">{{ predictedElementText }}</div>
+          <button @click="startChallenge" :disabled="bagPets.length === 0" class="w-full h-11 rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white font-black disabled:opacity-50 disabled:cursor-not-allowed">发起挑战</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-show="showWarehousePanel" style="display:none" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeWarehousePanel">
+    <div class="w-full max-w-6xl h-[760px] rounded-3xl border border-white bg-white p-4 shadow-2xl flex flex-col" @click.stop>
+      <div class="flex items-center gap-2 mb-3">
+        <input v-model="warehouseSearch" placeholder="搜索仓库亚比" class="flex-1 h-9 rounded-lg border border-slate-300 px-3 text-sm font-bold">
+        <select v-model="warehouseElementFilter" class="h-9 rounded-lg border border-slate-300 px-2 text-sm font-bold">
+          <option v-for="opt in warehouseElementOptions" :key="opt" :value="opt">{{ opt }}</option>
+        </select>
+        <button @click="closeWarehousePanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-2 max-h-[520px] overflow-y-auto pr-1 scrollbar">
+        <div v-for="pet in filteredWarehousePets" :key="'wp_'+petId(pet)" class="rounded-xl border border-slate-200 bg-white p-2 min-h-[136px]">
+          <div class="flex items-start justify-between mb-1">
+            <div class="flex items-center gap-1">
+              <div class="text-[10px] font-black text-slate-500">#{{ pet.dexId }}</div>
+              <span class="element-icon" :style="petElementIconStyle(pet.element, 15)" :title="pet.element || ''"></span>
+              <span v-if="pet.subElement" class="element-icon" :style="petElementIconStyle(pet.subElement, 15)" :title="pet.subElement || ''"></span>
+            </div>
+            <div class="text-[11px] font-bold text-slate-500">Lv.{{ pet.level }}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <img :src="petCurrentForm(pet).img" @error="withFallback" class="w-20 h-20 object-contain pet-bob">
+            <div class="min-w-0 flex-1 ml-1">
+              <div class="text-base font-black text-slate-800 break-words leading-4">{{ petDisplayName(pet) }}</div>
+            </div>
+          </div>
+          <div class="mt-2 space-y-2">
+            <button @click="openPetDetailModal(petId(pet))" class="w-full h-8 rounded-lg text-[11px] font-black bg-emerald-50 text-emerald-700">查看详情</button>
+            <button @click="toggleBagByPet(petId(pet))" class="w-full h-8 rounded-lg text-[11px] font-black bg-indigo-50 text-indigo-700">放入背包</button>
+          </div>
+        </div>
+      </div>
+      <div class="h-[180px]"></div>
+    </div>
+  </div>
+
+  <div v-if="showPetDetailModal && selectedPet" class="fixed inset-0 z-[80] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closePetDetailModal">
+    <div class="w-full max-w-6xl h-[760px] rounded-3xl border border-white bg-white p-4 shadow-2xl flex flex-col" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-black text-slate-900">亚比信息：{{ petDisplayName(selectedPet) }} (Lv.{{ selectedPet.level }})</h3>
+        <button @click="closePetDetailModal" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+      </div>
+      <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1 mb-3">
+        <button @click="setInfoTab('skills')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'skills' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">技能栏</button>
+        <button @click="setInfoTab('ability')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'ability' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">能力值栏</button>
+        <button @click="setInfoTab('study')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'study' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">学习力栏</button>
+        <button @click="setInfoTab('talent')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'talent' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">天赋栏</button>
+        <button @click="setInfoTab('race')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'race' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">种族值栏</button>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 max-h-[62vh] overflow-y-auto pr-1 scrollbar">
+        <template v-if="selectedInfoTab === 'skills'">
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <div v-for="idx in [0,1,2,3]" :key="idx" class="h-9 rounded-xl border border-dashed border-slate-300 bg-white px-2 flex items-center text-xs font-black text-slate-600 truncate">{{ selectedPet.equippedSkills[idx] || '空技能槽' }}</div>
+          </div>
+          <div class="max-h-[320px] overflow-y-auto pr-1 scrollbar space-y-2">
+            <div v-for="skill in availableSkillsForSelectedPet" :key="safeSkillName(skill)" @click="inspectSkill(safeSkillName(skill))" :class="['w-full rounded-xl border px-3 py-2 text-left transition-all', selectedSkillName === safeSkillName(skill) ? 'border-blue-400 ring-2 ring-blue-100' : 'border-slate-200 bg-white hover:border-indigo-300']">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <template v-if="skillTypeMeta(safeSkillType(skill)).icon"><img :src="skillTypeMeta(safeSkillType(skill)).icon" class="w-4 h-4 object-contain" :alt="skillTypeMeta(safeSkillType(skill)).label"></template>
+                  <span class="text-sm font-black text-slate-800 truncate">{{ safeSkillName(skill) }}</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-black">Lv{{ skill.level }}</span>
+                  <button @click.stop="toggleEquipSkill(safeSkillName(skill))" class="h-6 px-2 rounded text-[10px] font-black" :class="hasEquippedSkill(selectedPet, safeSkillName(skill)) ? 'bg-rose-50 text-rose-600' : 'bg-indigo-50 text-indigo-700'">{{ hasEquippedSkill(selectedPet, safeSkillName(skill)) ? '卸下' : '装配' }}</button>
+                </div>
+              </div>
+              <div class="mt-1 flex items-center gap-2 text-[11px] font-bold text-slate-500"><span>{{ skillTypeMeta(safeSkillType(skill)).label }}</span><span>| 威力 {{ safeSkillPower(skill) }}</span><span>| PP {{ safeSkillPP(skill) }}</span></div>
+            </div>
+          </div>
+        </template>
+        <template v-else-if="selectedInfoTab === 'ability'">
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+            <template v-if="selectedAbilityStats">
+              <div class="text-xs font-black text-slate-500 mb-2">能力值（按奥拉星官方公式）</div>
+              <div class="space-y-2 text-xs font-black">
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5">攻击：{{ selectedAbilityStats.atk }}</div>
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5">体力：{{ selectedAbilityStats.hp }}</div>
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5">特攻：{{ selectedAbilityStats.spAtk }}</div>
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5">防御：{{ selectedAbilityStats.def }}</div>
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5">特防：{{ selectedAbilityStats.spDef }}</div>
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5">速度：{{ selectedAbilityStats.speed }}</div>
+              </div>
+              <div class="mt-2 text-[11px] font-black text-indigo-700">总和：{{ selectedAbilityStats.total }}</div>
+            </template>
+          </div>
+        </template>
+        <template v-else-if="selectedInfoTab === 'talent'">
+          <div class="text-xs font-bold text-slate-700">天赋：攻 {{ selectedPetTalent.atk }} 体 {{ selectedPetTalent.hp }} 特攻 {{ selectedPetTalent.spAtk }} 防御 {{ selectedPetTalent.def }} 特防 {{ selectedPetTalent.spDef }} 速度 {{ selectedPetTalent.speed }}</div>
+        </template>
+        <template v-else-if="selectedInfoTab === 'study'">
+          <div class="text-xs font-bold text-slate-700">学习力总和：{{ selectedStudyTotal }} / 510</div>
+        </template>
+        <template v-else>
+          <div v-if="selectedRaceStats" class="text-xs font-bold text-slate-700">种族值：体 {{ selectedRaceStats.hp }} 攻 {{ selectedRaceStats.atk }} 防 {{ selectedRaceStats.def }} 特攻 {{ selectedRaceStats.spAtk }} 特防 {{ selectedRaceStats.spDef }} 速 {{ selectedRaceStats.speed }} 总和 {{ selectedRaceStats.total }}</div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <div v-show="showShopPanel" style="display:none" class="fixed inset-0 z-[70] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeShopPanel">
+    <div class="w-full max-w-4xl rounded-3xl border border-white bg-white p-4 shadow-2xl" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+          <button @click="shopTab='shop'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='shop' ? 'bg-emerald-600 text-white' : 'text-slate-600'">亚比商店</button>
+          <button @click="shopTab='items'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='items' ? 'bg-indigo-600 text-white' : 'text-slate-600'">亚比道具</button>
+        </div>
+        <button @click="closeShopPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+      </div>
+      <select v-model="shopTargetPetId" class="w-full h-9 rounded-lg border border-slate-300 bg-white px-2 text-sm font-bold text-slate-700 mb-3">
+        <option v-for="u in shopTargetOptions" :key="'shop_pet_'+u.id" :value="u.id">{{ u.name }} Lv.{{ u.level }}</option>
+      </select>
+      <div v-if="shopTab==='shop'" class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
+        <div v-for="it in shopItems" :key="'shop_item_'+it.id" class="rounded-2xl border border-emerald-100 bg-emerald-50 p-3 flex items-center justify-between gap-3">
+          <div>
+            <div class="text-sm font-black text-emerald-900">{{ it.name }}</div>
+            <div class="text-[11px] font-bold text-emerald-700">{{ it.desc }}</div>
+          </div>
+          <button @click="buyShopItem(it.id)" class="h-9 px-4 rounded-xl bg-emerald-600 text-white text-sm font-black">购买</button>
+        </div>
+      </div>
+      <div v-else class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
+        <div v-for="it in itemInventoryRows" :key="'bag_item_'+it.id" class="rounded-2xl border border-indigo-100 bg-indigo-50 p-3 flex items-center justify-between gap-3">
+          <div>
+            <div class="text-sm font-black text-indigo-900">{{ it.name }} × {{ it.count }}</div>
+            <div class="text-[11px] font-bold text-indigo-700">{{ it.desc }}</div>
+          </div>
+          <button @click="useShopItem(it.id)" :disabled="it.count <= 0" class="h-9 px-4 rounded-xl bg-indigo-600 text-white text-sm font-black disabled:opacity-45">使用</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-show="showGuardianPanel" style="display:none" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeGuardianPanel">
+    <div class="w-full max-w-6xl h-[760px] rounded-3xl border border-white bg-white p-4 shadow-2xl flex flex-col" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-black text-slate-900">守护者挑战</h3>
+        <button @click="closeGuardianPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 max-h-[520px] overflow-y-auto pr-1 scrollbar">
+        <button v-for="entry in guardianDexEntries" :key="'guardian_'+entry.dexId" @click="openGuardianChallengePanel(entry.dexId)" class="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-left hover:border-amber-400 min-h-[136px]">
+          <img :src="entry.image" @error="withFallback" class="w-16 h-16 object-contain mx-auto">
+          <div class="text-sm font-black text-amber-900 text-center mt-1">{{ entry.name }}</div>
+        </button>
+      </div>
+      <div class="h-[180px]"></div>
+    </div>
+  </div>
+
+  <template v-if="showGuardianChallengePanel">
+    <div v-if="selectedGuardianEntry" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeGuardianChallengePanel">
+      <div class="w-full max-w-3xl rounded-3xl border border-white bg-white p-4 shadow-2xl" @click.stop>
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-black text-slate-900">守护者挑战</h3>
+          <button @click="closeGuardianChallengePanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center">
+            <img :src="selectedGuardianEntry.image" @error="withFallback" class="w-28 h-28 object-contain mx-auto">
+            <div class="mt-2 text-sm font-black text-slate-800">{{ selectedGuardianEntry.name }}</div>
+            <button @click="openSelectedGuardianDetail" class="mt-2 h-8 px-3 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-black">查看详情</button>
+          </div>
+          <div class="space-y-3">
+            <div class="rounded-xl border border-amber-100 bg-amber-50 p-3 text-xs font-bold text-amber-800">
+              挑战说明：守护者从 Lv.30 开始，每次胜利提升至下一阶段（40, 50 ... 100），全部阶段通关后可获得对应亚比蛋。
+            </div>
+            <button @click="confirmGuardianChallenge" :disabled="bagPets.length===0" class="w-full h-10 rounded-xl bg-amber-500 text-white font-black disabled:opacity-50">发起挑战</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <div v-show="showElementPanel" style="display:none" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeElementPanel">
+    <div class="w-full max-w-5xl rounded-3xl border border-white bg-white p-4 shadow-2xl" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-black text-slate-900">属性克制关系</h3>
+        <button @click="closeElementPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+        <img src="./属性克制.jpg" alt="属性克制关系" class="w-full h-auto object-contain rounded-xl border border-slate-200 bg-white">
+      </div>
+    </div>
+  </div>
+
+  <div v-if="toast.show" class="fixed top-5 left-1/2 -translate-x-1/2 z-[120]">
+    <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var queue = [
+    "./aola-dex-1-100.js",
+    "./aola-species-data.js",
+    "./aola-skill-data.js",
+    "./aola-evolution-chains.js",
+    "./vendor/vue.global.prod.js",
+    "./aola-star-app.js"
+  ];
+  var loaded = [];
+  var failed = [];
+  function show(msg) {
+    var tip = document.createElement("div");
+    tip.style.position = "fixed";
+    tip.style.left = "12px";
+    tip.style.right = "12px";
+    tip.style.bottom = "12px";
+    tip.style.zIndex = "99999";
+    tip.style.background = "rgba(127,29,29,.95)";
+    tip.style.color = "#fff";
+    tip.style.padding = "10px 12px";
+    tip.style.borderRadius = "10px";
+    tip.style.font = "12px/1.5 Consolas, monospace";
+    tip.style.whiteSpace = "pre-wrap";
+    tip.textContent = msg;
+    document.body.appendChild(tip);
+  }
+  function absUrl(rel) {
+    try { return new URL(rel, window.location.href).href; } catch (_) { return rel; }
+  }
+  function loadNext(i) {
+    if (i >= queue.length) {
+      setTimeout(function () {
+        var app = document.getElementById("app");
+        var raw = app && (app.textContent || "").indexOf("{{") >= 0;
+        if (raw) {
+          show("[MOUNT CHECK] Vue app did not mount.\nloaded=" + loaded.join(" | ") + "\nfailed=" + failed.join(" | "));
+        }
+      }, 800);
+      return;
+    }
+    var rel = queue[i];
+    var s = document.createElement("script");
+    s.src = absUrl(rel);
+    s.onload = function () { loaded.push(rel); loadNext(i + 1); };
+    s.onerror = function () {
+      failed.push(rel);
+      show("[SCRIPT LOAD ERROR]\n" + rel + "\nloaded=" + loaded.join(" | "));
+      loadNext(i + 1);
+    };
+    document.body.appendChild(s);
+  }
+  loadNext(0);
+})();
+</script>
+</body>
+</html>
+

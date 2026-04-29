@@ -1,0 +1,279 @@
+{
+  "range": [
+    10,
+    796
+  ],
+  "timestamp": "2026-04-22T04:46:44.375Z",
+  "entryTotal": 787,
+  "fetched": 787,
+  "fallback": 0,
+  "candidateUrls": 302,
+  "parsedUrls": 241,
+  "urlErrorsCount": 61,
+  "methodCount": {
+    "neighbor_plus_1": 53,
+    "dex_source_url": 394,
+    "search_last_exact": 234,
+    "neighbor_minus_1": 37,
+    "neighbor_plus_2": 26,
+    "neighbor_minus_2": 13,
+    "neighbor_plus_3": 7,
+    "neighbor_minus_3": 6,
+    "neighbor_minus_4": 4,
+    "neighbor_plus_5": 3,
+    "neighbor_plus_4": 4,
+    "neighbor_minus_5": 1,
+    "neighbor_minus_6": 1,
+    "neighbor_minus_7": 1,
+    "neighbor_plus_8": 1,
+    "neighbor_plus_7": 1,
+    "neighbor_plus_6": 1
+  },
+  "failures": [],
+  "urlErrors": [
+    {
+      "url": "https://aola.100bt.com/tujian/217000.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4474.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4498.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4483.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/194845.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/24551.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4549.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4564.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21401.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21398.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4594.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/22071.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21407.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4600.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4612.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4642.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4645.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4648.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4639.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/99641.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/100104.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/177633.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21587.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21584.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21596.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21623.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4666.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21668.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21590.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4696.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4690.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21689.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21692.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21695.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21686.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21683.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/231538.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4786.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4801.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4891.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/33479.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4903.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4861.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21326.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4906.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4966.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/22065.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/4981.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21413.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21368.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21392.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21506.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21530.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21521.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21500.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21515.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21518.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21524.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21497.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/21494.html",
+      "err": "no_skills_parsed"
+    },
+    {
+      "url": "https://aola.100bt.com/tujian/12019.html",
+      "err": "no_skills_parsed"
+    }
+  ]
+}
