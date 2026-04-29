@@ -22,6 +22,16 @@
     .evo-flash { animation: evoFlash 0.85s ease-out forwards; }
     @keyframes petBob { 0% { transform: translateY(0); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0); } }
     .pet-bob { animation: petBob 2.4s ease-in-out infinite; }
+    @keyframes comboFloatUp { 0% { opacity: 0; transform: translate(-50%, 8px) scale(0.92); } 12% { opacity: 1; } 82% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -56px) scale(1.08); } }
+    @keyframes comboTotalPop { 0% { opacity: 0; transform: translateY(0) scale(0.85); } 12% { opacity: 1; transform: translateY(0) scale(1.18); } 70% { opacity: 1; transform: translateY(-4px) scale(1.05); } 100% { opacity: 0; transform: translateY(-14px) scale(0.96); } }
+    @keyframes evoGlowPulse { 0% { filter: drop-shadow(0 0 0 rgba(99,102,241,0)); transform: scale(0.96); } 50% { filter: drop-shadow(0 0 18px rgba(129,140,248,.85)); transform: scale(1.03); } 100% { filter: drop-shadow(0 0 10px rgba(59,130,246,.55)); transform: scale(1); } }
+    @keyframes battleDamagePop { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.9); } 18% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -28px) scale(1.06); } }
+    @keyframes battleCritPop { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.88); } 14% { opacity: 1; transform: translate(-50%, 0) scale(1.26); filter: drop-shadow(0 0 10px rgba(251,191,36,.95)); } 100% { opacity: 0; transform: translate(-50%, -26px) scale(1); filter: drop-shadow(0 0 0 rgba(251,191,36,0)); } }
+    .combo-hit-pop { animation: comboFloatUp 0.8s ease-out forwards; }
+    .combo-total-pop { animation: comboTotalPop 1s ease-out forwards; }
+    .evo-glow { animation: evoGlowPulse 1.1s ease-in-out infinite alternate; }
+    .battle-damage-pop { animation: battleDamagePop 0.9s ease-out forwards; }
+    .battle-crit-pop { animation: battleCritPop 1s ease-out forwards; }
   </style>
 </head>
 <body class="text-slate-800 min-h-screen">
@@ -297,9 +307,12 @@
   </div>
 
   <div v-if="showPetDetailModal && selectedPet" class="fixed inset-0 z-[80] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closePetDetailModal">
-    <div class="w-full max-w-6xl h-[760px] rounded-3xl border border-white bg-white p-4 shadow-2xl flex flex-col" @click.stop>
+    <div class="w-full max-w-3xl h-[760px] rounded-3xl border border-white bg-white p-4 shadow-2xl flex flex-col" @click.stop>
       <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-black text-slate-900">亚比信息：{{ petDisplayName(selectedPet) }} (Lv.{{ selectedPet.level }})</h3>
+        <div class="flex items-center gap-2">
+          <img :src="petCurrentForm(selectedPet).img" @error="withFallback" class="w-12 h-12 object-contain rounded-lg bg-slate-50 border border-slate-200">
+          <h3 class="text-lg font-black text-slate-900">亚比信息 Lv.{{ selectedPet.level }}</h3>
+        </div>
         <button @click="closePetDetailModal" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
       <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1 mb-3">
@@ -314,6 +327,13 @@
           <div class="grid grid-cols-2 gap-2 mb-3">
             <div v-for="idx in [0,1,2,3]" :key="idx" class="h-9 rounded-xl border border-dashed border-slate-300 bg-white px-2 flex items-center text-xs font-black text-slate-600 truncate">{{ selectedPet.equippedSkills[idx] || '空技能槽' }}</div>
           </div>
+          <div v-if="replaceSkillCtx && String(replaceSkillCtx.petId)===String(petId(selectedPet))" class="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-2">
+            <div class="text-xs font-black text-amber-700 mb-2">技能栏已满，请选择要替换的技能</div>
+            <div class="grid grid-cols-2 gap-2">
+              <button v-for="old in selectedPet.equippedSkills" :key="'repl_'+old" @click="confirmReplaceSkill(old)" class="h-8 rounded-lg bg-white border border-amber-300 text-[11px] font-black text-amber-800 truncate px-2">{{ old }}</button>
+            </div>
+            <button @click="cancelReplaceSkill" class="mt-2 h-8 px-3 rounded-lg bg-slate-200 text-slate-700 text-xs font-black">取消替换</button>
+          </div>
           <div class="max-h-[320px] overflow-y-auto pr-1 scrollbar space-y-2">
             <div v-for="skill in availableSkillsForSelectedPet" :key="safeSkillName(skill)" @click="inspectSkill(safeSkillName(skill))" :class="['w-full rounded-xl border px-3 py-2 text-left transition-all', selectedSkillName === safeSkillName(skill) ? 'border-blue-400 ring-2 ring-blue-100' : 'border-slate-200 bg-white hover:border-indigo-300']">
               <div class="flex items-center justify-between gap-2">
@@ -326,8 +346,13 @@
                   <button @click.stop="toggleEquipSkill(safeSkillName(skill))" class="h-6 px-2 rounded text-[10px] font-black" :class="hasEquippedSkill(selectedPet, safeSkillName(skill)) ? 'bg-rose-50 text-rose-600' : 'bg-indigo-50 text-indigo-700'">{{ hasEquippedSkill(selectedPet, safeSkillName(skill)) ? '卸下' : '装配' }}</button>
                 </div>
               </div>
-              <div class="mt-1 flex items-center gap-2 text-[11px] font-bold text-slate-500"><span>{{ skillTypeMeta(safeSkillType(skill)).label }}</span><span>| 威力 {{ safeSkillPower(skill) }}</span><span>| PP {{ safeSkillPP(skill) }}</span></div>
+              <div class="mt-1 flex items-center gap-2 text-[11px] font-bold text-slate-500"><span>{{ skillTypeMeta(safeSkillType(skill)).label }}</span><span>| 威力 {{ safeSkillPower(skill) }}</span><span>| 命中 {{ safeSkillAccuracy(skill) }}</span><span>| PP {{ safeSkillPP(skill) }}</span></div>
             </div>
+          </div>
+          <div v-if="selectedSkillDetail" class="mt-3 rounded-xl border border-indigo-200 bg-indigo-50 p-3">
+            <div class="text-sm font-black text-indigo-900">{{ selectedSkillDetail.name }}</div>
+            <div class="text-xs font-bold text-indigo-700 mt-1">命中率：{{ selectedSkillDetail.accuracy }} | 威力：{{ selectedSkillDetail.power }} | PP：{{ selectedSkillDetail.pp }}</div>
+            <div class="text-xs font-bold text-slate-700 mt-1">{{ selectedSkillDetail.desc || '暂无技能描述' }}</div>
           </div>
         </template>
         <template v-else-if="selectedInfoTab === 'ability'">
@@ -335,25 +360,48 @@
             <template v-if="selectedAbilityStats">
               <div class="text-xs font-black text-slate-500 mb-2">能力值（按奥拉星官方公式）</div>
               <div class="space-y-2 text-xs font-black">
-                <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5">攻击：{{ selectedAbilityStats.atk }}</div>
-                <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5">体力：{{ selectedAbilityStats.hp }}</div>
-                <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5">特攻：{{ selectedAbilityStats.spAtk }}</div>
-                <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5">防御：{{ selectedAbilityStats.def }}</div>
-                <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5">特防：{{ selectedAbilityStats.spDef }}</div>
-                <div class="rounded-lg bg-white border border-slate-200 px-2 py-1.5">速度：{{ selectedAbilityStats.speed }}</div>
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>体力</span><span>{{ selectedAbilityStats.hp }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-emerald-400" :style="{ width: Math.min(100, (selectedAbilityStats.hp/800)*100)+'%' }"></div></div></div>
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>攻击</span><span>{{ selectedAbilityStats.atk }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-indigo-400" :style="{ width: Math.min(100, (selectedAbilityStats.atk/500)*100)+'%' }"></div></div></div>
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>防御</span><span>{{ selectedAbilityStats.def }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-cyan-400" :style="{ width: Math.min(100, (selectedAbilityStats.def/500)*100)+'%' }"></div></div></div>
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>特攻</span><span>{{ selectedAbilityStats.spAtk }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-fuchsia-400" :style="{ width: Math.min(100, (selectedAbilityStats.spAtk/500)*100)+'%' }"></div></div></div>
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>特防</span><span>{{ selectedAbilityStats.spDef }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-violet-400" :style="{ width: Math.min(100, (selectedAbilityStats.spDef/500)*100)+'%' }"></div></div></div>
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>速度</span><span>{{ selectedAbilityStats.speed }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-amber-400" :style="{ width: Math.min(100, (selectedAbilityStats.speed/500)*100)+'%' }"></div></div></div>
               </div>
               <div class="mt-2 text-[11px] font-black text-indigo-700">总和：{{ selectedAbilityStats.total }}</div>
             </template>
           </div>
         </template>
         <template v-else-if="selectedInfoTab === 'talent'">
-          <div class="text-xs font-bold text-slate-700">天赋：攻 {{ selectedPetTalent.atk }} 体 {{ selectedPetTalent.hp }} 特攻 {{ selectedPetTalent.spAtk }} 防御 {{ selectedPetTalent.def }} 特防 {{ selectedPetTalent.spDef }} 速度 {{ selectedPetTalent.speed }}</div>
+          <div class="space-y-2 text-xs font-black">
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>体力天赋</span><span>{{ selectedPetTalent.hp }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-emerald-400" :style="{ width: Math.min(100, (selectedPetTalent.hp/62)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>攻击天赋</span><span>{{ selectedPetTalent.atk }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-indigo-400" :style="{ width: Math.min(100, (selectedPetTalent.atk/62)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>防御天赋</span><span>{{ selectedPetTalent.def }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-cyan-400" :style="{ width: Math.min(100, (selectedPetTalent.def/62)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>特攻天赋</span><span>{{ selectedPetTalent.spAtk }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-fuchsia-400" :style="{ width: Math.min(100, (selectedPetTalent.spAtk/62)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>特防天赋</span><span>{{ selectedPetTalent.spDef }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-violet-400" :style="{ width: Math.min(100, (selectedPetTalent.spDef/62)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>速度天赋</span><span>{{ selectedPetTalent.speed }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-amber-400" :style="{ width: Math.min(100, (selectedPetTalent.speed/62)*100)+'%' }"></div></div></div>
+          </div>
         </template>
         <template v-else-if="selectedInfoTab === 'study'">
-          <div class="text-xs font-bold text-slate-700">学习力总和：{{ selectedStudyTotal }} / 510</div>
+          <div class="space-y-2 text-xs font-black">
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>体力学习力</span><span>{{ selectedPetStudy.hp }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-emerald-400" :style="{ width: Math.min(100, (selectedPetStudy.hp/255)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>攻击学习力</span><span>{{ selectedPetStudy.atk }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-indigo-400" :style="{ width: Math.min(100, (selectedPetStudy.atk/255)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>防御学习力</span><span>{{ selectedPetStudy.def }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-cyan-400" :style="{ width: Math.min(100, (selectedPetStudy.def/255)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>特攻学习力</span><span>{{ selectedPetStudy.spAtk }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-fuchsia-400" :style="{ width: Math.min(100, (selectedPetStudy.spAtk/255)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>特防学习力</span><span>{{ selectedPetStudy.spDef }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-violet-400" :style="{ width: Math.min(100, (selectedPetStudy.spDef/255)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>速度学习力</span><span>{{ selectedPetStudy.speed }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-amber-400" :style="{ width: Math.min(100, (selectedPetStudy.speed/255)*100)+'%' }"></div></div></div>
+            <div class="text-xs font-black text-indigo-700">学习力总和：{{ selectedStudyTotal }} / 510</div>
+          </div>
         </template>
         <template v-else>
-          <div v-if="selectedRaceStats" class="text-xs font-bold text-slate-700">种族值：体 {{ selectedRaceStats.hp }} 攻 {{ selectedRaceStats.atk }} 防 {{ selectedRaceStats.def }} 特攻 {{ selectedRaceStats.spAtk }} 特防 {{ selectedRaceStats.spDef }} 速 {{ selectedRaceStats.speed }} 总和 {{ selectedRaceStats.total }}</div>
+          <div v-if="selectedRaceStats" class="space-y-2 text-xs font-black">
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>体力种族</span><span>{{ selectedRaceStats.hp }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-emerald-400" :style="{ width: Math.min(100, (selectedRaceStats.hp/500)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>攻击种族</span><span>{{ selectedRaceStats.atk }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-indigo-400" :style="{ width: Math.min(100, (selectedRaceStats.atk/500)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>防御种族</span><span>{{ selectedRaceStats.def }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-cyan-400" :style="{ width: Math.min(100, (selectedRaceStats.def/500)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>特攻种族</span><span>{{ selectedRaceStats.spAtk }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-fuchsia-400" :style="{ width: Math.min(100, (selectedRaceStats.spAtk/500)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>特防种族</span><span>{{ selectedRaceStats.spDef }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-violet-400" :style="{ width: Math.min(100, (selectedRaceStats.spDef/500)*100)+'%' }"></div></div></div>
+            <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>速度种族</span><span>{{ selectedRaceStats.speed }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-amber-400" :style="{ width: Math.min(100, (selectedRaceStats.speed/500)*100)+'%' }"></div></div></div>
+            <div class="text-xs font-black text-indigo-700">总和：{{ selectedRaceStats.total }}</div>
+          </div>
         </template>
       </div>
     </div>
@@ -446,6 +494,223 @@
 
   <div v-if="toast.show" class="fixed top-5 left-1/2 -translate-x-1/2 z-[120]">
     <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+  </div>
+</div>
+
+<div v-if="battleScene && battleScene.open" class="fixed inset-0 z-[110] bg-slate-950/90 backdrop-blur-sm" @click="closeBattleScene">
+  <div class="relative w-full h-full overflow-hidden bg-[radial-gradient(circle_at_20%_30%,rgba(56,189,248,.18),transparent_35%),radial-gradient(circle_at_80%_70%,rgba(16,185,129,.12),transparent_35%),linear-gradient(180deg,#0b1220_0%,#121c2f_100%)]" @click.stop>
+    <div v-if="battleScene.fxSkillText" class="absolute top-6 right-6 z-30 rounded-2xl border border-cyan-300/60 bg-cyan-400/25 px-5 py-2 text-sm font-black text-cyan-100 shadow-[0_8px_24px_rgba(34,211,238,0.25)] battle-skill-float">{{ battleScene.fxSkillText }}</div>
+
+    <div class="absolute left-8 top-8 w-[22%] min-w-[280px]">
+      <div class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <div class="text-white text-xl font-black truncate">{{ battleScene.targetName }}</div>
+            <div class="text-cyan-100 text-xs font-black mt-0.5">Lv.{{ battleScene.targetLevel }}</div>
+          </div>
+          <div class="flex flex-wrap gap-1 justify-end max-w-[55%]">
+            <span v-for="b in battleTargetStatusBadges" :key="'tar_st_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
+            <span v-for="e in battleTargetTimedEffects" :key="'tar_fx_' + e.key" :title="`${e.desc}｜剩余${e.turns}回合`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
+          </div>
+        </div>
+        <div class="mt-2 h-3 rounded-full bg-slate-800/80 overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" :style="{ width: hpPercent(battleScene.targetHp, battleScene.targetMaxHp) + '%' }"></div>
+        </div>
+        <div class="mt-1 text-xs font-black text-cyan-100">HP {{ battleScene.targetHp }}/{{ battleScene.targetMaxHp }}</div>
+        <div class="mt-2 text-[11px] font-black text-cyan-100 flex flex-wrap gap-1">
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">攻 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">特攻 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">防 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">特防 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">命中 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">闪避 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">速度 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.critStage) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.critStage) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">暴击 {{ (battleScene.targetState && battleScene.targetState.critStage) || 0 }}</span>
+        </div>
+      </div>
+      <div :class="['relative mt-3 h-[260px] flex items-end justify-end', battleScene.fxTargetShake ? 'battle-shake-right' : '']">
+        <img :src="battleScene.targetImage" @error="withFallback" class="max-w-full max-h-full object-contain drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
+        <div v-if="battleScene.damageOnTarget" :class="['absolute top-6 left-1/2 -translate-x-1/2 text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.critOnTarget ? 'text-amber-300 battle-crit-pop' : 'text-rose-300 battle-damage-pop']">{{ battleScene.damageOnTarget }}</div>
+        <div v-if="battleScene.healOnTarget" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnTarget }}</div>
+        <div v-if="battleScene.ppOnTarget" class="absolute top-16 left-[66%] text-2xl font-black text-sky-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.ppOnTarget }}</div>
+        <div v-for="(hit, idx) in (battleScene.comboHitsOnTarget || [])" :key="'combo_tar_'+idx+'_'+hit" class="absolute top-10 left-1/2 text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="{ animationDelay: (idx*250)+'ms' }">{{ hit }}</div>
+        <div v-if="battleScene.comboTotalOnTarget" class="absolute top-8 left-[72%] text-5xl font-black text-amber-300 [text-shadow:0_3px_16px_rgba(0,0,0,.5)] combo-total-pop">{{ battleScene.comboTotalOnTarget }}</div>
+      </div>
+      <div class="rounded-2xl border border-cyan-200/20 bg-slate-900/35 p-3 mt-2 w-[65%]">
+        <div class="text-xs font-black text-cyan-100 mb-2">六维能力值</div>
+        <div class="space-y-1 text-[12px] font-black text-slate-100">
+          <div>体力：{{ battleScene.targetAbility.hp }}</div>
+          <div>攻击：{{ battleScene.targetAbility.atk }}</div>
+          <div>防御：{{ battleScene.targetAbility.def }}</div>
+          <div>特攻：{{ battleScene.targetAbility.spAtk }}</div>
+          <div>特防：{{ battleScene.targetAbility.spDef }}</div>
+          <div>速度：{{ battleScene.targetAbility.speed }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="absolute right-8 top-[30%] w-[22%] min-w-[280px]">
+      <div class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <div class="text-white text-xl font-black truncate">{{ battleScene.attackerName }}</div>
+            <div class="text-cyan-100 text-xs font-black mt-0.5">Lv.{{ battleScene.attackerLevel }}</div>
+          </div>
+          <div class="flex flex-wrap gap-1 justify-end max-w-[55%]">
+            <span v-for="b in battleAttackerStatusBadges" :key="'atk_st_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
+            <span v-for="e in battleAttackerTimedEffects" :key="'atk_fx_' + e.key" :title="`${e.desc}｜剩余${e.turns}回合`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
+          </div>
+        </div>
+        <div class="mt-2 h-3 rounded-full bg-slate-800/80 overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" :style="{ width: hpPercent(battleScene.attackerHp, battleScene.attackerMaxHp) + '%' }"></div>
+        </div>
+        <div class="mt-1 text-xs font-black text-cyan-100">HP {{ battleScene.attackerHp }}/{{ battleScene.attackerMaxHp }}</div>
+        <div class="mt-2 text-[11px] font-black text-cyan-100 flex flex-wrap gap-1">
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">攻 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">特攻 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">防 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">特防 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">命中 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">闪避 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">速度 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.critStage) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.critStage) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">暴击 {{ (battleScene.attackerState && battleScene.attackerState.critStage) || 0 }}</span>
+        </div>
+      </div>
+      <div :class="['relative mt-3 h-[300px] flex items-end justify-start', battleScene.fxAttackerShake ? 'battle-shake-left' : '']">
+        <img :src="battleScene.attackerImage" @error="withFallback" class="max-w-full max-h-full object-contain scale-x-[-1] drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
+        <div v-if="battleScene.fxAttackerSkillText" class="absolute top-[-8px] left-1/2 -translate-x-1/2 rounded-xl border border-cyan-300/60 bg-cyan-400/20 px-3 py-1 text-sm font-black text-cyan-100 battle-skill-float">{{ battleScene.fxAttackerSkillText }}</div>
+        <div v-if="battleScene.damageOnAttacker" :class="['absolute top-6 left-1/2 -translate-x-1/2 text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.critOnAttacker ? 'text-amber-300 battle-crit-pop' : 'text-rose-300 battle-damage-pop']">{{ battleScene.damageOnAttacker }}</div>
+        <div v-if="battleScene.healOnAttacker" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnAttacker }}</div>
+        <div v-if="battleScene.ppOnAttacker" class="absolute top-16 left-[66%] text-2xl font-black text-sky-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.ppOnAttacker }}</div>
+        <div v-for="(hit, idx) in (battleScene.comboHitsOnAttacker || [])" :key="'combo_atk_'+idx+'_'+hit" class="absolute top-10 left-1/2 text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="{ animationDelay: (idx*250)+'ms' }">{{ hit }}</div>
+        <div v-if="battleScene.comboTotalOnAttacker" class="absolute top-8 left-[72%] text-5xl font-black text-amber-300 [text-shadow:0_3px_16px_rgba(0,0,0,.5)] combo-total-pop">{{ battleScene.comboTotalOnAttacker }}</div>
+      </div>
+      <div class="mt-5 w-[66%] min-w-[420px] mr-8">
+        <div class="flex items-center gap-2 mb-2">
+          <button @click="openBattleSkillPanel" :disabled="battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-cyan-600 text-white text-sm font-black disabled:opacity-45 shadow-md">技能</button>
+          <button @click="openBattleItemPanel" :disabled="battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-emerald-600 text-white text-sm font-black disabled:opacity-45 shadow-md">道具</button>
+          <button @click="openSwitchPanel('manual')" :disabled="battleSceneAvailablePets.length === 0 || battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-indigo-600 text-white text-sm font-black disabled:opacity-45 shadow-md">换宠</button>
+          <button @click="closeBattleScene" class="h-9 px-4 rounded-xl bg-slate-700/95 border border-slate-400 text-slate-100 text-sm font-black shadow-md hover:bg-slate-600">撤退</button>
+        </div>
+        <div class="rounded-2xl border border-cyan-200/20 bg-slate-900/35 p-3">
+          <div class="text-xs font-black text-cyan-100 mb-2">{{ battleActionTab === 'items' ? '道具列表' : '技能列表' }}</div>
+          <div v-if="battleActionTab === 'items'" class="space-y-2 max-h-[220px] overflow-y-auto pr-1 scrollbar">
+            <button
+              v-for="it in itemInventoryRows.filter(x => (x.id.startsWith('pp_bean_') || x.id.startsWith('hp_candy_')))"
+              :key="'battle_item_'+it.id"
+              @click="useShopItem(it.id)"
+              :disabled="it.count <= 0 || battleScene.ended || battleScene.isActing"
+              class="w-full h-11 rounded-xl border border-cyan-300/35 bg-cyan-500/15 text-cyan-100 text-xs font-black disabled:opacity-40 text-left px-3 flex items-center justify-between"
+            >
+              <span class="flex items-center gap-2 min-w-0">
+                <span class="w-6 h-6 rounded-lg flex items-center justify-center text-sm" :class="it.id.startsWith('pp_bean_') ? 'bg-indigo-500/40' : 'bg-rose-500/40'">{{ it.id.startsWith('pp_bean_') ? 'PP' : 'HP' }}</span>
+                <span class="truncate">{{ it.name }}</span>
+              </span>
+              <span class="text-[11px] text-cyan-200">x{{ it.count }}</span>
+            </button>
+          </div>
+          <div v-else class="space-y-2">
+            <button
+              v-for="skill in battleSceneSkills"
+              :key="'battle_skill_' + safeSkillName(skill)"
+              @click="castBattleSkill(safeSkillName(skill))"
+              :disabled="!canCastBattleSkill(safeSkillName(skill))"
+              :title="skillBattleDesc(skill)"
+              class="w-full h-10 rounded-xl border border-cyan-300/35 bg-cyan-500/15 text-cyan-100 text-xs font-black disabled:opacity-40 text-left px-3"
+            >
+              {{ safeSkillName(skill) }} | PP {{ safeSkillPP(skill) }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="absolute left-8 bottom-8 w-[21%] min-w-[260px] rounded-2xl border border-cyan-200/20 bg-slate-900/40 p-3">
+      <div class="text-sm font-black text-cyan-100 mb-2">战斗日志</div>
+      <div ref="battleSceneLogRef" class="max-h-[220px] overflow-auto scrollbar pr-1">
+        <div v-for="(line, idx) in battleScene.logs" :key="'battle_log_' + idx" class="text-xs font-bold text-slate-200 mb-1">{{ line }}</div>
+      </div>
+      <div v-if="battleScene.ended" class="mt-3 rounded-xl border p-3" :class="battleScene.win ? 'border-emerald-400/60 bg-emerald-500/10' : 'border-rose-400/60 bg-rose-500/10'">
+        <div :class="['text-base font-black', battleScene.win ? 'text-emerald-300' : 'text-rose-300']">{{ battleScene.win ? '挑战胜利' : '挑战失败' }}</div>
+        <div class="text-xs font-bold text-slate-200 mt-1">{{ battleScene.summary }}</div>
+        <div class="text-xs font-bold text-slate-300 mt-1">获得经验：{{ battleScene.expGain }}</div>
+        <div v-if="battleScene.unlockText" class="text-xs font-black text-cyan-200 mt-1">{{ battleScene.unlockText }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div v-if="showSwitchPanel && battleScene" class="fixed inset-0 z-[111] bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4" @click="closeSwitchPanel">
+  <div class="w-full max-w-3xl rounded-3xl border border-white bg-white p-4 shadow-2xl" @click.stop>
+    <div class="text-lg font-black text-slate-900 mb-3">选择替换亚比</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <button
+        v-for="u in battleScene.team"
+        :key="'switch_' + u.id"
+        @click="switchBattlePet(u.id)"
+        :disabled="u.id === battleScene.currentAttackerId || u.hp <= 0"
+        class="h-16 rounded-xl border text-xs font-black px-2"
+        :class="[
+          u.id === battleScene.currentAttackerId ? 'bg-slate-100 text-slate-400 border-slate-300' : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-300',
+          u.hp <= 0 ? 'opacity-40 cursor-not-allowed' : ''
+        ]"
+      >
+        <div class="flex items-center gap-2">
+          <span class="element-icon" :style="petElementIconStyle(u.element, 14)" :title="u.element || ''"></span>
+          <img :src="u.image" @error="withFallback" class="w-10 h-10 object-contain">
+          <div class="text-left min-w-0">
+            <div class="truncate">{{ u.name }}</div>
+            <div class="text-[10px]">HP {{ u.hp }}/{{ u.maxHp }}</div>
+          </div>
+        </div>
+      </button>
+    </div>
+    <div class="mt-3 text-right">
+      <button @click="closeSwitchPanel" class="h-9 px-4 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div v-if="battleResult" class="fixed inset-0 z-[130] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBattleResult">
+  <div class="w-full max-w-3xl rounded-3xl border border-white bg-white p-4 shadow-2xl" @click.stop>
+    <div class="flex items-center justify-between mb-3">
+      <div class="text-lg font-black" :class="battleResult.win ? 'text-emerald-700' : 'text-rose-700'">{{ battleResult.win ? '挑战胜利结算' : '挑战失败结算' }}</div>
+      <button @click="closeBattleResult" class="h-9 px-4 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">确认</button>
+    </div>
+    <div class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
+      <div v-for="row in (battleResult.expDistribution || [])" :key="'settle_'+row.petId" class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+        <div class="flex items-center gap-3">
+          <span class="element-icon" :style="petElementIconStyle(row.element, 16)" :title="row.element || ''"></span>
+          <img :src="row.image" @error="withFallback" class="w-12 h-12 object-contain rounded-lg border border-slate-200 bg-white">
+          <div class="min-w-0">
+            <div class="text-sm font-black text-slate-800 truncate">{{ row.name }}</div>
+            <div class="text-xs font-bold text-slate-600">经验 +{{ row.gainedExp }} | 等级 {{ row.beforeLevel }} -> {{ row.afterLevel }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div v-if="activeEvolution" class="fixed inset-0 z-[131] bg-slate-950/88 backdrop-blur-md flex items-center justify-center p-4" @click="closeEvolutionModal">
+  <div class="w-full max-w-2xl rounded-3xl border border-indigo-300/40 bg-slate-900 p-4 shadow-2xl shadow-indigo-900/40 relative overflow-hidden" @click.stop>
+    <div class="absolute -top-10 -left-10 w-48 h-48 rounded-full bg-indigo-500/20 blur-2xl pointer-events-none"></div>
+    <div class="absolute -bottom-10 -right-8 w-56 h-56 rounded-full bg-cyan-400/20 blur-2xl pointer-events-none"></div>
+    <div class="text-lg font-black text-indigo-200 mb-3 relative z-10">亚比进化</div>
+    <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+      <div class="rounded-2xl border border-slate-700 bg-slate-800/70 p-3 text-center relative z-10">
+        <img :src="activeEvolution.beforeImage" @error="withFallback" class="w-28 h-28 object-contain mx-auto">
+        <div class="mt-2 text-sm font-black text-slate-200">{{ activeEvolution.beforeName }}</div>
+      </div>
+      <div class="text-3xl font-black text-cyan-300 evo-glow relative z-10">-></div>
+      <div class="rounded-2xl border border-indigo-300/50 bg-indigo-900/35 p-3 text-center relative z-10 evo-glow">
+        <img :src="activeEvolution.afterImage" @error="withFallback" class="w-28 h-28 object-contain mx-auto evo-glow">
+        <div class="mt-2 text-sm font-black text-cyan-200">{{ activeEvolution.afterName }}</div>
+      </div>
+    </div>
+    <div class="mt-4 text-right relative z-20">
+      <button type="button" @click.stop="closeEvolutionModal" class="h-9 px-4 rounded-xl bg-indigo-600 text-white text-sm font-black">确认</button>
+    </div>
   </div>
 </div>
 

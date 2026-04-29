@@ -214,6 +214,7 @@ const safeNonNegInt = (v, fallback = 0) => {
 };
 const STAT_KEYS = ["atk", "hp", "spAtk", "def", "spDef", "speed"];
 const createZeroStats = () => ({ hp: 0, atk: 0, def: 0, spAtk: 0, spDef: 0, speed: 0 });
+const createUniformTalent30 = () => ({ hp: 30, atk: 30, def: 30, spAtk: 30, spDef: 30, speed: 30 });
 const normalizeTalent = (raw) => {
   const s = raw && typeof raw === "object" ? raw : {};
   return {
@@ -653,7 +654,7 @@ const parseSkillEffects = (skill) => {
     const m = desc.match(/持续\s*([0-9一二三四五六])\s*回合/);
     return m ? Math.max(1, cnNumToInt(m[1], fallback)) : fallback;
   };
-  const stageKeywordsPattern = "全属性|全能力|双攻|双防|攻防|攻击和特攻|防御和特防|攻击和速度|攻速|命中和闪避|命中率和闪避率|普攻|物攻|魔攻|攻击|防御|特攻|特防|速度|命中率|命中|闪避率|闪避|回避率|回避|暴击等级|暴击";
+  const stageKeywordsPattern = "全属性|全能力|双攻|双防|攻防|攻击和特攻|防御和特防|攻击和速度|攻速|命中和闪避|命中率和闪避率|普攻|物攻|魔攻|攻击|防御|特攻|特防|速度|命中率|命中|闪避率|闪避|回避率|回避|暴击等级|暴击率|会心一击率|会心|暴击";
   const parseChanceNear = (text, idx) => {
     const t = normalize(text).replace(/％/g, "%");
     const left = Math.max(0, idx - 24);
@@ -832,15 +833,15 @@ const parseSkillEffects = (skill) => {
   }
 
   // 暴击等级（会心一击率/暴击率）
-  if (desc.includes("会心一击率") || desc.includes("暴击率") || desc.includes("暴击等级") || desc.includes("较高暴击")) {
-    const levelM = desc.match(/(提升|提高|上升|降低|下降)[^。；，\n]{0,10}(?:会心一击率|暴击率|暴击等级)[^。；，\n]{0,6}([0-9一二三四五六])?级?/);
+  if (desc.includes("会心一击率") || desc.includes("暴击率") || desc.includes("暴击等级") || desc.includes("较高暴击") || desc.includes("会心")) {
+    const levelM = desc.match(/(提升|提高|上升|降低|下降)[^。；，\n]{0,12}(?:会心一击率|暴击率|暴击等级|会心)[^。；，\n]{0,8}([0-9一二三四五六])?级?/);
     let delta = 1;
     if (levelM) {
       const op = levelM[1] || "提升";
       const lv = levelM[2] ? cnNumToInt(levelM[2], 1) : 1;
       delta = (op === "降低" || op === "下降") ? -lv : lv;
     }
-    if (!levelM && desc.includes("较高暴击")) delta = 2;
+    if (!levelM && (desc.includes("较高暴击") || /会心[^。；，\n]{0,8}(?:提高|提升|上升|增强)/.test(desc))) delta = 2;
     add({ kind: "critStage", target: "self", delta });
   }
 
@@ -852,8 +853,8 @@ const parseSkillEffects = (skill) => {
     if (t.includes("双防") || (t.includes("防御") && t.includes("特防"))) return ["def", "spDef"];
     if (t.includes("攻击和速度") || t.includes("攻速") || t.includes("普攻和速度") || t.includes("物攻和速度")) return ["atk", "speed"];
     if (t.includes("攻防")) return ["atk", "def"];
-    if ((t.includes("命中") || t.includes("命中率")) && t.includes("暴击")) return ["accuracy", "critStage"];
-    if (t.includes("暴击") && (t.includes("命中") || t.includes("命中率"))) return ["accuracy", "critStage"];
+    if ((t.includes("命中") || t.includes("命中率")) && (t.includes("暴击") || t.includes("会心"))) return ["accuracy", "critStage"];
+    if ((t.includes("暴击") || t.includes("会心")) && (t.includes("命中") || t.includes("命中率"))) return ["accuracy", "critStage"];
     if ((t.includes("命中") || t.includes("命中率")) && (t.includes("闪避") || t.includes("闪避率") || t.includes("回避") || t.includes("回避率"))) return ["accuracy", "evasion"];
     const keys = [];
     if (t.includes("普攻") || t.includes("物攻") || t.includes("攻击")) keys.push("atk");
@@ -863,7 +864,7 @@ const parseSkillEffects = (skill) => {
     if (t.includes("速度")) keys.push("speed");
     if (t.includes("命中") || t.includes("命中率")) keys.push("accuracy");
     if (t.includes("闪避") || t.includes("闪避率") || t.includes("回避") || t.includes("回避率")) keys.push("evasion");
-    if (t.includes("暴击")) keys.push("critStage");
+    if (t.includes("暴击") || t.includes("会心")) keys.push("critStage");
     return Array.from(new Set(keys));
   };
   parseStatusCureEffects(desc);
@@ -1033,6 +1034,25 @@ const parseSkillEffects = (skill) => {
   if ((name === "玄灵甲") || (desc.includes("伤害抗性") && desc.includes("50"))) {
     const turns = parseTurns(3);
     add({ kind: "damageReduction", target: "self", ratio: 0.5, turns });
+    // 兜底：仅当通用解析未识别“受击后全属性下降”时再补，避免双触发
+    const hasFullOnDamagedDebuff = effects.some((e) =>
+      normalize(e && e.kind) === "onDamagedStage" &&
+      Array.isArray(e && e.keys) &&
+      e.keys.length >= ALL_ABILITY_STAGE_KEYS.length &&
+      ALL_ABILITY_STAGE_KEYS.every((k) => e.keys.includes(k))
+    );
+    if (!hasFullOnDamagedDebuff) {
+      add({
+        kind: "onDamagedStage",
+        target: "self",
+        applyTo: "attacker",
+        keys: ALL_ABILITY_STAGE_KEYS.slice(),
+        delta: -1,
+        turns: parseTurns(3),
+        chance: 1,
+        trigger: "damaged"
+      });
+    }
   }
   // 玄灵甲的“受伤后降全属性”走通用文本解析分支，避免重复挂载反制效果。
   const dedup = [];
@@ -1641,6 +1661,70 @@ createApp({
       if (key && skillMasterByKey.has(key)) return skillMasterByKey.get(key);
       return null;
     };
+    const applySkillDescFromExtractJson = async () => {
+      if (typeof fetch !== "function") return;
+      try {
+        const [petRes, skillRes] = await Promise.all([
+          fetch("./aola_pet_skill_extract.json", { cache: "no-store" }),
+          fetch("./aola_pet_skill_extract_skills.json", { cache: "no-store" })
+        ]);
+        if (!petRes.ok || !skillRes.ok) return;
+        const [petRows, skillRows] = await Promise.all([petRes.json(), skillRes.json()]);
+        if (!Array.isArray(petRows) || !Array.isArray(skillRows)) return;
+
+        const descBySkillId = new Map();
+        skillRows.forEach((row) => {
+          const sid = Number(row && row.skill_id);
+          if (!Number.isFinite(sid) || sid <= 0) return;
+          const desc = normalize((row && row.client_desc) || (row && row.new_effect_desc) || (row && row.old_effect_desc) || "");
+          if (desc) descBySkillId.set(sid, desc);
+        });
+        if (descBySkillId.size <= 0) return;
+
+        const raceSkillsById = new Map();
+        petRows.forEach((row) => {
+          const rid = Number(row && row.race_id);
+          if (!Number.isFinite(rid) || rid <= 0) return;
+          const skills = Array.isArray(row && row.skills) ? row.skills : [];
+          raceSkillsById.set(rid, skills);
+        });
+
+        speciesByDexMap.forEach((species, dexId) => {
+          const raceSkills = raceSkillsById.get(Number(dexId));
+          if (!species || !Array.isArray(species.skills) || !Array.isArray(raceSkills)) return;
+          const sidByName = new Map();
+          const sidByNameLevel = new Map();
+          raceSkills.forEach((s) => {
+            const nm = normalize(s && s.name);
+            const sid = Number(s && s.skill_id);
+            const lv = Number(s && s.level);
+            if (nm && Number.isFinite(sid) && sid > 0) {
+              sidByName.set(nm, sid);
+              if (Number.isFinite(lv)) sidByNameLevel.set(`${nm}#${lv}`, sid);
+            }
+          });
+          species.skills = species.skills.map((s) => {
+            const cur = s && typeof s === "object" ? s : {};
+            const nm = normalize(cur.name);
+            const lv = Number(cur.level);
+            const sidByPair = (nm && Number.isFinite(lv)) ? Number(sidByNameLevel.get(`${nm}#${lv}`)) : NaN;
+            let desc = Number.isFinite(sidByPair) && sidByPair > 0 ? normalize(descBySkillId.get(sidByPair)) : "";
+            if (!desc) {
+              const sidByNm = nm ? Number(sidByName.get(nm)) : NaN;
+              if (Number.isFinite(sidByNm) && sidByNm > 0) desc = normalize(descBySkillId.get(sidByNm));
+            }
+            if (!desc) {
+              const sid = Number(cur.skillId);
+              if (Number.isFinite(sid) && sid > 0) desc = normalize(descBySkillId.get(sid));
+            }
+            if (!desc) return cur;
+            return { ...cur, desc };
+          });
+        });
+      } catch (err) {
+        console.warn("[AolaStar] applySkillDescFromExtractJson failed:", err);
+      }
+    };
 
     const normalizeSpeciesSource = (source, entry) => {
       const fallback = buildFallbackSpecies(entry);
@@ -1776,6 +1860,7 @@ createApp({
       speciesByDexMap.set(entry.dexId, species);
       if (!speciesMap.has(entry.name)) speciesMap.set(entry.name, species);
     });
+    applySkillDescFromExtractJson();
 
     const formNameToDexIds = new Map();
     dexEntries.forEach((entry) => {
@@ -2185,9 +2270,10 @@ createApp({
     };
     const closeEvolutionModal = () => {
       activeEvolution.value = null;
+      // 关闭当前后继续弹出队列中的下一个进化
       setTimeout(() => {
         tryOpenNextEvolution();
-      }, 120);
+      }, 50);
     };
     const stopBattleBgm = () => {
       const audio = battleBgmAudio.value;
@@ -2866,7 +2952,7 @@ createApp({
         spDef: safeNonNegInt(species.raceStats.spDef),
         speed: safeNonNegInt(species.raceStats.speed)
       };
-      const ability = calcPetAbilityByRace(race, level, createZeroStats(), createZeroStats());
+      const ability = calcPetAbilityByRace(race, level, createUniformTalent30(), createZeroStats());
       const targetUnlockedSkills = (species.skills || []).filter((s) => Number(s.level) <= level).map((s) => ({
         skillId: Number(s && s.skillId) || null,
         skillKey: normalize(s && s.skillKey),
@@ -3660,13 +3746,18 @@ createApp({
       const id = normalize(String(itemId || ""));
       if (!id) return;
       if (getItemCount(id) <= 0) return showToast("该道具数量不足。");
+      if (battleScene.value && battleScene.value.currentAttackerId) {
+        shopTargetPetId.value = battleScene.value.currentAttackerId;
+      }
       const pet = state.value.activePets.find((p) => p && p.id === shopTargetPetId.value);
       if (!pet) return showToast("请先选择目标亚比。");
       if (id === "max_level_fruit") {
         if (pet.level >= 100) return showToast(`${petDisplayName(pet)} 已是满级。`);
-        const chain = getChainStageInfoByDexId(pet.dexId, pet.speciesName);
+        const chainAnchorDexId = Number((pet && pet.baseDexId) || (pet && pet.dexId)) || Number(pet.dexId) || 0;
+        const chain = getChainStageInfoByDexId(chainAnchorDexId, pet.speciesName);
         const crossed = [];
         while (pet.level < 100) {
+          const beforeForm = petCurrentForm(pet);
           const oldLevel = pet.level;
           pet.level += 1;
           const prevStage = stageIndexByLevelAndCount(oldLevel, chain.formCount, chain.evoLevels);
@@ -3677,15 +3768,14 @@ createApp({
             const afterDexId = resolveEvolutionDexIdByPetAndStage(pet, nextStage);
             const beforeDex = dexById.get(Number(beforeDexId));
             const afterDex = dexById.get(Number(afterDexId));
-            if (beforeDex && afterDex) {
-              crossed.push({
-                petId: pet.id,
-                beforeName: beforeDex.name,
-                afterName: afterDex.name,
-                beforeImage: ensureHttps(beforeDex.image) || PLACEHOLDER,
-                afterImage: ensureHttps(afterDex.image) || PLACEHOLDER
-              });
-            }
+            const afterForm = petCurrentForm(pet);
+            crossed.push({
+              petId: pet.id,
+              beforeName: (beforeDex && beforeDex.name) || normalize(beforeForm && beforeForm.name) || pet.speciesName,
+              afterName: (afterDex && afterDex.name) || normalize(afterForm && afterForm.name) || pet.speciesName,
+              beforeImage: (beforeDex && ensureHttps(beforeDex.image)) || ensureHttps(beforeForm && beforeForm.img) || PLACEHOLDER,
+              afterImage: (afterDex && ensureHttps(afterDex.image)) || ensureHttps(afterForm && afterForm.img) || PLACEHOLDER
+            });
           }
           const evoDexId = resolveEvolutionDexIdByPetAndStage(pet, nextStage);
           if (evoDexId > 0 && !state.value.activatedDexIds.includes(evoDexId)) {
