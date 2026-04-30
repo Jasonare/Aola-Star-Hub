@@ -27,23 +27,47 @@
     @keyframes evoGlowPulse { 0% { filter: drop-shadow(0 0 0 rgba(99,102,241,0)); transform: scale(0.96); } 50% { filter: drop-shadow(0 0 18px rgba(129,140,248,.85)); transform: scale(1.03); } 100% { filter: drop-shadow(0 0 10px rgba(59,130,246,.55)); transform: scale(1); } }
     @keyframes battleDamagePop { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.9); } 18% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -28px) scale(1.06); } }
     @keyframes battleCritPop { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.88); } 14% { opacity: 1; transform: translate(-50%, 0) scale(1.26); filter: drop-shadow(0 0 10px rgba(251,191,36,.95)); } 100% { opacity: 0; transform: translate(-50%, -26px) scale(1); filter: drop-shadow(0 0 0 rgba(251,191,36,0)); } }
+    @keyframes battleShakeLeft { 0% { transform: translateX(0); } 18% { transform: translateX(-8px); } 36% { transform: translateX(7px); } 54% { transform: translateX(-6px); } 72% { transform: translateX(4px); } 100% { transform: translateX(0); } }
+    @keyframes battleShakeRight { 0% { transform: translateX(0); } 18% { transform: translateX(8px); } 36% { transform: translateX(-7px); } 54% { transform: translateX(6px); } 72% { transform: translateX(-4px); } 100% { transform: translateX(0); } }
     .combo-hit-pop { animation: comboFloatUp 0.8s ease-out forwards; }
     .combo-total-pop { animation: comboTotalPop 1s ease-out forwards; }
     .evo-glow { animation: evoGlowPulse 1.1s ease-in-out infinite alternate; }
     .battle-damage-pop { animation: battleDamagePop 0.9s ease-out forwards; }
     .battle-crit-pop { animation: battleCritPop 1s ease-out forwards; }
+    .battle-shake-left { animation: battleShakeLeft .45s ease-in-out; }
+    .battle-shake-right { animation: battleShakeRight .45s ease-in-out; }
     @media (max-width: 900px) {
-      .battle-mobile-root { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; }
+      :root { --battle-right-panel-w: 31vw; }
+      .battle-mobile-root { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; padding: 8px !important; }
       .battle-mobile-wrap { position: static !important; width: auto !important; min-width: 0 !important; left: auto !important; right: auto !important; top: auto !important; bottom: auto !important; margin: 0 !important; }
-      .battle-mobile-target { grid-column: 1 / 2; width: 46vw !important; max-width: 46vw !important; justify-self: start; }
-      .battle-mobile-attacker { grid-column: 2 / 3; width: 46vw !important; max-width: 46vw !important; justify-self: end; }
-      .battle-mobile-sprite { height: 140px !important; margin-top: 6px !important; }
-      .battle-mobile-ability { width: 62% !important; max-width: 62% !important; }
-      .battle-mobile-skillpanel { grid-column: 1 / 3; width: 68vw !important; max-width: 68vw !important; min-width: 0 !important; margin-right: 0 !important; justify-self: end; }
-      .battle-mobile-log { grid-column: 1 / 3; position: static !important; width: 52vw !important; max-width: 52vw !important; min-width: 0 !important; margin-top: 0 !important; justify-self: start; }
-      .battle-mobile-root { padding: 8px !important; }
+      .battle-mobile-target { grid-column: 1 / 2; width: 47vw !important; max-width: 47vw !important; justify-self: start; align-self: start; display: flex; flex-direction: column; align-items: flex-start; }
+      .battle-mobile-attacker { grid-column: 2 / 3; width: 47vw !important; max-width: 47vw !important; justify-self: end; align-self: start; display: flex; flex-direction: column; align-items: flex-end; }
+      .battle-mobile-sprite { height: 120px !important; margin-top: 4px !important; }
+      .battle-mobile-target-sprite { order: 1; margin-top: 0 !important; margin-left: -6px; justify-content: flex-start !important; }
+      .battle-mobile-target-card { order: 2; width: 66% !important; max-width: 66% !important; }
+      .battle-mobile-skillpanel { width: var(--battle-right-panel-w) !important; max-width: var(--battle-right-panel-w) !important; min-width: 0 !important; margin-right: 0 !important; }
+      .battle-mobile-log { grid-column: 1 / 2; position: static !important; width: 47vw !important; max-width: 47vw !important; min-width: 0 !important; margin-top: 8px !important; justify-self: start; align-self: end; }
+      .battle-mobile-actions { order: 1; }
+      .battle-mobile-skills { order: 2; }
+      .battle-mobile-attacker-main { position: absolute; right: var(--battle-right-panel-w); bottom: 8px; margin-top: 0; width: auto; display: flex; align-items: flex-end; justify-content: flex-start; gap: 2px; z-index: 6; }
+      .battle-mobile-attacker-card { width: 66% !important; max-width: 66% !important; min-width: 66% !important; }
+      .battle-mobile-attacker-visual { width: 112px !important; max-width: 112px !important; height: 180px !important; display: flex; align-items: flex-end; justify-content: flex-end; }
+      .battle-mobile-attacker-stats { position: absolute; right: calc(100% + 10px); bottom: 0; }
+      .battle-mobile-hpbox { position: absolute; right: calc(var(--battle-right-panel-w) + 8px); bottom: 196px; width: 31vw !important; max-width: 31vw !important; min-width: 31vw !important; margin: 0 !important; z-index: 7; }
+      .battle-mobile-compact-title { font-size: 9px !important; line-height: 1.2 !important; }
+      .battle-mobile-compact-level { font-size: 9px !important; }
+      .battle-mobile-stat-side { width: 88px; }
+      .battle-mobile-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+      .battle-mobile-stat-side .stat-row { display: flex; align-items: center; justify-content: space-between; font-size: 9px; font-weight: 800; margin-bottom: 0; padding: 1px 4px; border-radius: 6px; white-space: nowrap; }
+      .battle-mobile-stat-side .stat-row span { white-space: nowrap; }
+      .battle-mobile-stat-side .stat-zero { background: rgba(250,204,21,.7); color: #1f2937; }
+      .battle-mobile-stat-side .stat-pos { background: rgba(239,68,68,.7); color: #fff; }
+      .battle-mobile-stat-side .stat-neg { background: rgba(16,185,129,.7); color: #fff; }
+      .battle-mobile-hp-short { width: 100% !important; max-width: 100% !important; }
       .battle-mobile-btns { display: grid !important; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 6px !important; }
       .battle-mobile-btns button { padding-left: 0.25rem !important; padding-right: 0.25rem !important; font-size: 11px !important; }
+      .battle-log-details summary { list-style: none; cursor: pointer; }
+      .battle-log-details summary::-webkit-details-marker { display: none; }
     }
   </style>
 </head>
@@ -52,9 +76,7 @@
 <div id="app" class="max-w-[1700px] mx-auto p-3 md:p-6">
   <header class="rounded-3xl border border-white bg-white/90 shadow-lg px-5 py-4 mb-5">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-      <div>
-        <h1 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Aola Star Hub</h1>
-      </div>
+      <div></div>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center w-full lg:min-w-[360px]">
         <div class="rounded-xl bg-blue-50 border border-blue-100 py-2">
           <div class="text-[10px] font-bold text-blue-400">激活图鉴</div>
@@ -514,26 +536,26 @@
 </div>
 
 <div v-if="battleScene && battleScene.open" class="fixed inset-0 z-[110] bg-slate-950/90 backdrop-blur-sm" @click="closeBattleScene">
-  <div class="relative w-full h-full overflow-y-auto md:overflow-hidden bg-[radial-gradient(circle_at_20%_30%,rgba(56,189,248,.18),transparent_35%),radial-gradient(circle_at_80%_70%,rgba(16,185,129,.12),transparent_35%),linear-gradient(180deg,#0b1220_0%,#121c2f_100%)] battle-mobile-root" @click.stop>
+  <div class="relative w-full h-full overflow-hidden bg-[radial-gradient(circle_at_20%_30%,rgba(56,189,248,.18),transparent_35%),radial-gradient(circle_at_80%_70%,rgba(16,185,129,.12),transparent_35%),linear-gradient(180deg,#0b1220_0%,#121c2f_100%)] battle-mobile-root" @click.stop>
     <div v-if="battleScene.fxSkillText" class="absolute top-6 right-6 z-30 rounded-2xl border border-cyan-300/60 bg-cyan-400/25 px-5 py-2 text-sm font-black text-cyan-100 shadow-[0_8px_24px_rgba(34,211,238,0.25)] battle-skill-float">{{ battleScene.fxSkillText }}</div>
 
     <div class="absolute left-3 right-3 md:left-8 md:right-auto top-3 md:top-8 w-auto md:w-[22%] md:min-w-[280px] battle-mobile-wrap battle-mobile-target">
-      <div class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3">
+      <div class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3 battle-mobile-target-card">
         <div class="flex items-start justify-between gap-2">
-          <div>
-            <div class="text-white text-xl font-black truncate">{{ battleScene.targetName }}</div>
-            <div class="text-cyan-100 text-xs font-black mt-0.5">Lv.{{ battleScene.targetLevel }}</div>
+          <div class="flex items-center gap-1 min-w-0">
+            <div class="text-white text-xl font-black truncate battle-mobile-compact-title">{{ battleScene.targetName }}</div>
+            <div class="text-cyan-100 font-black battle-mobile-compact-level shrink-0">Lv.{{ battleScene.targetLevel }}</div>
           </div>
           <div class="flex flex-wrap gap-1 justify-end max-w-[55%]">
             <span v-for="b in battleTargetStatusBadges" :key="'tar_st_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
             <span v-for="e in battleTargetTimedEffects" :key="'tar_fx_' + e.key" :title="`${e.desc}｜剩余${e.turns}回合`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
           </div>
         </div>
-        <div class="mt-2 h-3 rounded-full bg-slate-800/80 overflow-hidden">
+        <div class="mt-2 h-3 rounded-full bg-slate-800/80 overflow-hidden battle-mobile-hp-short">
           <div class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" :style="{ width: hpPercent(battleScene.targetHp, battleScene.targetMaxHp) + '%' }"></div>
         </div>
         <div class="mt-1 text-xs font-black text-cyan-100">HP {{ battleScene.targetHp }}/{{ battleScene.targetMaxHp }}</div>
-        <div class="mt-2 text-[11px] font-black text-cyan-100 flex flex-wrap gap-1">
+        <div class="mt-2 text-[11px] font-black text-cyan-100 flex flex-wrap gap-1 hidden md:flex">
           <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">攻 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0 }}</span>
           <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">特攻 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0 }}</span>
           <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">防 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0 }}</span>
@@ -544,15 +566,27 @@
           <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.critStage) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.critStage) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">暴击 {{ (battleScene.targetState && battleScene.targetState.critStage) || 0 }}</span>
         </div>
       </div>
-      <div :class="['relative mt-3 h-[260px] flex items-end justify-end battle-mobile-sprite', battleScene.fxTargetShake ? 'battle-shake-right' : '']">
-        <img :src="battleScene.targetImage" @error="withFallback" class="max-w-full max-h-full object-contain drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
-        <div v-if="battleScene.damageOnTarget" :class="['absolute top-6 left-1/2 -translate-x-1/2 text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.critOnTarget ? 'text-amber-300 battle-crit-pop' : 'text-rose-300 battle-damage-pop']">{{ battleScene.damageOnTarget }}</div>
-        <div v-if="battleScene.healOnTarget" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnTarget }}</div>
-        <div v-if="battleScene.ppOnTarget" class="absolute top-16 left-[66%] text-2xl font-black text-sky-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.ppOnTarget }}</div>
-        <div v-for="(hit, idx) in (battleScene.comboHitsOnTarget || [])" :key="'combo_tar_'+idx+'_'+hit" class="absolute top-10 left-1/2 text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="{ animationDelay: (idx*250)+'ms' }">{{ hit }}</div>
-        <div v-if="battleScene.comboTotalOnTarget" class="absolute top-8 left-[72%] text-5xl font-black text-amber-300 [text-shadow:0_3px_16px_rgba(0,0,0,.5)] combo-total-pop">{{ battleScene.comboTotalOnTarget }}</div>
+      <div class="mt-2 flex items-end justify-between gap-1 battle-mobile-target-sprite">
+        <div :class="['relative h-[260px] flex items-end justify-end battle-mobile-sprite flex-1', battleScene.fxTargetShake ? 'battle-shake-right' : '']">
+          <img :src="battleScene.targetImage" @error="withFallback" class="max-w-full max-h-full object-contain drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
+          <div v-if="battleScene.damageOnTarget" :class="['absolute top-6 left-1/2 -translate-x-1/2 text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.critOnTarget ? 'text-amber-300 battle-crit-pop' : 'text-rose-300 battle-damage-pop']">{{ battleScene.damageOnTarget }}</div>
+          <div v-if="battleScene.healOnTarget" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnTarget }}</div>
+          <div v-if="battleScene.ppOnTarget" class="absolute top-16 left-[66%] text-2xl font-black text-sky-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.ppOnTarget }}</div>
+          <div v-for="(hit, idx) in (battleScene.comboHitsOnTarget || [])" :key="'combo_tar_'+idx+'_'+hit" class="absolute top-10 left-1/2 text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="{ animationDelay: (idx*250)+'ms' }">{{ hit }}</div>
+          <div v-if="battleScene.comboTotalOnTarget" class="absolute top-8 left-[72%] text-5xl font-black text-amber-300 [text-shadow:0_3px_16px_rgba(0,0,0,.5)] combo-total-pop">{{ battleScene.comboTotalOnTarget }}</div>
+        </div>
+        <div class="battle-mobile-stat-side battle-mobile-stat-grid" style="margin-left:8px;">
+          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>攻击</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0 }}</span></div>
+          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>特攻</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0 }}</span></div>
+          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>防御</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0 }}</span></div>
+          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>特防</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0 }}</span></div>
+          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>命中</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0 }}</span></div>
+          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>闪避</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0 }}</span></div>
+          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>速度</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0 }}</span></div>
+          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.critStage) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.critStage) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>暴击</span><span>{{ (battleScene.targetState && battleScene.targetState.critStage) || 0 }}</span></div>
+        </div>
       </div>
-      <div class="rounded-2xl border border-cyan-200/20 bg-slate-900/35 p-3 mt-2 w-[65%] battle-mobile-ability">
+      <div class="rounded-2xl border border-cyan-200/20 bg-slate-900/35 p-3 mt-2 w-[65%] battle-mobile-ability hidden md:block">
         <div class="text-xs font-black text-cyan-100 mb-2">六维能力值</div>
         <div class="space-y-1 text-[12px] font-black text-slate-100">
           <div>体力：{{ battleScene.targetAbility.hp }}</div>
@@ -566,48 +600,15 @@
     </div>
 
     <div class="absolute left-3 right-3 md:right-8 md:left-auto top-[43%] md:top-[30%] w-auto md:w-[22%] md:min-w-[280px] battle-mobile-wrap battle-mobile-attacker">
-      <div class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3">
-        <div class="flex items-start justify-between gap-2">
-          <div>
-            <div class="text-white text-xl font-black truncate">{{ battleScene.attackerName }}</div>
-            <div class="text-cyan-100 text-xs font-black mt-0.5">Lv.{{ battleScene.attackerLevel }}</div>
-          </div>
-          <div class="flex flex-wrap gap-1 justify-end max-w-[55%]">
-            <span v-for="b in battleAttackerStatusBadges" :key="'atk_st_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
-            <span v-for="e in battleAttackerTimedEffects" :key="'atk_fx_' + e.key" :title="`${e.desc}｜剩余${e.turns}回合`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
-          </div>
-        </div>
-        <div class="mt-2 h-3 rounded-full bg-slate-800/80 overflow-hidden">
-          <div class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" :style="{ width: hpPercent(battleScene.attackerHp, battleScene.attackerMaxHp) + '%' }"></div>
-        </div>
-        <div class="mt-1 text-xs font-black text-cyan-100">HP {{ battleScene.attackerHp }}/{{ battleScene.attackerMaxHp }}</div>
-        <div class="mt-2 text-[11px] font-black text-cyan-100 flex flex-wrap gap-1">
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">攻 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">特攻 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">防 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">特防 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">命中 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">闪避 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">速度 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.critStage) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.critStage) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">暴击 {{ (battleScene.attackerState && battleScene.attackerState.critStage) || 0 }}</span>
-        </div>
-      </div>
-      <div :class="['relative mt-3 h-[300px] flex items-end justify-start battle-mobile-sprite', battleScene.fxAttackerShake ? 'battle-shake-left' : '']">
-        <img :src="battleScene.attackerImage" @error="withFallback" class="max-w-full max-h-full object-contain scale-x-[-1] drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
-        <div v-if="battleScene.fxAttackerSkillText" class="absolute top-[-8px] left-1/2 -translate-x-1/2 rounded-xl border border-cyan-300/60 bg-cyan-400/20 px-3 py-1 text-sm font-black text-cyan-100 battle-skill-float">{{ battleScene.fxAttackerSkillText }}</div>
-        <div v-if="battleScene.damageOnAttacker" :class="['absolute top-6 left-1/2 -translate-x-1/2 text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.critOnAttacker ? 'text-amber-300 battle-crit-pop' : 'text-rose-300 battle-damage-pop']">{{ battleScene.damageOnAttacker }}</div>
-        <div v-if="battleScene.healOnAttacker" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnAttacker }}</div>
-        <div v-if="battleScene.ppOnAttacker" class="absolute top-16 left-[66%] text-2xl font-black text-sky-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.ppOnAttacker }}</div>
-        <div v-for="(hit, idx) in (battleScene.comboHitsOnAttacker || [])" :key="'combo_atk_'+idx+'_'+hit" class="absolute top-10 left-1/2 text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="{ animationDelay: (idx*250)+'ms' }">{{ hit }}</div>
-        <div v-if="battleScene.comboTotalOnAttacker" class="absolute top-8 left-[72%] text-5xl font-black text-amber-300 [text-shadow:0_3px_16px_rgba(0,0,0,.5)] combo-total-pop">{{ battleScene.comboTotalOnAttacker }}</div>
-      </div>
-      <div class="mt-4 md:mt-5 w-full md:w-[66%] min-w-0 md:min-w-[420px] md:mr-8 battle-mobile-skillpanel">
+      <div class="mt-4 md:mt-5 w-full md:w-[66%] min-w-0 md:min-w-[420px] md:mr-8 battle-mobile-skillpanel battle-mobile-actions">
         <div class="flex items-center gap-2 mb-2 battle-mobile-btns">
           <button @click="openBattleSkillPanel" :disabled="battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-cyan-600 text-white text-sm font-black disabled:opacity-45 shadow-md">技能</button>
           <button @click="openBattleItemPanel" :disabled="battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-emerald-600 text-white text-sm font-black disabled:opacity-45 shadow-md">道具</button>
           <button @click="openSwitchPanel('manual')" :disabled="battleSceneAvailablePets.length === 0 || battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-indigo-600 text-white text-sm font-black disabled:opacity-45 shadow-md">换宠</button>
           <button @click="closeBattleScene" class="h-9 px-4 rounded-xl bg-slate-700/95 border border-slate-400 text-slate-100 text-sm font-black shadow-md hover:bg-slate-600">撤退</button>
         </div>
+      </div>
+      <div class="w-full battle-mobile-skillpanel battle-mobile-skills">
         <div class="rounded-2xl border border-cyan-200/20 bg-slate-900/35 p-3">
           <div class="text-xs font-black text-cyan-100 mb-2">{{ battleActionTab === 'items' ? '道具列表' : '技能列表' }}</div>
           <div v-if="battleActionTab === 'items'" class="space-y-2 max-h-[220px] overflow-y-auto pr-1 scrollbar">
@@ -627,25 +628,76 @@
           </div>
           <div v-else class="space-y-2">
             <button
-              v-for="skill in battleSceneSkills"
-              :key="'battle_skill_' + safeSkillName(skill)"
-              @click="castBattleSkill(safeSkillName(skill))"
-              :disabled="!canCastBattleSkill(safeSkillName(skill))"
-              :title="skillBattleDesc(skill)"
-              class="w-full h-10 rounded-xl border border-cyan-300/35 bg-cyan-500/15 text-cyan-100 text-xs font-black disabled:opacity-40 text-left px-3"
+              v-for="idx in [0,1,2,3]"
+              :key="'battle_skill_slot_' + idx + '_' + ((battleSceneSkills && battleSceneSkills[idx]) ? safeSkillName(battleSceneSkills[idx]) : 'empty')"
+              @click="(battleSceneSkills && battleSceneSkills[idx]) ? castBattleSkill(safeSkillName(battleSceneSkills[idx])) : null"
+              :disabled="!(battleSceneSkills && battleSceneSkills[idx]) || !canCastBattleSkill(safeSkillName(battleSceneSkills[idx]))"
+              :title="(battleSceneSkills && battleSceneSkills[idx]) ? skillBattleDesc(battleSceneSkills[idx]) : ''"
+              class="w-full h-10 rounded-xl border text-xs font-black text-left px-3"
+              :class="(battleSceneSkills && battleSceneSkills[idx]) ? 'border-cyan-300/35 bg-cyan-500/15 text-cyan-100 disabled:opacity-40' : 'border-slate-500/40 bg-slate-700/30 text-slate-400 cursor-not-allowed'"
             >
-              {{ safeSkillName(skill) }} | PP {{ safeSkillPP(skill) }}
+              {{ (battleSceneSkills && battleSceneSkills[idx]) ? (safeSkillName(battleSceneSkills[idx]) + ' | PP ' + safeSkillPP(battleSceneSkills[idx])) : '空白技能' }}
             </button>
           </div>
         </div>
       </div>
+      <div class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3 battle-mobile-attacker-card battle-mobile-hpbox">
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center gap-1 min-w-0">
+            <div class="text-white text-xl font-black truncate battle-mobile-compact-title">{{ battleScene.attackerName }}</div>
+            <div class="text-cyan-100 font-black battle-mobile-compact-level shrink-0">Lv.{{ battleScene.attackerLevel }}</div>
+          </div>
+          <div class="flex flex-wrap gap-1 justify-end max-w-[55%]">
+            <span v-for="b in battleAttackerStatusBadges" :key="'atk_st_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
+            <span v-for="e in battleAttackerTimedEffects" :key="'atk_fx_' + e.key" :title="`${e.desc}｜剩余${e.turns}回合`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
+          </div>
+        </div>
+        <div class="mt-2 h-3 rounded-full bg-slate-800/80 overflow-hidden battle-mobile-hp-short">
+          <div class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" :style="{ width: hpPercent(battleScene.attackerHp, battleScene.attackerMaxHp) + '%' }"></div>
+        </div>
+        <div class="mt-1 text-xs font-black text-cyan-100">HP {{ battleScene.attackerHp }}/{{ battleScene.attackerMaxHp }}</div>
+        <div class="mt-2 text-[11px] font-black text-cyan-100 flex flex-wrap gap-1 hidden md:flex">
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">攻 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">特攻 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">防 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">特防 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">命中 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">闪避 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">速度 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0 }}</span>
+          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.critStage) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.critStage) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">暴击 {{ (battleScene.attackerState && battleScene.attackerState.critStage) || 0 }}</span>
+        </div>
+      </div>
+      <div class="battle-mobile-attacker-main">
+      <div class="battle-mobile-stat-side battle-mobile-stat-grid battle-mobile-attacker-stats">
+        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>攻击</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0 }}</span></div>
+        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>特攻</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0 }}</span></div>
+        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>防御</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0 }}</span></div>
+        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>特防</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0 }}</span></div>
+        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>命中</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0 }}</span></div>
+        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>闪避</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0 }}</span></div>
+        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>速度</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0 }}</span></div>
+        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.critStage) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.critStage) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>暴击</span><span>{{ (battleScene.attackerState && battleScene.attackerState.critStage) || 0 }}</span></div>
+      </div>
+      <div :class="['relative h-[300px] flex items-end justify-start battle-mobile-sprite battle-mobile-attacker-visual', battleScene.fxAttackerShake ? 'battle-shake-left' : '']">
+        <img :src="battleScene.attackerImage" @error="withFallback" class="max-w-full max-h-full object-contain scale-x-[-1] drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
+        <div v-if="battleScene.fxAttackerSkillText" class="absolute top-[-8px] left-1/2 -translate-x-1/2 rounded-xl border border-cyan-300/60 bg-cyan-400/20 px-3 py-1 text-sm font-black text-cyan-100 battle-skill-float">{{ battleScene.fxAttackerSkillText }}</div>
+        <div v-if="battleScene.damageOnAttacker" :class="['absolute top-6 left-1/2 -translate-x-1/2 text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.critOnAttacker ? 'text-amber-300 battle-crit-pop' : 'text-rose-300 battle-damage-pop']">{{ battleScene.damageOnAttacker }}</div>
+        <div v-if="battleScene.healOnAttacker" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnAttacker }}</div>
+        <div v-if="battleScene.ppOnAttacker" class="absolute top-16 left-[66%] text-2xl font-black text-sky-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.ppOnAttacker }}</div>
+        <div v-for="(hit, idx) in (battleScene.comboHitsOnAttacker || [])" :key="'combo_atk_'+idx+'_'+hit" class="absolute top-10 left-1/2 text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="{ animationDelay: (idx*250)+'ms' }">{{ hit }}</div>
+        <div v-if="battleScene.comboTotalOnAttacker" class="absolute top-8 left-[72%] text-5xl font-black text-amber-300 [text-shadow:0_3px_16px_rgba(0,0,0,.5)] combo-total-pop">{{ battleScene.comboTotalOnAttacker }}</div>
+      </div>
+      </div>
     </div>
 
+    <!--
     <div class="absolute left-3 right-3 md:left-8 md:right-auto bottom-3 md:bottom-8 w-auto md:w-[21%] min-w-0 md:min-w-[260px] rounded-2xl border border-cyan-200/20 bg-slate-900/40 p-3 battle-mobile-log">
-      <div class="text-sm font-black text-cyan-100 mb-2">战斗日志</div>
-      <div ref="battleSceneLogRef" class="max-h-[220px] overflow-auto scrollbar pr-1">
-        <div v-for="(line, idx) in battleScene.logs" :key="'battle_log_' + idx" class="text-xs font-bold text-slate-200 mb-1">{{ line }}</div>
-      </div>
+      <details class="battle-log-details">
+        <summary class="h-9 px-3 rounded-xl bg-cyan-700/70 text-cyan-100 text-sm font-black flex items-center justify-center">战斗日志</summary>
+        <div ref="battleSceneLogRef" class="max-h-[220px] overflow-auto scrollbar pr-1 mt-2">
+          <div v-for="(line, idx) in battleScene.logs" :key="'battle_log_' + idx" class="text-xs font-bold text-slate-200 mb-1">{{ line }}</div>
+        </div>
+      </details>
       <div v-if="battleScene.ended" class="mt-3 rounded-xl border p-3" :class="battleScene.win ? 'border-emerald-400/60 bg-emerald-500/10' : 'border-rose-400/60 bg-rose-500/10'">
         <div :class="['text-base font-black', battleScene.win ? 'text-emerald-300' : 'text-rose-300']">{{ battleScene.win ? '挑战胜利' : '挑战失败' }}</div>
         <div class="text-xs font-bold text-slate-200 mt-1">{{ battleScene.summary }}</div>
@@ -653,6 +705,7 @@
         <div v-if="battleScene.unlockText" class="text-xs font-black text-cyan-200 mt-1">{{ battleScene.unlockText }}</div>
       </div>
     </div>
+    -->
   </div>
 </div>
 
@@ -788,4 +841,5 @@
 </script>
 </body>
 </html>
+
 
