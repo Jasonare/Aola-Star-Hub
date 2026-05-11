@@ -22,6 +22,29 @@
     .evo-flash { animation: evoFlash 0.85s ease-out forwards; }
     @keyframes petBob { 0% { transform: translateY(0); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0); } }
     .pet-bob { animation: petBob 2.4s ease-in-out infinite; }
+    .battle-mobile-attacker { --battle-desktop-panel-w: 560px; }
+    .battle-mobile-attacker .battle-mobile-skillpanel,
+    .battle-mobile-attacker .battle-mobile-hpbox {
+      width: var(--battle-desktop-panel-w) !important;
+      max-width: var(--battle-desktop-panel-w) !important;
+      min-width: var(--battle-desktop-panel-w) !important;
+      margin-right: 0 !important;
+    }
+    .battle-mobile-attacker-main {
+      position: absolute;
+      right: calc(var(--battle-desktop-panel-w) + 40px);
+      bottom: 0;
+      width: 300px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      z-index: 8;
+    }
+    .battle-mobile-attacker-visual {
+      width: 300px;
+      max-width: 300px;
+      justify-content: flex-end;
+    }
     @keyframes comboFloatUp { 0% { opacity: 0; transform: translate(-50%, 8px) scale(0.92); } 12% { opacity: 1; } 82% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -56px) scale(1.08); } }
     @keyframes comboTotalPop { 0% { opacity: 0; transform: translateY(0) scale(0.85); } 12% { opacity: 1; transform: translateY(0) scale(1.18); } 70% { opacity: 1; transform: translateY(-4px) scale(1.05); } 100% { opacity: 0; transform: translateY(-14px) scale(0.96); } }
     @keyframes evoGlowPulse { 0% { filter: drop-shadow(0 0 0 rgba(99,102,241,0)); transform: scale(0.96); } 50% { filter: drop-shadow(0 0 18px rgba(129,140,248,.85)); transform: scale(1.03); } 100% { filter: drop-shadow(0 0 10px rgba(59,130,246,.55)); transform: scale(1); } }
@@ -29,43 +52,114 @@
     @keyframes battleCritPop { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.88); } 14% { opacity: 1; transform: translate(-50%, 0) scale(1.26); filter: drop-shadow(0 0 10px rgba(251,191,36,.95)); } 100% { opacity: 0; transform: translate(-50%, -26px) scale(1); filter: drop-shadow(0 0 0 rgba(251,191,36,0)); } }
     @keyframes battleShakeLeft { 0% { transform: translateX(0); } 18% { transform: translateX(-8px); } 36% { transform: translateX(7px); } 54% { transform: translateX(-6px); } 72% { transform: translateX(4px); } 100% { transform: translateX(0); } }
     @keyframes battleShakeRight { 0% { transform: translateX(0); } 18% { transform: translateX(8px); } 36% { transform: translateX(-7px); } 54% { transform: translateX(6px); } 72% { transform: translateX(-4px); } 100% { transform: translateX(0); } }
+    @keyframes battleSkillEffectPop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.72); filter: drop-shadow(0 0 0 rgba(34,211,238,0)); } 12% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); filter: drop-shadow(0 0 18px rgba(34,211,238,.8)); } 82% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.12); filter: drop-shadow(0 0 6px rgba(34,211,238,.25)); } }
+    @keyframes battleDefeatedExit { 0% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1); } 35% { opacity: .82; transform: translateY(12px) scale(.98); filter: brightness(.75); } 100% { opacity: 0; transform: translateY(90px) scale(.86); filter: brightness(.25) blur(2px); } }
     .combo-hit-pop { animation: comboFloatUp 0.8s ease-out forwards; }
     .combo-total-pop { animation: comboTotalPop 1s ease-out forwards; }
     .evo-glow { animation: evoGlowPulse 1.1s ease-in-out infinite alternate; }
     .battle-damage-pop { animation: battleDamagePop 0.9s ease-out forwards; }
     .battle-crit-pop { animation: battleCritPop 1s ease-out forwards; }
+    .battle-skill-effect-gif { position: fixed; left: var(--skill-fx-x, 50vw); top: var(--skill-fx-y, 50vh); width: clamp(300px, 26vw, 560px); height: clamp(300px, 26vw, 560px); object-fit: contain; pointer-events: none; z-index: 118; animation: battleSkillEffectPop .9s ease-out forwards; mix-blend-mode: screen; }
+    .battle-defeated-exit { animation: battleDefeatedExit 1.2s ease-in forwards; pointer-events: none; }
+    .battle-pet-visual-anchor { position: relative; display: inline-flex; align-items: center; justify-content: center; max-width: 100%; max-height: 100%; line-height: 0; transform-origin: 50% 50%; }
+    .battle-skill-float { border-radius: 16px; border: 1px solid rgba(125,211,252,.85); background: linear-gradient(135deg, rgba(8,47,73,.92), rgba(14,116,144,.78)); box-shadow: 0 8px 24px rgba(34,211,238,.28), inset 0 0 16px rgba(255,255,255,.08); padding: 6px 12px; color: #e0f2fe; letter-spacing: .04em; text-shadow: 0 1px 8px rgba(34,211,238,.55); z-index: 26; }
     .battle-shake-left { animation: battleShakeLeft .45s ease-in-out; }
     .battle-shake-right { animation: battleShakeRight .45s ease-in-out; }
+    .battle-mobile-stat-side { width: 120px; }
+    .battle-mobile-stat-grid { display: grid; grid-template-columns: 1fr; gap: 4px; }
+    .battle-mobile-stat-side .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 0;
+      padding: 2px 6px;
+      border-radius: 8px;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+    .battle-mobile-stat-side .stat-row span { white-space: nowrap; }
+    .battle-mobile-stat-side .stat-zero { background: #facc15 !important; color: #111827 !important; opacity: 1 !important; }
+    .battle-mobile-stat-side .stat-pos { background: #ef4444 !important; color: #ffffff !important; opacity: 1 !important; }
+    .battle-mobile-stat-side .stat-neg { background: #10b981 !important; color: #ffffff !important; opacity: 1 !important; }
+    .battle-stage-line { display: flex; flex-wrap: nowrap; gap: 4px; white-space: nowrap; }
     @media (max-width: 900px) {
-      :root { --battle-right-panel-w: 31vw; }
+      :root { --battle-right-panel-w: 20.7vw; }
       .battle-mobile-root { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; padding: 8px !important; }
       .battle-mobile-wrap { position: static !important; width: auto !important; min-width: 0 !important; left: auto !important; right: auto !important; top: auto !important; bottom: auto !important; margin: 0 !important; }
       .battle-mobile-target { grid-column: 1 / 2; width: 47vw !important; max-width: 47vw !important; justify-self: start; align-self: start; display: flex; flex-direction: column; align-items: flex-start; }
       .battle-mobile-attacker { grid-column: 2 / 3; width: 47vw !important; max-width: 47vw !important; justify-self: end; align-self: start; display: flex; flex-direction: column; align-items: flex-end; }
       .battle-mobile-sprite { height: 120px !important; margin-top: 4px !important; }
       .battle-mobile-target-sprite { order: 1; margin-top: 0 !important; margin-left: -6px; justify-content: flex-start !important; }
-      .battle-mobile-target-card { order: 2; width: 66% !important; max-width: 66% !important; }
+      .battle-mobile-target-card { order: 2; width: var(--battle-right-panel-w) !important; max-width: var(--battle-right-panel-w) !important; }
       .battle-mobile-skillpanel { width: var(--battle-right-panel-w) !important; max-width: var(--battle-right-panel-w) !important; min-width: 0 !important; margin-right: 0 !important; }
       .battle-mobile-log { grid-column: 1 / 2; position: static !important; width: 47vw !important; max-width: 47vw !important; min-width: 0 !important; margin-top: 8px !important; justify-self: start; align-self: end; }
       .battle-mobile-actions { order: 1; }
       .battle-mobile-skills { order: 2; }
-      .battle-mobile-attacker-main { position: absolute; right: var(--battle-right-panel-w); bottom: 8px; margin-top: 0; width: auto; display: flex; align-items: flex-end; justify-content: flex-start; gap: 2px; z-index: 6; }
-      .battle-mobile-attacker-card { width: 66% !important; max-width: 66% !important; min-width: 66% !important; }
+      .battle-mobile-attacker-main { position: absolute; right: calc(var(--battle-right-panel-w) + 18px); bottom: 8px; margin-top: 0; width: auto; display: flex; align-items: flex-end; justify-content: flex-start; gap: 18px; z-index: 6; }
+      .battle-mobile-attacker-card { width: var(--battle-right-panel-w) !important; max-width: var(--battle-right-panel-w) !important; min-width: var(--battle-right-panel-w) !important; }
       .battle-mobile-attacker-visual { width: 112px !important; max-width: 112px !important; height: 180px !important; display: flex; align-items: flex-end; justify-content: flex-end; }
-      .battle-mobile-attacker-stats { position: absolute; right: calc(100% + 10px); bottom: 0; }
-      .battle-mobile-hpbox { position: absolute; right: calc(var(--battle-right-panel-w) + 8px); bottom: 196px; width: 31vw !important; max-width: 31vw !important; min-width: 31vw !important; margin: 0 !important; z-index: 7; }
+      .battle-mobile-attacker-stats { position: static; right: auto; bottom: auto; margin-top: 6px; }
+      .battle-mobile-hpbox { position: absolute; right: calc(var(--battle-right-panel-w) + 8px); bottom: 176px; width: var(--battle-right-panel-w) !important; max-width: var(--battle-right-panel-w) !important; min-width: var(--battle-right-panel-w) !important; margin: 0 !important; z-index: 7; }
       .battle-mobile-compact-title { font-size: 9px !important; line-height: 1.2 !important; }
       .battle-mobile-compact-level { font-size: 9px !important; }
-      .battle-mobile-stat-side { width: 88px; }
+      .battle-mobile-stat-side { width: 100%; }
       .battle-mobile-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
-      .battle-mobile-stat-side .stat-row { display: flex; align-items: center; justify-content: space-between; font-size: 9px; font-weight: 800; margin-bottom: 0; padding: 1px 4px; border-radius: 6px; white-space: nowrap; }
+      .battle-mobile-stat-side .stat-row { display: flex; align-items: center; justify-content: space-between; font-size: 8px; font-weight: 800; margin-bottom: 0; padding: 1px 4px; border-radius: 6px; white-space: nowrap; }
       .battle-mobile-stat-side .stat-row span { white-space: nowrap; }
-      .battle-mobile-stat-side .stat-zero { background: rgba(250,204,21,.7); color: #1f2937; }
-      .battle-mobile-stat-side .stat-pos { background: rgba(239,68,68,.7); color: #fff; }
-      .battle-mobile-stat-side .stat-neg { background: rgba(16,185,129,.7); color: #fff; }
+      .battle-mobile-stat-side .stat-zero { background: #facc15 !important; color: #111827 !important; opacity: 1 !important; }
+      .battle-mobile-stat-side .stat-pos { background: #ef4444 !important; color: #ffffff !important; opacity: 1 !important; }
+      .battle-mobile-stat-side .stat-neg { background: #10b981 !important; color: #ffffff !important; opacity: 1 !important; }
+      .battle-mobile-attacker-main .battle-mobile-attacker-stats { display: none !important; }
       .battle-mobile-hp-short { width: 100% !important; max-width: 100% !important; }
       .battle-mobile-btns { display: grid !important; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 6px !important; }
       .battle-mobile-btns button { padding-left: 0.25rem !important; padding-right: 0.25rem !important; font-size: 11px !important; }
+      .battle-mobile-btns button { white-space: nowrap !important; }
+      .battle-stage-line {
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0,1fr));
+        gap: 4px !important;
+      }
+      .battle-stage-line > span {
+        display: block;
+        text-align: center;
+        font-size: 9px !important;
+        padding: 2px 3px !important;
+      }
+      .pet-detail-overlay {
+        align-items: flex-start !important;
+        justify-content: center !important;
+        padding: 2px 0 !important;
+      }
+      .pet-detail-modal {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 99vh !important;
+        max-height: 99vh !important;
+        overflow: hidden !important;
+        border-radius: 10px !important;
+        padding: 4px !important;
+      }
+      .pet-detail-grid { grid-template-columns: 0.92fr 2.08fr !important; gap: 5px !important; }
+      .pet-detail-left { padding: 5px !important; }
+      .pet-detail-left img { max-height: 17vh !important; }
+      .pet-detail-right { min-width: 0; }
+      .pet-detail-right .inline-flex { margin-bottom: 6px !important; }
+      .pet-detail-right .inline-flex button { height: 24px !important; padding-left: 6px !important; padding-right: 6px !important; font-size: 10px !important; }
+      .pet-detail-panel { padding: 4px !important; }
+      .pet-detail-panel .pet-stat-row,
+      .pet-detail-panel .rounded-lg.bg-white.border.border-slate-200.px-2.py-2 { padding: 3px 4px !important; margin-bottom: 4px !important; }
+      .pet-detail-panel .pet-stat-row span,
+      .pet-detail-panel .rounded-lg.bg-white.border.border-slate-200.px-2.py-2 span { font-size: 10px !important; line-height: 1.1 !important; }
+      .pet-detail-panel .pet-stat-row .h-2,
+      .pet-detail-panel .rounded-lg.bg-white.border.border-slate-200.px-2.py-2 .h-2 { height: 4px !important; }
+      .pet-detail-modal h3 { font-size: 13px !important; line-height: 1.1 !important; }
+      .pet-detail-modal .text-sm { font-size: 11px !important; line-height: 1.1 !important; }
+      .pet-detail-modal .space-y-2 { row-gap: 4px !important; }
+      .pet-detail-modal .mb-3 { margin-bottom: 4px !important; }
+      .pet-detail-modal .mt-2 { margin-top: 3px !important; }
+      .pet-detail-modal .mt-1 { margin-top: 2px !important; }
       .battle-log-details summary { list-style: none; cursor: pointer; }
       .battle-log-details summary::-webkit-details-marker { display: none; }
     }
@@ -158,7 +252,7 @@
               <template v-if="slot.pet">
                 <button @click="openPetDetailModal(petId(slot.pet))" class="w-full text-left">
                   <div class="flex items-center gap-2">
-                    <img :src="petCurrentForm(slot.pet).img" @error="withFallback" class="w-[80px] h-[80px] object-contain pet-bob">
+                    <img :src="bagPetVisual(slot.pet).src" @error="(event) => { withFallback(event); if (event && event.target) event.target.classList.add('pet-bob'); }" :class="['w-[80px] h-[80px] object-contain', bagPetVisual(slot.pet).animated ? '' : 'pet-bob']">
                     <div class="min-w-0 ml-1">
                       <div class="text-[11px] md:text-base font-black text-slate-800 truncate">{{ petDisplayName(slot.pet) }}</div>
                       <div class="text-[10px] md:text-xs font-bold text-slate-500 truncate">Lv.{{ slot.pet.level }}</div>
@@ -286,14 +380,15 @@
             <span class="element-icon" :style="petElementIconStyle(selectedDexEntry.element, 18)" :title="selectedDexEntry.element || ''"></span>
             <span v-if="selectedDexEntry.subElement" class="element-icon" :style="petElementIconStyle(selectedDexEntry.subElement, 18)" :title="selectedDexEntry.subElement || ''"></span>
           </div>
-          <img :src="selectedDexEntry.image" @error="withFallback" class="w-20 h-20 md:w-28 md:h-28 object-contain mx-auto">
+          <img :src="selectedDexBattleImage" @error="withFallback" class="w-20 h-20 md:w-28 md:h-28 object-contain mx-auto">
           <div class="mt-2 text-sm font-black text-slate-800 truncate">{{ selectedDexEntry.name }}</div>
           <button @click="openSelectedDexDetail" class="mt-2 h-8 px-3 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-black">查看详情</button>
         </div>
         <div class="space-y-3">
           <label class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-500">
-            目标等级 (1-100)
-            <input v-model.number="state.targetLevel" type="number" min="1" max="100" class="mt-1 w-full text-sm font-black bg-transparent focus:outline-none">
+            目标等级 ({{ selectedChallengeLevelRange.min }}-{{ selectedChallengeLevelRange.max }})
+            <input v-model="targetLevelInput" type="text" inputmode="numeric" class="mt-1 w-full text-sm font-black bg-transparent focus:outline-none">
+            <div v-if="targetLevelValidationText" class="mt-1 text-[10px] font-black text-rose-500">{{ targetLevelValidationText }}</div>
           </label>
           <div class="rounded-xl border border-indigo-100 bg-indigo-50 p-2 text-xs font-bold text-indigo-700">属性倍率：{{ predictedElementFactor.toFixed(2) }}x</div>
           <div class="rounded-xl border border-emerald-100 bg-emerald-50 p-2 text-xs font-bold text-emerald-700">{{ predictedElementText }}</div>
@@ -313,7 +408,7 @@
         <button @click="closeWarehousePanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
       <div class="grid grid-cols-6 gap-1 md:gap-2 max-h-[520px] overflow-y-auto pr-1 scrollbar">
-        <div v-for="pet in filteredWarehousePets" :key="'wp_'+petId(pet)" class="rounded-xl border border-slate-200 bg-white p-1.5 md:p-2 min-h-[136px]">
+        <div v-for="pet in filteredWarehousePets" :key="'wp_'+petId(pet)" class="rounded-xl border border-slate-200 bg-white p-1.5 md:p-2 min-h-[136px]" @click="toggleWarehousePetActions(petId(pet))">
           <div class="flex items-start justify-between mb-1">
             <div class="flex items-center gap-1">
               <div class="text-[10px] font-black text-slate-500">#{{ pet.dexId }}</div>
@@ -323,14 +418,10 @@
             <div class="text-[11px] font-bold text-slate-500">Lv.{{ pet.level }}</div>
           </div>
           <div class="flex items-center gap-2">
-            <img :src="petCurrentForm(pet).img" @error="withFallback" class="w-20 h-20 object-contain pet-bob">
+            <img :src="bagPetVisual(pet).src" @error="(event) => { withFallback(event); if (event && event.target) event.target.classList.add('pet-bob'); }" :class="['w-20 h-20 object-contain', bagPetVisual(pet).animated ? '' : 'pet-bob']">
             <div class="min-w-0 flex-1 ml-1">
               <div class="text-[11px] md:text-base font-black text-slate-800 truncate leading-4">{{ petDisplayName(pet) }}</div>
             </div>
-          </div>
-          <div class="mt-2 space-y-2">
-            <button @click="openPetDetailModal(petId(pet))" class="w-full h-8 rounded-lg text-[10px] md:text-[11px] font-black bg-emerald-50 text-emerald-700 truncate px-1">查看详情</button>
-            <button @click="toggleBagByPet(petId(pet))" class="w-full h-8 rounded-lg text-[10px] md:text-[11px] font-black bg-indigo-50 text-indigo-700 truncate px-1">放入背包</button>
           </div>
         </div>
       </div>
@@ -338,8 +429,29 @@
     </div>
   </div>
 
-  <div v-if="showPetDetailModal && selectedPet" class="fixed inset-0 z-[80] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closePetDetailModal">
-    <div class="w-full max-w-3xl h-[90vh] md:h-[760px] rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl flex flex-col" @click.stop>
+  <div
+    v-if="showWarehouseActionModal && selectedWarehouseActionPet"
+    class="fixed inset-0 z-[90] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+    @click="closeWarehouseActionModal"
+  >
+    <div class="w-full max-w-sm rounded-2xl border border-white bg-white p-4 shadow-2xl" @click.stop>
+      <div class="flex items-center gap-3 mb-3">
+        <img :src="petCurrentForm(selectedWarehouseActionPet).img" @error="withFallback" class="w-14 h-14 object-contain rounded-lg border border-slate-200 bg-slate-50">
+        <div class="min-w-0">
+          <div class="text-sm font-black text-slate-800 truncate">{{ petDisplayName(selectedWarehouseActionPet) }}</div>
+          <div class="text-xs font-bold text-slate-500">Lv.{{ selectedWarehouseActionPet.level }}</div>
+        </div>
+      </div>
+      <div class="space-y-2">
+        <button @click="openPetDetailModal(petId(selectedWarehouseActionPet)); closeWarehouseActionModal()" class="w-full h-9 rounded-lg text-xs font-black bg-emerald-50 text-emerald-700">查看详情</button>
+        <button @click="addToBagFromWarehouse(petId(selectedWarehouseActionPet))" class="w-full h-9 rounded-lg text-xs font-black bg-indigo-50 text-indigo-700">放入背包</button>
+      </div>
+      <button @click="closeWarehouseActionModal" class="mt-3 w-full h-9 rounded-lg text-xs font-black bg-slate-100 text-slate-700">关闭</button>
+    </div>
+  </div>
+
+  <div v-if="showPetDetailModal && selectedPet" class="fixed inset-0 z-[80] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4 pet-detail-overlay" @click="closePetDetailModal">
+    <div class="w-full max-w-5xl rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl pet-detail-modal" @click.stop>
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center gap-2">
           <img :src="petCurrentForm(selectedPet).img" @error="withFallback" class="w-12 h-12 object-contain rounded-lg bg-slate-50 border border-slate-200">
@@ -347,32 +459,46 @@
         </div>
         <button @click="closePetDetailModal" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
-      <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1 mb-3">
-        <button @click="setInfoTab('skills')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'skills' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">技能栏</button>
-        <button @click="setInfoTab('ability')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'ability' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">能力值栏</button>
-        <button @click="setInfoTab('study')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'study' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">学习力栏</button>
-        <button @click="setInfoTab('talent')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'talent' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">天赋栏</button>
-        <button @click="setInfoTab('race')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'race' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">种族值栏</button>
-      </div>
-      <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 max-h-[62vh] overflow-y-auto pr-1 scrollbar">
-        <template v-if="selectedInfoTab === 'skills'">
-          <div class="grid grid-cols-2 gap-2 mb-3">
-            <div v-for="idx in [0,1,2,3]" :key="idx" class="h-9 rounded-xl border border-dashed border-slate-300 bg-white px-2 flex items-center text-xs font-black text-slate-600 truncate">{{ selectedPet.equippedSkills[idx] || '空技能槽' }}</div>
+      <div class="grid grid-cols-3 gap-3 pet-detail-grid">
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 col-span-1 md:col-span-1 pet-detail-left">
+          <img :src="petCurrentForm(selectedPet).img" @error="withFallback" class="w-full max-h-[220px] object-contain">
+          <div class="mt-2 text-sm font-black text-slate-800 text-center">{{ petDisplayName(selectedPet) }}</div>
+          <div v-if="!(selectedPet && selectedPet.hideStudyTalentTabs)" class="mt-1 text-xs font-black text-indigo-700 text-center">
+            天赋等级：{{
+              (() => {
+                const t = selectedPetTalent || {};
+                const total = (Number(t.hp)||0)+(Number(t.atk)||0)+(Number(t.def)||0)+(Number(t.spAtk)||0)+(Number(t.spDef)||0)+(Number(t.speed)||0);
+                if (total >= 372) return '唯我独尊';
+                if (total >= 360) return '天下无双';
+                if (total >= 300) return '王者无敌';
+                if (total >= 240) return '万众瞩目';
+                if (total >= 180) return '千载难逢';
+                if (total >= 120) return '百里挑一';
+                if (total >= 60) return '十分常见';
+                return '一无是处';
+              })()
+            }}
           </div>
-          <div class="max-h-[320px] overflow-y-auto pr-1 scrollbar space-y-2">
-            <div v-for="skill in availableSkillsForSelectedPet" :key="safeSkillName(skill)" :class="['w-full rounded-xl border px-3 py-2 text-left transition-all', selectedSkillName === safeSkillName(skill) ? 'border-blue-400 ring-2 ring-blue-100' : 'border-slate-200 bg-white hover:border-indigo-300']">
+        </div>
+        <div class="col-span-1 md:col-span-2 pet-detail-right">
+          <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1 mb-3 flex-wrap">
+            <button @click="setInfoTab('skills')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'skills' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">技能栏</button>
+            <button @click="setInfoTab('ability')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'ability' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">能力值栏</button>
+            <button v-if="!(selectedPet && selectedPet.hideStudyTalentTabs)" @click="setInfoTab('study')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'study' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">学习力栏</button>
+            <button v-if="!(selectedPet && selectedPet.hideStudyTalentTabs)" @click="setInfoTab('talent')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'talent' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">天赋栏</button>
+            <button @click="setInfoTab('race')" class="h-8 px-3 rounded-lg text-xs font-black" :class="selectedInfoTab === 'race' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'">种族值栏</button>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 pet-detail-panel">
+        <template v-if="selectedInfoTab === 'skills'">
+          <div class="space-y-2 overflow-y-auto pr-1 scrollbar" :class="(selectedPet && selectedPet.previewAllSkills) ? 'max-h-[232px]' : 'max-h-[46vh]'">
+            <div v-for="(skillName, idx) in selectedPetEquippedSkills" :key="'eq_slot_'+idx+'_'+skillName" class="rounded-xl border border-slate-200 bg-white px-3 py-2">
               <div class="flex items-center justify-between gap-2">
-                <div class="flex items-center gap-2 min-w-0">
-                  <template v-if="skillTypeMeta(safeSkillType(skill)).icon"><img :src="skillTypeMeta(safeSkillType(skill)).icon" class="w-4 h-4 object-contain" :alt="skillTypeMeta(safeSkillType(skill)).label"></template>
-                  <span class="text-sm font-black text-slate-800 truncate">{{ safeSkillName(skill) }}</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-black">Lv{{ skill.level }}</span>
-                  <button @click.stop="toggleEquipSkill(safeSkillName(skill))" class="h-6 px-2 rounded text-[10px] font-black" :class="hasEquippedSkill(selectedPet, safeSkillName(skill)) ? 'bg-rose-50 text-rose-600' : 'bg-indigo-50 text-indigo-700'">{{ hasEquippedSkill(selectedPet, safeSkillName(skill)) ? '卸下' : '装配' }}</button>
-                </div>
+                <div class="text-sm font-black text-slate-800 truncate">{{ skillName || '空白技能' }}</div>
+                <button v-if="skillName && !(selectedPet && selectedPet.previewAllSkills)" @click="startDirectReplaceSkill(skillName)" class="h-7 px-3 rounded-lg text-xs font-black bg-indigo-50 text-indigo-700">替换</button>
               </div>
-              <div class="mt-1 flex items-center gap-2 text-[11px] font-bold text-slate-500"><span>{{ skillTypeMeta(safeSkillType(skill)).label }}</span><span>| 威力 {{ safeSkillPower(skill) }}</span><span>| 命中 {{ safeSkillAccuracy(skill) }}</span><span>| PP {{ safeSkillPP(skill) }}</span></div>
-              <div class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">{{ skill.desc || '暂无技能描述' }}</div>
+              <div v-if="skillName" class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">
+                {{ (availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}).desc || '暂无技能描述' }}
+              </div>
             </div>
           </div>
         </template>
@@ -381,8 +507,8 @@
             <template v-if="selectedAbilityStats">
               <div class="text-xs font-black text-slate-500 mb-2">能力值（按奥拉星官方公式）</div>
               <div class="space-y-2 text-xs font-black">
-                <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>体力</span><span>{{ selectedAbilityStats.hp }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-emerald-400" :style="{ width: Math.min(100, (selectedAbilityStats.hp/800)*100)+'%' }"></div></div></div>
-                <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>攻击</span><span>{{ selectedAbilityStats.atk }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-indigo-400" :style="{ width: Math.min(100, (selectedAbilityStats.atk/500)*100)+'%' }"></div></div></div>
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-2 pet-stat-row"><div class="flex justify-between mb-1"><span>体力</span><span>{{ selectedAbilityStats.hp }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-emerald-400" :style="{ width: Math.min(100, (selectedAbilityStats.hp/800)*100)+'%' }"></div></div></div>
+                <div class="rounded-lg bg-white border border-slate-200 px-2 py-2 pet-stat-row"><div class="flex justify-between mb-1"><span>攻击</span><span>{{ selectedAbilityStats.atk }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-indigo-400" :style="{ width: Math.min(100, (selectedAbilityStats.atk/500)*100)+'%' }"></div></div></div>
                 <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>防御</span><span>{{ selectedAbilityStats.def }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-cyan-400" :style="{ width: Math.min(100, (selectedAbilityStats.def/500)*100)+'%' }"></div></div></div>
                 <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>特攻</span><span>{{ selectedAbilityStats.spAtk }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-fuchsia-400" :style="{ width: Math.min(100, (selectedAbilityStats.spAtk/500)*100)+'%' }"></div></div></div>
                 <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>特防</span><span>{{ selectedAbilityStats.spDef }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-violet-400" :style="{ width: Math.min(100, (selectedAbilityStats.spDef/500)*100)+'%' }"></div></div></div>
@@ -424,14 +550,28 @@
             <div class="text-xs font-black text-indigo-700">总和：{{ selectedRaceStats.total }}</div>
           </div>
         </template>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <div v-if="showPetDetailModal && selectedPet && replaceSkillCtx && String(replaceSkillCtx.petId)===String(petId(selectedPet))" class="fixed inset-0 z-[95] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4" @click="cancelReplaceSkill">
-    <div class="w-full max-w-sm rounded-2xl border border-amber-200 bg-white p-4 shadow-2xl" @click.stop>
-      <div class="text-sm font-black text-amber-700 mb-2">技能栏已满，请选择要替换的技能</div>
-      <div class="grid grid-cols-2 gap-2">
+    <div class="w-full max-w-md rounded-2xl border border-amber-200 bg-white p-4 shadow-2xl" @click.stop>
+      <div v-if="replaceSkillCtx.directReplaceMode" class="text-sm font-black text-amber-700 mb-2">选择当前等级可学习技能进行替换</div>
+      <div v-else class="text-sm font-black text-amber-700 mb-2">技能栏已满，请选择要替换的技能</div>
+      <div v-if="replaceSkillCtx.directReplaceMode" class="space-y-2 max-h-[52vh] overflow-y-auto pr-1 scrollbar">
+        <button
+          v-for="sk in availableSkillsForSelectedPet"
+          :key="'direct_pick_'+safeSkillName(sk)"
+          @click="confirmDirectReplaceSkill(safeSkillName(sk))"
+          class="w-full rounded-lg bg-indigo-50 border border-indigo-200 text-left px-3 py-2"
+        >
+          <div class="text-xs font-black text-indigo-900 truncate">{{ safeSkillName(sk) }}</div>
+          <div class="text-[11px] font-bold text-indigo-700 truncate">Lv{{ sk.level }} | 威力 {{ safeSkillPower(sk) }} | 命中 {{ safeSkillAccuracy(sk) }} | PP {{ safeSkillPP(sk) }}</div>
+        </button>
+      </div>
+      <div v-else class="grid grid-cols-2 gap-2">
         <button
           v-for="old in selectedPet.equippedSkills"
           :key="'repl_modal_'+old"
@@ -509,7 +649,7 @@
           </div>
           <div class="space-y-3">
             <div class="rounded-xl border border-amber-100 bg-amber-50 p-3 text-xs font-bold text-amber-800">
-              挑战说明：守护者从 Lv.30 开始，每次胜利提升至下一阶段（40, 50 ... 100），全部阶段通关后可获得对应亚比蛋。
+              {{ selectedGuardianChallengeText }}
             </div>
             <button @click="confirmGuardianChallenge" :disabled="bagPets.length===0" class="w-full h-10 rounded-xl bg-amber-500 text-white font-black disabled:opacity-50">发起挑战</button>
           </div>
@@ -537,7 +677,7 @@
 
 <div v-if="battleScene && battleScene.open" class="fixed inset-0 z-[110] bg-slate-950/90 backdrop-blur-sm" @click="closeBattleScene">
   <div class="relative w-full h-full overflow-hidden bg-[radial-gradient(circle_at_20%_30%,rgba(56,189,248,.18),transparent_35%),radial-gradient(circle_at_80%_70%,rgba(16,185,129,.12),transparent_35%),linear-gradient(180deg,#0b1220_0%,#121c2f_100%)] battle-mobile-root" @click.stop>
-    <div v-if="battleScene.fxSkillText" class="absolute top-6 right-6 z-30 rounded-2xl border border-cyan-300/60 bg-cyan-400/25 px-5 py-2 text-sm font-black text-cyan-100 shadow-[0_8px_24px_rgba(34,211,238,0.25)] battle-skill-float">{{ battleScene.fxSkillText }}</div>
+    <div v-if="battleScene.fxSkillText" class="hidden absolute top-6 right-6 z-30 rounded-2xl border border-cyan-300/60 bg-cyan-400/25 px-3 py-1 text-[11px] font-black text-cyan-100 whitespace-nowrap shadow-[0_8px_24px_rgba(34,211,238,0.25)] battle-skill-float">{{ battleScene.fxSkillText }}</div>
 
     <div class="absolute left-3 right-3 md:left-8 md:right-auto top-3 md:top-8 w-auto md:w-[22%] md:min-w-[280px] battle-mobile-wrap battle-mobile-target">
       <div class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3 battle-mobile-target-card">
@@ -552,39 +692,43 @@
           </div>
         </div>
         <div class="mt-2 h-3 rounded-full bg-slate-800/80 overflow-hidden battle-mobile-hp-short">
-          <div class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" :style="{ width: hpPercent(battleScene.targetHp, battleScene.targetMaxHp) + '%' }"></div>
+          <div class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" :style="{ width: hpPercent(battleScene.uiTargetHp, battleScene.uiTargetMaxHp) + '%' }"></div>
         </div>
-        <div class="mt-1 text-xs font-black text-cyan-100">HP {{ battleScene.targetHp }}/{{ battleScene.targetMaxHp }}</div>
-        <div class="mt-2 text-[11px] font-black text-cyan-100 flex flex-wrap gap-1 hidden md:flex">
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">攻 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">特攻 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">防 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">特防 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">命中 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">闪避 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">速度 {{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.critStage) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.targetState && battleScene.targetState.critStage) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">暴击 {{ (battleScene.targetState && battleScene.targetState.critStage) || 0 }}</span>
+        <div class="mt-1 text-xs font-black text-cyan-100">HP {{ battleScene.uiTargetHp }}/{{ battleScene.uiTargetMaxHp }}</div>
+        <div class="mt-2 overflow-x-auto">
+          <div class="battle-mobile-stat-side battle-stage-line inline-flex items-center gap-1 text-[10px] font-black whitespace-nowrap">
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) < 0 ? 'stat-neg' : 'stat-zero')">攻击{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) < 0 ? 'stat-neg' : 'stat-zero')">特攻{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0) < 0 ? 'stat-neg' : 'stat-zero')">防御{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0) < 0 ? 'stat-neg' : 'stat-zero')">特防{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0) < 0 ? 'stat-neg' : 'stat-zero')">命中{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0) < 0 ? 'stat-neg' : 'stat-zero')">闪避{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0) < 0 ? 'stat-neg' : 'stat-zero')">速度{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.critStage) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.critStage) || 0) < 0 ? 'stat-neg' : 'stat-zero')">暴击{{ (battleScene.targetState && battleScene.targetState.critStage) || 0 }}</span>
+          </div>
         </div>
       </div>
-      <div class="mt-2 flex items-end justify-between gap-1 battle-mobile-target-sprite">
-        <div :class="['relative h-[260px] flex items-end justify-end battle-mobile-sprite flex-1', battleScene.fxTargetShake ? 'battle-shake-right' : '']">
-          <img :src="battleScene.targetImage" @error="withFallback" class="max-w-full max-h-full object-contain drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
-          <div v-if="battleScene.damageOnTarget" :class="['absolute top-6 left-1/2 -translate-x-1/2 text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.critOnTarget ? 'text-amber-300 battle-crit-pop' : 'text-rose-300 battle-damage-pop']">{{ battleScene.damageOnTarget }}</div>
+        <div class="mt-2 flex items-end justify-between gap-1 battle-mobile-target-sprite">
+          <div :class="['relative h-[260px] flex items-end justify-end battle-mobile-sprite flex-1', battleScene.fxTargetShake && !battleScene.fxTargetDefeated ? 'battle-shake-right' : '']">
+            <div v-if="battleScene.fxTargetSkillText" class="absolute top-[18%] left-[calc(50%+72px)] text-sm font-black whitespace-nowrap battle-skill-float">{{ battleScene.fxTargetSkillText }}</div>
+            <div :class="['battle-pet-visual-anchor', battleScene.fxTargetDefeated ? 'battle-defeated-exit' : '']">
+              <img :src="battleScene.targetImage" @error="withFallback" :class="['max-w-full max-h-full object-contain drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]', isBattleAnimSide(battleScene, 'target') ? 'scale-[2]' : '']">
+              <img v-if="battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'target'" :key="'skill_fx_target_' + battleScene.skillEffectFx.seq" :src="battleScene.skillEffectFx.src" class="battle-skill-effect-gif" :style="battleSkillEffectStyle('target')" alt="">
+            </div>
+          <div v-if="battleScene.damageOnTarget || battleScene.damageTagOnTarget" class="absolute top-6 left-1/2 -translate-x-1/2 inline-flex items-center justify-center gap-2 battle-damage-pop whitespace-nowrap pointer-events-none min-w-max">
+            <span
+              v-for="tag in String(battleScene.damageTagOnTarget || '').split(' ').filter(Boolean)"
+              :key="'tar_tag_'+tag"
+              class="inline-flex items-center h-8 px-2 rounded-lg border text-base font-black shadow-lg"
+              :class="tag === '微弱' ? 'border-emerald-300 bg-emerald-500/85 text-white' : (tag === '克制' ? 'border-rose-300 bg-rose-500/85 text-white' : 'border-amber-200 bg-amber-400/90 text-slate-900')"
+            >{{ tag }}</span>
+            <span :class="['text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.damageOnTarget === 'MISS' ? 'text-slate-100' : (battleScene.critOnTarget ? 'text-amber-300 battle-crit-pop' : 'text-rose-300')]">{{ battleScene.damageOnTarget }}</span>
+          </div>
           <div v-if="battleScene.healOnTarget" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnTarget }}</div>
           <div v-if="battleScene.ppOnTarget" class="absolute top-16 left-[66%] text-2xl font-black text-sky-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.ppOnTarget }}</div>
           <div v-for="(hit, idx) in (battleScene.comboHitsOnTarget || [])" :key="'combo_tar_'+idx+'_'+hit" class="absolute top-10 left-1/2 text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="{ animationDelay: (idx*250)+'ms' }">{{ hit }}</div>
           <div v-if="battleScene.comboTotalOnTarget" class="absolute top-8 left-[72%] text-5xl font-black text-amber-300 [text-shadow:0_3px_16px_rgba(0,0,0,.5)] combo-total-pop">{{ battleScene.comboTotalOnTarget }}</div>
-        </div>
-        <div class="battle-mobile-stat-side battle-mobile-stat-grid" style="margin-left:8px;">
-          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>攻击</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0 }}</span></div>
-          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>特攻</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0 }}</span></div>
-          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>防御</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.def) || 0 }}</span></div>
-          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>特防</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spDef) || 0 }}</span></div>
-          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>命中</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.accuracy) || 0 }}</span></div>
-          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>闪避</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.evasion) || 0 }}</span></div>
-          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>速度</span><span>{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.speed) || 0 }}</span></div>
-          <div class="stat-row" :class="((battleScene.targetState && battleScene.targetState.critStage) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.critStage) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>暴击</span><span>{{ (battleScene.targetState && battleScene.targetState.critStage) || 0 }}</span></div>
-        </div>
+          </div>
       </div>
       <div class="rounded-2xl border border-cyan-200/20 bg-slate-900/35 p-3 mt-2 w-[65%] battle-mobile-ability hidden md:block">
         <div class="text-xs font-black text-cyan-100 mb-2">六维能力值</div>
@@ -605,7 +749,7 @@
           <button @click="openBattleSkillPanel" :disabled="battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-cyan-600 text-white text-sm font-black disabled:opacity-45 shadow-md">技能</button>
           <button @click="openBattleItemPanel" :disabled="battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-emerald-600 text-white text-sm font-black disabled:opacity-45 shadow-md">道具</button>
           <button @click="openSwitchPanel('manual')" :disabled="battleSceneAvailablePets.length === 0 || battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-indigo-600 text-white text-sm font-black disabled:opacity-45 shadow-md">换宠</button>
-          <button @click="closeBattleScene" class="h-9 px-4 rounded-xl bg-slate-700/95 border border-slate-400 text-slate-100 text-sm font-black shadow-md hover:bg-slate-600">撤退</button>
+          <button @click="closeBattleScene" class="h-9 px-4 rounded-xl bg-slate-700/95 border border-slate-400 text-slate-100 text-sm font-black shadow-md hover:bg-slate-600 whitespace-nowrap">撤退</button>
         </div>
       </div>
       <div class="w-full battle-mobile-skillpanel battle-mobile-skills">
@@ -631,6 +775,12 @@
               v-for="idx in [0,1,2,3]"
               :key="'battle_skill_slot_' + idx + '_' + ((battleSceneSkills && battleSceneSkills[idx]) ? safeSkillName(battleSceneSkills[idx]) : 'empty')"
               @click="(battleSceneSkills && battleSceneSkills[idx]) ? castBattleSkill(safeSkillName(battleSceneSkills[idx])) : null"
+              @touchstart="(battleSceneSkills && battleSceneSkills[idx]) ? onBattleSkillTouchStart(battleSceneSkills[idx]) : null"
+              @touchend="onBattleSkillTouchEnd"
+              @touchcancel="onBattleSkillTouchEnd"
+              @mousedown="(battleSceneSkills && battleSceneSkills[idx]) ? onBattleSkillTouchStart(battleSceneSkills[idx]) : null"
+              @mouseup="onBattleSkillTouchEnd"
+              @mouseleave="onBattleSkillTouchEnd"
               :disabled="!(battleSceneSkills && battleSceneSkills[idx]) || !canCastBattleSkill(safeSkillName(battleSceneSkills[idx]))"
               :title="(battleSceneSkills && battleSceneSkills[idx]) ? skillBattleDesc(battleSceneSkills[idx]) : ''"
               class="w-full h-10 rounded-xl border text-xs font-black text-left px-3"
@@ -653,35 +803,38 @@
           </div>
         </div>
         <div class="mt-2 h-3 rounded-full bg-slate-800/80 overflow-hidden battle-mobile-hp-short">
-          <div class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" :style="{ width: hpPercent(battleScene.attackerHp, battleScene.attackerMaxHp) + '%' }"></div>
+          <div class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" :style="{ width: hpPercent(battleScene.uiAttackerHp, battleScene.uiAttackerMaxHp) + '%' }"></div>
         </div>
-        <div class="mt-1 text-xs font-black text-cyan-100">HP {{ battleScene.attackerHp }}/{{ battleScene.attackerMaxHp }}</div>
-        <div class="mt-2 text-[11px] font-black text-cyan-100 flex flex-wrap gap-1 hidden md:flex">
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">攻 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">特攻 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">防 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">特防 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">命中 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">闪避 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">速度 {{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0 }}</span>
-          <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.critStage) || 0) > 0 ? 'bg-rose-500/70 text-white' : (((battleScene.attackerState && battleScene.attackerState.critStage) || 0) < 0 ? 'bg-emerald-500/70 text-white' : 'bg-transparent text-cyan-100')">暴击 {{ (battleScene.attackerState && battleScene.attackerState.critStage) || 0 }}</span>
+        <div class="mt-1 text-xs font-black text-cyan-100">HP {{ battleScene.uiAttackerHp }}/{{ battleScene.uiAttackerMaxHp }}</div>
+        <div class="mt-2 overflow-x-auto">
+          <div class="battle-mobile-stat-side battle-stage-line inline-flex items-center gap-1 text-[10px] font-black whitespace-nowrap">
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) < 0 ? 'stat-neg' : 'stat-zero')">攻击{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) < 0 ? 'stat-neg' : 'stat-zero')">特攻{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) < 0 ? 'stat-neg' : 'stat-zero')">防御{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) < 0 ? 'stat-neg' : 'stat-zero')">特防{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) < 0 ? 'stat-neg' : 'stat-zero')">命中{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) < 0 ? 'stat-neg' : 'stat-zero')">闪避{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) < 0 ? 'stat-neg' : 'stat-zero')">速度{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0 }}</span>
+            <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.critStage) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.critStage) || 0) < 0 ? 'stat-neg' : 'stat-zero')">暴击{{ (battleScene.attackerState && battleScene.attackerState.critStage) || 0 }}</span>
+          </div>
         </div>
       </div>
       <div class="battle-mobile-attacker-main">
-      <div class="battle-mobile-stat-side battle-mobile-stat-grid battle-mobile-attacker-stats">
-        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>攻击</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0 }}</span></div>
-        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>特攻</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spAtk) || 0 }}</span></div>
-        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>防御</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.def) || 0 }}</span></div>
-        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>特防</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.spDef) || 0 }}</span></div>
-        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>命中</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.accuracy) || 0 }}</span></div>
-        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>闪避</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.evasion) || 0 }}</span></div>
-        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>速度</span><span>{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.speed) || 0 }}</span></div>
-        <div class="stat-row" :class="((battleScene.attackerState && battleScene.attackerState.critStage) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.critStage) || 0) < 0 ? 'stat-neg' : 'stat-zero')"><span>暴击</span><span>{{ (battleScene.attackerState && battleScene.attackerState.critStage) || 0 }}</span></div>
-      </div>
-      <div :class="['relative h-[300px] flex items-end justify-start battle-mobile-sprite battle-mobile-attacker-visual', battleScene.fxAttackerShake ? 'battle-shake-left' : '']">
-        <img :src="battleScene.attackerImage" @error="withFallback" class="max-w-full max-h-full object-contain scale-x-[-1] drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
-        <div v-if="battleScene.fxAttackerSkillText" class="absolute top-[-8px] left-1/2 -translate-x-1/2 rounded-xl border border-cyan-300/60 bg-cyan-400/20 px-3 py-1 text-sm font-black text-cyan-100 battle-skill-float">{{ battleScene.fxAttackerSkillText }}</div>
-        <div v-if="battleScene.damageOnAttacker" :class="['absolute top-6 left-1/2 -translate-x-1/2 text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.critOnAttacker ? 'text-amber-300 battle-crit-pop' : 'text-rose-300 battle-damage-pop']">{{ battleScene.damageOnAttacker }}</div>
+      <div :class="['relative h-[300px] flex items-end justify-start battle-mobile-sprite battle-mobile-attacker-visual', battleScene.fxAttackerShake && !battleScene.fxAttackerDefeated ? 'battle-shake-left' : '']">
+        <div :class="['battle-pet-visual-anchor', battleScene.fxAttackerDefeated ? 'battle-defeated-exit' : '']">
+          <img :src="battleScene.attackerImage" @error="withFallback" :class="['max-w-full max-h-full object-contain drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]', isBattleAnimSide(battleScene, 'attacker') ? 'scale-[2]' : '']">
+          <img v-if="battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'attacker'" :key="'skill_fx_attacker_' + battleScene.skillEffectFx.seq" :src="battleScene.skillEffectFx.src" class="battle-skill-effect-gif" :style="battleSkillEffectStyle('attacker')" alt="">
+        </div>
+        <div v-if="battleScene.fxAttackerSkillText" class="absolute top-[-14px] left-1/2 -translate-x-1/2 text-sm font-black whitespace-nowrap battle-skill-float">{{ battleScene.fxAttackerSkillText }}</div>
+        <div v-if="battleScene.damageOnAttacker || battleScene.damageTagOnAttacker" class="absolute top-6 left-1/2 -translate-x-1/2 inline-flex items-center justify-center gap-2 battle-damage-pop whitespace-nowrap pointer-events-none min-w-max">
+          <span
+            v-for="tag in String(battleScene.damageTagOnAttacker || '').split(' ').filter(Boolean)"
+            :key="'atk_tag_'+tag"
+            class="inline-flex items-center h-8 px-2 rounded-lg border text-base font-black shadow-lg"
+            :class="tag === '微弱' ? 'border-emerald-300 bg-emerald-500/85 text-white' : (tag === '克制' ? 'border-rose-300 bg-rose-500/85 text-white' : 'border-amber-200 bg-amber-400/90 text-slate-900')"
+          >{{ tag }}</span>
+          <span :class="['text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.damageOnAttacker === 'MISS' ? 'text-slate-100' : (battleScene.critOnAttacker ? 'text-amber-300 battle-crit-pop' : 'text-rose-300')]">{{ battleScene.damageOnAttacker }}</span>
+        </div>
         <div v-if="battleScene.healOnAttacker" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnAttacker }}</div>
         <div v-if="battleScene.ppOnAttacker" class="absolute top-16 left-[66%] text-2xl font-black text-sky-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.ppOnAttacker }}</div>
         <div v-for="(hit, idx) in (battleScene.comboHitsOnAttacker || [])" :key="'combo_atk_'+idx+'_'+hit" class="absolute top-10 left-1/2 text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="{ animationDelay: (idx*250)+'ms' }">{{ hit }}</div>
@@ -690,14 +843,11 @@
       </div>
     </div>
 
-    <!--
     <div class="absolute left-3 right-3 md:left-8 md:right-auto bottom-3 md:bottom-8 w-auto md:w-[21%] min-w-0 md:min-w-[260px] rounded-2xl border border-cyan-200/20 bg-slate-900/40 p-3 battle-mobile-log">
-      <details class="battle-log-details">
-        <summary class="h-9 px-3 rounded-xl bg-cyan-700/70 text-cyan-100 text-sm font-black flex items-center justify-center">战斗日志</summary>
-        <div ref="battleSceneLogRef" class="max-h-[220px] overflow-auto scrollbar pr-1 mt-2">
-          <div v-for="(line, idx) in battleScene.logs" :key="'battle_log_' + idx" class="text-xs font-bold text-slate-200 mb-1">{{ line }}</div>
-        </div>
-      </details>
+      <div class="h-9 px-3 rounded-xl bg-cyan-700/70 text-cyan-100 text-sm font-black flex items-center justify-center">战斗日志</div>
+      <div ref="battleSceneLogRef" class="max-h-[220px] overflow-auto scrollbar pr-1 mt-2">
+        <div v-for="(line, idx) in battleScene.logs" :key="'battle_log_' + idx" class="text-xs font-bold text-slate-200 mb-1">{{ line }}</div>
+      </div>
       <div v-if="battleScene.ended" class="mt-3 rounded-xl border p-3" :class="battleScene.win ? 'border-emerald-400/60 bg-emerald-500/10' : 'border-rose-400/60 bg-rose-500/10'">
         <div :class="['text-base font-black', battleScene.win ? 'text-emerald-300' : 'text-rose-300']">{{ battleScene.win ? '挑战胜利' : '挑战失败' }}</div>
         <div class="text-xs font-bold text-slate-200 mt-1">{{ battleScene.summary }}</div>
@@ -705,7 +855,33 @@
         <div v-if="battleScene.unlockText" class="text-xs font-black text-cyan-200 mt-1">{{ battleScene.unlockText }}</div>
       </div>
     </div>
-    -->
+  </div>
+</div>
+
+<div v-if="bagReplaceCtx" class="fixed inset-0 z-[112] bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4" @click="cancelReplaceBag">
+  <div class="w-full max-w-3xl rounded-3xl border border-white bg-white p-4 shadow-2xl" @click.stop>
+    <div class="text-lg font-black text-slate-900 mb-1">背包已满，选择替换亚比</div>
+    <div class="text-xs font-bold text-slate-500 mb-3">将要放入：{{ petDisplayName(state.activePets.find(p => p && p.id === bagReplaceCtx.incomingPetId) || {}) }}</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <button
+        v-for="(pid, idx) in state.bagPetIds"
+        :key="'bag_replace_'+idx+'_'+pid"
+        @click="replaceBagSlot(idx)"
+        class="h-16 rounded-xl border bg-white text-slate-700 border-slate-200 hover:border-indigo-300 text-xs font-black px-2"
+      >
+        <div class="flex items-center gap-2" v-if="pid && state.activePets.find(p => p && p.id === pid)">
+          <span class="element-icon" :style="petElementIconStyle((state.activePets.find(p => p && p.id === pid) || {}).element, 14)" :title="(state.activePets.find(p => p && p.id === pid) || {}).element || ''"></span>
+          <img :src="petCurrentForm(state.activePets.find(p => p && p.id === pid)).img" @error="withFallback" class="w-10 h-10 object-contain">
+          <div class="text-left min-w-0">
+            <div class="truncate">{{ petDisplayName(state.activePets.find(p => p && p.id === pid)) }}</div>
+            <div class="text-[10px] text-slate-500">背包位 {{ idx + 1 }}</div>
+          </div>
+        </div>
+      </button>
+    </div>
+    <div class="mt-3 text-right">
+      <button @click="cancelReplaceBag" class="h-9 px-4 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">取消</button>
+    </div>
   </div>
 </div>
 
@@ -841,5 +1017,6 @@
 </script>
 </body>
 </html>
+
 
 
