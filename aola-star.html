@@ -52,14 +52,14 @@
     @keyframes battleCritPop { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.88); } 14% { opacity: 1; transform: translate(-50%, 0) scale(1.26); filter: drop-shadow(0 0 10px rgba(251,191,36,.95)); } 100% { opacity: 0; transform: translate(-50%, -26px) scale(1); filter: drop-shadow(0 0 0 rgba(251,191,36,0)); } }
     @keyframes battleShakeLeft { 0% { transform: translateX(0); } 18% { transform: translateX(-8px); } 36% { transform: translateX(7px); } 54% { transform: translateX(-6px); } 72% { transform: translateX(4px); } 100% { transform: translateX(0); } }
     @keyframes battleShakeRight { 0% { transform: translateX(0); } 18% { transform: translateX(8px); } 36% { transform: translateX(-7px); } 54% { transform: translateX(6px); } 72% { transform: translateX(-4px); } 100% { transform: translateX(0); } }
-    @keyframes battleSkillEffectPop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.72); filter: drop-shadow(0 0 0 rgba(34,211,238,0)); } 12% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); filter: drop-shadow(0 0 18px rgba(34,211,238,.8)); } 82% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.12); filter: drop-shadow(0 0 6px rgba(34,211,238,.25)); } }
+    @keyframes battleSkillEffectPop { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 0 18px rgba(34,211,238,.8)); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 0 18px rgba(34,211,238,.8)); } }
     @keyframes battleDefeatedExit { 0% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1); } 35% { opacity: .82; transform: translateY(12px) scale(.98); filter: brightness(.75); } 100% { opacity: 0; transform: translateY(90px) scale(.86); filter: brightness(.25) blur(2px); } }
-    .combo-hit-pop { animation: comboFloatUp 0.8s ease-out forwards; }
-    .combo-total-pop { animation: comboTotalPop 1s ease-out forwards; }
+    .combo-hit-pop { animation: comboFloatUp 2s ease-out forwards; }
+    .combo-total-pop { animation: comboTotalPop 2s ease-out forwards; }
     .evo-glow { animation: evoGlowPulse 1.1s ease-in-out infinite alternate; }
-    .battle-damage-pop { animation: battleDamagePop 0.9s ease-out forwards; }
-    .battle-crit-pop { animation: battleCritPop 1s ease-out forwards; }
-    .battle-skill-effect-gif { position: fixed; left: var(--skill-fx-x, 50vw); top: var(--skill-fx-y, 50vh); width: clamp(300px, 26vw, 560px); height: clamp(300px, 26vw, 560px); object-fit: contain; pointer-events: none; z-index: 118; animation: battleSkillEffectPop .9s ease-out forwards; mix-blend-mode: screen; }
+    .battle-damage-pop { animation: battleDamagePop 2s ease-out forwards; }
+    .battle-crit-pop { animation: battleCritPop 2s ease-out forwards; }
+    .battle-skill-effect-gif { position: fixed; left: var(--skill-fx-x, 50vw); top: var(--skill-fx-y, 50vh); width: clamp(300px, 26vw, 560px); height: clamp(300px, 26vw, 560px); object-fit: contain; pointer-events: none; z-index: 118; animation: battleSkillEffectPop var(--skill-fx-duration, .9s) ease-out forwards; mix-blend-mode: screen; }
     .battle-defeated-exit { animation: battleDefeatedExit 1.2s ease-in forwards; pointer-events: none; }
     .battle-pet-visual-anchor { position: relative; display: inline-flex; align-items: center; justify-content: center; max-width: 100%; max-height: 100%; line-height: 0; transform-origin: 50% 50%; }
     .battle-skill-float { border-radius: 16px; border: 1px solid rgba(125,211,252,.85); background: linear-gradient(135deg, rgba(8,47,73,.92), rgba(14,116,144,.78)); box-shadow: 0 8px 24px rgba(34,211,238,.28), inset 0 0 16px rgba(255,255,255,.08); padding: 6px 12px; color: #e0f2fe; letter-spacing: .04em; text-shadow: 0 1px 8px rgba(34,211,238,.55); z-index: 26; }
@@ -171,7 +171,7 @@
   <header class="rounded-3xl border border-white bg-white/90 shadow-lg px-5 py-4 mb-5">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
       <div></div>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center w-full lg:min-w-[360px]">
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center w-full lg:min-w-[360px]">
         <div class="rounded-xl bg-blue-50 border border-blue-100 py-2">
           <div class="text-[10px] font-bold text-blue-400">激活图鉴</div>
           <div class="text-lg font-black text-blue-700">{{ activatedDexCount }}/{{ dexTotal }}</div>
@@ -188,6 +188,14 @@
           <div class="text-[10px] font-bold text-amber-500">孵化中蛋</div>
           <div class="text-lg font-black text-amber-700">{{ state.eggs.length }}</div>
         </div>
+        <div class="rounded-xl bg-yellow-50 border border-yellow-100 py-2">
+          <div class="text-[10px] font-bold text-yellow-500">H币</div>
+          <div class="text-lg font-black text-yellow-700">{{ state.hCoins || 0 }}</div>
+        </div>
+      </div>
+      <div class="rounded-2xl border border-amber-100 bg-amber-50 px-5 py-2 text-left min-w-[260px] md:min-w-[360px]">
+        <div class="text-[10px] font-black text-amber-500">当前佩戴徽章</div>
+        <div class="text-sm font-black text-amber-900 whitespace-nowrap">{{ equippedBadge ? equippedBadge.name : '未佩戴徽章' }}</div>
       </div>
     </div>
     <div class="mt-3 flex items-center gap-2">
@@ -216,10 +224,28 @@
         守护者挑战
       </button>
       <button
+        @click="openBossPanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-rose-50 border border-rose-300 text-rose-700"
+      >
+        BOSS挑战
+      </button>
+      <button
+        @click="openStudyPanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-cyan-50 border border-cyan-300 text-cyan-700"
+      >
+        学习力战场
+      </button>
+      <button
         @click="openElementPanel"
         class="h-9 px-4 rounded-xl text-sm font-black bg-white border border-slate-300 text-slate-700"
       >
         属性克制关系
+      </button>
+      <button
+        @click="openBadgePanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-yellow-50 border border-yellow-300 text-yellow-700"
+      >
+        徽章
       </button>
     </div>
   </header>
@@ -252,7 +278,7 @@
               <template v-if="slot.pet">
                 <button @click="openPetDetailModal(petId(slot.pet))" class="w-full text-left">
                   <div class="flex items-center gap-2">
-                    <img :src="bagPetVisual(slot.pet).src" @error="(event) => { withFallback(event); if (event && event.target) event.target.classList.add('pet-bob'); }" :class="['w-[80px] h-[80px] object-contain', bagPetVisual(slot.pet).animated ? '' : 'pet-bob']">
+                    <img :src="bagPetVisual(slot.pet).src" @error="(event) => { const img = event && event.target; if (!img) return; if (img.dataset.animFallbackDone === '1') { withFallback(event); img.classList.add('pet-bob'); return; } img.dataset.animFallbackDone = '1'; img.src = petCurrentForm(slot.pet).img || ''; img.classList.add('pet-bob'); }" :class="['w-[80px] h-[80px] object-contain', bagPetVisual(slot.pet).animated ? '' : 'pet-bob']">
                     <div class="min-w-0 ml-1">
                       <div class="text-[11px] md:text-base font-black text-slate-800 truncate">{{ petDisplayName(slot.pet) }}</div>
                       <div class="text-[10px] md:text-xs font-bold text-slate-500 truncate">Lv.{{ slot.pet.level }}</div>
@@ -350,7 +376,7 @@
         <button @click="closeDexPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
       <div class="rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2 text-[11px] font-black text-indigo-700 mb-3">
-        图鉴提示：只有击败某亚比的最终形态，才会获得该亚比蛋。守护者亚比请从【守护者挑战】入口挑战。
+        图鉴提示：只有击败某亚比的最终形态，才会获得该亚比蛋。守护者请从【守护者挑战】入口挑战，BOSS请从【BOSS挑战】入口挑战，商店蛋亚比只能从【亚比商店/道具】购买。
       </div>
       <div class="grid grid-cols-6 gap-1 md:gap-2 flex-1 overflow-y-auto pr-1 scrollbar">
         <button v-for="entry in filteredDex" :key="'dex_'+entry.dexId" @click="canChallengeFromDex(entry) ? (selectDex(entry.dexId), closeDexPanel()) : null" class="rounded-xl border bg-white p-1.5 md:p-2 text-left min-h-[164px]" :class="canChallengeFromDex(entry) ? 'border-slate-200 hover:border-indigo-300' : 'border-amber-300 bg-amber-50 cursor-not-allowed'">
@@ -358,7 +384,7 @@
             <div class="text-[10px] font-black text-slate-500">#{{ entry.dexId }}</div>
             <span class="element-icon" :style="petElementIconStyle(entry.element, 15)" :title="entry.element || ''"></span>
             <span v-if="entry.subElement" class="element-icon" :style="petElementIconStyle(entry.subElement, 15)" :title="entry.subElement || ''"></span>
-            <span v-if="!canChallengeFromDex(entry)" class="ml-auto text-[10px] font-black text-amber-700">守护者</span>
+            <span v-if="!canChallengeFromDex(entry)" class="ml-auto text-[10px] font-black" :class="dexStatus(entry)==='BOSS' ? 'text-rose-700' : (dexStatus(entry)==='商店蛋' ? 'text-violet-700' : 'text-amber-700')">{{ dexStatus(entry) }}</span>
           </div>
           <img :src="entry.image" @error="withFallback" class="w-20 h-20 object-contain mx-auto">
           <div class="text-[11px] md:text-sm font-black text-slate-800 text-center mt-1 truncate">{{ entry.name }}</div>
@@ -405,6 +431,10 @@
         <select v-model="warehouseElementFilter" class="h-9 rounded-lg border border-slate-300 px-2 text-sm font-bold">
           <option v-for="opt in warehouseElementOptions" :key="opt" :value="opt">{{ opt }}</option>
         </select>
+        <select v-model="warehouseSortMode" class="h-9 rounded-lg border border-slate-300 px-2 text-sm font-bold">
+          <option value="created">获取顺序</option>
+          <option value="level">等级排序</option>
+        </select>
         <button @click="closeWarehousePanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
       <div class="grid grid-cols-6 gap-1 md:gap-2 max-h-[520px] overflow-y-auto pr-1 scrollbar">
@@ -418,7 +448,7 @@
             <div class="text-[11px] font-bold text-slate-500">Lv.{{ pet.level }}</div>
           </div>
           <div class="flex items-center gap-2">
-            <img :src="bagPetVisual(pet).src" @error="(event) => { withFallback(event); if (event && event.target) event.target.classList.add('pet-bob'); }" :class="['w-20 h-20 object-contain', bagPetVisual(pet).animated ? '' : 'pet-bob']">
+            <img :src="bagPetVisual(pet).src" @error="(event) => { const img = event && event.target; if (!img) return; if (img.dataset.animFallbackDone === '1') { withFallback(event); img.classList.add('pet-bob'); return; } img.dataset.animFallbackDone = '1'; img.src = petCurrentForm(pet).img || ''; img.classList.add('pet-bob'); }" :class="['w-20 h-20 object-contain', bagPetVisual(pet).animated ? '' : 'pet-bob']">
             <div class="min-w-0 flex-1 ml-1">
               <div class="text-[11px] md:text-base font-black text-slate-800 truncate leading-4">{{ petDisplayName(pet) }}</div>
             </div>
@@ -463,6 +493,9 @@
         <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 col-span-1 md:col-span-1 pet-detail-left">
           <img :src="petCurrentForm(selectedPet).img" @error="withFallback" class="w-full max-h-[220px] object-contain">
           <div class="mt-2 text-sm font-black text-slate-800 text-center">{{ petDisplayName(selectedPet) }}</div>
+          <div class="mt-2 flex items-center justify-center gap-1">
+            <span v-for="el in petElementList(selectedPet)" :key="'detail_el_'+el" class="element-icon" :style="petElementIconStyle(el, 20)" :title="el"></span>
+          </div>
           <div v-if="!(selectedPet && selectedPet.hideStudyTalentTabs)" class="mt-1 text-xs font-black text-indigo-700 text-center">
             天赋等级：{{
               (() => {
@@ -493,7 +526,15 @@
           <div class="space-y-2 overflow-y-auto pr-1 scrollbar" :class="(selectedPet && selectedPet.previewAllSkills) ? 'max-h-[232px]' : 'max-h-[46vh]'">
             <div v-for="(skillName, idx) in selectedPetEquippedSkills" :key="'eq_slot_'+idx+'_'+skillName" class="rounded-xl border border-slate-200 bg-white px-3 py-2">
               <div class="flex items-center justify-between gap-2">
-                <div class="text-sm font-black text-slate-800 truncate">{{ skillName || '空白技能' }}</div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1">
+                    <span v-if="skillName" class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {})).label, 15)" :title="skillTypeMeta(safeSkillType(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {})).label"></span>
+                    <div class="text-sm font-black text-slate-800 truncate">{{ skillName || '空白技能' }}</div>
+                  </div>
+                  <div v-if="skillName" class="mt-0.5 text-[10px] font-black text-slate-500">
+                    {{ skillTypeMeta(safeSkillType(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {})).label }} | 威力 {{ safeSkillPower(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }} | 命中 {{ safeSkillAccuracy(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }} | PP {{ safeSkillPP(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }}
+                  </div>
+                </div>
                 <button v-if="skillName && !(selectedPet && selectedPet.previewAllSkills)" @click="startDirectReplaceSkill(skillName)" class="h-7 px-3 rounded-lg text-xs font-black bg-indigo-50 text-indigo-700">替换</button>
               </div>
               <div v-if="skillName" class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">
@@ -567,8 +608,12 @@
           @click="confirmDirectReplaceSkill(safeSkillName(sk))"
           class="w-full rounded-lg bg-indigo-50 border border-indigo-200 text-left px-3 py-2"
         >
-          <div class="text-xs font-black text-indigo-900 truncate">{{ safeSkillName(sk) }}</div>
-          <div class="text-[11px] font-bold text-indigo-700 truncate">Lv{{ sk.level }} | 威力 {{ safeSkillPower(sk) }} | 命中 {{ safeSkillAccuracy(sk) }} | PP {{ safeSkillPP(sk) }}</div>
+          <div class="flex items-center gap-1">
+            <span class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(sk)).label, 15)" :title="skillTypeMeta(safeSkillType(sk)).label"></span>
+            <div class="text-xs font-black text-indigo-900 truncate">{{ safeSkillName(sk) }}</div>
+          </div>
+          <div class="mt-1 text-[11px] font-bold text-indigo-700">Lv{{ sk.level }} | {{ skillTypeMeta(safeSkillType(sk)).label }} | 威力 {{ safeSkillPower(sk) }} | 命中 {{ safeSkillAccuracy(sk) }} | PP {{ safeSkillPP(sk) }}</div>
+          <div class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">{{ sk.desc || '暂无技能描述' }}</div>
         </button>
       </div>
       <div v-else class="grid grid-cols-2 gap-2">
@@ -590,6 +635,7 @@
       <div class="flex items-center justify-between mb-3">
         <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
           <button @click="shopTab='shop'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='shop' ? 'bg-emerald-600 text-white' : 'text-slate-600'">亚比商店</button>
+          <button @click="shopTab='eggs'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='eggs' ? 'bg-violet-600 text-white' : 'text-slate-600'">亚比蛋购买</button>
           <button @click="shopTab='items'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='items' ? 'bg-indigo-600 text-white' : 'text-slate-600'">亚比道具</button>
         </div>
         <button @click="closeShopPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
@@ -602,8 +648,24 @@
           <div>
             <div class="text-sm font-black text-emerald-900">{{ it.name }}</div>
             <div class="text-[11px] font-bold text-emerald-700">{{ it.desc }}</div>
+            <div class="text-[11px] font-black text-amber-700 mt-1">{{ it.price > 0 ? (it.price + ' H币') : '免费' }}</div>
           </div>
-          <button @click="buyShopItem(it.id)" class="h-9 px-4 rounded-xl bg-emerald-600 text-white text-sm font-black">购买</button>
+          <button @click="buyShopItem(it.id)" :disabled="(state.hCoins || 0) < it.price" class="h-9 px-4 rounded-xl bg-emerald-600 text-white text-sm font-black disabled:opacity-45">购买</button>
+        </div>
+      </div>
+      <div v-else-if="shopTab==='eggs'" class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
+        <div v-for="entry in shopEggEntries" :key="'shop_egg_'+entry.dexId" class="rounded-2xl border border-violet-100 bg-violet-50 p-3 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <img :src="entry.image" @error="withFallback" class="w-14 h-14 object-contain rounded-xl bg-white/70 border border-violet-100">
+            <div class="min-w-0">
+              <div class="text-sm font-black text-violet-900 truncate">#{{ entry.dexId }} {{ entry.name }}</div>
+              <div class="text-[11px] font-bold text-violet-700">亚比蛋售价：{{ entry.price }} H币</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button @click="openShopEggDetail(entry.dexId)" class="h-9 px-3 rounded-xl bg-white text-violet-700 border border-violet-200 text-sm font-black">亚比能力</button>
+            <button @click="buyShopEgg(entry.dexId)" :disabled="(state.hCoins || 0) < entry.price" class="h-9 px-4 rounded-xl bg-violet-600 text-white text-sm font-black disabled:opacity-45">购买</button>
+          </div>
         </div>
       </div>
       <div v-else class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
@@ -614,6 +676,43 @@
           </div>
           <button @click="useShopItem(it.id)" :disabled="it.count <= 0" class="h-9 px-4 rounded-xl bg-indigo-600 text-white text-sm font-black disabled:opacity-45">使用</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-show="showBadgePanel" style="display:none" class="fixed inset-0 z-[72] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBadgePanel">
+    <div class="w-full max-w-2xl rounded-3xl border border-yellow-100 bg-white p-4 shadow-2xl" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h3 class="text-lg font-black text-slate-900">徽章</h3>
+          <p class="text-xs font-bold text-slate-500">守护者挑战成功 1 次、10 次、100 次可激活对应徽章。</p>
+        </div>
+        <button @click="closeBadgePanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+      </div>
+      <div v-if="equippedBadge" class="mb-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 flex items-center justify-between gap-3">
+        <div>
+          <div class="text-xs font-black text-amber-500">当前佩戴</div>
+          <div class="text-base font-black text-amber-900">{{ equippedBadge.name }}</div>
+        </div>
+        <button @click="unequipBadge" class="h-9 px-4 rounded-xl bg-white border border-amber-200 text-amber-700 text-sm font-black">卸下</button>
+      </div>
+      <div v-if="ownedBadges.length===0" class="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center text-sm font-black text-slate-500">
+        暂未获得徽章，挑战守护者即可开始收集。
+      </div>
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[58vh] overflow-y-auto pr-1 scrollbar">
+        <button
+          v-for="badge in ownedBadges"
+          :key="'badge_'+badge.id"
+          @click="equipBadge(badge.id)"
+          class="rounded-2xl border p-3 text-left transition hover:-translate-y-0.5"
+          :class="state.equippedBadgeId===badge.id ? 'border-yellow-400 bg-yellow-50 shadow-lg' : 'border-slate-200 bg-white hover:bg-slate-50'"
+        >
+          <div class="text-base font-black text-slate-900">{{ badge.name }}</div>
+          <div class="text-[11px] font-bold text-slate-500 mt-1">{{ badge.guardianName }} 已挑战成功 {{ badge.currentCount }} 次</div>
+          <div class="mt-2 inline-flex h-6 items-center rounded-full bg-slate-900 px-3 text-[11px] font-black text-white">
+            {{ state.equippedBadgeId===badge.id ? '佩戴中' : '点击佩戴' }}
+          </div>
+        </button>
       </div>
     </div>
   </div>
@@ -657,6 +756,70 @@
       </div>
     </div>
   </template>
+
+  <div v-show="showBossPanel" style="display:none" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBossPanel">
+    <div class="w-full max-w-6xl h-[90vh] md:h-[760px] rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl flex flex-col" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-black text-slate-900">BOSS挑战</h3>
+        <button @click="closeBossPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 max-h-[520px] overflow-y-auto pr-1 scrollbar">
+        <button v-for="entry in bossDexEntries" :key="'boss_'+entry.dexId" @click="openBossChallengePanel(entry.dexId)" class="rounded-2xl border border-rose-200 bg-rose-50 p-3 text-left hover:border-rose-400 min-h-[136px]">
+          <img :src="entry.image" @error="withFallback" class="w-16 h-16 object-contain mx-auto">
+          <div class="text-sm font-black text-rose-900 text-center mt-1">{{ entry.name }}</div>
+        </button>
+      </div>
+      <div class="h-[180px]"></div>
+    </div>
+  </div>
+
+  <template v-if="showBossChallengePanel">
+    <div v-if="selectedBossEntry" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBossChallengePanel">
+      <div class="w-full max-w-[92vw] md:max-w-3xl rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl max-h-[88vh] overflow-y-auto" @click.stop>
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-black text-slate-900">BOSS挑战</h3>
+          <button @click="closeBossChallengePanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center">
+            <img :src="selectedBossEntry.image" @error="withFallback" class="w-20 h-20 md:w-28 md:h-28 object-contain mx-auto">
+            <div class="mt-2 text-sm font-black text-slate-800">{{ selectedBossEntry.name }}</div>
+            <button @click="openSelectedBossDetail" class="mt-2 h-8 px-3 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-black">查看详情</button>
+          </div>
+          <div class="space-y-3">
+            <div class="rounded-xl border border-rose-100 bg-rose-50 p-3 text-xs font-bold text-rose-800">
+              {{ selectedBossChallengeText }}
+            </div>
+            <button @click="confirmBossChallenge" :disabled="bagPets.length===0" class="w-full h-10 rounded-xl bg-rose-500 text-white font-black disabled:opacity-50">发起挑战</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <div v-show="showStudyPanel" style="display:none" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeStudyPanel">
+    <div class="w-full max-w-4xl rounded-3xl border border-white bg-white p-4 shadow-2xl" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h3 class="text-lg font-black text-slate-900">学习力战场</h3>
+          <p class="text-xs font-bold text-slate-500">每次击败 Lv.10 守卫可获得对应学习力 +5，达到 255 后自动停止。</p>
+        </div>
+        <button @click="closeStudyPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <button
+          v-for="field in studyBattlefields"
+          :key="'study_field_'+field.key"
+          @click="startStudyBattle(field.key)"
+          class="rounded-2xl border border-cyan-100 bg-cyan-50 p-4 text-left transition hover:-translate-y-0.5 hover:shadow-lg"
+        >
+          <div class="text-base font-black text-cyan-900">{{ field.label }}学习力战场</div>
+          <div class="text-xs font-bold text-cyan-700 mt-1">守卫：{{ field.guardianName }} Lv.10</div>
+          <div class="mt-3 inline-flex h-7 items-center rounded-full bg-cyan-600 px-3 text-xs font-black text-white">进入战场</div>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div v-show="showElementPanel" style="display:none" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeElementPanel">
     <div class="w-full max-w-5xl rounded-3xl border border-white bg-white p-4 shadow-2xl" @click.stop>
@@ -722,7 +885,8 @@
               class="inline-flex items-center h-8 px-2 rounded-lg border text-base font-black shadow-lg"
               :class="tag === '微弱' ? 'border-emerald-300 bg-emerald-500/85 text-white' : (tag === '克制' ? 'border-rose-300 bg-rose-500/85 text-white' : 'border-amber-200 bg-amber-400/90 text-slate-900')"
             >{{ tag }}</span>
-            <span :class="['text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.damageOnTarget === 'MISS' ? 'text-slate-100' : (battleScene.critOnTarget ? 'text-amber-300 battle-crit-pop' : 'text-rose-300')]">{{ battleScene.damageOnTarget }}</span>
+            <span v-if="battleScene.damageOnTarget === '无效'" class="inline-flex items-center h-10 px-3 rounded-xl border border-slate-300/70 bg-slate-500/85 text-2xl font-black text-white shadow-lg">无效</span>
+            <span v-else :class="['text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.damageOnTarget === 'MISS' ? 'text-slate-300' : (battleScene.critOnTarget ? 'text-amber-300 battle-crit-pop' : 'text-rose-300')]">{{ battleScene.damageOnTarget }}</span>
           </div>
           <div v-if="battleScene.healOnTarget" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnTarget }}</div>
           <div v-if="battleScene.ppOnTarget" class="absolute top-16 left-[66%] text-2xl font-black text-sky-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.ppOnTarget }}</div>
@@ -733,12 +897,12 @@
       <div class="rounded-2xl border border-cyan-200/20 bg-slate-900/35 p-3 mt-2 w-[65%] battle-mobile-ability hidden md:block">
         <div class="text-xs font-black text-cyan-100 mb-2">六维能力值</div>
         <div class="space-y-1 text-[12px] font-black text-slate-100">
-          <div>体力：{{ battleScene.targetAbility.hp }}</div>
-          <div>攻击：{{ battleScene.targetAbility.atk }}</div>
-          <div>防御：{{ battleScene.targetAbility.def }}</div>
-          <div>特攻：{{ battleScene.targetAbility.spAtk }}</div>
-          <div>特防：{{ battleScene.targetAbility.spDef }}</div>
-          <div>速度：{{ battleScene.targetAbility.speed }}</div>
+          <div>体力：{{ battleAbilityNow('target','hp') }}</div>
+          <div>攻击：{{ battleAbilityNow('target','atk') }}</div>
+          <div>防御：{{ battleAbilityNow('target','def') }}</div>
+          <div>特攻：{{ battleAbilityNow('target','spAtk') }}</div>
+          <div>特防：{{ battleAbilityNow('target','spDef') }}</div>
+          <div>速度：{{ battleAbilityNow('target','speed') }}</div>
         </div>
       </div>
     </div>
@@ -833,7 +997,8 @@
             class="inline-flex items-center h-8 px-2 rounded-lg border text-base font-black shadow-lg"
             :class="tag === '微弱' ? 'border-emerald-300 bg-emerald-500/85 text-white' : (tag === '克制' ? 'border-rose-300 bg-rose-500/85 text-white' : 'border-amber-200 bg-amber-400/90 text-slate-900')"
           >{{ tag }}</span>
-          <span :class="['text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.damageOnAttacker === 'MISS' ? 'text-slate-100' : (battleScene.critOnAttacker ? 'text-amber-300 battle-crit-pop' : 'text-rose-300')]">{{ battleScene.damageOnAttacker }}</span>
+          <span v-if="battleScene.damageOnAttacker === '无效'" class="inline-flex items-center h-10 px-3 rounded-xl border border-slate-300/70 bg-slate-500/85 text-2xl font-black text-white shadow-lg">无效</span>
+          <span v-else :class="['text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.damageOnAttacker === 'MISS' ? 'text-slate-300' : (battleScene.critOnAttacker ? 'text-amber-300 battle-crit-pop' : 'text-rose-300')]">{{ battleScene.damageOnAttacker }}</span>
         </div>
         <div v-if="battleScene.healOnAttacker" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnAttacker }}</div>
         <div v-if="battleScene.ppOnAttacker" class="absolute top-16 left-[66%] text-2xl font-black text-sky-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.ppOnAttacker }}</div>
@@ -844,7 +1009,7 @@
     </div>
 
     <div class="absolute left-3 right-3 md:left-8 md:right-auto bottom-3 md:bottom-8 w-auto md:w-[21%] min-w-0 md:min-w-[260px] rounded-2xl border border-cyan-200/20 bg-slate-900/40 p-3 battle-mobile-log">
-      <div class="h-9 px-3 rounded-xl bg-cyan-700/70 text-cyan-100 text-sm font-black flex items-center justify-center">战斗日志</div>
+      <div class="h-9 px-3 rounded-xl bg-cyan-700/70 text-cyan-100 text-sm font-black flex items-center justify-center">战斗日志｜第{{ battleScene.turnCount || 1 }}回合</div>
       <div ref="battleSceneLogRef" class="max-h-[220px] overflow-auto scrollbar pr-1 mt-2">
         <div v-for="(line, idx) in battleScene.logs" :key="'battle_log_' + idx" class="text-xs font-bold text-slate-200 mb-1">{{ line }}</div>
       </div>
@@ -923,6 +1088,12 @@
       <button @click="closeBattleResult" class="h-9 px-4 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">确认</button>
     </div>
     <div class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
+      <div v-if="battleResult.hCoinGain > 0" class="rounded-2xl border border-yellow-200 bg-yellow-50 p-3 text-sm font-black text-yellow-800">
+        获得 H币 +{{ battleResult.hCoinGain }}
+      </div>
+      <div v-if="battleResult.unlockText" class="rounded-2xl border border-cyan-200 bg-cyan-50 p-3 text-sm font-black text-cyan-800">
+        {{ battleResult.unlockText }}
+      </div>
       <div v-for="row in (battleResult.expDistribution || [])" :key="'settle_'+row.petId" class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
         <div class="flex items-center gap-3">
           <span class="element-icon" :style="petElementIconStyle(row.element, 16)" :title="row.element || ''"></span>
