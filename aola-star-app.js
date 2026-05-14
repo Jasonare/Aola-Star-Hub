@@ -65,7 +65,8 @@ const STUDY_BATTLEFIELDS = [
   { key: "speed", label: "速度", guardianName: "毛毛球" }
 ];
 const SHOP_EGG_PRICE = 2000;
-const HOME_BGM_SRC = "./BGM/小k橘子 - 主题公园3.ogg";
+const LOGIN_BGM_SRC = "./BGM/小k橘子 - 主题公园3.ogg";
+const HOME_BGM_SRC = "./BGM/小k橘子 - 神宠殿堂.ogg";
 const WAREHOUSE_BGM_SRC = "./BGM/小k橘子 - 家园.ogg";
 const SHOP_BGM_SRC = "./BGM/小k橘子 - 经验战场.ogg";
 const STUDY_BGM_SRC = "./BGM/小k橘子 - 欢乐岛.ogg";
@@ -2943,18 +2944,6 @@ createApp({
     const shopTargetPetId = ref("");
     const shopItems = ref([
       {
-        id: "max_level_fruit",
-        name: "满级经验果",
-        price: 0,
-        desc: "使目标亚比直接升至 Lv.100（测试道具）"
-      },
-      {
-        id: "level_40_fruit",
-        name: "40级经验果",
-        price: 0,
-        desc: "使未超过 Lv.40 的亚比直接升至 Lv.40"
-      },
-      {
         id: "pp_bean_s",
         name: "初级PP豆",
         price: 50,
@@ -3200,6 +3189,7 @@ createApp({
         showToast(err && err.message ? err.message : "登录失败。");
       } finally {
         authLoading.value = false;
+        refreshSceneBgm();
       }
     };
     const logoutUser = async () => {
@@ -3314,6 +3304,7 @@ createApp({
     };
     const refreshSceneBgm = () => {
       if (battleScene.value && battleScene.value.open) return;
+      if (!playMode.value) return playSceneBgm(LOGIN_BGM_SRC);
       if (showStudyPanel.value) return playSceneBgm(STUDY_BGM_SRC);
       if (showShopPanel.value) return playSceneBgm(SHOP_BGM_SRC);
       if (showWarehousePanel.value) return playSceneBgm(WAREHOUSE_BGM_SRC);
@@ -4881,7 +4872,10 @@ createApp({
           pushBattleLog(scene, `${actorName} 使用 ${skill.name}，对 ${damageTargetName} 造成 ${damage} 点伤害（${compareElementLabel(elementFactor)}）。`);
         }
         runOnDamagedEffects(scene, targetSide, actorSide, { reason: "attacked" });
-        runOnDamagedEffects(scene, targetSide, actorSide, { reason: "damaged" });
+        const damagedTriggerTimes = Math.max(1, comboHitList.length);
+        for (let i = 0; i < damagedTriggerTimes; i += 1) {
+          runOnDamagedEffects(scene, targetSide, actorSide, { reason: "damaged" });
+        }
       }
       if (didHit && damage <= 0) {
         runOnDamagedEffects(scene, targetSide, actorSide, { reason: "attacked" });

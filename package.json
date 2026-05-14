@@ -1,0 +1,58 @@
+{
+  "name": "aola-star-hub",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Aola Star Hub frontend with local save server and Electron shell.",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "server": "node server/index.js",
+    "electron": "electron .",
+    "desktop": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "com.aolastar.hub",
+    "productName": "Aola Star Hub",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "aola-star.html",
+      "aola-star-app.js",
+      "aola-star-crash.js",
+      "aola-dex-1-100.js",
+      "aola-species-data.js",
+      "aola-skill-data.js",
+      "aola-evolution-chains.js",
+      "vendor/**/*",
+      "type/**/*",
+      "BGM/**/*",
+      "pet-action/*/*.webp",
+      "pet-img/**/*",
+      "skill-effect/*.gif",
+      "electron/**/*",
+      "server/index.js",
+      "server/README.md",
+      "package.json",
+      "属性克制.jpg"
+    ],
+    "asarUnpack": [
+      "server/**/*"
+    ],
+    "win": {
+      "signAndEditExecutable": false,
+      "target": [
+        "portable"
+      ]
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-portable.exe"
+    }
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  }
+}
