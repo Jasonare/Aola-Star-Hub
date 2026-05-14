@@ -29,6 +29,8 @@ const cleanupOrphanTemplateOverlays = () => {
 cleanupOrphanTemplateOverlays();
 
 const STORAGE_KEY = "aola_battle_platform_v2_ascii";
+const SESSION_MODE_KEY = "aola_star_session_mode_v1";
+const AUTH_TOKEN_KEY = "aola_star_auth_token_v1";
 const SAVE_FILE_PREFIX = "aola_battle_save_";
 const STARTER_DEX_IDS = [1, 4, 7];
 const BASE_GUARDIAN_NAMES = ["冰拳艾司", "沙麒麟", "金刚库巴", "木面侠", "火花龙"];
@@ -2854,11 +2856,7 @@ createApp({
     };
 
     const storageAdapter = createStorageAdapter();
-    const saveState = (nextState) => {
-      try { storageAdapter.saveRaw(JSON.stringify(nextState)); } catch {}
-    };
-
-    const loadState = () => {
+    const loadLocalState = () => {
       try {
         const text = storageAdapter.loadRaw();
         if (!text) return createInitialState();
@@ -2867,8 +2865,44 @@ createApp({
         return createInitialState();
       }
     };
+    const readSessionMode = () => {
+      try {
+        const mode = localStorage.getItem(SESSION_MODE_KEY);
+        return mode === "guest" || mode === "user" ? mode : "";
+      } catch {
+        return "";
+      }
+    };
+    const writeSessionMode = (mode) => {
+      try {
+        if (mode) localStorage.setItem(SESSION_MODE_KEY, mode);
+        else localStorage.removeItem(SESSION_MODE_KEY);
+      } catch {}
+    };
+    const readAuthToken = () => {
+      try { return localStorage.getItem(AUTH_TOKEN_KEY) || ""; } catch { return ""; }
+    };
+    const writeAuthToken = (token) => {
+      try {
+        if (token) localStorage.setItem(AUTH_TOKEN_KEY, token);
+        else localStorage.removeItem(AUTH_TOKEN_KEY);
+      } catch {}
+    };
+    const saveState = (nextState) => {
+      if (playMode.value !== "guest" && storageAdapter.mode === "localStorage") return;
+      try { storageAdapter.saveRaw(JSON.stringify(nextState)); } catch {}
+    };
 
-    const state = ref(loadState());
+    const state = ref(createInitialState());
+    const playMode = ref("");
+    const authReady = ref(false);
+    const authUser = ref(null);
+    const authUsername = ref("");
+    const authPassword = ref("");
+    const authMode = ref("login");
+    const authLoading = ref(false);
+    const saveLoading = ref(false);
+    const lastServerSavedAt = ref("");
     const dexSearch = ref("");
     const dexElementFilter = ref("全部系别");
     const warehouseSearch = ref("");
@@ -3049,6 +3083,157 @@ createApp({
       toast.value = { show: true, message };
       setTimeout(() => { toast.value.show = false; }, 2200);
     };
+    const apiBaseUrl = () => {
+      const protocol = String(window.location && window.location.protocol || "");
+      if (protocol === "http:" || protocol === "https:") return "";
+      return "http://127.0.0.1:3030";
+    };
+    const apiJson = async (url, options = {}) => {
+      const targetUrl = `${apiBaseUrl()}${url}`;
+      let res = null;
+      const token = readAuthToken();
+      const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
+      if (token) headers.Authorization = `Bearer ${token}`;
+      try {
+        res = await fetch(targetUrl, {
+          credentials: "include",
+          headers,
+          ...options
+        });
+      } catch {
+        throw new Error("无法连接后端服务，请先运行 npm run server 后再登录/注册。");
+      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.ok === false) throw new Error(data.message || `请求失败：${res.status}`);
+      return data;
+    };
+    const loadServerSave = async () => {
+      if (!authUser.value) return false;
+      const data = await apiJson("/api/save");
+      if (data && data.save && data.save.save) {
+        state.value = sanitizeState(data.save.save);
+        lastServerSavedAt.value = data.save.savedAt || "";
+        showToast("已读取服务器存档。");
+        return true;
+      }
+      state.value = createInitialState();
+      lastServerSavedAt.value = "";
+      showToast("当前用户暂无服务器存档，已初始化新进度。");
+      return false;
+    };
+    const checkAuthSession = async () => {
+      const mode = readSessionMode();
+      if (mode === "guest") {
+        writeAuthToken("");
+        playMode.value = "guest";
+        state.value = loadLocalState();
+        authReady.value = true;
+        refreshSceneBgm();
+        return;
+      }
+      if (mode !== "user") {
+        writeAuthToken("");
+        playMode.value = "";
+        state.value = createInitialState();
+        authReady.value = true;
+        refreshSceneBgm();
+        return;
+      }
+      try {
+        const data = await apiJson("/api/auth/me");
+        authUser.value = data.user || null;
+        if (authUser.value) {
+          playMode.value = "user";
+          await loadServerSave();
+        } else {
+          playMode.value = "";
+          state.value = createInitialState();
+          writeAuthToken("");
+          writeSessionMode("");
+        }
+      } catch {
+        authUser.value = null;
+        playMode.value = "";
+        state.value = createInitialState();
+        writeAuthToken("");
+        writeSessionMode("");
+      } finally {
+        authReady.value = true;
+        refreshSceneBgm();
+      }
+    };
+    const enterGuestMode = () => {
+      authUser.value = null;
+      lastServerSavedAt.value = "";
+      writeAuthToken("");
+      playMode.value = "guest";
+      writeSessionMode("guest");
+      state.value = loadLocalState();
+      showToast("已以游客身份进入，进度将保存到本机。");
+      refreshSceneBgm();
+    };
+    const submitAuth = async () => {
+      if (authLoading.value) return;
+      const username = normalize(authUsername.value);
+      const password = String(authPassword.value || "");
+      if (!username || !password) {
+        showToast("请输入用户名和密码。");
+        return;
+      }
+      authLoading.value = true;
+      try {
+        const path = authMode.value === "register" ? "/api/auth/register" : "/api/auth/login";
+        const data = await apiJson(path, {
+          method: "POST",
+          body: JSON.stringify({ username, password })
+        });
+        authUser.value = data.user || null;
+        writeAuthToken(data.token || "");
+        authPassword.value = "";
+        playMode.value = "user";
+        writeSessionMode("user");
+        state.value = createInitialState();
+        lastServerSavedAt.value = "";
+        showToast(authMode.value === "register" ? "注册并登录成功。" : "登录成功。");
+        if (authUser.value) await loadServerSave();
+      } catch (err) {
+        showToast(err && err.message ? err.message : "登录失败。");
+      } finally {
+        authLoading.value = false;
+      }
+    };
+    const logoutUser = async () => {
+      try { await apiJson("/api/auth/logout", { method: "POST", body: "{}" }); } catch {}
+      authUser.value = null;
+      writeAuthToken("");
+      playMode.value = "";
+      writeSessionMode("");
+      state.value = createInitialState();
+      lastServerSavedAt.value = "";
+      showToast("已退出登录。");
+      refreshSceneBgm();
+    };
+    const saveToServer = async () => {
+      if (!authUser.value) {
+        showToast("请先登录后再存档。");
+        return;
+      }
+      if (saveLoading.value) return;
+      saveLoading.value = true;
+      try {
+        const data = await apiJson("/api/save", {
+          method: "POST",
+          body: JSON.stringify({ save: state.value })
+        });
+        lastServerSavedAt.value = data.savedAt || new Date().toISOString();
+        saveState(state.value);
+        showToast(`已保存到 ${data.saveDir || "用户存档目录"}`);
+      } catch (err) {
+        showToast(err && err.message ? err.message : "服务器存档失败。");
+      } finally {
+        saveLoading.value = false;
+      }
+    };
     const closeBattleResult = () => { battleResult.value = null; };
     const tryOpenNextEvolution = () => {
       if (activeEvolution.value || evolutionQueue.value.length === 0) return;
@@ -3185,13 +3370,15 @@ createApp({
     };
 
     if (storageAdapter.mode === "localStorage") {
-      watch(state, () => saveState(state.value), { deep: true });
+      watch(state, () => {
+        if (playMode.value === "guest") saveState(state.value);
+      }, { deep: true });
     }
     let timer = null;
     const handleAutoSave = () => saveState(state.value);
     onMounted(() => {
       timer = setInterval(() => { nowTs.value = Date.now(); }, 1000);
-      refreshSceneBgm();
+      checkAuthSession();
       if (storageAdapter.mode === "file") {
         window.addEventListener("beforeunload", handleAutoSave);
         window.addEventListener("pagehide", handleAutoSave);
@@ -4018,16 +4205,9 @@ createApp({
       return Boolean(getPetBattleAnimPath(dexId, side === "target" ? "target" : "attacker", "idle"));
     };
     const battleSkillEffectStyle = (side) => {
-      const isTarget = side === "target";
-      if (typeof window === "undefined") {
-        return { "--skill-fx-x": isTarget ? "30vw" : "70vw", "--skill-fx-y": isTarget ? "38vh" : "70vh" };
-      }
-      const w = Math.max(1, window.innerWidth || 1);
-      const h = Math.max(1, window.innerHeight || 1);
-      const x = isTarget ? Math.round(w * 0.24) : Math.round(w * 0.65);
-      const y = isTarget ? Math.round(h * 0.26) : Math.round(h * 0.56);
       const duration = Math.max(300, Number(battleScene.value && battleScene.value.skillEffectFx && battleScene.value.skillEffectFx.durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS);
-      return { "--skill-fx-x": `${x}px`, "--skill-fx-y": `${y}px`, "--skill-fx-duration": `${duration}ms` };
+      const localX = side === "target" ? "52%" : "48%";
+      return { "--skill-fx-local-x": localX, "--skill-fx-local-y": "50%", "--skill-fx-duration": `${duration}ms` };
     };
     const setBattleSkillEffectFx = (scene, fx, durationMs, expireMs) => {
       if (!scene || !fx) return;
@@ -5079,6 +5259,11 @@ createApp({
       scene.isActing = true;
       const actionGuardToken = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
       scene._actionGuardToken = actionGuardToken;
+      const result = runBattleSkill(scene, "attacker", skill);
+      const guardDelayMs = Math.max(
+        BATTLE_COUNTER_ATTACK_DELAY_MS + BATTLE_FLOAT_TEXT_DURATION_MS * 4,
+        (Number(result && result.visualDelayMs) || 0) + BATTLE_COUNTER_ATTACK_DELAY_MS + BATTLE_FLOAT_TEXT_DURATION_MS * 3
+      );
       setTimeout(() => {
         const live = battleScene.value;
         if (!live || live !== scene || live.ended || live.pendingFinish) return;
@@ -5094,8 +5279,7 @@ createApp({
         clearBattleSkillEffectFxIfExpired(live);
         resetBattleAnimIdle(live);
         pushBattleLog(live, "行动超时保护触发：已恢复战斗操作。");
-      }, BATTLE_COUNTER_ATTACK_DELAY_MS + BATTLE_FLOAT_TEXT_DURATION_MS * 4);
-      const result = runBattleSkill(scene, "attacker", skill);
+      }, guardDelayMs);
       setTimeout(() => {
         if (!battleScene.value || battleScene.value.ended || battleScene.value.pendingFinish) return;
         battleScene.value.fxSkillText = "";
@@ -5979,6 +6163,15 @@ createApp({
 
     return {
       state,
+      playMode,
+      authReady,
+      authUser,
+      authUsername,
+      authPassword,
+      authMode,
+      authLoading,
+      saveLoading,
+      lastServerSavedAt,
       dexSearch,
       dexElementFilter,
       warehouseSearch,
@@ -6192,6 +6385,11 @@ createApp({
       startChallenge,
       hatchEgg,
       resetProgress,
+      submitAuth,
+      enterGuestMode,
+      logoutUser,
+      saveToServer,
+      loadServerSave,
       withFallback
     };
   }
