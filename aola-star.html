@@ -838,6 +838,11 @@
         <select v-model="dexElementFilter" class="h-9 rounded-lg border border-slate-300 px-2 text-sm font-bold">
           <option v-for="opt in dexElementOptions" :key="opt" :value="opt">{{ opt }}</option>
         </select>
+        <select v-model="dexDefeatFilter" class="h-9 rounded-lg border border-slate-300 px-2 text-sm font-bold">
+          <option value="全部战绩">全部战绩</option>
+          <option value="已击败">已击败</option>
+          <option value="未击败">未击败</option>
+        </select>
         <button @click="closeDexPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
       <div class="rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2 text-[11px] font-black text-indigo-700 mb-3">
@@ -849,6 +854,7 @@
             <div class="text-[10px] font-black text-slate-500">#{{ entry.dexId }}</div>
             <span class="element-icon" :style="petElementIconStyle(entry.element, 15)" :title="entry.element || ''"></span>
             <span v-if="entry.subElement" class="element-icon" :style="petElementIconStyle(entry.subElement, 15)" :title="entry.subElement || ''"></span>
+            <span v-if="hasDefeatedDex(entry.dexId)" class="rounded bg-emerald-500 px-1.5 py-0.5 text-[9px] font-black text-white" :class="canChallengeFromDex(entry) ? 'ml-auto' : ''">WIN</span>
             <span v-if="!canChallengeFromDex(entry)" class="ml-auto text-[10px] font-black" :class="dexStatus(entry)==='BOSS' ? 'text-rose-700' : (dexStatus(entry)==='商店蛋' ? 'text-violet-700' : 'text-amber-700')">{{ dexStatus(entry) }}</span>
           </div>
           <img :src="entry.image" @error="withFallback" class="w-20 h-20 object-contain mx-auto">
@@ -997,13 +1003,13 @@
                     <div class="text-sm font-black text-slate-800 truncate">{{ skillName || '空白技能' }}</div>
                   </div>
                   <div v-if="skillName" class="mt-0.5 text-[10px] font-black text-slate-500">
-                    {{ skillTypeMeta(safeSkillType(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {})).label }} | 威力 {{ safeSkillPower(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }} | 命中 {{ safeSkillAccuracy(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }} | PP {{ safeSkillPP(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }}
+                    {{ skillTypeMeta(safeSkillType(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {})).label }} | {{ skillAttackTypeLabel(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }} | 威力 {{ safeSkillPower(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }} | 命中 {{ safeSkillAccuracy(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }} | PP {{ safeSkillPP(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }}
                   </div>
                 </div>
                 <button v-if="skillName && !(selectedPet && selectedPet.previewAllSkills)" @click="startDirectReplaceSkill(skillName)" class="h-7 px-3 rounded-lg text-xs font-black bg-indigo-50 text-indigo-700">替换</button>
               </div>
               <div v-if="skillName" class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">
-                {{ (availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}).desc || '暂无技能描述' }}
+                {{ skillDisplayDesc(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }}
               </div>
             </div>
           </div>
@@ -1071,14 +1077,16 @@
           v-for="sk in availableSkillsForSelectedPet"
           :key="'direct_pick_'+safeSkillName(sk)"
           @click="confirmDirectReplaceSkill(safeSkillName(sk))"
-          class="w-full rounded-lg bg-indigo-50 border border-indigo-200 text-left px-3 py-2"
+          :disabled="hasEquippedSkill(selectedPet, safeSkillName(sk))"
+          class="w-full rounded-lg border text-left px-3 py-2"
+          :class="hasEquippedSkill(selectedPet, safeSkillName(sk)) ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-70' : 'bg-indigo-50 border-indigo-200'"
         >
           <div class="flex items-center gap-1">
             <span class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(sk)).label, 15)" :title="skillTypeMeta(safeSkillType(sk)).label"></span>
             <div class="text-xs font-black text-indigo-900 truncate">{{ safeSkillName(sk) }}</div>
           </div>
-          <div class="mt-1 text-[11px] font-bold text-indigo-700">Lv{{ sk.level }} | {{ skillTypeMeta(safeSkillType(sk)).label }} | 威力 {{ safeSkillPower(sk) }} | 命中 {{ safeSkillAccuracy(sk) }} | PP {{ safeSkillPP(sk) }}</div>
-          <div class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">{{ sk.desc || '暂无技能描述' }}</div>
+          <div class="mt-1 text-[11px] font-bold" :class="hasEquippedSkill(selectedPet, safeSkillName(sk)) ? 'text-slate-400' : 'text-indigo-700'">Lv{{ sk.level }} | {{ skillTypeMeta(safeSkillType(sk)).label }} | {{ skillAttackTypeLabel(sk) }} | 威力 {{ safeSkillPower(sk) }} | 命中 {{ safeSkillAccuracy(sk) }} | PP {{ safeSkillPP(sk) }}{{ hasEquippedSkill(selectedPet, safeSkillName(sk)) ? ' | 已装备' : '' }}</div>
+          <div class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">{{ skillDisplayDesc(sk) }}</div>
         </button>
       </div>
       <div v-else class="grid grid-cols-2 gap-2">
@@ -1413,10 +1421,19 @@
               @mouseleave="onBattleSkillTouchEnd"
               :disabled="!(battleSceneSkills && battleSceneSkills[idx]) || !canCastBattleSkill(safeSkillName(battleSceneSkills[idx]))"
               :title="(battleSceneSkills && battleSceneSkills[idx]) ? skillBattleDesc(battleSceneSkills[idx]) : ''"
-              class="w-full h-10 rounded-xl border text-xs font-black text-left px-3"
+              class="w-full min-h-[48px] rounded-xl border text-xs font-black text-left px-3 py-1.5"
               :class="(battleSceneSkills && battleSceneSkills[idx]) ? 'border-cyan-300/35 bg-cyan-500/15 text-cyan-100 disabled:opacity-40' : 'border-slate-500/40 bg-slate-700/30 text-slate-400 cursor-not-allowed'"
             >
-              {{ (battleSceneSkills && battleSceneSkills[idx]) ? (safeSkillName(battleSceneSkills[idx]) + ' | PP ' + safeSkillPP(battleSceneSkills[idx])) : '空白技能' }}
+              <template v-if="battleSceneSkills && battleSceneSkills[idx]">
+                <div class="flex items-center gap-1 min-w-0">
+                  <span class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(battleSceneSkills[idx])).label, 14)" :title="skillTypeMeta(safeSkillType(battleSceneSkills[idx])).label"></span>
+                  <span class="truncate">{{ safeSkillName(battleSceneSkills[idx]) }}</span>
+                </div>
+                <div class="mt-0.5 text-[10px] font-black text-cyan-200 truncate">
+                  威力 {{ safeSkillPower(battleSceneSkills[idx]) }} | {{ skillTypeMeta(safeSkillType(battleSceneSkills[idx])).label }} | {{ skillAttackTypeLabel(battleSceneSkills[idx]) }} | PP {{ safeSkillPP(battleSceneSkills[idx]) }}
+                </div>
+              </template>
+              <template v-else>空白技能</template>
             </button>
           </div>
         </div>
@@ -1598,6 +1615,7 @@
 
 <script>
 (function () {
+  var assetVersion = "20260515_attack_type_v2";
   var queue = [
     "./aola-dex-1-100.js",
     "./aola-species-data.js",
@@ -1625,7 +1643,13 @@
     document.body.appendChild(tip);
   }
   function absUrl(rel) {
-    try { return new URL(rel, window.location.href).href; } catch (_) { return rel; }
+    try {
+      var url = new URL(rel, window.location.href);
+      url.searchParams.set("v", assetVersion);
+      return url.href;
+    } catch (_) {
+      return rel + (rel.indexOf("?") >= 0 ? "&" : "?") + "v=" + assetVersion;
+    }
   }
   function loadNext(i) {
     if (i >= queue.length) {
@@ -1654,9 +1678,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
-

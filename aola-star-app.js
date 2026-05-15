@@ -48,7 +48,7 @@ const EXTRA_GUARDIAN_ALIAS = {
 const GUARDIAN_NAMES = Array.from(new Set([...BASE_GUARDIAN_NAMES, ...EXTRA_GUARDIAN_NAMES]));
 const BOSS_NAMES = [
   "骰子大王", "龙族大法师", "七星神龙", "青龙灵兽", "玄武灵兽", "白虎灵兽", "朱雀灵兽", "念", "凯撒", "修罗",
-  "奇灵王", "音爵卡卡", "烈焰凤凰", "魔焰吉拉", "古渊露龙", "终结兔", "飞天独角兽", "熊猫大侠", "帝皇龙"
+  "奇灵王", "音爵卡卡", "烈焰凤凰", "魔焰吉拉", "古渊露龙", "终结兔", "飞天独角兽", "熊猫大侠", "帝皇龙", "梅卡"
 ];
 const EXCLUDED_GUARDIAN_NAMES = ["魔灯鬼王"];
 const EXCLUDED_BOSS_NAMES = ["冰山修罗"];
@@ -313,12 +313,45 @@ const safeSkillAccuracy = (skill) => {
   const n = skill && Number.isFinite(Number(skill.accuracy)) ? Number(skill.accuracy) : 100;
   return n < 0 ? 100 : n;
 };
-const skillAttackTypeLabel = (typeText) => {
-  const t = String(typeText || "");
-  if (t.includes("/")) return String(t.split("/")[1] || "").trim() || "普通攻击";
-  return "普通攻击";
+const skillAttackTypeLabel = (skillOrType) => {
+  const skill = skillOrType && typeof skillOrType === "object" ? skillOrType : null;
+  if (skill) {
+    skillAttackTypeVersion.value;
+    const indexedCode = lookupAttackTypeCode(skill, skill.dexId);
+    const explicit = attackTypeLabelFromCode(skill.attackTypeCode) || attackTypeLabelFromCode(indexedCode) || normalize(skill.attackTypeLabel) || normalize(skill.attackType);
+    if (explicit) return explicit;
+    const parsed = parseSkillTypeMeta(skill.type).attackType || "";
+    const power = Number(skill.power);
+    const desc = normalize(skill.desc);
+    if (Number.isFinite(power) && power <= 0 && !/(固定伤害|伤害\s*=|点伤害|威力)/.test(desc)) return "属性攻击";
+    return parsed || "普通攻击";
+  }
+  return parseSkillTypeMeta(skillOrType).attackType || "普通攻击";
+};
+const skillDisplayDesc = (skill) => {
+  const name = normalize(skill && skill.name).replace(/决/g, "诀");
+  if (name === "锁神诀") return "100％命中，每回合减血1/16，持续5回合，并且令敌方1体速度下降1级，对BOSS有效；一场战斗只能使用一次，使用PP豆无法再次使用。";
+  if (name === "激发力量") return "攻击对方单体，若自己中毒、麻痹或烧伤时，则发动2倍威力。";
+  return normalize(skill && skill.desc) || "暂无技能描述";
 };
 const normalizeSkillKey = (name) => normalize(name);
+const oncePerBattleSkillKey = (skillOrName) => {
+  const name = normalize(typeof skillOrName === "string" ? skillOrName : (skillOrName && skillOrName.name)).replace(/决/g, "诀");
+  return name === "锁神诀" ? "锁神诀" : "";
+};
+const hasUsedOncePerBattleSkill = (scene, side, skillOrName) => {
+  const key = oncePerBattleSkillKey(skillOrName);
+  if (!scene || !key) return false;
+  const used = Array.isArray(scene.oncePerBattleSkillKeys) ? scene.oncePerBattleSkillKeys : [];
+  return used.includes(`${side}:${key}`);
+};
+const markOncePerBattleSkillUsed = (scene, side, skillOrName) => {
+  const key = oncePerBattleSkillKey(skillOrName);
+  if (!scene || !key) return;
+  if (!Array.isArray(scene.oncePerBattleSkillKeys)) scene.oncePerBattleSkillKeys = [];
+  const scoped = `${side}:${key}`;
+  if (!scene.oncePerBattleSkillKeys.includes(scoped)) scene.oncePerBattleSkillKeys.push(scoped);
+};
 const safeNonNegInt = (v, fallback = 0) => {
   const n = Number(v);
   if (!Number.isFinite(n) || n < 0) return fallback;
@@ -425,6 +458,56 @@ const ELEMENT_NAMES = Object.keys(PET_TYPE_ICON || {});
 const STATUS_LABEL_MAP = { poison: "中毒", burn: "烧伤", sleep: "睡眠", paralyze: "麻痹", freeze: "冰冻", leech: "寄生", bind: "束缚", weak: "衰弱", confuse: "混乱", fear: "害怕" };
 const SKILL_STATUS_HINT = ["属性攻击", "属性"];
 const ATTACK_TYPE_HINT = ["普通攻击", "特殊攻击", "属性攻击"];
+const ATTACK_TYPE_LABEL_BY_CODE = { 0: "普通攻击", 1: "特殊攻击", 2: "属性攻击" };
+const skillAttackTypeVersion = ref(0);
+const skillAttackTypeIndexBySkillId = new Map();
+const skillAttackTypeIndexByNameLevel = new Map();
+const attackTypeLabelFromCode = (code) => {
+  const n = Number(code);
+  return Object.prototype.hasOwnProperty.call(ATTACK_TYPE_LABEL_BY_CODE, n) ? ATTACK_TYPE_LABEL_BY_CODE[n] : "";
+};
+const syncSkillAttackTypeIndex = (rows) => {
+  skillAttackTypeIndexBySkillId.clear();
+  skillAttackTypeIndexByNameLevel.clear();
+  (Array.isArray(rows) ? rows : []).forEach((row) => {
+    const dexId = Number(row && row.race_id);
+    if (!Number.isFinite(dexId) || dexId <= 0) return;
+    const skills = Array.isArray(row && row.skills) ? row.skills : [];
+    skills.forEach((s) => {
+      const attackTypeCode = Number(s && s.attack_type);
+      if (!Number.isFinite(attackTypeCode)) return;
+      const skillId = Number(s && s.skill_id);
+      const name = normalize(s && s.name);
+      const level = Number(s && s.level);
+      const payload = { dexId, skillId: Number.isFinite(skillId) ? skillId : null, name, level: Number.isFinite(level) ? level : null, attackTypeCode };
+      if (payload.skillId) skillAttackTypeIndexBySkillId.set(payload.skillId, payload);
+      if (name) {
+        skillAttackTypeIndexByNameLevel.set(`${dexId}#${name}#${Number.isFinite(level) ? level : ""}`, payload);
+        skillAttackTypeIndexByNameLevel.set(`${name}#${Number.isFinite(level) ? level : ""}`, payload);
+      }
+    });
+  });
+  skillAttackTypeVersion.value += 1;
+};
+const lookupAttackTypeCode = (skill, dexId = 0) => {
+  const sid = Number(skill && skill.skillId);
+  if (Number.isFinite(sid) && sid > 0 && skillAttackTypeIndexBySkillId.has(sid)) {
+    return Number(skillAttackTypeIndexBySkillId.get(sid).attackTypeCode);
+  }
+  const name = normalize(skill && skill.name);
+  const level = Number(skill && skill.level);
+  if (name && Number.isFinite(level)) {
+    const hit = skillAttackTypeIndexByNameLevel.get(`${Number(dexId) || 0}#${name}#${level}`) || skillAttackTypeIndexByNameLevel.get(`${name}#${level}`);
+    if (hit) return Number(hit.attackTypeCode);
+  }
+  return null;
+};
+const buildSkillTypeText = (typeText, attackTypeCode = null, attackTypeText = "") => {
+  const raw = normalize(typeText);
+  const parsed = parseSkillTypeMeta(raw);
+  const attackType = attackTypeLabelFromCode(attackTypeCode) || normalize(attackTypeText) || parsed.attackType || "普通攻击";
+  return `${parsed.element || "未知系"}/${attackType}`;
+};
 const cnNumToInt = (text, fallback = 1) => {
   const t = normalize(text);
   if (!t) return fallback;
@@ -513,8 +596,10 @@ const parseSkillTypeMeta = (typeText) => {
   if (!attackType) attackType = "普通攻击";
   return { element, attackType };
 };
-const parseSkillAttackKind = (typeText) => {
-  const meta = parseSkillTypeMeta(typeText);
+const parseSkillAttackKind = (skillOrType) => {
+  const meta = skillOrType && typeof skillOrType === "object"
+    ? { attackType: skillAttackTypeLabel(skillOrType) }
+    : parseSkillTypeMeta(skillOrType);
   if (meta.attackType.includes("特殊攻击")) return "special";
   if (meta.attackType.includes("普通攻击")) return "physical";
   return "status";
@@ -839,7 +924,15 @@ const buildTimedEffectBadges = (scene, side) => {
   const global = Array.isArray(scene && scene.globalTimedEffects) ? scene.globalTimedEffects : [];
   const fxBadges = own.concat(global).map((e) => timedEffectBadgeMeta(e)).filter((x) => x.turns > 0);
   const onDamagedBadges = (sideState.onDamagedEffects || []).map((e) => onDamagedBadgeMeta(e)).filter(Boolean);
-  return fxBadges.concat(onDamagedBadges);
+  const out = [];
+  const seen = new Set();
+  fxBadges.concat(onDamagedBadges).forEach((badge) => {
+    const key = `${badge.key}|${badge.label}|${badge.tone}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push(badge);
+  });
+  return out;
 };
 const statusChanceFromDesc = (desc, statusKeyword = "", fallback = 1) => {
   const t = normalize(desc);
@@ -929,7 +1022,7 @@ const parseSkillEffects = (skill) => {
   const canonicalSkillName = name.replace(/决/g, "诀");
   if (canonicalSkillName === "锁神诀") {
     return [
-      { kind: "lockGodSeal", target: "opponent", turns: 8, ratio: 1 / 16, speedDelta: -1 }
+      { kind: "lockGodSeal", target: "opponent", turns: 5, ratio: 1 / 16, speedDelta: -1 }
     ];
   }
   if (name === "风神附体") {
@@ -1852,11 +1945,16 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
     }
     if (e.kind === "globalElementPower") {
       if (!Array.isArray(scene.globalTimedEffects)) scene.globalTimedEffects = [];
-      scene.globalTimedEffects.push({
+      const next = {
         kind: "elementPowerBuff",
         turns: Math.max(1, Math.floor(Number(e.turns) || 1)),
         data: { element: e.element, factor: Number(e.factor) || 1 }
-      });
+      };
+      const idx = scene.globalTimedEffects.findIndex((fx) => normalize(fx && fx.kind) === next.kind
+        && normalize(fx && fx.data && fx.data.element) === normalize(next.data.element)
+        && Number(fx && fx.data && fx.data.factor) === Number(next.data.factor));
+      if (idx >= 0) scene.globalTimedEffects[idx] = next;
+      else scene.globalTimedEffects.push(next);
       logs.push(`全场${e.element}技能威力调整为${Math.round((Number(e.factor) || 1) * 100)}%，持续${e.turns}回合`);
       return;
     }
@@ -2356,29 +2454,87 @@ createApp({
       if (key && skillMasterByKey.has(key)) return skillMasterByKey.get(key);
       return null;
     };
-    const applySkillDescFromExtractJson = async () => {
-      if (typeof fetch !== "function") return;
-      if (window.location && window.location.protocol === "file:") {
-        console.info("[AolaStar] Skip extract JSON fetch under file protocol.");
-        return;
-      }
+    const extractSkillMetaByDex = (() => {
+      const out = new Map();
+      const runtime = getNodeRuntime();
+      if (!runtime) return out;
       try {
-        const [petRes, skillRes] = await Promise.all([
-          fetch("./aola_pet_skill_extract.json", { cache: "no-store" }),
-          fetch("./aola_pet_skill_extract_skills.json", { cache: "no-store" })
+        const { fs, path } = runtime;
+        const full = path.join(resolveWorkspaceDir(path), "aola_pet_skill_extract.json");
+        const rows = JSON.parse(fs.readFileSync(full, "utf8"));
+        if (!Array.isArray(rows)) return out;
+        syncSkillAttackTypeIndex(rows);
+        rows.forEach((row) => {
+          const dexId = Number(row && row.race_id);
+          if (!Number.isFinite(dexId) || dexId <= 0) return;
+          const skills = Array.isArray(row && row.skills) ? row.skills : [];
+          const bySkillId = new Map();
+          const byName = new Map();
+          const byNameLevel = new Map();
+          skills.forEach((s) => {
+            const skillId = Number(s && s.skill_id);
+            const name = normalize(s && s.name);
+            const level = Number(s && s.level);
+            const attackTypeCode = Number(s && s.attack_type);
+            if (!Number.isFinite(attackTypeCode)) return;
+            const meta = {
+              skillId: Number.isFinite(skillId) && skillId > 0 ? skillId : null,
+              name,
+              level: Number.isFinite(level) ? level : null,
+              attackTypeCode
+            };
+            if (meta.skillId) bySkillId.set(meta.skillId, meta);
+            if (name) {
+              byName.set(name, meta);
+              if (Number.isFinite(level)) byNameLevel.set(`${name}#${level}`, meta);
+            }
+          });
+          out.set(dexId, { bySkillId, byName, byNameLevel });
+        });
+      } catch (err) {
+        console.warn("[AolaStar] build extractSkillMetaByDex failed:", err);
+      }
+      return out;
+    })();
+    const pickExtractSkillMeta = (dexId, skill) => {
+      const bucket = extractSkillMetaByDex.get(Number(dexId));
+      if (!bucket) return null;
+      const sid = Number(skill && skill.skillId);
+      if (Number.isFinite(sid) && sid > 0 && bucket.bySkillId.has(sid)) return bucket.bySkillId.get(sid);
+      const name = normalize(skill && skill.name);
+      const level = Number(skill && skill.level);
+      if (name && Number.isFinite(level) && bucket.byNameLevel.has(`${name}#${level}`)) return bucket.byNameLevel.get(`${name}#${level}`);
+      if (name && bucket.byName.has(name)) return bucket.byName.get(name);
+      return null;
+    };
+    const applySkillDescFromExtractJson = async () => {
+      const loadJsonAsset = async (fileName) => {
+        const runtime = getNodeRuntime();
+        if (runtime) {
+          const { fs, path } = runtime;
+          const full = path.join(resolveWorkspaceDir(path), fileName);
+          return JSON.parse(fs.readFileSync(full, "utf8"));
+        }
+        if (typeof fetch !== "function") return null;
+        if (window.location && window.location.protocol === "file:") return null;
+        const res = await fetch(`./${fileName}`, { cache: "no-store" });
+        return res && res.ok ? res.json() : null;
+      };
+      try {
+        const [petRows, skillRows] = await Promise.all([
+          loadJsonAsset("aola_pet_skill_extract.json"),
+          loadJsonAsset("aola_pet_skill_extract_skills.json")
         ]);
-        if (!petRes.ok || !skillRes.ok) return;
-        const [petRows, skillRows] = await Promise.all([petRes.json(), skillRes.json()]);
-        if (!Array.isArray(petRows) || !Array.isArray(skillRows)) return;
+        if (!Array.isArray(petRows)) return;
+        syncSkillAttackTypeIndex(petRows);
 
         const descBySkillId = new Map();
-        skillRows.forEach((row) => {
+        (Array.isArray(skillRows) ? skillRows : []).forEach((row) => {
           const sid = Number(row && row.skill_id);
           if (!Number.isFinite(sid) || sid <= 0) return;
           const desc = normalize((row && row.client_desc) || (row && row.new_effect_desc) || (row && row.old_effect_desc) || "");
           if (desc) descBySkillId.set(sid, desc);
         });
-        if (descBySkillId.size <= 0) return;
 
         const raceSkillsById = new Map();
         petRows.forEach((row) => {
@@ -2393,13 +2549,26 @@ createApp({
           if (!species || !Array.isArray(species.skills) || !Array.isArray(raceSkills)) return;
           const sidByName = new Map();
           const sidByNameLevel = new Map();
+          const metaBySkillId = new Map();
+          const metaByName = new Map();
+          const metaByNameLevel = new Map();
           raceSkills.forEach((s) => {
             const nm = normalize(s && s.name);
             const sid = Number(s && s.skill_id);
             const lv = Number(s && s.level);
+            const attackTypeCode = Number(s && s.attack_type);
+            const meta = {
+              skillId: Number.isFinite(sid) && sid > 0 ? sid : null,
+              attackTypeCode: Number.isFinite(attackTypeCode) ? attackTypeCode : null
+            };
             if (nm && Number.isFinite(sid) && sid > 0) {
               sidByName.set(nm, sid);
               if (Number.isFinite(lv)) sidByNameLevel.set(`${nm}#${lv}`, sid);
+            }
+            if (meta.skillId) metaBySkillId.set(meta.skillId, meta);
+            if (nm) {
+              metaByName.set(nm, meta);
+              if (Number.isFinite(lv)) metaByNameLevel.set(`${nm}#${lv}`, meta);
             }
           });
           species.skills = species.skills.map((s) => {
@@ -2407,17 +2576,28 @@ createApp({
             const nm = normalize(cur.name);
             const lv = Number(cur.level);
             const sidByPair = (nm && Number.isFinite(lv)) ? Number(sidByNameLevel.get(`${nm}#${lv}`)) : NaN;
+            let meta = (nm && Number.isFinite(lv) ? metaByNameLevel.get(`${nm}#${lv}`) : null) || null;
             let desc = Number.isFinite(sidByPair) && sidByPair > 0 ? normalize(descBySkillId.get(sidByPair)) : "";
             if (!desc) {
               const sidByNm = nm ? Number(sidByName.get(nm)) : NaN;
               if (Number.isFinite(sidByNm) && sidByNm > 0) desc = normalize(descBySkillId.get(sidByNm));
+              if (!meta && Number.isFinite(sidByNm) && sidByNm > 0) meta = metaBySkillId.get(sidByNm) || null;
             }
             if (!desc) {
               const sid = Number(cur.skillId);
               if (Number.isFinite(sid) && sid > 0) desc = normalize(descBySkillId.get(sid));
+              if (!meta && Number.isFinite(sid) && sid > 0) meta = metaBySkillId.get(sid) || null;
             }
-            if (!desc) return cur;
-            return { ...cur, desc };
+            if (!meta && nm) meta = metaByName.get(nm) || null;
+            const attackTypeCode = Number(meta && meta.attackTypeCode);
+            const patch = {};
+            if (desc) patch.desc = desc;
+            if (Number.isFinite(attackTypeCode)) {
+              patch.attackTypeCode = attackTypeCode;
+              patch.attackTypeLabel = attackTypeLabelFromCode(attackTypeCode);
+              patch.type = buildSkillTypeText(cur.type, attackTypeCode);
+            }
+            return Object.keys(patch).length > 0 ? { ...cur, ...patch } : cur;
           });
         });
       } catch (err) {
@@ -2490,16 +2670,25 @@ createApp({
               if (!Number.isFinite(n) || n < 0) return 100;
               return n;
             })(),
+            attackTypeCode: (() => {
+              const n = Number(s && (s.attackTypeCode ?? s.attack_type));
+              return Number.isFinite(n) ? n : null;
+            })(),
+            attackTypeLabel: normalize(s && (s.attackTypeLabel || s.attackType)),
             type: normalize(s && s.type),
             desc: normalize(s && s.desc)
           })).map((s) => {
             const master = pickSkillMaster(s);
+            const extractMeta = pickExtractSkillMeta(entry.dexId, s);
             const sid = Number(s.skillId) || Number(master && master.skillId) || null;
             const mPower = Number(master && master.power);
             const mPp = Number(master && master.pp);
             const mAcc = Number(master && master.accuracy);
+            const attackTypeCode = Number.isFinite(Number(s.attackTypeCode)) ? Number(s.attackTypeCode) : (Number.isFinite(Number(extractMeta && extractMeta.attackTypeCode)) ? Number(extractMeta.attackTypeCode) : (Number.isFinite(Number(master && master.attackTypeCode)) ? Number(master.attackTypeCode) : null));
+            const attackTypeLabel = attackTypeLabelFromCode(attackTypeCode) || normalize(s.attackTypeLabel) || normalize(master && (master.attackTypeLabel || master.attackType));
             return {
               skillId: sid,
+              dexId: Number(entry && entry.dexId) || 0,
               skillKey: normalize(s.skillKey) || normalize(master && master.skillKey),
               name: normalize(s.name) || normalize(master && master.name),
               level: Number(s.level) || 0,
@@ -2511,7 +2700,9 @@ createApp({
                 if (Number.isFinite(mAcc) && mAcc >= 0) return mAcc;
                 return 100;
               })(),
-              type: normalize(s.type) || normalize(master && master.type),
+              attackTypeCode,
+              attackTypeLabel,
+              type: buildSkillTypeText(normalize(s.type) || normalize(master && master.type), attackTypeCode, attackTypeLabel),
               desc: normalize(s.desc) || normalize(master && master.desc)
             };
           }).filter((s) => s.name).sort((a, b) => a.level - b.level)
@@ -2731,6 +2922,7 @@ createApp({
       const starterActivated = Array.from(new Set(starterPets.map((p) => resolveEvolutionDexIdByPetAndStage(p, 0))));
       return {
         activatedDexIds: starterActivated,
+        defeatedDexIds: [],
         obtainedEggDexIds: [],
         activePets: starterPets,
         bagPetIds: bagSeed,
@@ -2800,6 +2992,7 @@ createApp({
       }).filter(Boolean) : [];
 
       const activated = new Set(Array.isArray(loaded.activatedDexIds) ? loaded.activatedDexIds.map((n) => Number(n)).filter(Boolean) : []);
+      const defeated = new Set(Array.isArray(loaded.defeatedDexIds) ? loaded.defeatedDexIds.map((n) => Number(n)).filter((n) => n > 0) : []);
       activePets.forEach((p) => {
         const chain = getChainStageInfoByDexId(p.dexId, p.speciesName);
         const stage = stageIndexByLevelAndCount(p.level, chain.formCount);
@@ -2825,6 +3018,7 @@ createApp({
       const selectedAttackerId = bagPetIds[0] || "";
       return {
         activatedDexIds: Array.from(activated),
+        defeatedDexIds: Array.from(defeated),
         obtainedEggDexIds: Array.isArray(loaded.obtainedEggDexIds) ? loaded.obtainedEggDexIds.map((n) => Number(n)).filter((n) => n > 0 && canObtainEggByActionDexId(n)) : [],
         activePets,
         bagPetIds,
@@ -2906,6 +3100,7 @@ createApp({
     const lastServerSavedAt = ref("");
     const dexSearch = ref("");
     const dexElementFilter = ref("全部系别");
+    const dexDefeatFilter = ref("全部战绩");
     const warehouseSearch = ref("");
     const warehouseElementFilter = ref("全部系别");
     const warehouseSortMode = ref("created");
@@ -3059,6 +3254,17 @@ createApp({
       if (!id) return;
       if (!Array.isArray(state.value.obtainedEggDexIds)) state.value.obtainedEggDexIds = [];
       if (!state.value.obtainedEggDexIds.includes(id)) state.value.obtainedEggDexIds.push(id);
+    };
+    const hasDefeatedDex = (dexId) => {
+      const id = Number(dexId) || 0;
+      if (!id) return false;
+      return Array.isArray(state.value.defeatedDexIds) && state.value.defeatedDexIds.includes(id);
+    };
+    const markDefeatedDex = (dexId) => {
+      const id = Number(dexId) || 0;
+      if (!id) return;
+      if (!Array.isArray(state.value.defeatedDexIds)) state.value.defeatedDexIds = [];
+      if (!state.value.defeatedDexIds.includes(id)) state.value.defeatedDexIds.push(id);
     };
     const addItemCount = (itemId, delta) => {
       ensureItemInventory();
@@ -3330,7 +3536,7 @@ createApp({
       const cur = clamp(Number(hp) || 0, 0, max);
       return clamp((cur / max) * 100, 0, 100);
     };
-    const skillBattleDesc = (skill) => normalize(skill && skill.desc) || "暂无技能描述";
+    const skillBattleDesc = (skill) => skillDisplayDesc(skill);
     const battleStageBadges = (side) => {
       const ns = normalizeBattleState(side && side.stages ? side : { stages: side });
       const st = ns.stages;
@@ -3575,10 +3781,13 @@ createApp({
     const filteredDex = computed(() => {
       const q = normalize(dexSearch.value).toLowerCase();
       const element = normalize(dexElementFilter.value);
+      const defeat = normalize(dexDefeatFilter.value);
       return dexEntries.filter((d) => {
         const hitName = !q || d.name.toLowerCase().includes(q);
         const hitElement = !element || element === "全部系别" || normalize(d.element) === element || normalize(d.subElement) === element;
-        return hitName && hitElement;
+        const won = hasDefeatedDex(d.dexId);
+        const hitDefeat = !defeat || defeat === "全部战绩" || (defeat === "已击败" ? won : !won);
+        return hitName && hitElement && hitDefeat;
       });
     });
     const guardianDexEntries = computed(() => dexEntries.filter((d) => isGuardianName(d.name)));
@@ -4349,9 +4558,12 @@ createApp({
         .filter(Boolean);
       const chosenSkills = (chosenByEquip.length > 0 ? chosenByEquip : unlockedSkills).slice(0, 4).map((s) => ({
         skillId: Number(s && s.skillId) || null,
+        dexId: Number(pet && pet.dexId) || Number(s && s.dexId) || 0,
         skillKey: normalize(s && s.skillKey),
         name: normalizeSkillKey(s.name) || "未知技能",
-        type: normalize(s.type) || "未知系/普通攻击",
+        attackTypeCode: Number.isFinite(Number(s && s.attackTypeCode)) ? Number(s.attackTypeCode) : null,
+        attackTypeLabel: normalize(s && s.attackTypeLabel),
+        type: buildSkillTypeText(normalize(s.type) || "未知系/普通攻击", s && s.attackTypeCode, s && s.attackTypeLabel),
         power: Number(s.power) > 0 ? Number(s.power) : 0,
         ppMax: Math.max(1, Number(s.pp) || 10),
         pp: Math.max(1, Number(s.pp) || 10),
@@ -4399,9 +4611,12 @@ createApp({
       const ability = calcPetAbilityByRace(race, level, talentOverride || createUniformTalent30(), studyOverride || createZeroStats());
       const targetUnlockedSkills = (species.skills || []).filter((s) => Number(s.level) <= level).map((s) => ({
         skillId: Number(s && s.skillId) || null,
+        dexId: Number(entry && entry.dexId) || Number(s && s.dexId) || 0,
         skillKey: normalize(s && s.skillKey),
         name: normalizeSkillKey(s.name) || "未知技能",
-        type: normalize(s.type) || "未知系/普通攻击",
+        attackTypeCode: Number.isFinite(Number(s && s.attackTypeCode)) ? Number(s.attackTypeCode) : null,
+        attackTypeLabel: normalize(s && s.attackTypeLabel),
+        type: buildSkillTypeText(normalize(s.type) || "未知系/普通攻击", s && s.attackTypeCode, s && s.attackTypeLabel),
         power: Number(s.power) > 0 ? Number(s.power) : 0,
         ppMax: Math.max(1, Number(s.pp) || 10),
         pp: Math.max(1, Number(s.pp) || 10),
@@ -4490,6 +4705,7 @@ createApp({
         summary: "",
         lastDamage: 0,
         lastElementFactor: 1,
+        oncePerBattleSkillKeys: [],
         fxSkillText: "",
         fxAttackerSkillText: "",
         fxTargetSkillText: "",
@@ -4533,6 +4749,7 @@ createApp({
       if (!scene || !scene.open || scene.ended || scene.isActing || scene.pendingFinish) return false;
       const key = normalizeSkillKey(skillName);
       const skill = battleSceneSkills.value.find((s) => normalizeSkillKey(s.name) === key);
+      if (hasUsedOncePerBattleSkill(scene, "attacker", skill || key)) return false;
       return Boolean(skill && skill.pp > 0);
     };
     const scheduleBattleDefeatResolution = (scene, defeatedSide, reason = "") => {
@@ -4667,7 +4884,12 @@ createApp({
       if (!beforeAct.canAct) {
         return { ended: false, skipped: true, visualDelayMs: BATTLE_FLOAT_TEXT_DURATION_MS };
       }
+      if (hasUsedOncePerBattleSkill(scene, actorSide, skill)) {
+        pushBattleLog(scene, `${actorName} 本场战斗已经使用过 ${skill.name}，无法再次使用。`);
+        return { ended: false, skipped: true, visualDelayMs: BATTLE_FLOAT_TEXT_DURATION_MS };
+      }
       skill.pp = Math.max(0, Number(skill.pp) - 1);
+      markOncePerBattleSkillUsed(scene, actorSide, skill);
 
       scene.fxSkillText = skill.name;
       scene.fxAttackerSkillText = isAttacker ? skill.name : "";
@@ -4691,7 +4913,7 @@ createApp({
 
       const actionSeq = (Number(scene._petAnimActionSeq) || 0) + 1;
       scene._petAnimActionSeq = actionSeq;
-      const atkKind = parseSkillAttackKind(skill.type);
+      const atkKind = parseSkillAttackKind(skill);
       const actorDexIdForDelay = resolveBattleSideDexId(scene, actorSide);
       const actorState = getSideState(scene, actorSide);
       if ((atkKind === "physical" || atkKind === "special") && Math.max(0, Number(actorState.statuses.confuse) || 0) > 0) {
@@ -4771,6 +4993,12 @@ createApp({
             ? getBattleAbilityStat(scene, targetSide, "spDef")
             : getBattleAbilityStat(scene, targetSide, "def"));
         const powerFactor = getElementPowerFactor(scene, actorSide, skillElement);
+        const actorStatuses = getSideState(scene, actorSide).statuses || {};
+        const powerConditionFactor = normalize(skill && skill.name) === "激发力量"
+          && (Math.max(0, Number(actorStatuses.poison) || 0) > 0 || Math.max(0, Number(actorStatuses.paralyze) || 0) > 0 || Math.max(0, Number(actorStatuses.burn) || 0) > 0)
+          ? 2
+          : 1;
+        if (powerConditionFactor > 1) pushBattleLog(scene, `${actorName}处于异常状态，激发力量威力提升为2倍。`);
         const reduceFactor = getDamageReductionFactor(scene, targetSide);
         const mh = fixedDamage > 0 ? null : parseMultiHitRangeFromDesc(skill);
         const bonusFixedPerHit = mh ? parseBonusFixedDamagePerHit(skill) : null;
@@ -4784,7 +5012,7 @@ createApp({
           const randomFactor = 0.85 + Math.random() * 0.15;
           let one = calcSkillDamageByOfficialStyle({
             level: actorLevel,
-            power: (isNoEdgeBlade ? 1 : Number(skill.power)) * powerFactor,
+            power: (isNoEdgeBlade ? 1 : Number(skill.power)) * powerFactor * powerConditionFactor,
             atkStat,
             defStat,
             stab,
@@ -5135,6 +5363,7 @@ createApp({
             scene.pendingFinish = false;
             return;
           }
+          markDefeatedDex(target.dexId);
           if (!state.value.activatedDexIds.includes(target.dexId)) state.value.activatedDexIds.push(target.dexId);
           recordGuardianBadgeWin(target.name);
           const canDropEgg = canObtainEggByActionDexId(target.dexId);
@@ -5156,6 +5385,7 @@ createApp({
           }
         } else if (scene.mode === "boss") {
           hCoinGain = 2000;
+          markDefeatedDex(target.dexId);
           if (!state.value.activatedDexIds.includes(target.dexId)) state.value.activatedDexIds.push(target.dexId);
           const canDropEgg = canObtainEggByActionDexId(target.dexId);
           const alreadyHadEgg = hasObtainedEggDex(target.dexId);
@@ -5178,6 +5408,7 @@ createApp({
           hCoinGain = Math.max(0, Math.floor(Number(scene.targetLevel) || 0) * 2);
           const targetChain = getChainStageInfoByDexId(target.dexId, target.name);
           const isFinalForm = targetChain.formCount <= 1 || targetChain.stageIndex >= (targetChain.formCount - 1);
+          markDefeatedDex(target.dexId);
           if (!state.value.activatedDexIds.includes(target.dexId)) state.value.activatedDexIds.push(target.dexId);
           if (isFinalForm) {
             const hatchDexId = Number(targetChain.rootDexId) || target.dexId;
@@ -5250,6 +5481,10 @@ createApp({
       const key = normalizeSkillKey(skillName);
       const skill = (scene.skills || []).find((s) => normalizeSkillKey(s.name) === key);
       if (!skill || skill.pp <= 0) return;
+      if (hasUsedOncePerBattleSkill(scene, "attacker", skill)) {
+        showToast(`${skill.name} 一场战斗只能使用一次。`);
+        return;
+      }
       scene.isActing = true;
       const actionGuardToken = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
       scene._actionGuardToken = actionGuardToken;
@@ -5483,6 +5718,7 @@ createApp({
       const newName = normalizeSkillKey(newSkill);
       const validSet = speciesSkillNameSet(species, pet.level);
       if (!oldName || !newName || !validSet.has(newName)) { replaceSkillCtx.value = null; return; }
+      if (pet.equippedSkills.some((x) => normalizeSkillKey(x) === newName)) return;
       const idx = pet.equippedSkills.findIndex((x) => normalizeSkillKey(x) === oldName);
       if (idx >= 0) {
         pet.equippedSkills.splice(idx, 1, newName);
@@ -5742,6 +5978,10 @@ createApp({
         let deltaSum = 0;
         const detail = [];
         (actor.skills || []).forEach((s) => {
+          if (hasUsedOncePerBattleSkill(actor, "attacker", s)) {
+            detail.push(`${s.name}+0`);
+            return;
+          }
           const cur = Number(s.pp) || 0;
           const mx = Math.max(1, Number(s.ppMax) || cur || 1);
           const next = clamp(cur + gain, 0, mx);
@@ -6168,6 +6408,7 @@ createApp({
       lastServerSavedAt,
       dexSearch,
       dexElementFilter,
+      dexDefeatFilter,
       warehouseSearch,
       warehouseElementFilter,
       warehouseSortMode,
@@ -6265,7 +6506,9 @@ createApp({
       safeSkillAccuracy,
       skillBattleDesc,
       skillAttackTypeLabel,
+      skillDisplayDesc,
       hasEquippedSkill,
+      hasDefeatedDex,
       petElementIconStyle,
       petElementIconSrc,
       petElementList,
@@ -6388,8 +6631,3 @@ createApp({
     };
   }
 }).mount("#app");
-
-
-
-
-

@@ -25,6 +25,8 @@
       "aola-dex-1-100.js",
       "aola-species-data.js",
       "aola-skill-data.js",
+      "aola_pet_skill_extract.json",
+      "aola_pet_skill_extract_skills.json",
       "aola-evolution-chains.js",
       "vendor/**/*",
       "type/**/*",

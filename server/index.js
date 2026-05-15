@@ -153,7 +153,12 @@ const serveStatic = (req, res) => {
       ".gif": "image/gif",
       ".ogg": "audio/ogg"
     };
-    res.writeHead(200, { "Content-Type": typeMap[ext] || "application/octet-stream" });
+    res.writeHead(200, {
+      "Content-Type": typeMap[ext] || "application/octet-stream",
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0"
+    });
     fs.createReadStream(full).pipe(res);
   });
 };
