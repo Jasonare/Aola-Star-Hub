@@ -1022,7 +1022,7 @@ const parseSkillEffects = (skill) => {
   const canonicalSkillName = name.replace(/决/g, "诀");
   if (canonicalSkillName === "锁神诀") {
     return [
-      { kind: "lockGodSeal", target: "opponent", turns: 5, ratio: 1 / 16, speedDelta: -1 }
+      { kind: "lockGodSeal", target: "opponent", turns: 8, ratio: 1 / 16, speedDelta: -1 }
     ];
   }
   if (name === "风神附体") {
@@ -3137,6 +3137,14 @@ createApp({
     const showPetDetailModal = ref(false);
     const detailPreviewPet = ref(null);
     const shopTargetPetId = ref("");
+    const initialOnlyItems = [
+      {
+        id: "level_40_fruit",
+        name: "40级经验果",
+        price: 0,
+        desc: "初始一次性道具，只能给低于 Lv.40 的亚比使用，使用后直接升至 Lv.40"
+      }
+    ];
     const shopItems = ref([
       {
         id: "pp_bean_s",
@@ -3187,6 +3195,7 @@ createApp({
         desc: "随机单项天赋值增加 1-5 点"
       }
     ]);
+    const itemCatalog = computed(() => initialOnlyItems.concat(shopItems.value));
     const battleBgmAudio = ref(null);
     const sceneBgmAudio = ref(null);
     const currentSceneBgmSrc = ref("");
@@ -3233,6 +3242,11 @@ createApp({
       ensureItemInventory();
       const id = normalize(String(itemId || ""));
       return Math.max(0, Number(state.value.items[id]) || 0);
+    };
+    const itemNameById = (itemId, fallback = "道具") => {
+      const id = normalize(String(itemId || ""));
+      const item = itemCatalog.value.find((x) => normalize(x.id) === id);
+      return item ? item.name : fallback;
     };
     const hasObtainedEggDex = (dexId) => {
       const id = Number(dexId) || 0;
@@ -5486,45 +5500,7 @@ createApp({
         return;
       }
       scene.isActing = true;
-      const actionGuardToken = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-      scene._actionGuardToken = actionGuardToken;
       const result = runBattleSkill(scene, "attacker", skill);
-      const guardDelayMs = Math.max(
-        BATTLE_COUNTER_ATTACK_DELAY_MS + BATTLE_FLOAT_TEXT_DURATION_MS * 4,
-        (Number(result && result.visualDelayMs) || 0) + BATTLE_COUNTER_ATTACK_DELAY_MS + BATTLE_FLOAT_TEXT_DURATION_MS * 3
-      );
-      setTimeout(() => {
-        const live = battleScene.value;
-        if (!live || live !== scene || live.ended || live.pendingFinish) return;
-        if (live._actionGuardToken !== actionGuardToken || !live.isActing) return;
-        live.isActing = false;
-        live.pendingEndTurnTick = false;
-        live.fxSkillText = "";
-        live.fxAttackerSkillText = "";
-        live.fxTargetSkillText = "";
-        live.fxTargetShake = false;
-        live.fxAttackerShake = false;
-        clearBattleFloatTextIfExpired(live, true);
-        clearBattleSkillEffectFxIfExpired(live);
-        resetBattleAnimIdle(live);
-        pushBattleLog(live, "行动超时保护触发：已恢复战斗操作。");
-      }, guardDelayMs);
-      setTimeout(() => {
-        if (!battleScene.value || battleScene.value.ended || battleScene.value.pendingFinish) return;
-        battleScene.value.fxSkillText = "";
-        battleScene.value.fxAttackerSkillText = "";
-        battleScene.value.fxTargetSkillText = "";
-        clearBattleFloatTextIfExpired(battleScene.value);
-        clearBattleSkillEffectFxIfExpired(battleScene.value);
-        battleScene.value.fxTargetShake = false;
-        battleScene.value.fxAttackerShake = false;
-        battleScene.value._petAnimActionMarks = {};
-        if (battleScene.value._petAnimTargetAutoIdleTimer) { clearTimeout(battleScene.value._petAnimTargetAutoIdleTimer); battleScene.value._petAnimTargetAutoIdleTimer = null; }
-        if (battleScene.value._petAnimAttackerAutoIdleTimer) { clearTimeout(battleScene.value._petAnimAttackerAutoIdleTimer); battleScene.value._petAnimAttackerAutoIdleTimer = null; }
-        battleScene.value._petAnimTargetPlayLock = false;
-        battleScene.value._petAnimAttackerPlayLock = false;
-        resetBattleAnimIdle(battleScene.value);
-      }, Math.max(BATTLE_DEFEAT_RESOLUTION_DELAY_MS, BATTLE_FLOAT_TEXT_DURATION_MS));
       if (scene.ended) {
         scene.isActing = false;
         return;
@@ -5536,11 +5512,11 @@ createApp({
         scene.isActing = false;
         return;
       }
-      setTimeout(() => {
+      Promise.resolve(result && result.visualDone).then(() => {
         const live = battleScene.value;
         if (!live || live !== scene || live.ended || live.pendingFinish) return;
-        queueTargetCounterAttack(160);
-      }, Math.max(0, Number(result && result.visualDelayMs) || 0));
+        queueTargetCounterAttack(BATTLE_COUNTER_ATTACK_DELAY_MS);
+      });
     };
     const consumeBattleTurnAfterItem = () => {
       const scene = battleScene.value;
@@ -5996,7 +5972,7 @@ createApp({
         setTimeout(() => {
           if (battleScene.value && battleScene.value === actor) actor.ppOnAttacker = "";
         }, BATTLE_FLOAT_TEXT_DURATION_MS);
-        pushBattleLog(actor, `${petDisplayName(pet)} 使用 ${shopItems.value.find((x) => x.id === id)?.name || "PP豆"}：每个已装备技能回复 ${gain} PP，${detail.join("，")}（实际合计+${deltaSum}）`);
+        pushBattleLog(actor, `${petDisplayName(pet)} 使用 ${itemNameById(id, "PP豆")}：每个已装备技能回复 ${gain} PP，${detail.join("，")}（实际合计+${deltaSum}）`);
         battleActionTab.value = "skills";
         showToast(`${petDisplayName(pet)} 的技能 PP 回复 ${gain} 点。`);
         consumeBattleTurnAfterItem();

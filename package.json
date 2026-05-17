@@ -1,5 +1,5 @@
 {
-  "name": "aola-star-hub",
+  "name": "Aola-Star-Hub",
   "version": "0.1.0",
   "private": true,
   "description": "Aola Star Hub frontend with local save server and Electron shell.",
@@ -10,7 +10,7 @@
     "electron": "electron .",
     "desktop": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder --win portable"
+    "dist": "electron-builder --win nsis"
   },
   "build": {
     "appId": "com.aolastar.hub",
@@ -38,19 +38,29 @@
       "server/index.js",
       "server/README.md",
       "package.json",
-      "属性克制.jpg"
+      "属性克制.jpg",
+      "Aola-Star-Hub-bg.png",
+      "Aola-Star-Hub-icon.png",
+      "build/Aola-Star-Hub-icon.ico"
     ],
     "asarUnpack": [
       "server/**/*"
     ],
     "win": {
       "signAndEditExecutable": false,
+      "icon": "build/Aola-Star-Hub-icon.ico",
       "target": [
-        "portable"
+        "nsis"
       ]
     },
+    "nsis": {
+      "installerIcon": "build/Aola-Star-Hub-icon.ico",
+      "uninstallerIcon": "build/Aola-Star-Hub-icon.ico",
+      "installerHeaderIcon": "build/Aola-Star-Hub-icon.ico",
+      "artifactName": "${productName}-debug-${version}-setup.exe"
+    },
     "portable": {
-      "artifactName": "${productName}-${version}-portable.exe"
+      "artifactName": "${productName}-debug-${version}-setup.exe"
     }
   },
   "devDependencies": {

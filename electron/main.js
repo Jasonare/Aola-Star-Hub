@@ -15,6 +15,7 @@ const createWindow = () => {
     height: 820,
     minWidth: 1024,
     minHeight: 640,
+    icon: path.join(__dirname, "../build/Aola-Star-Hub-icon.ico"),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false
