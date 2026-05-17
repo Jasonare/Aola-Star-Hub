@@ -1,6 +1,6 @@
 {
   "name": "Aola-Star-Hub",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Aola Star Hub frontend with local save server and Electron shell.",
   "main": "electron/main.js",
@@ -16,7 +16,7 @@
     "appId": "com.aolastar.hub",
     "productName": "Aola Star Hub",
     "directories": {
-      "output": "dist"
+      "output": "release"
     },
     "files": [
       "aola-star.html",
@@ -54,6 +54,11 @@
       ]
     },
     "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Aola Star Hub",
       "installerIcon": "build/Aola-Star-Hub-icon.ico",
       "uninstallerIcon": "build/Aola-Star-Hub-icon.ico",
       "installerHeaderIcon": "build/Aola-Star-Hub-icon.ico",

@@ -31,6 +31,7 @@ cleanupOrphanTemplateOverlays();
 const STORAGE_KEY = "aola_battle_platform_v2_ascii";
 const SESSION_MODE_KEY = "aola_star_session_mode_v1";
 const AUTH_TOKEN_KEY = "aola_star_auth_token_v1";
+const REMEMBER_LOGIN_KEY = "aola_star_remember_login_v1";
 const SAVE_FILE_PREFIX = "aola_battle_save_";
 const STARTER_DEX_IDS = [1, 4, 7];
 const BASE_GUARDIAN_NAMES = ["冰拳艾司", "沙麒麟", "金刚库巴", "木面侠", "火花龙"];
@@ -462,6 +463,15 @@ const ATTACK_TYPE_LABEL_BY_CODE = { 0: "普通攻击", 1: "特殊攻击", 2: "�
 const skillAttackTypeVersion = ref(0);
 const skillAttackTypeIndexBySkillId = new Map();
 const skillAttackTypeIndexByNameLevel = new Map();
+const syncSkillMasterAttackTypeIndex = (rows) => {
+  (Array.isArray(rows) ? rows : []).forEach((row) => {
+    const skillId = Number(row && row.skill_id);
+    const attackTypeCode = Number(row && row.attack_type);
+    if (!Number.isFinite(skillId) || skillId <= 0 || !Number.isFinite(attackTypeCode)) return;
+    skillAttackTypeIndexBySkillId.set(skillId, { dexId: 0, skillId, name: normalize((row && row.cn_name) || (row && row.new_cn_name)), level: null, attackTypeCode });
+  });
+  skillAttackTypeVersion.value += 1;
+};
 const attackTypeLabelFromCode = (code) => {
   const n = Number(code);
   return Object.prototype.hasOwnProperty.call(ATTACK_TYPE_LABEL_BY_CODE, n) ? ATTACK_TYPE_LABEL_BY_CODE[n] : "";
@@ -743,7 +753,7 @@ const syncBattleUiHpForSide = (scene, side) => {
     scene.uiTargetHp = clamp(Number(scene.targetHp) || 0, 0, Number(scene.targetMaxHp) || 1);
   }
 };
-const TIMED_EFFECT_REFRESH_BY_KIND = new Set(["diceDrain", "lockGodDrain"]);
+const TIMED_EFFECT_REFRESH_BY_KIND = new Set(["diceDrain"]);
 const addTimedEffect = (scene, side, effect) => {
   const state = getSideState(scene, side);
   const next = {
@@ -2527,6 +2537,7 @@ createApp({
         ]);
         if (!Array.isArray(petRows)) return;
         syncSkillAttackTypeIndex(petRows);
+        syncSkillMasterAttackTypeIndex(skillRows);
 
         const descBySkillId = new Map();
         (Array.isArray(skillRows) ? skillRows : []).forEach((row) => {
@@ -2859,7 +2870,8 @@ createApp({
       const lv = clamp(Number(level) || 1, 1, 100);
       const byId = sid > 0 ? (dexById.get(sid) || null) : null;
 
-      if (!name) return byId || dexEntries[0] || null;
+      if (byId) return byId;
+      if (!name) return dexEntries[0] || null;
 
       // 存档里可能保存的是“当前形态名”，先回推到该进化链根ID，确保20/40级进化规则稳定生效。
       const rootId = Number(rootDexByFormName.get(name)) || 0;
@@ -2953,10 +2965,7 @@ createApp({
         const savedBase = Number(p.baseDexId) || 0;
         const anchor = savedBase || dex.dexId;
         const rootDexId = chainRootByDex.get(anchor) || anchor;
-        const chain = getChainStageInfoByDexId(rootDexId, dex.name);
-        const stage = stageIndexByLevelAndCount(level, chain.formCount, chain.evoLevels);
-        const currentDexId = Number(resolveEvolutionDexIdByPetAndStage({ dexId: rootDexId, baseDexId: rootDexId, speciesName: dex.name }, stage)) || Number(dex.dexId) || 0;
-        const currentDex = dexById.get(currentDexId) || dex;
+        const currentDex = dex;
         const currentSpecies = getSpeciesByDexId(currentDex.dexId, currentDex.name) || species;
         return {
           id: String(p.id || uid()),
@@ -2974,7 +2983,7 @@ createApp({
           talentRerollCount: Math.max(0, Math.floor(Number(p.talentRerollCount) || 0)),
           createdAt: Number(p.createdAt) || Date.now()
         };
-      }).filter((egg) => egg && canObtainEggByActionDexId(egg.dexId)) : [];
+      }).filter((pet) => pet && Number(pet.dexId) > 0 && Number(pet.dexId) <= MAX_OPEN_CHALLENGE_DEX_ID) : [];
 
       const eggs = Array.isArray(loaded.eggs) ? loaded.eggs.map((e) => {
         const nameInSave = normalize(e.speciesName);
@@ -3083,6 +3092,31 @@ createApp({
         else localStorage.removeItem(AUTH_TOKEN_KEY);
       } catch {}
     };
+    const readRememberLogin = () => {
+      try {
+        const raw = JSON.parse(localStorage.getItem(REMEMBER_LOGIN_KEY) || "{}");
+        return {
+          remember: Boolean(raw && raw.remember),
+          username: normalize(raw && raw.username),
+          password: String((raw && raw.password) || "")
+        };
+      } catch {
+        return { remember: false, username: "", password: "" };
+      }
+    };
+    const writeRememberLogin = (username, password) => {
+      try {
+        if (!rememberPassword.value) {
+          localStorage.removeItem(REMEMBER_LOGIN_KEY);
+          return;
+        }
+        localStorage.setItem(REMEMBER_LOGIN_KEY, JSON.stringify({
+          remember: true,
+          username: normalize(username),
+          password: String(password || "")
+        }));
+      } catch {}
+    };
     const saveState = (nextState) => {
       if (playMode.value !== "guest" && storageAdapter.mode === "localStorage") return;
       try { storageAdapter.saveRaw(JSON.stringify(nextState)); } catch {}
@@ -3094,6 +3128,7 @@ createApp({
     const authUser = ref(null);
     const authUsername = ref("");
     const authPassword = ref("");
+    const rememberPassword = ref(false);
     const authMode = ref("login");
     const authLoading = ref(false);
     const saveLoading = ref(false);
@@ -3137,6 +3172,7 @@ createApp({
     const showPetDetailModal = ref(false);
     const detailPreviewPet = ref(null);
     const shopTargetPetId = ref("");
+    const shopBuyQuantities = ref({});
     const initialOnlyItems = [
       {
         id: "level_40_fruit",
@@ -3181,6 +3217,12 @@ createApp({
         name: "高级体力糖",
         price: 200,
         desc: "回复目标亚比 200 点体力"
+      },
+      {
+        id: "purify_potion",
+        name: "净化药剂",
+        price: 200,
+        desc: "清除目标亚比的异常状态"
       },
       {
         id: "talent_reroll_capsule",
@@ -3287,6 +3329,19 @@ createApp({
       const cur = Math.max(0, Number(state.value.items[id]) || 0);
       state.value.items[id] = Math.max(0, cur + (Number(delta) || 0));
     };
+    const shopBuyQuantity = (itemId) => {
+      const id = normalize(String(itemId || ""));
+      return clamp(Math.floor(Number(shopBuyQuantities.value[id]) || 1), 1, 999);
+    };
+    const setShopBuyQuantity = (itemId, value) => {
+      const id = normalize(String(itemId || ""));
+      if (!id) return;
+      shopBuyQuantities.value[id] = clamp(Math.floor(Number(value) || 1), 1, 999);
+    };
+    const shopItemTotalPrice = (item) => {
+      if (!item) return 0;
+      return Math.max(0, Math.floor(Number(item.price) || 0)) * shopBuyQuantity(item.id);
+    };
 
     const showToast = (message) => {
       toast.value = { show: true, message };
@@ -3331,6 +3386,12 @@ createApp({
       return false;
     };
     const checkAuthSession = async () => {
+      const remembered = readRememberLogin();
+      rememberPassword.value = remembered.remember;
+      if (remembered.remember) {
+        authUsername.value = remembered.username;
+        authPassword.value = remembered.password;
+      }
       const mode = readSessionMode();
       if (mode === "guest") {
         writeAuthToken("");
@@ -3398,7 +3459,8 @@ createApp({
         });
         authUser.value = data.user || null;
         writeAuthToken(data.token || "");
-        authPassword.value = "";
+        writeRememberLogin(username, password);
+        if (!rememberPassword.value) authPassword.value = "";
         playMode.value = "user";
         writeSessionMode("user");
         state.value = createInitialState();
@@ -5280,7 +5342,7 @@ createApp({
       if (!pet) return { added: 0, current: 0, full: false, pet: null };
       const study = normalizeStudy(pet.study);
       const before = clamp(Number(study[key]) || 0, 0, 255);
-      study[key] = clamp(before + 5, 0, 255);
+      study[key] = clamp(before + 10, 0, 255);
       pet.study = normalizeStudy(study, key);
       const after = clamp(Number(pet.study[key]) || 0, 0, 255);
       const added = Math.max(0, after - before);
@@ -5861,11 +5923,13 @@ createApp({
       const item = shopItems.value.find((x) => normalize(x.id) === id);
       if (!item) return;
       const price = Math.max(0, Math.floor(Number(item.price) || 0));
+      const quantity = shopBuyQuantity(id);
+      const totalPrice = price * quantity;
       const wallet = Math.max(0, Math.floor(Number(state.value.hCoins) || 0));
-      if (wallet < price) return showToast(`H币不足，需要 ${price} H币。`);
-      state.value.hCoins = wallet - price;
-      addItemCount(id, 1);
-      showToast(price > 0 ? `已购买 ${item.name} x1，花费 ${price} H币。` : `已获取 ${item.name} x1。`);
+      if (wallet < totalPrice) return showToast(`H币不足，需要 ${totalPrice} H币。`);
+      state.value.hCoins = wallet - totalPrice;
+      addItemCount(id, quantity);
+      showToast(totalPrice > 0 ? `已购买 ${item.name} x${quantity}，花费 ${totalPrice} H币。` : `已获取 ${item.name} x${quantity}。`);
     };
     const buyShopEgg = (dexId) => {
       const entry = dexById.get(Number(dexId));
@@ -6004,6 +6068,29 @@ createApp({
         battleActionTab.value = "skills";
         showToast(`${petDisplayName(pet)} 回复体力 ${heal} 点。`);
         if (scene && scene.currentAttackerId === pet.id) consumeBattleTurnAfterItem();
+        return;
+      }
+      if (id === "purify_potion") {
+        const scene = battleScene.value;
+        const targetState = scene && scene.currentAttackerId === pet.id
+          ? getSideState(scene, "attacker")
+          : null;
+        if (!targetState) return showToast("净化药剂需在该亚比出战时使用。");
+        const statusKeys = Object.keys((targetState && targetState.statuses) || {});
+        const activeLabels = statusKeys
+          .filter((k) => Math.max(0, Number(targetState.statuses[k]) || 0) > 0)
+          .map((k) => statusLabel(k));
+        if (targetState) {
+          statusKeys.forEach((k) => { targetState.statuses[k] = 0; });
+        }
+        addItemCount(id, -1);
+        battleActionTab.value = "skills";
+        const detail = activeLabels.length > 0 ? activeLabels.join("、") : "无异常状态";
+        if (scene && scene.currentAttackerId === pet.id) {
+          pushBattleLog(scene, `${petDisplayName(pet)} 使用净化药剂，清除了${detail}。`);
+          consumeBattleTurnAfterItem();
+        }
+        showToast(`${petDisplayName(pet)} 已清除异常状态。`);
         return;
       }
       if (id === "talent_reroll_capsule") {
@@ -6378,6 +6465,7 @@ createApp({
       authUser,
       authUsername,
       authPassword,
+      rememberPassword,
       authMode,
       authLoading,
       saveLoading,
@@ -6448,6 +6536,7 @@ createApp({
       filteredWarehousePets,
       warehouseCount,
       shopItems,
+      shopBuyQuantities,
       shopEggEntries,
       itemInventoryRows,
       shopTargetPetId,
@@ -6566,6 +6655,9 @@ createApp({
       openShopPanel,
       closeShopPanel,
       buyShopItem,
+      shopBuyQuantity,
+      setShopBuyQuantity,
+      shopItemTotalPrice,
       buyShopEgg,
       openShopEggDetail,
       useShopItem,

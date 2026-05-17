@@ -598,6 +598,10 @@
         <input v-model="authUsername" type="text" autocomplete="username" placeholder="用户名" class="login-input">
         <input v-model="authPassword" type="password" autocomplete="current-password" placeholder="密码" @keyup.enter="submitAuth" class="login-input">
       </div>
+      <label class="mt-3 flex items-center gap-2 text-xs font-black text-cyan-100/85 select-none">
+        <input v-model="rememberPassword" type="checkbox" class="w-4 h-4 accent-cyan-500">
+        <span>记住密码</span>
+      </label>
       <button @click="submitAuth" :disabled="authLoading" class="login-primary-btn w-full mt-4 disabled:opacity-50">{{ authMode==='register' ? '注册并进入游戏' : '登录并读取存档' }}</button>
       <button @click="enterGuestMode" :disabled="authLoading" class="login-ghost-btn w-full mt-3 disabled:opacity-50">游客登录（使用本地进度）</button>
       <div class="mt-5 rounded-2xl border border-cyan-300/20 bg-slate-950/35 p-3 text-xs font-bold text-cyan-100/75 leading-5">
@@ -1123,7 +1127,17 @@
             <div class="text-[11px] font-bold text-emerald-700">{{ it.desc }}</div>
             <div class="text-[11px] font-black text-amber-700 mt-1">{{ it.price > 0 ? (it.price + ' H币') : '免费' }}</div>
           </div>
-          <button @click="buyShopItem(it.id)" :disabled="(state.hCoins || 0) < it.price" class="h-9 px-4 rounded-xl bg-emerald-600 text-white text-sm font-black disabled:opacity-45">购买</button>
+          <div class="flex items-center gap-2 shrink-0">
+            <input
+              type="number"
+              min="1"
+              max="999"
+              :value="shopBuyQuantity(it.id)"
+              @input="setShopBuyQuantity(it.id, $event.target.value)"
+              class="w-20 h-9 rounded-xl border border-emerald-200 bg-white px-2 text-sm font-black text-emerald-900"
+            >
+            <button @click="buyShopItem(it.id)" :disabled="(state.hCoins || 0) < shopItemTotalPrice(it)" class="h-9 px-4 rounded-xl bg-emerald-600 text-white text-sm font-black disabled:opacity-45">购买</button>
+          </div>
         </div>
       </div>
       <div v-else-if="shopTab==='eggs'" class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
@@ -1276,7 +1290,7 @@
       <div class="flex items-center justify-between mb-3">
         <div>
           <h3 class="text-lg font-black text-slate-900">学习力战场</h3>
-          <p class="text-xs font-bold text-slate-500">每次击败 Lv.10 守卫可获得对应学习力 +5，达到 255 后自动停止。</p>
+          <p class="text-xs font-bold text-slate-500">每次击败 Lv.10 守卫可获得对应学习力 +10，达到 255 后自动停止。</p>
         </div>
         <button @click="closeStudyPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
@@ -1395,14 +1409,14 @@
           <div class="text-xs font-black text-cyan-100 mb-2">{{ battleActionTab === 'items' ? '道具列表' : '技能列表' }}</div>
           <div v-if="battleActionTab === 'items'" class="space-y-2 max-h-[220px] overflow-y-auto pr-1 scrollbar">
             <button
-              v-for="it in itemInventoryRows.filter(x => (x.id.startsWith('pp_bean_') || x.id.startsWith('hp_candy_')))"
+              v-for="it in itemInventoryRows.filter(x => (x.id.startsWith('pp_bean_') || x.id.startsWith('hp_candy_') || x.id === 'purify_potion'))"
               :key="'battle_item_'+it.id"
               @click="useShopItem(it.id)"
               :disabled="it.count <= 0 || battleScene.ended || battleScene.isActing"
               class="w-full h-11 rounded-xl border border-cyan-300/35 bg-cyan-500/15 text-cyan-100 text-xs font-black disabled:opacity-40 text-left px-3 flex items-center justify-between"
             >
               <span class="flex items-center gap-2 min-w-0">
-                <span class="w-6 h-6 rounded-lg flex items-center justify-center text-sm" :class="it.id.startsWith('pp_bean_') ? 'bg-indigo-500/40' : 'bg-rose-500/40'">{{ it.id.startsWith('pp_bean_') ? 'PP' : 'HP' }}</span>
+                <span class="w-6 h-6 rounded-lg flex items-center justify-center text-sm" :class="it.id.startsWith('pp_bean_') ? 'bg-indigo-500/40' : (it.id === 'purify_potion' ? 'bg-emerald-500/40' : 'bg-rose-500/40')">{{ it.id.startsWith('pp_bean_') ? 'PP' : (it.id === 'purify_potion' ? '净' : 'HP') }}</span>
                 <span class="truncate">{{ it.name }}</span>
               </span>
               <span class="text-[11px] text-cyan-200">x{{ it.count }}</span>

@@ -53,6 +53,9 @@ const verifyPassword = (password, user) => {
 
 const userSaveDir = (userId) => path.join(SAVE_ROOT, String(userId));
 const userSaveFile = (userId) => path.join(userSaveDir(userId), "save.json");
+const TEST_USER_ID = "test-account-all-pets-1-796";
+const TEST_USERNAME = "test";
+const TEST_PASSWORD = "test123456";
 
 const publicUser = (user) => ({
   id: user.id,
@@ -69,6 +72,122 @@ const createSession = (user) => {
   const token = crypto.randomBytes(32).toString("hex");
   sessions.set(token, { userId: user.id, expiresAt: Date.now() + SESSION_TTL_MS });
   return token;
+};
+
+const loadWindowDataScript = (fileName, globalName) => {
+  const text = fs.readFileSync(path.join(ROOT_DIR, fileName), "utf8");
+  const sandbox = { window: {} };
+  const wrapped = new Function("window", `${text}\nreturn window[${JSON.stringify(globalName)}];`);
+  return wrapped(sandbox.window);
+};
+
+const createTestSaveState = () => {
+  const dexRows = loadWindowDataScript("aola-dex-1-100.js", "AOLA_DEX_1_100");
+  const speciesByDex = loadWindowDataScript("aola-species-data.js", "AOLA_SPECIES_DATA_BY_DEX") || {};
+  const evolutionData = loadWindowDataScript("aola-evolution-chains.js", "AOLA_EVOLUTION_CHAINS") || {};
+  const zeroStats = () => ({ hp: 0, atk: 0, def: 0, spAtk: 0, spDef: 0, speed: 0 });
+  const maxTalent = () => ({ hp: 62, atk: 62, def: 62, spAtk: 62, spDef: 62, speed: 62 });
+  const clean = (s) => String(s || "").replace(/[\u200b\u00a0]/g, "").trim();
+  const now = Date.now();
+  const openedDexRows = (Array.isArray(dexRows) ? dexRows : [])
+    .filter((d) => Number(d && d.dexId) >= 1 && Number(d && d.dexId) <= 796);
+  const openedDexIds = new Set(openedDexRows.map((d) => Number(d.dexId)));
+  const chainRootByDex = new Map();
+  const chainOrderByDex = new Map();
+  (Array.isArray(evolutionData.chains) ? evolutionData.chains : []).forEach((chain) => {
+    const members = Array.isArray(chain && chain.members) ? chain.members : [];
+    const openedMembers = members
+      .map((m, index) => ({ dexId: Number(m && m.race_id) || 0, index }))
+      .filter((m) => openedDexIds.has(m.dexId));
+    if (openedMembers.length === 0) return;
+    const root = Number(chain && chain.chain_anchor_id) || openedMembers[0].dexId;
+    openedMembers.forEach((m) => {
+      chainRootByDex.set(m.dexId, root);
+      chainOrderByDex.set(m.dexId, m.index);
+    });
+  });
+  const representativeDexByRoot = new Map();
+  openedDexRows.forEach((d) => {
+    const dexId = Number(d.dexId);
+    const root = chainRootByDex.get(dexId) || dexId;
+    const current = representativeDexByRoot.get(root);
+    const currentOrder = chainOrderByDex.has(current) ? chainOrderByDex.get(current) : current;
+    const nextOrder = chainOrderByDex.has(dexId) ? chainOrderByDex.get(dexId) : dexId;
+    if (!current || nextOrder > currentOrder || (nextOrder === currentOrder && dexId > current)) {
+      representativeDexByRoot.set(root, dexId);
+    }
+  });
+  const representativeDexIds = new Set(representativeDexByRoot.values());
+  const activePets = openedDexRows
+    .filter((d) => representativeDexIds.has(Number(d.dexId)))
+    .map((d, idx) => {
+      const dexId = Number(d.dexId);
+      const species = speciesByDex[String(dexId)] || {};
+      const equippedSkills = (Array.isArray(species.skills) ? species.skills : [])
+        .filter((s) => Number(s && s.level) <= 100)
+        .sort((a, b) => Number(b.level || 0) - Number(a.level || 0))
+        .slice(0, 4)
+        .map((s) => clean(s && s.name))
+        .filter(Boolean)
+        .reverse();
+      return {
+        id: `test_pet_${String(dexId).padStart(4, "0")}`,
+        dexId,
+        baseDexId: dexId,
+        speciesName: clean(d.name) || clean(species.name) || `亚比${dexId}`,
+        element: clean(species.element) || clean(d.element) || "未知系",
+        subElement: clean(species.subElement || d.subElement),
+        level: 100,
+        exp: 0,
+        totalExp: 0,
+        talent: maxTalent(),
+        study: zeroStats(),
+        equippedSkills,
+        createdAt: now + idx
+      };
+    });
+  const bagPetIds = activePets.slice(0, 6).map((p) => p.id);
+  while (bagPetIds.length < 6) bagPetIds.push("");
+  return {
+    activatedDexIds: openedDexRows.map((d) => Number(d.dexId)),
+    obtainedEggDexIds: [],
+    activePets,
+    bagPetIds,
+    eggs: [],
+    selectedDexId: null,
+    challengeFormIndex: 0,
+    selectedAttackerId: bagPetIds[0] || "",
+    selectedPetId: activePets[0] ? activePets[0].id : "",
+    items: { level_40_fruit: 1 },
+    hCoins: 100000,
+    guardianWinCounts: {},
+    equippedBadgeId: "",
+    targetLevel: 10,
+    battleLog: [],
+    showDexPanel: false
+  };
+};
+
+const ensureTestAccount = () => {
+  const db = usersDb();
+  const { salt, hash } = hashPassword(TEST_PASSWORD);
+  let user = db.users.find((u) => String(u.username || "").toLowerCase() === TEST_USERNAME);
+  if (user) {
+    user.id = user.id || TEST_USER_ID;
+    user.salt = salt;
+    user.passwordHash = hash;
+    user.updatedAt = new Date().toISOString();
+  } else {
+    user = { id: TEST_USER_ID, username: TEST_USERNAME, salt, passwordHash: hash, createdAt: new Date().toISOString() };
+    db.users.push(user);
+  }
+  saveUsersDb(db);
+  writeJsonFile(userSaveFile(user.id), {
+    userId: user.id,
+    username: user.username,
+    savedAt: new Date().toISOString(),
+    save: createTestSaveState()
+  });
 };
 
 const parseCookies = (req) => {
@@ -246,6 +365,7 @@ const startServer = (port = PORT, callback = null) => {
   ensureDir(DATA_DIR);
   ensureDir(SAVE_ROOT);
   if (!fs.existsSync(USERS_FILE)) writeJsonFile(USERS_FILE, { users: [] });
+  ensureTestAccount();
   const server = http.createServer((req, res) => {
     const pathname = new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname;
     if (req.method === "OPTIONS") {
