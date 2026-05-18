@@ -9,6 +9,7 @@
     "server": "node server/index.js",
     "electron": "electron .",
     "desktop": "electron .",
+    "generate:skill-effects": "node generate-skill-effects-hardcoded.js",
     "pack": "electron-builder --dir",
     "dist": "electron-builder --win nsis"
   },
@@ -16,12 +17,13 @@
     "appId": "com.aolastar.hub",
     "productName": "Aola Star Hub",
     "directories": {
-      "output": "release"
+      "output": "output"
     },
     "files": [
       "aola-star.html",
       "aola-star-app.js",
       "aola-star-crash.js",
+      "aola-skill-effects-hardcoded.js",
       "aola-dex-1-100.js",
       "aola-species-data.js",
       "aola-skill-data.js",
@@ -30,6 +32,7 @@
       "aola-evolution-chains.js",
       "vendor/**/*",
       "type/**/*",
+      "type-transparent/**/*",
       "BGM/**/*",
       "pet-action/*/*.webp",
       "pet-img/**/*",

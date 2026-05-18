@@ -891,9 +891,25 @@
             <input v-model="targetLevelInput" type="text" inputmode="numeric" class="mt-1 w-full text-sm font-black bg-transparent focus:outline-none">
             <div v-if="targetLevelValidationText" class="mt-1 text-[10px] font-black text-rose-500">{{ targetLevelValidationText }}</div>
           </label>
-          <div class="rounded-xl border border-indigo-100 bg-indigo-50 p-2 text-xs font-bold text-indigo-700">属性倍率：{{ predictedElementFactor.toFixed(2) }}x</div>
-          <div class="rounded-xl border border-emerald-100 bg-emerald-50 p-2 text-xs font-bold text-emerald-700">{{ predictedElementText }}</div>
+          <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+            <div class="flex items-center gap-2 text-xs font-black text-rose-700">
+              <span class="w-20 shrink-0">克制目标</span>
+              <span v-for="el in selectedDexElementGroups.strong" :key="'dex_strong_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+              <span v-if="selectedDexElementGroups.strong.length===0" class="text-[11px] font-bold text-slate-400">无</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs font-black text-sky-700">
+              <span class="w-20 shrink-0">对目标微弱</span>
+              <span v-for="el in selectedDexElementGroups.weak" :key="'dex_weak_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+              <span v-if="selectedDexElementGroups.weak.length===0" class="text-[11px] font-bold text-slate-400">无</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs font-black text-slate-700">
+              <span class="w-20 shrink-0">对目标无效</span>
+              <span v-for="el in selectedDexElementGroups.immune" :key="'dex_immune_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+              <span v-if="selectedDexElementGroups.immune.length===0" class="text-[11px] font-bold text-slate-400">无</span>
+            </div>
+          </div>
           <button @click="startChallenge" :disabled="bagPets.length === 0" class="w-full h-11 rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white font-black disabled:opacity-50 disabled:cursor-not-allowed">发起挑战</button>
+          <button @click="startAutoBattleFromDex" :disabled="bagPets.length === 0 || (itemInventoryRows.find(x => x.id === 'auto_battle_device')?.count || 0) <= 0" class="w-full h-10 rounded-xl bg-slate-800 text-white text-sm font-black disabled:opacity-50 disabled:cursor-not-allowed">自动挑战10次（剩余 {{ itemInventoryRows.find(x => x.id === 'auto_battle_device')?.count || 0 }} 次）</button>
         </div>
       </div>
     </div>
@@ -1158,7 +1174,7 @@
       <div v-else class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
         <div v-for="it in itemInventoryRows" :key="'bag_item_'+it.id" class="rounded-2xl border border-indigo-100 bg-indigo-50 p-3 flex items-center justify-between gap-3">
           <div>
-            <div class="text-sm font-black text-indigo-900">{{ it.name }} × {{ it.count }}</div>
+            <div class="text-sm font-black text-indigo-900">{{ it.name }} {{ it.countLabel }}</div>
             <div class="text-[11px] font-bold text-indigo-700">{{ it.desc }}</div>
           </div>
           <button @click="useShopItem(it.id)" :disabled="it.count <= 0" class="h-9 px-4 rounded-xl bg-indigo-600 text-white text-sm font-black disabled:opacity-45">使用</button>
@@ -1238,6 +1254,23 @@
             <div class="rounded-xl border border-amber-100 bg-amber-50 p-3 text-xs font-bold text-amber-800">
               {{ selectedGuardianChallengeText }}
             </div>
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+              <div class="flex items-center gap-2 text-xs font-black text-rose-700">
+                <span class="w-20 shrink-0">克制目标</span>
+                <span v-for="el in selectedGuardianElementGroups.strong" :key="'guardian_strong_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+                <span v-if="selectedGuardianElementGroups.strong.length===0" class="text-[11px] font-bold text-slate-400">无</span>
+              </div>
+              <div class="flex items-center gap-2 text-xs font-black text-sky-700">
+                <span class="w-20 shrink-0">对目标微弱</span>
+                <span v-for="el in selectedGuardianElementGroups.weak" :key="'guardian_weak_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+                <span v-if="selectedGuardianElementGroups.weak.length===0" class="text-[11px] font-bold text-slate-400">无</span>
+              </div>
+              <div class="flex items-center gap-2 text-xs font-black text-slate-700">
+                <span class="w-20 shrink-0">对目标无效</span>
+                <span v-for="el in selectedGuardianElementGroups.immune" :key="'guardian_immune_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+                <span v-if="selectedGuardianElementGroups.immune.length===0" class="text-[11px] font-bold text-slate-400">无</span>
+              </div>
+            </div>
             <button @click="confirmGuardianChallenge" :disabled="bagPets.length===0" class="w-full h-10 rounded-xl bg-amber-500 text-white font-black disabled:opacity-50">发起挑战</button>
           </div>
         </div>
@@ -1277,6 +1310,23 @@
           <div class="space-y-3">
             <div class="rounded-xl border border-rose-100 bg-rose-50 p-3 text-xs font-bold text-rose-800">
               {{ selectedBossChallengeText }}
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+              <div class="flex items-center gap-2 text-xs font-black text-rose-700">
+                <span class="w-20 shrink-0">克制目标</span>
+                <span v-for="el in selectedBossElementGroups.strong" :key="'boss_strong_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+                <span v-if="selectedBossElementGroups.strong.length===0" class="text-[11px] font-bold text-slate-400">无</span>
+              </div>
+              <div class="flex items-center gap-2 text-xs font-black text-sky-700">
+                <span class="w-20 shrink-0">对目标微弱</span>
+                <span v-for="el in selectedBossElementGroups.weak" :key="'boss_weak_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+                <span v-if="selectedBossElementGroups.weak.length===0" class="text-[11px] font-bold text-slate-400">无</span>
+              </div>
+              <div class="flex items-center gap-2 text-xs font-black text-slate-700">
+                <span class="w-20 shrink-0">对目标无效</span>
+                <span v-for="el in selectedBossElementGroups.immune" :key="'boss_immune_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+                <span v-if="selectedBossElementGroups.immune.length===0" class="text-[11px] font-bold text-slate-400">无</span>
+              </div>
             </div>
             <button @click="confirmBossChallenge" :disabled="bagPets.length===0" class="w-full h-10 rounded-xl bg-rose-500 text-white font-black disabled:opacity-50">发起挑战</button>
           </div>
@@ -1401,6 +1451,7 @@
           <button @click="openBattleSkillPanel" :disabled="battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-cyan-600 text-white text-sm font-black disabled:opacity-45 shadow-md">技能</button>
           <button @click="openBattleItemPanel" :disabled="battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-emerald-600 text-white text-sm font-black disabled:opacity-45 shadow-md">道具</button>
           <button @click="openSwitchPanel('manual')" :disabled="battleSceneAvailablePets.length === 0 || battleScene.ended || battleScene.isActing" class="h-9 px-4 rounded-xl bg-indigo-600 text-white text-sm font-black disabled:opacity-45 shadow-md">换宠</button>
+          <button v-if="autoBattleRun" @click="stopAutoBattle" class="h-9 px-4 rounded-xl bg-amber-600 text-white text-sm font-black shadow-md">停止自动</button>
           <button @click="closeBattleScene" class="h-9 px-4 rounded-xl bg-slate-700/95 border border-slate-400 text-slate-100 text-sm font-black shadow-md hover:bg-slate-600 whitespace-nowrap">撤退</button>
         </div>
       </div>
@@ -1440,7 +1491,7 @@
             >
               <template v-if="battleSceneSkills && battleSceneSkills[idx]">
                 <div class="flex items-center gap-1 min-w-0">
-                  <span class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(battleSceneSkills[idx])).label, 14)" :title="skillTypeMeta(safeSkillType(battleSceneSkills[idx])).label"></span>
+                  <span class="element-icon shrink-0" :style="petElementTransparentIconStyle(skillTypeMeta(safeSkillType(battleSceneSkills[idx])).label, 14)" :title="skillTypeMeta(safeSkillType(battleSceneSkills[idx])).label"></span>
                   <span class="truncate">{{ safeSkillName(battleSceneSkills[idx]) }}</span>
                 </div>
                 <div class="mt-0.5 text-[10px] font-black text-cyan-200 truncate">
@@ -1514,6 +1565,8 @@
         <div :class="['text-base font-black', battleScene.win ? 'text-emerald-300' : 'text-rose-300']">{{ battleScene.win ? '挑战胜利' : '挑战失败' }}</div>
         <div class="text-xs font-bold text-slate-200 mt-1">{{ battleScene.summary }}</div>
         <div class="text-xs font-bold text-slate-300 mt-1">获得经验：{{ battleScene.expGain }}</div>
+        <div v-if="battleScene.expMultiplier > 1" class="text-xs font-black text-emerald-200 mt-1">双倍经验器生效：经验 ×{{ battleScene.expMultiplier }}</div>
+        <div v-if="battleScene.autoBattleMeta" class="text-xs font-black text-indigo-200 mt-1">自动战斗：已完成 {{ battleScene.autoBattleMeta.completed }}/10，剩余 {{ itemInventoryRows.find(x => x.id === 'auto_battle_device')?.count || 0 }} 次</div>
         <div v-if="battleScene.unlockText" class="text-xs font-black text-cyan-200 mt-1">{{ battleScene.unlockText }}</div>
       </div>
     </div>
@@ -1588,6 +1641,12 @@
       <div v-if="battleResult.hCoinGain > 0" class="rounded-2xl border border-yellow-200 bg-yellow-50 p-3 text-sm font-black text-yellow-800">
         获得 H币 +{{ battleResult.hCoinGain }}
       </div>
+      <div v-if="battleResult.expMultiplier > 1" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-black text-emerald-800">
+        双倍经验器生效：本场经验 ×{{ battleResult.expMultiplier }}
+      </div>
+      <div v-if="battleResult.autoBattleText" class="rounded-2xl border border-indigo-200 bg-indigo-50 p-3 text-sm font-black text-indigo-800">
+        {{ battleResult.autoBattleText }}
+      </div>
       <div v-if="battleResult.unlockText" class="rounded-2xl border border-cyan-200 bg-cyan-50 p-3 text-sm font-black text-cyan-800">
         {{ battleResult.unlockText }}
       </div>
@@ -1634,6 +1693,7 @@
     "./aola-dex-1-100.js",
     "./aola-species-data.js",
     "./aola-skill-data.js",
+    "./aola-skill-effects-hardcoded.js",
     "./aola-evolution-chains.js",
     "./vendor/vue.global.prod.js",
     "./aola-star-app.js"
