@@ -29,6 +29,7 @@
       "aola-skill-data.js",
       "aola_pet_skill_extract.json",
       "aola_pet_skill_extract_skills.json",
+      "aola-battle-background-default.png",
       "aola-evolution-chains.js",
       "vendor/**/*",
       "type/**/*",

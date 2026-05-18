@@ -72,6 +72,7 @@ const HOME_BGM_SRC = "./BGM/小k橘子 - 神宠殿堂.ogg";
 const WAREHOUSE_BGM_SRC = "./BGM/小k橘子 - 家园.ogg";
 const SHOP_BGM_SRC = "./BGM/小k橘子 - 经验战场.ogg";
 const STUDY_BGM_SRC = "./BGM/小k橘子 - 欢乐岛.ogg";
+const DEFAULT_BATTLE_BG_SRC = "./aola-battle-background-default.png";
 const GUARDIAN_LEVELS = [30, 40, 50, 60, 70, 80, 90, 100];
 const EXTRA_GUARDIAN_LEVELS = [100];
 const MAX_OPEN_CHALLENGE_DEX_ID = 796;
@@ -356,6 +357,17 @@ const markOncePerBattleSkillUsed = (scene, side, skillOrName) => {
   if (!Array.isArray(scene.oncePerBattleSkillKeys)) scene.oncePerBattleSkillKeys = [];
   const scoped = `${side}:${key}`;
   if (!scene.oncePerBattleSkillKeys.includes(scoped)) scene.oncePerBattleSkillKeys.push(scoped);
+};
+const DIMINISHING_SKILL_SUCCESS_CHANCES = [1, 0.7, 0.4, 0.1, 0];
+const rollDiminishingSkillSuccess = (scene, side, skillOrName) => {
+  const key = normalizeSkillKey(typeof skillOrName === "string" ? skillOrName : (skillOrName && skillOrName.name));
+  if (!scene || !key) return { success: true, chance: 1, useNo: 1 };
+  if (!scene.diminishingSkillUseCounts || typeof scene.diminishingSkillUseCounts !== "object") scene.diminishingSkillUseCounts = {};
+  const scoped = `${side}:${key}`;
+  const used = Math.max(0, Math.floor(Number(scene.diminishingSkillUseCounts[scoped]) || 0));
+  const chance = DIMINISHING_SKILL_SUCCESS_CHANCES[Math.min(used, DIMINISHING_SKILL_SUCCESS_CHANCES.length - 1)];
+  scene.diminishingSkillUseCounts[scoped] = used + 1;
+  return { success: Math.random() <= chance, chance, useNo: used + 1 };
 };
 const safeNonNegInt = (v, fallback = 0) => {
   const n = Number(v);
@@ -661,6 +673,14 @@ const calcBattleFixedDamageAmount = (scene, actorSide, skill, actorLevel = 1) =>
   const fixedByEffect = parseSkillEffects(skill).find((e) => normalize(e && e.kind) === "fixedDamageByLevel");
   if (fixedByEffect) {
     return Math.max(1, Math.floor((Number(actorLevel) || 1) * (Number(fixedByEffect.factor) || 1)));
+  }
+  const speedRatioEffect = parseSkillEffects(skill).find((e) => normalize(e && e.kind) === "fixedDamageBySpeedRatio");
+  if (speedRatioEffect) {
+    const actorSpeed = getBattleAbilityStat(scene, actorSide === "target" ? "target" : "attacker", "speed");
+    const defenderSide = actorSide === "target" ? "attacker" : "target";
+    const defenderSpeed = getBattleAbilityStat(scene, defenderSide, "speed");
+    const factor = Math.max(1, Number(speedRatioEffect.factor) || 500);
+    return Math.max(1, Math.floor((actorSpeed / Math.max(1, defenderSpeed)) * factor));
   }
   return parseFixedDamageAmount(skill, actorLevel);
 };
@@ -1014,6 +1034,9 @@ const timedEffectBadgeMeta = (e) => {
     const desc = `${chance}%概率免受${attackKind === "physical" ? "普通攻击" : (attackKind === "special" ? "特殊攻击" : "攻击")}伤害，剩余${turns}回合`;
     return { key: `immune_${attackKind}_${chance}`, label, turns, desc, tone: "buff" };
   }
+  if (kind === "damageAbsorb") {
+    return { key: "damage_absorb", label: "伤害吸收", turns, desc: `完全吸收受到的伤害并回复体力，剩余${turns}回合`, tone: "buff" };
+  }
   if (kind === "stageGuard") {
     const mode = normalize(d.mode) || "debuff";
     const label = mode === "buff" ? "防止提升" : (mode === "all" ? "能力保护" : "防止削弱");
@@ -1164,6 +1187,11 @@ const getAttackImmunityEffect = (scene, side, atkKind) => {
     return cp > bp ? cur : best;
   }, effects[0]);
 };
+const getDamageAbsorbEffect = (scene, side) => {
+  const state = getSideState(scene, side);
+  cleanupExpiredEffects(state);
+  return (state.timedEffects || []).find((e) => normalize(e && e.kind) === "damageAbsorb" && Math.max(0, Number(e && e.turns) || 0) > 0) || null;
+};
 const getElementPowerFactorFromState = (state, skillElement) => {
   let mul = 1;
   (state && Array.isArray(state.timedEffects) ? state.timedEffects : []).forEach((e) => {
@@ -1203,6 +1231,7 @@ const hasDirectDamageSuppressedEffect = (skill) => parseSkillEffects(skill).some
   "averageHp",
   "drainRemainingHpRatio"
 ].includes(normalize(e && e.kind)));
+const hasDiminishingGateEffect = (skill) => parseSkillEffects(skill).some((e) => normalize(e && e.kind) === "diminishingSuccessGate");
 const isGuardianBossProtectedTarget = (scene, side) => scene && (scene.mode === "guardian" || scene.mode === "boss") && side === "target";
 const isEffectBlockedByGuardianBoss = (scene, actor, effect) => {
   if (!effect || !effect.guardianBossImmune) return false;
@@ -1276,6 +1305,15 @@ const manualHardcodedSkillEffects = (skill) => {
       { kind: "lockGodDrain", target: "opponent", turns: 2, ratio: 1 / 16, label: "火海焚烧" }
     ];
   }
+  if (name === "光刃") return [{ kind: "fixedDamageBySpeedRatio", target: "opponent", factor: 500 }];
+  if (name === "七十二变") {
+    return [
+      { kind: "stage", target: "self", keys: ["def", "spDef", "evasion"], delta: 1, chance: 0.9, failEffectKey: "seventyTwoFail" },
+      { kind: "recoilFlatOnChanceFail", target: "self", amount: 50, effectKey: "seventyTwoFail" }
+    ];
+  }
+  if (name === "消失") return [{ kind: "diminishingSuccessGate", target: "self" }, { kind: "attackImmunity", target: "self", turns: 1, attackKind: "all" }];
+  if (name === "混沌吸收") return [{ kind: "diminishingSuccessGate", target: "self" }, { kind: "damageAbsorb", target: "self", turns: 1 }];
   if (name === "南瓜炸弹") {
     return [
       { kind: "defenseHalve", target: "opponent", turns: 10 }
@@ -1335,6 +1373,13 @@ const manualHardcodedSkillEffects = (skill) => {
     return [{ kind: "dragonBaseBoost", target: "self", ratio: 0.1, maxStacks: 5 }];
   }
   if (name === "火之辉耀") return [{ kind: "lockGodDrain", target: "opponent", turns: 99, flat: 80, label: "火之辉耀" }];
+  if (name === "障眼法") {
+    return [
+      { kind: "diminishingSuccessGate", target: "self" },
+      { kind: "attackImmunity", target: "self", turns: 1, attackKind: "all" },
+      { kind: "healFlatOnDiminishingFail", target: "self", amount: 100 }
+    ];
+  }
   return [];
 };
 const findHardcodedSkillEffects = (skill) => {
@@ -1363,6 +1408,10 @@ const parseSkillEffectsFromDesc = (skill) => {
     return cur === keys.map(normalize).sort().join("|");
   });
   const canonicalSkillName = name.replace(/决/g, "诀");
+  const skillIdForDesc = Number(skill && skill.skillId) || 0;
+  if (skillIdForDesc > 0 && skillIdForDesc < 24000 && desc.includes("一场战斗使用次数越多，成功率越低")) {
+    add({ kind: "diminishingSuccessGate", target: "self" });
+  }
   if (canonicalSkillName === "锁神诀") {
     return [
       { kind: "lockGodSeal", target: "opponent", turns: 5, ratio: 1 / 16, speedDelta: -1, label: "锁神诀" }
@@ -1427,6 +1476,7 @@ const parseSkillEffectsFromDesc = (skill) => {
     const left = Math.max(0, idx - 24);
     const right = Math.min(t.length, idx + 24);
     const seg = t.slice(left, right);
+    if (seg.includes("极大概率")) return 0.9;
     const m = seg.match(/(\d+(?:\.\d+)?)\s*%\s*(?:概率|几率|机率)?|(?:概率|几率|机率)\s*(\d+(?:\.\d+)?)\s*%/);
     if (!m) return 1;
     const n = Number(m[1] || m[2]);
@@ -1959,7 +2009,15 @@ const parseSkillEffectsFromDesc = (skill) => {
 const parseSkillEffects = (skill) => {
   const manual = manualHardcodedSkillEffects(skill);
   if (manual.length > 0) return cloneSkillEffectList(manual);
-  return findHardcodedSkillEffects(skill);
+  const hardcoded = findHardcodedSkillEffects(skill);
+  const descEffects = parseSkillEffectsFromDesc(skill);
+  const hasDiminishingGate = descEffects.some((e) => normalize(e && e.kind) === "diminishingSuccessGate");
+  if (hardcoded.length > 0) {
+    return hasDiminishingGate && !hardcoded.some((e) => normalize(e && e.kind) === "diminishingSuccessGate")
+      ? [{ kind: "diminishingSuccessGate", target: "self" }].concat(cloneSkillEffectList(hardcoded))
+      : cloneSkillEffectList(hardcoded);
+  }
+  return descEffects;
 };
 if (typeof window !== "undefined") {
   window.AOLA_PARSE_SKILL_EFFECTS_FROM_DESC = parseSkillEffectsFromDesc;
@@ -1972,7 +2030,21 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
   const targetName = actor === "attacker" ? scene.targetName : scene.attackerName;
   const isGuardianImmuneSide = (side) => isGuardianBossProtectedTarget(scene, side);
   const sideByTarget = (target) => target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+  let diminishingGateChecked = false;
+  let diminishingGateSuccess = true;
+  const chanceFailKeys = new Set();
   effects.forEach((e) => {
+    if (normalize(e && e.kind) === "diminishingSuccessGate") {
+      if (!diminishingGateChecked) {
+        const gate = rollDiminishingSkillSuccess(scene, actor, skill);
+        diminishingGateChecked = true;
+        diminishingGateSuccess = gate.success;
+        logs.push(`${actorName}使用${skill.name}第${gate.useNo}次，成功率${Math.round(gate.chance * 100)}%。`);
+        if (!gate.success) logs.push(`${skill.name}发动失败。`);
+      }
+      return;
+    }
+    if (diminishingGateChecked && !diminishingGateSuccess && normalize(e && e.kind) !== "healFlatOnDiminishingFail") return;
     if (isEffectBlockedByGuardianBoss(scene, actor, e)) {
       logs.push(`${targetName}对${skill.name}的特殊效果免疫。`);
       return;
@@ -1988,7 +2060,11 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
     if (e.kind === "stage") {
       if (e.requireHit && !didHit) return;
       const chance = clamp(Number(e.chance) || 1, 0, 1);
-      if (Math.random() > chance) return;
+      if (Math.random() > chance) {
+        const failKey = normalize(e.failEffectKey);
+        if (failKey) chanceFailKeys.add(failKey);
+        return;
+      }
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
       const changed = applyStageDelta(scene, side, e.keys, e.delta);
       if (changed.length > 0) {
@@ -2066,6 +2142,23 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       markBattleFloatText(scene);
       if (actual > 0) clearSleepAfterDamage(scene, side);
       logs.push(`${who}被扣除最大体力值的${Math.round(ratio * 100)}%，损失 ${actual} 点体力${chance < 1 ? `（概率${Math.round(chance * 100)}%）` : ""}`);
+      return;
+    }
+    if (e.kind === "recoilFlatOnChanceFail") {
+      const effectKey = normalize(e.effectKey);
+      if (!effectKey || !chanceFailKeys.has(effectKey)) return;
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const amount = Math.max(1, Math.floor(Number(e.amount) || 1));
+      const hpKey = side === "attacker" ? "attackerHp" : "targetHp";
+      const before = Math.max(0, Number(scene[hpKey]) || 0);
+      scene[hpKey] = Math.max(0, before - amount);
+      const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
+      if (side === "attacker") applyBattleDamageToActivePet(scene);
+      syncBattleUiHpForSide(scene, side);
+      if (side === "attacker") scene.damageOnAttacker = `-${actual}`;
+      else scene.damageOnTarget = `-${actual}`;
+      markBattleFloatText(scene);
+      logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}因${skill.name}失败扣除 ${actual} 点体力。`);
       return;
     }
     if (e.kind === "drainRemainingHpRatio") {
@@ -2280,6 +2373,18 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       logs.push(`${who}回复了 ${val} 点体力（实际恢复 ${healed}）`);
       return;
     }
+    if (e.kind === "healFlatOnDiminishingFail") {
+      if (!diminishingGateChecked || diminishingGateSuccess) return;
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const amount = Math.max(1, Math.floor(Number(e.amount) || 1));
+      const { actual } = healSideByFlatAmount(scene, side, amount);
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      if (side === "attacker") scene.healOnAttacker = `+${actual}`;
+      else scene.healOnTarget = `+${actual}`;
+      markBattleFloatText(scene);
+      logs.push(`${who}因${skill.name}失败回复 ${actual} 点体力。`);
+      return;
+    }
     if (e.kind === "healFlatTeam") {
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
@@ -2476,6 +2581,33 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       const attackLabel = attackKind === "physical" ? "普通攻击" : (attackKind === "special" ? "特殊攻击" : "攻击");
       logs.push(`${who}获得${Math.round(chance * 100)}%概率免受${attackLabel}伤害，持续${e.turns}回合`);
+      return;
+    }
+    if (e.kind === "diminishingAttackImmunity") {
+      const gate = rollDiminishingSkillSuccess(scene, actor, skill);
+      const who = actor === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}使用${skill.name}第${gate.useNo}次，成功率${Math.round(gate.chance * 100)}%。`);
+      if (!gate.success) {
+        logs.push(`${skill.name}发动失败。`);
+        return;
+      }
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const attackKind = normalize(e.attackKind) || "all";
+      addTimedEffect(scene, side, { kind: "attackImmunity", turns: Math.max(1, Math.floor(Number(e.turns) || 1)), data: { attackKind, chance: 1 } });
+      logs.push(`${who}进入消失状态，本回合免受攻击伤害。`);
+      return;
+    }
+    if (e.kind === "diminishingDamageAbsorb") {
+      const gate = rollDiminishingSkillSuccess(scene, actor, skill);
+      const who = actor === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}使用${skill.name}第${gate.useNo}次，成功率${Math.round(gate.chance * 100)}%。`);
+      if (!gate.success) {
+        logs.push(`${skill.name}发动失败。`);
+        return;
+      }
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      addTimedEffect(scene, side, { kind: "damageAbsorb", turns: Math.max(1, Math.floor(Number(e.turns) || 1)), data: {} });
+      logs.push(`${who}进入混沌吸收状态，本回合吸收受到的伤害并回复体力。`);
       return;
     }
     if (e.kind === "stageGuard") {
@@ -3622,7 +3754,12 @@ createApp({
         equippedBadgeId: "",
         targetLevel: 10,
         battleLog: [],
-        showDexPanel: false
+        showDexPanel: false,
+        battleBackground: {
+          mode: "default",
+          src: DEFAULT_BATTLE_BG_SRC,
+          name: "默认战斗背景"
+        }
       };
     };
 
@@ -3728,7 +3865,14 @@ createApp({
         selectedPetId: activePets.some((p) => p.id === loaded.selectedPetId) ? loaded.selectedPetId : ((activePets[0] && activePets[0].id) || ""),
         targetLevel: clamp(Number(loaded.targetLevel) || 10, 1, 100),
         battleLog: sanitizeBattleLog(loaded.battleLog),
-        showDexPanel: false
+        showDexPanel: false,
+        battleBackground: (() => {
+          const source = loaded.battleBackground && typeof loaded.battleBackground === "object" ? loaded.battleBackground : {};
+          const mode = normalize(source.mode) === "custom" ? "custom" : "default";
+          const src = mode === "custom" && normalize(source.src) ? String(source.src) : DEFAULT_BATTLE_BG_SRC;
+          const name = mode === "custom" && normalize(source.name) ? normalize(source.name) : "默认战斗背景";
+          return { mode, src, name };
+        })()
       };
     };
 
@@ -3954,6 +4098,51 @@ createApp({
       bgmVolume.value = clamp(Number(value) || 0, 0, 1);
       writeBgmVolume(bgmVolume.value);
       applyBgmVolume();
+    };
+    const battleBackground = computed(() => {
+      const source = state.value && state.value.battleBackground && typeof state.value.battleBackground === "object"
+        ? state.value.battleBackground
+        : {};
+      const mode = normalize(source.mode) === "custom" ? "custom" : "default";
+      const src = mode === "custom" && normalize(source.src) ? String(source.src) : DEFAULT_BATTLE_BG_SRC;
+      const name = mode === "custom" && normalize(source.name) ? normalize(source.name) : "默认战斗背景";
+      return { mode, src, name };
+    });
+    const applyBattleBackground = (bg) => {
+      const next = bg && typeof bg === "object" ? bg : {};
+      const mode = normalize(next.mode) === "custom" ? "custom" : "default";
+      const src = mode === "custom" && normalize(next.src) ? String(next.src) : DEFAULT_BATTLE_BG_SRC;
+      const name = mode === "custom" && normalize(next.name) ? normalize(next.name) : "默认战斗背景";
+      state.value.battleBackground = { mode, src, name };
+      saveState(state.value);
+      showToast(mode === "custom" ? "已应用自定义战斗背景。" : "已恢复默认战斗背景。");
+    };
+    const resetBattleBackground = () => applyBattleBackground({ mode: "default", src: DEFAULT_BATTLE_BG_SRC, name: "默认战斗背景" });
+    const onBattleBackgroundFilePick = async (event) => {
+      const input = event && event.target;
+      const file = input && input.files && input.files[0];
+      if (!file) return;
+      if (!/^image\//.test(file.type || "")) {
+        showToast("请选择图片或动图文件。");
+        if (input) input.value = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const src = String(reader.result || "");
+        if (!src) {
+          showToast("背景读取失败。");
+          if (input) input.value = "";
+          return;
+        }
+        applyBattleBackground({ mode: "custom", src, name: file.name || "自定义背景" });
+        if (input) input.value = "";
+      };
+      reader.onerror = () => {
+        showToast("背景读取失败。");
+        if (input) input.value = "";
+      };
+      reader.readAsDataURL(file);
     };
     const guardianBadgeThresholds = [
       { count: 1, suffix: "斗士", tone: "amber" },
@@ -5582,6 +5771,7 @@ createApp({
         lastDamage: 0,
         lastElementFactor: 1,
         oncePerBattleSkillKeys: [],
+        diminishingSkillUseCounts: {},
         fxSkillText: "",
         fxAttackerSkillText: "",
         fxTargetSkillText: "",
@@ -5800,6 +5990,7 @@ createApp({
       const actorSide = isAttacker ? "attacker" : "target";
       let targetSide = isAttacker ? "target" : "attacker";
       const suppressDirectDamage = hasDirectDamageSuppressedEffect(skill);
+      const hasDiminishingSelfEffect = hasDiminishingGateEffect(skill);
       const beforeAct = beforeActionCheck(scene, actorSide);
       if (beforeAct.log) {
         pushBattleLog(scene, beforeAct.log);
@@ -5856,7 +6047,7 @@ createApp({
       }
       const actorLevel = isAttacker ? scene.attackerLevel : scene.targetLevel;
       const fixedDamage = calcBattleFixedDamageAmount(scene, actorSide, skill, actorLevel);
-      const isStatusAnim = suppressDirectDamage || atkKind === "status" || (Number(skill.power) <= 0 && fixedDamage <= 0);
+      const isStatusAnim = suppressDirectDamage || hasDiminishingSelfEffect || atkKind === "status" || (Number(skill.power) <= 0 && fixedDamage <= 0);
       const actionStateKey = isStatusAnim ? "status" : "atk";
       const visualDelayMs = (getPetBattleAnimPath(actorDexIdForDelay, actorSide, actionStateKey) || getBattleSkillEffectPath(skill, actionSeq))
         ? Math.max(BATTLE_FLOAT_TEXT_DURATION_MS, BATTLE_COUNTER_ATTACK_DELAY_MS + BATTLE_DAMAGE_VISUAL_DELAY_MS)
@@ -5897,7 +6088,7 @@ createApp({
           markBattleFloatText(scene);
         };
         scheduleBattleSkillEffectVisual(scene, actorSide, targetSide, skill, atkKind, actionStateKey, actionSeq, showMissVisual);
-      } else if (suppressDirectDamage || atkKind === "status" || (Number(skill.power) <= 0 && fixedDamage <= 0)) {
+      } else if (suppressDirectDamage || hasDiminishingSelfEffect || atkKind === "status" || (Number(skill.power) <= 0 && fixedDamage <= 0)) {
         pushBattleLog(scene, `${actorName} 使用 ${skill.name}（属性技能）。`);
         scheduleBattleSkillEffectVisual(scene, actorSide, targetSide, skill, atkKind, actionStateKey, actionSeq, () => flushAfterDamageFloat(scene));
         skillEffectDidApply = true;
@@ -6033,6 +6224,28 @@ createApp({
           randomFactor: 0.925,
           reduceFactor: getDamageReductionFactor(scene, actorSide)
         });
+      }
+      if (damage > 0) {
+        const absorbEffect = getDamageAbsorbEffect(scene, targetSide);
+        if (absorbEffect) {
+          const hpKey = targetSide === "attacker" ? "attackerHp" : "targetHp";
+          const maxHpKey = targetSide === "attacker" ? "attackerMaxHp" : "targetMaxHp";
+          const before = Math.max(0, Number(scene[hpKey]) || 0);
+          const maxHp = Math.max(1, Number(scene[maxHpKey]) || 1);
+          const healed = Math.max(0, Math.min(damage, maxHp - before));
+          scene[hpKey] = clamp(before + healed, 0, maxHp);
+          syncBattleUiHpForSide(scene, targetSide);
+          if (targetSide === "attacker") {
+            const idx = Array.isArray(scene.team) ? scene.team.findIndex((u) => u && u.id === scene.currentAttackerId) : -1;
+            if (idx >= 0) scene.team[idx].hp = scene.attackerHp;
+          }
+          if (targetSide === "attacker") scene.healOnAttacker = `+${healed}`;
+          else scene.healOnTarget = `+${healed}`;
+          markBattleFloatText(scene);
+          pushBattleLog(scene, `${targetName}的混沌吸收生效，吸收本次 ${damage} 点伤害并回复 ${healed} 点体力。`);
+          damage = 0;
+          comboHitList = ["吸收"];
+        }
       }
       if (damage > 0) {
         const showDamageVisual = () => {
@@ -7525,6 +7738,9 @@ createApp({
       lastServerSavedAt,
       bgmVolume,
       bgmVolumePercent,
+      battleBackground,
+      onBattleBackgroundFilePick,
+      resetBattleBackground,
       dexSearch,
       dexElementFilter,
       dexDefeatFilter,

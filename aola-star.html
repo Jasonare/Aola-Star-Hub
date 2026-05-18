@@ -129,6 +129,29 @@
     .battle-mobile-attacker-visual {
       overflow: visible !important;
     }
+    .battle-bg-layer {
+      position: absolute;
+      inset: 0;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      z-index: 0;
+    }
+    .battle-bg-shade {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 26% 24%, rgba(56, 189, 248, .22), transparent 38%),
+        radial-gradient(circle at 76% 78%, rgba(16, 185, 129, .16), transparent 34%),
+        linear-gradient(180deg, rgba(2, 6, 23, .28), rgba(2, 6, 23, .56));
+      z-index: 1;
+      pointer-events: none;
+    }
+    .battle-mobile-wrap,
+    .battle-mobile-log,
+    .battle-mobile-attacker-main {
+      z-index: 6;
+    }
     .battle-stage-line { display: flex; flex-wrap: nowrap; gap: calc(4 * var(--ui-px)); white-space: nowrap; }
     .login-page {
       min-height: 100vh;
@@ -716,6 +739,19 @@
       >
         徽章
       </button>
+      <div class="flex h-9 items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-2 text-xs font-black text-indigo-700">
+        <label class="h-7 px-3 rounded-lg bg-indigo-600 text-white flex items-center justify-center cursor-pointer">
+          对战背景
+          <input type="file" accept="image/*" class="hidden" @change="onBattleBackgroundFilePick">
+        </label>
+        <button
+          @click="resetBattleBackground"
+          class="h-7 px-2 rounded-lg border border-indigo-200 bg-white text-indigo-700"
+        >
+          默认
+        </button>
+        <span class="hidden xl:inline max-w-[130px] truncate text-indigo-500">{{ battleBackground.name }}</span>
+      </div>
       <label class="ml-auto flex h-9 items-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-3 text-xs font-black text-sky-700">
         <span class="shrink-0">BGM {{ bgmVolumePercent }}%</span>
         <input
@@ -1439,7 +1475,9 @@
 </div>
 
 <div v-if="battleScene && battleScene.open" class="fixed inset-0 z-[110] bg-slate-950/90 backdrop-blur-sm" @click="closeBattleScene">
-  <div class="relative w-full h-full overflow-hidden bg-[radial-gradient(circle_at_20%_30%,rgba(56,189,248,.18),transparent_35%),radial-gradient(circle_at_80%_70%,rgba(16,185,129,.12),transparent_35%),linear-gradient(180deg,#0b1220_0%,#121c2f_100%)] battle-mobile-root" @click.stop>
+  <div class="relative w-full h-full overflow-hidden bg-slate-950 battle-mobile-root" @click.stop>
+    <div class="battle-bg-layer" :style="{ backgroundImage: `url(${battleBackground.src})` }"></div>
+    <div class="battle-bg-shade"></div>
     <div v-if="battleScene.fxSkillText" class="hidden absolute top-6 right-6 z-30 rounded-2xl border border-cyan-300/60 bg-cyan-400/25 px-3 py-1 text-[11px] font-black text-cyan-100 whitespace-nowrap shadow-[0_8px_24px_rgba(34,211,238,0.25)] battle-skill-float">{{ battleScene.fxSkillText }}</div>
 
     <div class="absolute left-3 right-3 md:left-8 md:right-auto top-3 md:top-8 w-auto md:w-[22%] md:min-w-[280px] battle-mobile-wrap battle-mobile-target">
