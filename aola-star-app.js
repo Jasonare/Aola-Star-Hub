@@ -32,6 +32,7 @@ const STORAGE_KEY = "aola_battle_platform_v2_ascii";
 const SESSION_MODE_KEY = "aola_star_session_mode_v1";
 const AUTH_TOKEN_KEY = "aola_star_auth_token_v1";
 const REMEMBER_LOGIN_KEY = "aola_star_remember_login_v1";
+const BGM_VOLUME_KEY = "aola_star_bgm_volume_v1";
 const SAVE_FILE_PREFIX = "aola_battle_save_";
 const STARTER_DEX_IDS = [1, 4, 7];
 const BASE_GUARDIAN_NAMES = ["冰拳艾司", "沙麒麟", "金刚库巴", "木面侠", "火花龙"];
@@ -3443,6 +3444,17 @@ createApp({
         }));
       } catch {}
     };
+    const readBgmVolume = () => {
+      try {
+        const raw = Number(localStorage.getItem(BGM_VOLUME_KEY));
+        return Number.isFinite(raw) ? clamp(raw, 0, 1) : 0.55;
+      } catch {
+        return 0.55;
+      }
+    };
+    const writeBgmVolume = (value) => {
+      try { localStorage.setItem(BGM_VOLUME_KEY, String(clamp(Number(value) || 0, 0, 1))); } catch {}
+    };
     const saveState = (nextState) => {
       if (playMode.value !== "guest" && storageAdapter.mode === "localStorage") return;
       try { storageAdapter.saveRaw(JSON.stringify(nextState)); } catch {}
@@ -3459,6 +3471,7 @@ createApp({
     const authLoading = ref(false);
     const saveLoading = ref(false);
     const lastServerSavedAt = ref("");
+    const bgmVolume = ref(readBgmVolume());
     const dexSearch = ref("");
     const dexElementFilter = ref("全部系别");
     const dexDefeatFilter = ref("全部战绩");
@@ -3580,6 +3593,22 @@ createApp({
     const battleBgmAudio = ref(null);
     const sceneBgmAudio = ref(null);
     const currentSceneBgmSrc = ref("");
+    const bgmVolumePercent = computed(() => Math.round(clamp(Number(bgmVolume.value) || 0, 0, 1) * 100));
+    const applyBgmVolume = () => {
+      const volume = clamp(Number(bgmVolume.value) || 0, 0, 1);
+      [sceneBgmAudio.value, battleBgmAudio.value].forEach((audio) => {
+        if (!audio) return;
+        try {
+          audio.volume = volume;
+          audio.muted = volume <= 0;
+        } catch {}
+      });
+    };
+    const setBgmVolume = (value) => {
+      bgmVolume.value = clamp(Number(value) || 0, 0, 1);
+      writeBgmVolume(bgmVolume.value);
+      applyBgmVolume();
+    };
     const guardianBadgeThresholds = [
       { count: 1, suffix: "斗士", tone: "amber" },
       { count: 10, suffix: "的克星", tone: "rose" },
@@ -3943,6 +3972,8 @@ createApp({
           const audio = new Audio(nextSrc);
           audio.loop = true;
           audio.preload = "auto";
+          audio.volume = clamp(Number(bgmVolume.value) || 0, 0, 1);
+          audio.muted = audio.volume <= 0;
           sceneBgmAudio.value = audio;
           currentSceneBgmSrc.value = nextSrc;
         }
@@ -3954,6 +3985,7 @@ createApp({
           currentSceneBgmSrc.value = nextSrc;
         }
         audio.loop = true;
+        applyBgmVolume();
         const task = audio.play();
         if (task && typeof task.catch === "function") task.catch(() => {});
       } catch {}
@@ -3973,10 +4005,13 @@ createApp({
           const audio = new Audio(BATTLE_BGM_SRC);
           audio.loop = true;
           audio.preload = "auto";
+          audio.volume = clamp(Number(bgmVolume.value) || 0, 0, 1);
+          audio.muted = audio.volume <= 0;
           battleBgmAudio.value = audio;
         }
         const audio = battleBgmAudio.value;
         audio.loop = true;
+        applyBgmVolume();
         const task = audio.play();
         if (task && typeof task.catch === "function") task.catch(() => {});
       } catch {}
@@ -4044,6 +4079,10 @@ createApp({
     watch(() => state.value.activePets.map((p) => p.id).join("|"), () => {
       state.value.bagPetIds = normalizeBagIds(state.value.bagPetIds, state.value.activePets);
       state.value.selectedAttackerId = state.value.bagPetIds[0] || "";
+    });
+    watch(bgmVolume, () => {
+      writeBgmVolume(bgmVolume.value);
+      applyBgmVolume();
     });
 
     const selectedDexEntry = computed(() => {
@@ -4144,6 +4183,11 @@ createApp({
     })));
     const firstPet = computed(() => (bagSlots.value[0] && bagSlots.value[0].pet) ? bagSlots.value[0].pet : null);
     const bagPets = computed(() => bagSlots.value.map((x) => x.pet).filter((p) => p && p.id));
+    const selectedBagSlotIndex = computed(() => {
+      const id = petId(selectedPet.value);
+      if (!id) return -1;
+      return bagSlots.value.findIndex((slot) => slot.pet && petId(slot.pet) === id);
+    });
     const bagCount = computed(() => bagPets.value.length);
     const safeActivePets = computed(() => state.value.activePets.filter((p) => p && p.id));
     const warehousePets = computed(() => safeActivePets.value.filter((p) => !state.value.bagPetIds.includes(p.id)));
@@ -6372,8 +6416,12 @@ createApp({
       return true;
     };
     const removeFromBag = (slotIdx) => {
+      const removedId = state.value.bagPetIds[slotIdx] || "";
       state.value.bagPetIds.splice(slotIdx, 1, "");
       state.value.selectedAttackerId = state.value.bagPetIds[0] || "";
+      if (removedId && state.value.selectedPetId === removedId) {
+        state.value.selectedPetId = state.value.bagPetIds.find((id) => id) || "";
+      }
     };
     const swapBagSlots = (a, b) => {
       if (a === b) return;
@@ -6820,6 +6868,9 @@ createApp({
     const closePetDetailModal = () => {
       showPetDetailModal.value = false;
       detailPreviewPet.value = null;
+      if (!isInBag(state.value.selectedPetId)) {
+        state.value.selectedPetId = state.value.bagPetIds.find((id) => id) || "";
+      }
     };
     watch(showPetDetailModal, (open) => {
       if (!open) return;
@@ -7111,6 +7162,8 @@ createApp({
       authLoading,
       saveLoading,
       lastServerSavedAt,
+      bgmVolume,
+      bgmVolumePercent,
       dexSearch,
       dexElementFilter,
       dexDefeatFilter,
@@ -7169,6 +7222,7 @@ createApp({
       activatedDexCount,
       dexTotal,
       bagSlots,
+      selectedBagSlotIndex,
       firstPet,
       bagPets,
       bagCount,
@@ -7303,6 +7357,7 @@ createApp({
       openShopPanel,
       closeShopPanel,
       buyShopItem,
+      setBgmVolume,
       shopBuyQuantity,
       setShopBuyQuantity,
       shopItemTotalPrice,
