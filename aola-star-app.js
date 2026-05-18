@@ -658,6 +658,10 @@ const calcBattleFixedDamageAmount = (scene, actorSide, skill, actorLevel = 1) =>
     const speed = getBattleAbilityStat(scene, actorSide === "target" ? "target" : "attacker", "speed");
     return Math.max(1, Math.floor(speed / 3));
   }
+  const fixedByEffect = parseSkillEffects(skill).find((e) => normalize(e && e.kind) === "fixedDamageByLevel");
+  if (fixedByEffect) {
+    return Math.max(1, Math.floor((Number(actorLevel) || 1) * (Number(fixedByEffect.factor) || 1)));
+  }
   return parseFixedDamageAmount(skill, actorLevel);
 };
 const critChanceByStage = (stage) => {
@@ -837,7 +841,7 @@ const syncBattleUiHpForSide = (scene, side) => {
     scene.uiTargetHp = clamp(Number(scene.targetHp) || 0, 0, Number(scene.targetMaxHp) || 1);
   }
 };
-const TIMED_EFFECT_REFRESH_BY_KIND = new Set(["diceDrain"]);
+const TIMED_EFFECT_REFRESH_BY_KIND = new Set(["diceDrain", "defenseHalve", "destinyBond", "damageShield", "lastStand"]);
 const addTimedEffect = (scene, side, effect) => {
   const state = getSideState(scene, side);
   const next = {
@@ -981,6 +985,12 @@ const timedEffectBadgeMeta = (e) => {
       tone: deltaPct >= 0 ? "buff" : "debuff"
     };
   }
+  if (kind === "damageBoost") {
+    const factorRaw = Number(d.factor) || 1;
+    const deltaPct = Math.round((factorRaw - 1) * 100);
+    const sign = deltaPct >= 0 ? "+" : "";
+    return { key: `damage_boost_${Math.round(factorRaw * 100)}`, label: `伤害${sign}${deltaPct}%`, turns, desc: `造成伤害提升${Math.abs(deltaPct)}%，剩余${turns}回合`, tone: deltaPct >= 0 ? "buff" : "debuff" };
+  }
   if (kind === "healOverTime") {
     const ratio = Number(d.ratio) || 0;
     const pct = Math.max(1, Math.round(ratio * 100));
@@ -989,6 +999,13 @@ const timedEffectBadgeMeta = (e) => {
   if (kind === "endTurnHealFlat") {
     const amount = Math.max(1, Math.floor(Number(d.amount) || 1));
     return { key: `flat_hot_${amount}`, label: `回血${amount}`, turns, desc: `回合结束回复${amount}点体力，剩余${turns}回合`, tone: "buff" };
+  }
+  if (kind === "damageShield") {
+    const amount = Math.max(1, Math.floor(Number(d.amount) || 1));
+    return { key: `damage_shield_${amount}`, label: `护盾${amount}`, turns, desc: `每回合抵抗${amount}点伤害，剩余${turns}回合`, tone: "buff" };
+  }
+  if (kind === "lastStand") {
+    return { key: "last_stand", label: "不灭意志", turns, desc: `受到致命伤害时至少保留1点体力，剩余${turns}回合`, tone: "buff" };
   }
   if (kind === "attackImmunity") {
     const attackKind = normalize(d.attackKind) || "all";
@@ -1027,7 +1044,19 @@ const timedEffectBadgeMeta = (e) => {
   }
   if (kind === "lockGodDrain") {
     const label = normalize(d.label) || "锁神诀";
-    return { key: `lock_god_drain_${label}`, label, turns, desc: `每回合扣除最大体力值的1/16，剩余${turns}回合`, tone: "debuff" };
+    const flat = Math.floor(Number(d.flat) || 0);
+    const ratio = Number(d.ratio) || (1 / 16);
+    const desc = flat > 0 ? `每回合扣除${flat}点体力，剩余${turns}回合` : `每回合扣除最大体力值的${Math.round(ratio * 10000) / 100}%，剩余${turns}回合`;
+    return { key: `lock_god_drain_${label}`, label, turns, desc, tone: "debuff" };
+  }
+  if (kind === "flatDrain") {
+    const label = normalize(d.label) || "吸附";
+    const amount = Math.max(1, Math.floor(Number(d.amount) || 1));
+    return { key: `flat_drain_${label}`, label, turns, desc: `每回合被吸取${amount}点体力，剩余${turns}回合`, tone: "debuff" };
+  }
+  if (kind === "mutualEndTurnDamageFlat") {
+    const amount = Math.max(1, Math.floor(Number(d.amount) || 1));
+    return { key: `mutual_flat_${amount}`, label: "腐蚀酸云", turns, desc: `每回合受到${amount}点伤害，剩余${turns}回合`, tone: "debuff" };
   }
   if (kind === "destinyBond") {
     return { key: "destiny_bond", label: "同归于尽", turns, desc: `本回合若被对手打败则双方同归于尽，剩余${turns}回合`, tone: "buff" };
@@ -1103,6 +1132,19 @@ const getDamageReductionFactor = (scene, side) => {
   });
   return 1 - ratio;
 };
+const getDamageShieldAmount = (scene, side) => {
+  const state = getSideState(scene, side);
+  let amount = 0;
+  (state.timedEffects || []).forEach((e) => {
+    if (normalize(e && e.kind) !== "damageShield") return;
+    amount = Math.max(amount, Math.floor(Number(e.data && e.data.amount) || 0));
+  });
+  return amount;
+};
+const hasLastStandEffect = (scene, side) => {
+  const state = getSideState(scene, side);
+  return (state.timedEffects || []).some((e) => normalize(e && e.kind) === "lastStand" && Math.max(0, Number(e && e.turns) || 0) > 0);
+};
 const getAttackImmunityEffect = (scene, side, atkKind) => {
   if (atkKind !== "physical" && atkKind !== "special") return null;
   const state = getSideState(scene, side);
@@ -1140,12 +1182,37 @@ const getElementPowerFactor = (scene, side, skillElement) => {
   const global = getElementPowerFactorFromState({ timedEffects: scene.globalTimedEffects || [] }, skillElement);
   return own * global;
 };
+const getDamageBoostFactor = (scene, side) => {
+  const state = getSideState(scene, side);
+  let mul = 1;
+  (state && Array.isArray(state.timedEffects) ? state.timedEffects : []).forEach((e) => {
+    if (normalize(e && e.kind) !== "damageBoost") return;
+    const factor = Number(e.data && e.data.factor);
+    if (Number.isFinite(factor) && factor > 0) mul *= factor;
+  });
+  return mul;
+};
 const getSkillPowerOverride = (skill) => {
   const effects = parseSkillEffects(skill);
   const hit = effects.find((e) => normalize(e && e.kind) === "fixedPowerOverride" && Number(e && e.power) > 0);
   return hit ? Math.max(1, Number(hit.power) || 0) : null;
 };
 const hasSkillEffectKind = (skill, kind) => parseSkillEffects(skill).some((e) => normalize(e && e.kind) === normalize(kind));
+const hasDirectDamageSuppressedEffect = (skill) => parseSkillEffects(skill).some((e) => [
+  "equalizeOpponentHpToSelf",
+  "averageHp",
+  "drainRemainingHpRatio"
+].includes(normalize(e && e.kind)));
+const isGuardianBossProtectedTarget = (scene, side) => scene && (scene.mode === "guardian" || scene.mode === "boss") && side === "target";
+const isEffectBlockedByGuardianBoss = (scene, actor, effect) => {
+  if (!effect || !effect.guardianBossImmune) return false;
+  const side = effect.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+  return isGuardianBossProtectedTarget(scene, side);
+};
+const isSkillBlockedByGuardianBoss = (scene, actor, skill) => {
+  if (!scene || actor !== "attacker" || !isGuardianBossProtectedTarget(scene, "target")) return false;
+  return parseSkillEffects(skill).some((e) => isEffectBlockedByGuardianBoss(scene, actor, e));
+};
 const calcBattleDirectDamage = ({
   scene,
   actorSide,
@@ -1187,6 +1254,7 @@ const cloneSkillEffectList = (effects) => JSON.parse(JSON.stringify(Array.isArra
 const manualHardcodedSkillEffects = (skill) => {
   const name = normalize(skill && skill.name);
   const canonicalSkillName = name.replace(/决/g, "诀");
+  const skillId = Number(skill && skill.skillId) || 0;
   if (canonicalSkillName === "锁神诀") {
     return [
       { kind: "lockGodSeal", target: "opponent", turns: 5, ratio: 1 / 16, speedDelta: -1, label: "锁神诀" }
@@ -1208,6 +1276,65 @@ const manualHardcodedSkillEffects = (skill) => {
       { kind: "lockGodDrain", target: "opponent", turns: 2, ratio: 1 / 16, label: "火海焚烧" }
     ];
   }
+  if (name === "南瓜炸弹") {
+    return [
+      { kind: "defenseHalve", target: "opponent", turns: 10 }
+    ];
+  }
+  if (name === "原能暴风圈" || name === "同归于尽") {
+    return [
+      { kind: "selfKo", target: "self" },
+      { kind: "defenseHalve", target: "opponent", turns: 10 }
+    ];
+  }
+  if (name === "鲁莽") return [{ kind: "equalizeOpponentHpToSelf", target: "opponent", guardianBossImmune: true }];
+  if (name === "痛苦之源") return [{ kind: "averageHp", target: "opponent", guardianBossImmune: true }];
+  if (name === "数码干涉") {
+    return [
+      { kind: "recoilByMaxHp", target: "self", ratio: 0.5, requireHit: false },
+      { kind: "lockGodDrain", target: "opponent", turns: 99, ratio: 1 / 4, label: "数码干涉", guardianBossImmune: true }
+    ];
+  }
+  if (name === "时之虫洞") return [{ kind: "delayedKo", target: "opponent", turns: 6 }];
+  if (name === "千变万化") return [{ kind: "randomStatus", target: "opponent", turns: 3, chance: 0.3 }];
+  if (name === "病毒入侵") {
+    return [
+      { kind: "status", target: "opponent", status: "fear", turns: 1, chance: 1 },
+      { kind: "lockGodDrain", target: "opponent", turns: 99, ratio: 1 / 16, label: "病毒入侵" }
+    ];
+  }
+  if (name === "魔狂暴") return [{ kind: "drainRemainingHpRatio", target: "opponent", ratio: 0.5 }];
+  if (name === "血印") {
+    return [
+      { kind: "recoilFlat", target: "self", amount: 100 },
+      { kind: "heal", target: "self", ratio: 0.5, chance: 0.25 }
+    ];
+  }
+  if (name === "不灭的意志") return [{ kind: "lastStand", target: "self", turns: 1 }];
+  if (name === "银光护盾") return [{ kind: "damageShield", target: "self", turns: 10, amount: skillId === 19013 ? 300 : 50 }];
+  if (name === "腐蚀酸云") return [{ kind: "mutualEndTurnDamageFlat", target: "both", turns: 5, amount: skillId === 2213 ? 300 : 200 }];
+  if (name === "一击必杀") return [{ kind: "fixedPowerOverride", power: 1 + Math.floor(Math.random() * 500) }];
+  if (name === "火之净化" || name === "★火之净化") {
+    const out = [{ kind: "ppChange", target: "opponent", amount: -5, chance: 1, requireHit: true }];
+    if (name === "★火之净化") out.push({ kind: "damageReduction", target: "self", ratio: 0.2, turns: 3 });
+    return out;
+  }
+  if (name === "吸附") return [{ kind: "flatDrain", target: "opponent", turns: 20, amount: 50, label: "吸附" }];
+  if (name === "降龙有悔") return [{ kind: "leaveOneHp", target: "opponent" }];
+  if (name === "平沙落雁") return [{ kind: "fixedDamageByLevel", target: "opponent", factor: 2.5 }];
+  if (name === "龙啸九天") {
+    return [
+      { kind: "stage", target: "self", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: 1, chance: 1, requireHit: false },
+      { kind: "recoilFlat", target: "self", amount: 100, chance: 0.5 }
+    ];
+  }
+  if (name === "龙腾四海") {
+    if (skillId === 29386 || skillId === 29387 || skillId === 29388) {
+      return [{ kind: "damageBoost", target: "self", turns: 3, factor: skillId === 29386 ? 1.25 : 1.5 }];
+    }
+    return [{ kind: "dragonBaseBoost", target: "self", ratio: 0.1, maxStacks: 5 }];
+  }
+  if (name === "火之辉耀") return [{ kind: "lockGodDrain", target: "opponent", turns: 99, flat: 80, label: "火之辉耀" }];
   return [];
 };
 const findHardcodedSkillEffects = (skill) => {
@@ -1843,9 +1970,13 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
   const logs = [];
   const actorName = actor === "attacker" ? scene.attackerName : scene.targetName;
   const targetName = actor === "attacker" ? scene.targetName : scene.attackerName;
-  const isGuardianImmuneSide = (side) => scene && (scene.mode === "guardian" || scene.mode === "boss") && side === "target";
+  const isGuardianImmuneSide = (side) => isGuardianBossProtectedTarget(scene, side);
   const sideByTarget = (target) => target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
   effects.forEach((e) => {
+    if (isEffectBlockedByGuardianBoss(scene, actor, e)) {
+      logs.push(`${targetName}对${skill.name}的特殊效果免疫。`);
+      return;
+    }
     if (!didHit && (e.kind === "status" || e.kind === "stage") && e.target === "opponent") return;
     if (e.kind === "elementShelter") {
       const side = sideByTarget(e.target || "self");
@@ -1937,6 +2068,98 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       logs.push(`${who}被扣除最大体力值的${Math.round(ratio * 100)}%，损失 ${actual} 点体力${chance < 1 ? `（概率${Math.round(chance * 100)}%）` : ""}`);
       return;
     }
+    if (e.kind === "drainRemainingHpRatio") {
+      if (e.requireHit && !didHit) return;
+      const side = sideByTarget(e.target || "opponent");
+      const ratio = clamp(Number(e.ratio) || 0, 0.01, 1);
+      const hpKey = side === "attacker" ? "attackerHp" : "targetHp";
+      const before = Math.max(0, Number(scene[hpKey]) || 0);
+      const amount = Math.max(1, Math.floor(before * ratio));
+      const actual = Math.min(amount, before);
+      scene[hpKey] = Math.max(0, before - amount);
+      syncBattleUiHpForSide(scene, side);
+      clearSleepAfterDamage(scene, side);
+      const actorHpKey = actor === "attacker" ? "attackerHp" : "targetHp";
+      const actorMaxHpKey = actor === "attacker" ? "attackerMaxHp" : "targetMaxHp";
+      const healed = Math.min(actual, Math.max(0, (Number(scene[actorMaxHpKey]) || 0) - (Number(scene[actorHpKey]) || 0)));
+      scene[actorHpKey] = clamp((Number(scene[actorHpKey]) || 0) + healed, 0, Number(scene[actorMaxHpKey]) || 0);
+      syncBattleUiHpForSide(scene, actor);
+      if (actor === "attacker") {
+        const idx = Array.isArray(scene.team) ? scene.team.findIndex((u) => u && u.id === scene.currentAttackerId) : -1;
+        if (idx >= 0) scene.team[idx].hp = scene.attackerHp;
+      }
+      if (side === "attacker") scene.damageOnAttacker = `-${actual}`;
+      else scene.damageOnTarget = `-${actual}`;
+      if (actor === "attacker") scene.healOnAttacker = `+${healed}`;
+      else scene.healOnTarget = `+${healed}`;
+      markBattleFloatText(scene);
+      logs.push(`${targetName}被扣除剩余体力的${Math.round(ratio * 100)}%，${actorName}回复 ${healed} 点体力。`);
+      return;
+    }
+    if (e.kind === "equalizeOpponentHpToSelf") {
+      if (e.requireHit && !didHit) return;
+      const side = sideByTarget(e.target || "opponent");
+      const hpKey = side === "attacker" ? "attackerHp" : "targetHp";
+      const actorHp = Math.max(0, Number(actor === "attacker" ? scene.attackerHp : scene.targetHp) || 0);
+      const before = Math.max(0, Number(scene[hpKey]) || 0);
+      if (before <= actorHp) return;
+      scene[hpKey] = actorHp;
+      syncBattleUiHpForSide(scene, side);
+      clearSleepAfterDamage(scene, side);
+      if (side === "attacker") scene.damageOnAttacker = `-${before - actorHp}`;
+      else scene.damageOnTarget = `-${before - actorHp}`;
+      markBattleFloatText(scene);
+      logs.push(`${targetName}的体力被降至与${actorName}相同。`);
+      return;
+    }
+    if (e.kind === "averageHp") {
+      if (e.requireHit && !didHit) return;
+      const side = sideByTarget(e.target || "opponent");
+      const hpKeyA = actor === "attacker" ? "attackerHp" : "targetHp";
+      const hpKeyB = side === "attacker" ? "attackerHp" : "targetHp";
+      const maxHpKeyA = actor === "attacker" ? "attackerMaxHp" : "targetMaxHp";
+      const maxHpKeyB = side === "attacker" ? "attackerMaxHp" : "targetMaxHp";
+      const beforeA = Math.max(0, Number(scene[hpKeyA]) || 0);
+      const beforeB = Math.max(0, Number(scene[hpKeyB]) || 0);
+      const avg = Math.floor((beforeA + beforeB) / 2);
+      scene[hpKeyA] = clamp(avg, 0, Number(scene[maxHpKeyA]) || avg);
+      scene[hpKeyB] = clamp(avg, 0, Number(scene[maxHpKeyB]) || avg);
+      syncBattleUiHpForSide(scene, actor);
+      syncBattleUiHpForSide(scene, side);
+      if (actor === "attacker") {
+        const idx = Array.isArray(scene.team) ? scene.team.findIndex((u) => u && u.id === scene.currentAttackerId) : -1;
+        if (idx >= 0) scene.team[idx].hp = scene.attackerHp;
+      }
+      if (beforeA > avg) clearSleepAfterDamage(scene, actor);
+      if (beforeB > avg) clearSleepAfterDamage(scene, side);
+      markBattleFloatText(scene);
+      logs.push(`${actorName}与${targetName}平分当前体力值。`);
+      return;
+    }
+    if (e.kind === "delayedKo") {
+      const side = sideByTarget(e.target || "opponent");
+      addTimedEffect(scene, side, { kind: "delayedStage", turns: Math.max(1, Math.floor(Number(e.turns) || 6)), data: { ko: true, label: skill.name } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}被时间吞噬标记，${Math.max(1, Math.floor(Number(e.turns) || 6))}回合后将失去战斗能力。`);
+      return;
+    }
+    if (e.kind === "randomStatus") {
+      if (e.requireHit && !didHit) return;
+      const side = sideByTarget(e.target || "opponent");
+      if (isGuardianImmuneSide(side)) {
+        logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}免疫异常状态。`);
+        return;
+      }
+      const chance = clamp(Number(e.chance) || 1, 0, 1);
+      if (Math.random() > chance) return;
+      const options = ["poison", "burn", "sleep", "paralyze", "freeze", "confuse", "fear"].filter((s) => !isStatusImmuneByElement(scene, side, s));
+      if (options.length === 0) return;
+      const status = options[Math.floor(Math.random() * options.length)];
+      const st = getSideState(scene, side);
+      st.statuses[status] = Math.max(st.statuses[status], Math.max(1, Math.floor(Number(e.turns) || 3)));
+      logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}陷入${statusLabel(status)}${st.statuses[status]}回合。`);
+      return;
+    }
     if (e.kind === "destinyBond") {
       const side = sideByTarget(e.target);
       addTimedEffect(scene, side, { kind: "destinyBond", turns: Math.max(1, Math.floor(Number(e.turns) || 1)), data: {} });
@@ -2013,6 +2236,8 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
     }
     if (e.kind === "heal") {
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const chance = clamp(Number(e.chance) || 1, 0, 1);
+      if (Math.random() > chance) return;
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       const shownHeal = calcHealAmountByRatio(scene, side, e.ratio);
       const healed = healSideByRatio(scene, side, e.ratio);
@@ -2025,6 +2250,23 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
         if (idx >= 0) scene.team[idx].hp = clamp(Number(scene.attackerHp) || 0, 0, scene.team[idx].maxHp);
       }
       logs.push(`${who}回复了 ${shownHeal} 点体力（实际恢复 ${healed}）`);
+      return;
+    }
+    if (e.kind === "recoilFlat") {
+      const chance = clamp(Number(e.chance) || 1, 0, 1);
+      if (Math.random() > chance) return;
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const amount = Math.max(1, Math.floor(Number(e.amount) || 1));
+      const hpKey = side === "attacker" ? "attackerHp" : "targetHp";
+      const before = Math.max(0, Number(scene[hpKey]) || 0);
+      scene[hpKey] = Math.max(0, before - amount);
+      const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
+      if (side === "attacker") applyBattleDamageToActivePet(scene);
+      syncBattleUiHpForSide(scene, side);
+      if (side === "attacker") scene.damageOnAttacker = `-${actual}`;
+      else scene.damageOnTarget = `-${actual}`;
+      markBattleFloatText(scene);
+      logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}消耗 ${actual} 点体力。`);
       return;
     }
     if (e.kind === "healFlat") {
@@ -2129,6 +2371,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       return;
     }
     if (e.kind === "recoilByMaxHp") {
+      if (e.requireHit && !didHit) return;
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       const hpKey = side === "attacker" ? "attackerHp" : "targetHp";
@@ -2140,6 +2383,10 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
       if (side === "attacker") applyBattleDamageToActivePet(scene);
       syncBattleUiHpForSide(scene, side);
+      if (side === "attacker") {
+        const idx = Array.isArray(scene.team) ? scene.team.findIndex((u) => u && u.id === scene.currentAttackerId) : -1;
+        if (idx >= 0) scene.team[idx].hp = scene.attackerHp;
+      }
       if (side === "attacker") scene.damageOnAttacker = `-${recoil}`;
       else scene.damageOnTarget = `-${recoil}`;
       markBattleFloatText(scene);
@@ -2178,6 +2425,31 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       addTimedEffect(scene, side, { kind: "damageReduction", turns: e.turns, data: { ratio: e.ratio } });
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       logs.push(`${who}获得减伤${Math.round((Number(e.ratio) || 0) * 100)}%，持续${e.turns}回合`);
+      return;
+    }
+    if (e.kind === "damageBoost") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      const factor = Math.max(0.01, Number(e.factor) || 1);
+      addTimedEffect(scene, side, { kind: "damageBoost", turns, data: { factor } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}造成伤害提升${Math.round((factor - 1) * 100)}%，持续${turns}回合`);
+      return;
+    }
+    if (e.kind === "damageShield") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      const amount = Math.max(1, Math.floor(Number(e.amount) || 1));
+      addTimedEffect(scene, side, { kind: "damageShield", turns, data: { amount } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}获得银光护盾，每回合抵抗${amount}点伤害，持续${turns}回合`);
+      return;
+    }
+    if (e.kind === "lastStand") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      addTimedEffect(scene, side, { kind: "lastStand", turns: Math.max(1, Math.floor(Number(e.turns) || 1)), data: {} });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}获得不灭的意志，本回合受到致命伤害时至少保留1点体力。`);
       return;
     }
     if (e.kind === "timedHeal") {
@@ -2266,6 +2538,15 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       logs.push(`全场${e.element}技能威力调整为${Math.round((Number(e.factor) || 1) * 100)}%，持续${e.turns}回合`);
       return;
     }
+    if (e.kind === "mutualEndTurnDamageFlat") {
+      const amount = Math.max(1, Math.floor(Number(e.amount) || 1));
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      ["attacker", "target"].forEach((side) => {
+        addTimedEffect(scene, side, { kind: "mutualEndTurnDamageFlat", turns, data: { amount, label: skill.name } });
+      });
+      logs.push(`${skill.name}弥漫全场，双方每回合受到${amount}点伤害，持续${turns}回合。`);
+      return;
+    }
     if (e.kind === "defenseHalve") {
       if (!didHit) return;
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
@@ -2328,9 +2609,38 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       addTimedEffect(scene, side, {
         kind: "lockGodDrain",
         turns,
-        data: { caster, ratio, label }
+        data: { caster, ratio, flat: Math.max(0, Math.floor(Number(e.flat) || 0)), label }
       });
-      logs.push(`${who}受到${label}影响，${turns}回合内每回合扣除最大体力值的1/16。`);
+      if (Math.max(0, Math.floor(Number(e.flat) || 0)) > 0) {
+        logs.push(`${who}受到${label}影响，${turns}回合内每回合扣除${Math.max(1, Math.floor(Number(e.flat) || 0))}点体力。`);
+      } else {
+        logs.push(`${who}受到${label}影响，${turns}回合内每回合扣除最大体力值的${Math.round(ratio * 10000) / 100}%。`);
+      }
+    }
+    if (e.kind === "flatDrain") {
+      if (!didHit) return;
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const amount = Math.max(1, Math.floor(Number(e.amount) || 1));
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      const label = normalize(e.label) || skill.name;
+      addTimedEffect(scene, side, { kind: "flatDrain", turns, data: { caster: actor, amount, label } });
+      logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}受到${label}影响，${turns}回合内每回合被吸取${amount}点体力。`);
+    }
+    if (e.kind === "leaveOneHp") {
+      if (!didHit) return;
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const hpKey = side === "attacker" ? "attackerHp" : "targetHp";
+      if (Number(scene[hpKey]) <= 0) scene[hpKey] = 1;
+      logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}因${skill.name}至少保留1点体力。`);
+    }
+    if (e.kind === "dragonBaseBoost") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const st = getSideState(scene, side);
+      const maxStacks = Math.max(1, Math.floor(Number(e.maxStacks) || 5));
+      st.dragonBaseBoostStacks = clamp(Math.floor(Number(st.dragonBaseBoostStacks) || 0) + 1, 0, maxStacks);
+      const changed = applyStageDelta(scene, side, ["atk", "def", "spAtk", "spDef", "speed"], 1);
+      logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}获得龙腾四海强化（${st.dragonBaseBoostStacks}/${maxStacks}）。`);
+      if (changed.length > 0) logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}提升1级：${changed.map((k) => battleStatLabel(k)).join("、")}`);
     }
   });
   if (logs.length > 0) {
@@ -2501,20 +2811,56 @@ const applyEndTurnStatus = (scene, side) => {
   });
   (state.timedEffects || []).forEach((e) => {
     if (normalize(e.kind) !== "lockGodDrain") return;
-    const ratio = clamp(Number(e.data && e.data.ratio) || (1 / 16), 0.01, 1);
+    const flat = Math.floor(Number(e.data && e.data.flat) || 0);
+    const ratio = flat > 0 ? 0 : clamp(Number(e.data && e.data.ratio) || (1 / 16), 0.01, 1);
     const label = normalize(e.data && e.data.label) || "锁神诀";
-    const dmg = Math.max(1, Math.floor(maxHp * ratio));
+    const dmg = flat > 0 ? flat : Math.max(1, Math.floor(maxHp * ratio));
     const actual = Math.min(dmg, Math.max(0, Number(scene[hpKey]) || 0));
     scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - dmg);
     totalDamage += actual;
     if (actual > 0) damageStatusTriggered = true;
     pushBattleLog(scene, `${label}：${actorName}受到${actual}点持续伤害。`);
   });
+  (state.timedEffects || []).forEach((e) => {
+    if (normalize(e.kind) !== "flatDrain") return;
+    const amount = Math.max(1, Math.floor(Number(e.data && e.data.amount) || 1));
+    const label = normalize(e.data && e.data.label) || "吸附";
+    const actual = Math.min(amount, Math.max(0, Number(scene[hpKey]) || 0));
+    scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - amount);
+    totalDamage += actual;
+    if (actual > 0) damageStatusTriggered = true;
+    const casterSide = normalize(e.data && e.data.caster) === "target" ? "target" : "attacker";
+    const casterName = casterSide === "attacker" ? scene.attackerName : scene.targetName;
+    const casterHpKey = casterSide === "attacker" ? "attackerHp" : "targetHp";
+    const casterMaxHpKey = casterSide === "attacker" ? "attackerMaxHp" : "targetMaxHp";
+    const healToCaster = Math.min(actual, Math.max(0, (Number(scene[casterMaxHpKey]) || 0) - (Number(scene[casterHpKey]) || 0)));
+    scene[casterHpKey] = clamp((Number(scene[casterHpKey]) || 0) + healToCaster, 0, Number(scene[casterMaxHpKey]) || 0);
+    totalHealOpp += casterSide === oppSide ? healToCaster : 0;
+    if (casterSide === side) totalHealSelf += healToCaster;
+    pushBattleLog(scene, `${label}：${casterName}吸取${actorName}${actual}点体力。`);
+  });
+  (state.timedEffects || []).forEach((e) => {
+    if (normalize(e.kind) !== "mutualEndTurnDamageFlat") return;
+    const amount = Math.max(1, Math.floor(Number(e.data && e.data.amount) || 1));
+    const label = normalize(e.data && e.data.label) || "腐蚀酸云";
+    const actual = Math.min(amount, Math.max(0, Number(scene[hpKey]) || 0));
+    scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - amount);
+    totalDamage += actual;
+    if (actual > 0) damageStatusTriggered = true;
+    pushBattleLog(scene, `${label}：${actorName}受到${actual}点伤害。`);
+  });
   const delayedStageToApply = [];
   (state.timedEffects || []).forEach((e) => {
     if (normalize(e.kind) !== "delayedStage") return;
     if (Number(e.turns) !== 1) return;
     const d = e && e.data ? e.data : {};
+    if (d.ko) {
+      const before = Math.max(0, Number(scene[hpKey]) || 0);
+      scene[hpKey] = 0;
+      totalDamage += before;
+      pushBattleLog(scene, `${normalize(d.label) || "延时效果"}触发：${actorName}失去战斗能力。`);
+      return;
+    }
     const keys = Array.isArray(d.keys) ? d.keys.filter((k) => typeof k === "string") : [];
     const delta = Number(d.delta) || 0;
     if (keys.length === 0 || delta === 0) return;
@@ -4403,6 +4749,7 @@ createApp({
       }
     });
     const availableSkillsForSelectedPet = computed(() => {
+      skillAttackTypeVersion.value;
       const pet = selectedPet.value;
       if (!pet) return [];
       const species = selectedPetSpecies.value;
@@ -4445,6 +4792,7 @@ createApp({
       return hit || list[0] || null;
     });
     const selectedPetEquippedSkills = computed(() => {
+      skillAttackTypeVersion.value;
       const pet = selectedPet.value;
       if (detailPreviewPet.value && detailPreviewPet.value.previewAllSkills) {
         return availableSkillsForSelectedPet.value.map((s) => normalizeSkillKey(s && s.name)).filter(Boolean);
@@ -5451,6 +5799,7 @@ createApp({
       let targetElement = isAttacker ? scene.targetElement : scene.attackerElement;
       const actorSide = isAttacker ? "attacker" : "target";
       let targetSide = isAttacker ? "target" : "attacker";
+      const suppressDirectDamage = hasDirectDamageSuppressedEffect(skill);
       const beforeAct = beforeActionCheck(scene, actorSide);
       if (beforeAct.log) {
         pushBattleLog(scene, beforeAct.log);
@@ -5460,6 +5809,12 @@ createApp({
       }
       if (hasUsedOncePerBattleSkill(scene, actorSide, skill)) {
         pushBattleLog(scene, `${actorName} 本场战斗已经使用过 ${skill.name}，无法再次使用。`);
+        return { ended: false, skipped: true, visualDelayMs: BATTLE_FLOAT_TEXT_DURATION_MS };
+      }
+      if (isSkillBlockedByGuardianBoss(scene, actorSide, skill)) {
+        skill.pp = Math.max(0, Number(skill.pp) - 1);
+        pushBattleLog(scene, `${actorName} 使用 ${skill.name}，但${targetName}对该技能效果免疫。`);
+        scene.pendingEndTurnTick = true;
         return { ended: false, skipped: true, visualDelayMs: BATTLE_FLOAT_TEXT_DURATION_MS };
       }
       skill.pp = Math.max(0, Number(skill.pp) - 1);
@@ -5501,7 +5856,7 @@ createApp({
       }
       const actorLevel = isAttacker ? scene.attackerLevel : scene.targetLevel;
       const fixedDamage = calcBattleFixedDamageAmount(scene, actorSide, skill, actorLevel);
-      const isStatusAnim = atkKind === "status" || (Number(skill.power) <= 0 && fixedDamage <= 0);
+      const isStatusAnim = suppressDirectDamage || atkKind === "status" || (Number(skill.power) <= 0 && fixedDamage <= 0);
       const actionStateKey = isStatusAnim ? "status" : "atk";
       const visualDelayMs = (getPetBattleAnimPath(actorDexIdForDelay, actorSide, actionStateKey) || getBattleSkillEffectPath(skill, actionSeq))
         ? Math.max(BATTLE_FLOAT_TEXT_DURATION_MS, BATTLE_COUNTER_ATTACK_DELAY_MS + BATTLE_DAMAGE_VISUAL_DELAY_MS)
@@ -5512,7 +5867,7 @@ createApp({
         applyBattleAnimImage(scene, "target", actionStateKey, actionSeq);
       }
       const skillElement = parseSkillElement(skill.type);
-      const powerFactor = getElementPowerFactor(scene, actorSide, skillElement);
+      const powerFactor = getElementPowerFactor(scene, actorSide, skillElement) * getDamageBoostFactor(scene, actorSide);
       const powerOverride = getSkillPowerOverride(skill);
       const actorStatuses = getSideState(scene, actorSide).statuses || {};
       const powerConditionFactor = normalize(skill && skill.name) === "激发力量"
@@ -5542,7 +5897,7 @@ createApp({
           markBattleFloatText(scene);
         };
         scheduleBattleSkillEffectVisual(scene, actorSide, targetSide, skill, atkKind, actionStateKey, actionSeq, showMissVisual);
-      } else if (atkKind === "status" || (Number(skill.power) <= 0 && fixedDamage <= 0)) {
+      } else if (suppressDirectDamage || atkKind === "status" || (Number(skill.power) <= 0 && fixedDamage <= 0)) {
         pushBattleLog(scene, `${actorName} 使用 ${skill.name}（属性技能）。`);
         scheduleBattleSkillEffectVisual(scene, actorSide, targetSide, skill, atkKind, actionStateKey, actionSeq, () => flushAfterDamageFloat(scene));
         skillEffectDidApply = true;
@@ -5629,6 +5984,12 @@ createApp({
           });
           if (bonusFixedPerHit && Math.random() <= bonusFixedPerHit.chance) {
             one += bonusFixedPerHit.amount;
+          }
+          const shield = getDamageShieldAmount(scene, targetSide);
+          if (shield > 0) {
+            const beforeShield = one;
+            one = Math.max(0, one - shield);
+            if (beforeShield > one) pushBattleLog(scene, `${targetName}的银光护盾抵抗${beforeShield - one}点伤害。`);
           }
           const actorCritStage = getSideState(scene, actorSide).critStage || 0;
           const crit = Math.random() < critChanceByStage(actorCritStage);
@@ -5720,10 +6081,10 @@ createApp({
           flushAfterDamageFloat(scene);
         };
         if (targetSide === "target") {
-          scene.targetHp = Math.max(0, scene.targetHp - damage);
+            scene.targetHp = Math.max(hasLastStandEffect(scene, "target") && scene.targetHp > 0 ? 1 : 0, scene.targetHp - damage);
           if (damage > 0) clearSleepAfterDamage(scene, "target");
           if (selfPowerDamage > 0) {
-            scene.attackerHp = Math.max(0, scene.attackerHp - selfPowerDamage);
+              scene.attackerHp = Math.max(hasLastStandEffect(scene, "attacker") && scene.attackerHp > 0 ? 1 : 0, scene.attackerHp - selfPowerDamage);
             applyBattleDamageToActivePet(scene);
             clearSleepAfterDamage(scene, "attacker");
             pushBattleLog(scene, `${actorName}也受到${skill.name}同威力伤害 ${selfPowerDamage}（${compareElementLabel(selfPowerElementFactor)}）。`);
@@ -5731,11 +6092,11 @@ createApp({
             scheduleBattleSkillEffectVisual(scene, actorSide, targetSide, skill, atkKind, actionStateKey, actionSeq, showDamageVisual);
           }
           else {
-            scene.attackerHp = Math.max(0, scene.attackerHp - damage);
+            scene.attackerHp = Math.max(hasLastStandEffect(scene, "attacker") && scene.attackerHp > 0 ? 1 : 0, scene.attackerHp - damage);
             applyBattleDamageToActivePet(scene);
             if (damage > 0) clearSleepAfterDamage(scene, "attacker");
             if (selfPowerDamage > 0) {
-              scene.targetHp = Math.max(0, scene.targetHp - selfPowerDamage);
+              scene.targetHp = Math.max(hasLastStandEffect(scene, "target") && scene.targetHp > 0 ? 1 : 0, scene.targetHp - selfPowerDamage);
               clearSleepAfterDamage(scene, "target");
               pushBattleLog(scene, `${actorName}也受到${skill.name}同威力伤害 ${selfPowerDamage}（${compareElementLabel(selfPowerElementFactor)}）。`);
             }
