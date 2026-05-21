@@ -1,6 +1,6 @@
 {
   "name": "Aola-Star-Hub",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "description": "Aola Star Hub frontend with local save server and Electron shell.",
   "main": "electron/main.js",
@@ -11,14 +11,16 @@
     "desktop": "electron .",
     "generate:skill-effects": "node generate-skill-effects-hardcoded.js",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder --win nsis"
+    "dist": "node scripts/dist-ascii.js"
   },
   "build": {
     "appId": "com.aolastar.hub",
     "productName": "Aola Star Hub",
     "directories": {
-      "output": "output"
+      "output": "release"
     },
+    "asar": true,
+    "afterPack": "scripts/after-pack-win-icon.js",
     "files": [
       "aola-star.html",
       "aola-star-app.js",
@@ -27,6 +29,7 @@
       "aola-dex-1-100.js",
       "aola-species-data.js",
       "aola-skill-data.js",
+      "pet-action-layout.json",
       "aola_pet_skill_extract.json",
       "aola_pet_skill_extract_skills.json",
       "aola-battle-background-default.png",
@@ -35,9 +38,12 @@
       "type/**/*",
       "type-transparent/**/*",
       "BGM/**/*",
+      "time-tunnel-environments/**/*",
       "pet-action/*/*.webp",
       "pet-img/**/*",
+      "pet-state/**/*",
       "skill-effect/*.gif",
+      "skill-effect-fullscreen/*.gif",
       "electron/**/*",
       "server/index.js",
       "server/README.md",
@@ -47,14 +53,11 @@
       "Aola-Star-Hub-icon.png",
       "build/Aola-Star-Hub-icon.ico"
     ],
-    "asarUnpack": [
-      "server/**/*"
-    ],
     "win": {
-      "signAndEditExecutable": false,
       "icon": "build/Aola-Star-Hub-icon.ico",
+      "signAndEditExecutable": false,
       "target": [
-        "nsis"
+        "nsis-web"
       ]
     },
     "nsis": {
@@ -66,7 +69,11 @@
       "installerIcon": "build/Aola-Star-Hub-icon.ico",
       "uninstallerIcon": "build/Aola-Star-Hub-icon.ico",
       "installerHeaderIcon": "build/Aola-Star-Hub-icon.ico",
-      "artifactName": "${productName}-debug-${version}-setup.exe"
+      "artifactName": "${productName}-${version}-setup.exe"
+    },
+    "nsisWeb": {
+      "appPackageUrl": "https://example.invalid/aola-star-hub/${version}",
+      "artifactName": "${productName}-${version}-setup.exe"
     },
     "portable": {
       "artifactName": "${productName}-debug-${version}-setup.exe"

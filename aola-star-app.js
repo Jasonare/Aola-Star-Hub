@@ -7,6 +7,10 @@ if (!window.Vue) {
   throw new Error("Vue failed to load from local vendor file");
 }
 const { createApp, ref, computed, watch, onMounted, onBeforeUnmount, nextTick } = window.Vue;
+const isAndroidWebViewRuntime = () => {
+  if (typeof window === "undefined" || typeof navigator === "undefined") return false;
+  return /Android/i.test(navigator.userAgent || "") || String(window.location && window.location.href || "").includes("android_asset");
+};
 
 const cleanupOrphanTemplateOverlays = () => {
   if (!document || !document.body) return;
@@ -33,6 +37,7 @@ const SESSION_MODE_KEY = "aola_star_session_mode_v1";
 const AUTH_TOKEN_KEY = "aola_star_auth_token_v1";
 const REMEMBER_LOGIN_KEY = "aola_star_remember_login_v1";
 const BGM_VOLUME_KEY = "aola_star_bgm_volume_v1";
+const BATTLE_SPEED_KEY = "aola_star_battle_speed_v1";
 const SAVE_FILE_PREFIX = "aola_battle_save_";
 const STARTER_DEX_IDS = [1, 4, 7];
 const BASE_GUARDIAN_NAMES = ["冰拳艾司", "沙麒麟", "金刚库巴", "木面侠", "火花龙"];
@@ -52,12 +57,35 @@ const BOSS_NAMES = [
   "骰子大王", "龙族大法师", "七星神龙", "青龙灵兽", "玄武灵兽", "白虎灵兽", "朱雀灵兽", "念", "凯撒", "修罗",
   "奇灵王", "音爵卡卡", "烈焰凤凰", "魔焰吉拉", "古渊露龙", "终结兔", "飞天独角兽", "熊猫大侠", "帝皇龙", "梅卡"
 ];
+const BOSS_DEX_ENTRIES = [
+  { dexId: 1792, name: "天怒" }, { dexId: 1794, name: "天煞" }, { dexId: 1808, name: "瞳灵" }, { dexId: 1823, name: "星皇" },
+  { dexId: 1830, name: "雷霆" }, { dexId: 1832, name: "万钧" }, { dexId: 1845, name: "光暗弑神" }, { dexId: 1716, name: "奥天" },
+  { dexId: 1749, name: "雷霆青龙" }, { dexId: 1752, name: "惊涛玄武" }, { dexId: 1861, name: "龙刃" }, { dexId: 1754, name: "炎王" },
+  { dexId: 1777, name: "帝卡" }, { dexId: 1825, name: "斗罗明王" }, { dexId: 1873, name: "冰罗皇" }, { dexId: 1896, name: "圣天伊" },
+  { dexId: 1362, name: "阿波罗" }, { dexId: 1869, name: "圣王麒麟" }, { dexId: 1414, name: "九尾冰狐" }, { dexId: 1450, name: "千年瑞兽" },
+  { dexId: 1496, name: "震天金刚" }, { dexId: 1514, name: "战魂猛犸" }, { dexId: 1619, name: "巨角剑龙" }, { dexId: 891, name: "刀锋" },
+  { dexId: 901, name: "星宇侠" }, { dexId: 1118, name: "幻影" }, { dexId: 1426, name: "黑炎龙" }, { dexId: 1756, name: "阿尔萨斯" },
+  { dexId: 1911, name: "炽燎天" }, { dexId: 1912, name: "擎霸天" }, { dexId: 1898, name: "擎空" }, { dexId: 946, name: "紫渊" },
+  { dexId: 973, name: "红魔" }, { dexId: 1086, name: "绿焰" }, { dexId: 1124, name: "夜王狄米特" }, { dexId: 1170, name: "夜兰" },
+  { dexId: 1232, name: "鲁曼" }, { dexId: 1250, name: "纳兹" }, { dexId: 1291, name: "塞娅" }, { dexId: 1347, name: "魔洛" },
+  { dexId: 1122, name: "狼王迪洛斯" }, { dexId: 1309, name: "幻冥" }, { dexId: 1328, name: "幻极" }, { dexId: 1134, name: "白羽公主" },
+  { dexId: 1159, name: "极冰海牙" }, { dexId: 1380, name: "金刚虎王" }, { dexId: 1423, name: "噬月武神" }, { dexId: 1451, name: "金银尊者" },
+  { dexId: 1461, name: "苍炎战神" }, { dexId: 1538, name: "炼狱战狮" }, { dexId: 1539, name: "炼狱狮王" }, { dexId: 1806, name: "冥焰夜王" },
+  { dexId: 1905, name: "君焰狼王" }, { dexId: 1925, name: "龙炎王" }, { dexId: 1926, name: "帝王奇灵" }, { dexId: 1915, name: "真苍炎战神" },
+  { dexId: 1916, name: "真噬月武神" }, { dexId: 1917, name: "真烈焰凤凰" }, { dexId: 1927, name: "真赤色梦魇" }, { dexId: 1526, name: "雷钢侠" },
+  { dexId: 1528, name: "疾影侠" }, { dexId: 1530, name: "啸天侠" }, { dexId: 1501, name: "太阳星诺" }, { dexId: 1503, name: "月亮星诺" },
+  { dexId: 1181, name: "焚浪" }, { dexId: 1274, name: "岩战" }, { dexId: 1910, name: "魂战" }, { dexId: 1648, name: "菲尔" },
+  { dexId: 1649, name: "可兰" }, { dexId: 1234, name: "拉诺斯" }, { dexId: 1282, name: "施瓦辛格" }, { dexId: 1336, name: "波塞冬" }
+];
+const BOSS_DEX_ID_TO_NAME = new Map(BOSS_DEX_ENTRIES.map((entry) => [entry.dexId, entry.name]));
 const EXCLUDED_GUARDIAN_NAMES = ["魔灯鬼王"];
-const EXCLUDED_BOSS_NAMES = ["冰山修罗"];
+const EXCLUDED_BOSS_NAMES = ["冰山修罗", "神照修罗王", "黯天凯撒皇"];
 const SHOP_EGG_NAMES = [
   "阿努比斯", "寒冰公主", "花冠公主", "燕尾怪盗", "黑暗守卫", "变异库斯特", "星云大圣", "暗影夜蝠",
   "宇宙侠", "冰霜射手", "爆裂侠", "怒风侠", "天辉侠", "霸气侠"
 ];
+const SHOP_EGG_EXCLUDED_NAMES = new Set(["爆裂侠X", "天辉侠X"]);
+const SHOP_EGG_DEX_IDS = new Set([1736,1746,1767,1782,1834,1645,1678,1680,1728,1881,948,1296,1298,1300,1307]);
 const STUDY_BATTLEFIELDS = [
   { key: "atk", label: "攻击", guardianName: "朵朵兔" },
   { key: "spAtk", label: "特攻", guardianName: "闪光河豚" },
@@ -66,31 +94,118 @@ const STUDY_BATTLEFIELDS = [
   { key: "spDef", label: "特防", guardianName: "盼盼" },
   { key: "speed", label: "速度", guardianName: "毛毛球" }
 ];
+const TIME_TUNNEL_OPEN_MAX_FLOOR = 5;
+const TIME_TUNNEL_FLOORS = [
+  { floor: 1, enemies: [{ dexId: 33, level: 62 }, { dexId: 36, level: 64 }] },
+  { floor: 2, enemies: [{ dexId: 54, level: 66 }, { dexId: 60, level: 68 }] },
+  { floor: 3, enemies: [{ dexId: 63, level: 70 }, { dexId: 66, level: 72 }] },
+  { floor: 4, enemies: [{ dexId: 69, level: 74 }, { dexId: 72, level: 76 }] },
+  { floor: 5, enemies: [{ dexId: 81, level: 78 }, { dexId: 461, level: 80 }] }
+];
+const TIME_TUNNEL_SELECT_FLOORS = Array.from({ length: 100 }, (_, i) => i + 1);
+const TIME_TUNNEL_EXTRA_SKILLS_BY_DEX_ID = {
+  461: [
+    {
+      skillId: 17208,
+      name: "病毒入侵",
+      element: "暗黑系",
+      attackTypeCode: 2,
+      attackTypeLabel: "属性攻击",
+      power: 0,
+      pp: 10,
+      accuracy: 100,
+      desc: "令对手害怕1回合；另外每回合扣除对方单体最大体力值的1/16，无限回合，直至病毒死亡"
+    },
+    {
+      skillId: 17211,
+      name: "魔狂暴",
+      element: "暗黑系",
+      attackTypeCode: 2,
+      attackTypeLabel: "属性攻击",
+      power: 0,
+      pp: 10,
+      accuracy: 100,
+      desc: "扣除对方剩余体力值的1/2来转化回复自己的体力值"
+    },
+    {
+      skillId: 17212,
+      name: "黑洞",
+      element: "暗黑系",
+      attackTypeCode: 2,
+      attackTypeLabel: "属性攻击",
+      power: 0,
+      pp: 10,
+      accuracy: 100,
+      desc: "每回合回复自己最大体力值的1/8，无限回合"
+    }
+  ]
+};
 const SHOP_EGG_PRICE = 2000;
 const LOGIN_BGM_SRC = "./BGM/小k橘子 - 主题公园3.ogg";
 const HOME_BGM_SRC = "./BGM/小k橘子 - 神宠殿堂.ogg";
+const TIME_TUNNEL_BGM_SRC = "./BGM/小k橘子 - 时空隧道.ogg";
 const WAREHOUSE_BGM_SRC = "./BGM/小k橘子 - 家园.ogg";
 const SHOP_BGM_SRC = "./BGM/小k橘子 - 经验战场.ogg";
 const STUDY_BGM_SRC = "./BGM/小k橘子 - 欢乐岛.ogg";
 const DEFAULT_BATTLE_BG_SRC = "./aola-battle-background-default.png";
 const GUARDIAN_LEVELS = [30, 40, 50, 60, 70, 80, 90, 100];
 const EXTRA_GUARDIAN_LEVELS = [100];
-const MAX_OPEN_CHALLENGE_DEX_ID = 796;
-const NO_EGG_ACTION_DEX_IDS = new Set([116,117,118,119,210,213,216,217,218,219,222,223,224,225,227,237,239,240,241,242,243,244,245,246,247,248,250,251,252,269,270,272,301,304,306,307,308,318,319,321,322,324,325,326,327,329,330,331,332,333,334,340,359,360,361,369,399,400,401,402,403,404,405,415,419,420,446,447,448,461,462,464,465,466,523,527,609,716,717,735,754,755,756,757,758,759,760,761,762,763,764,765,766,767,768,769,770,771,772,773,774,775,776,777,778,779,780,781,782,783,784,785,786,787,788,789,790,791,792,793,797,798,799,800,801,802,803,804,805,806,807,808,809,810,811,812,813,814,815,816,817,818,819,820,821,822,823,824,825,826,827,828,829,830,831,832,833,834,835,836,837,838,839,840,841,842,843,844,845,846,847,848,849,850,851,852,853,854,855,856,857,858,859,860,861,862,863,864,865,866,867,868,869,870,871,872,873,874,875,876,877,878,879,880,881,882,883,884,885,886,887,888,889,890,891,892,893,894,895,896,897,898,899,900,901,902,903,904,905,906,907,908,909,910,911,912,913,914,915,916,917,918,919,920,921,922,923,924,925,926,927,928,929,930,931,932,933,934,935,936,937,938,939,940,941,942,943,944,945,946,947,948,949,950,951,952,953,954,955,956,957,958,959,960,961,962,963,964,965,966,967,968,969,970,971,972,973,974,975,976,977,978,979,980,981,982,983,984,985,986,987,988,989,990,991,992,993,994,995,996,997,998,999,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024,1025,1026,1027,1028,1029,1030,1031,1032,1033,1034,1035,1036,1037,1038,1039,1040,1041,1042,1043,1044,1045,1046,1047,1048,1049,1050,1051,1052,1053,1054,1055,1056,1057,1058,1059,1060,1061,1062,1063,1064,1065,1066,1067,1068,1069,1070,1071,1072,1073,1074,1075,1076,1077,1078,1079,1080,1081,1082,1083,1084,1085,1086,1087,1088,1089,1090,1091,1092,1093,1094,1095,1096,1097,1098,1099,1100,1101,1102,1103,1104,1105,1106,1107,1108,1109,1110,1111,1112,1113,1114,1115,1116,1117,1118,1119,1120,1121,1122,1123,1124,1125,1126,1127,1128,1129,1130,1131,1132,1133,1134,1135,1136,1137,1138,1139,1140,1141,1142,1143,1144,1145,1146,1147,1148,1149,1150,1151,1152,1153,1154,1155,1156,1157,1158,1159,1160,1161,1162,1163,1164,1165,1166,1167,1168,1169,1170,1171,1172,1173,1174,1175,1176,1177,1178,1179,1180,1181,1182,1183,1184,1185,1186,1187,1188,1189,1190,1191,1192,1193,1194,1195,1196,1197,1198,1199,1200,1201,1202,1203,1204,1205,1206,1207,1208,1209,1210,1211,1212,1213,1214,1215,1216,1217,1218,1219,1220,1221,1222,1223,1224,1225,1226,1227,1228,1229,1230,1231,1232,1233,1234,1235,1236,1237,1238,1239,1240,1241,1242,1243,1244,1245,1246,1247,1248,1249,1250,1251,1252,1253,1254,1255,1256,1257,1258,1259,1260,1261,1262,1263,1264,1265,1266,1267,1268,1269,1270,1271,1272,1273,1274,1275,1276,1277,1278,1279,1280,1281,1282,1283,1284,1285,1286,1287,1288,1289,1290,1291,1292,1293,1294,1295,1296,1297,1298,1299,1300,1301,1302,1303,1304,1305,1306,1307,1308,1309,1310,1311,1312,1313,1314,1315,1316,1317,1318,1319,1320,1321,1322,1323,1324,1325,1326,1327,1328,1329,1330,1331,1332,1333,1334,1335,1336,1337,1338,1339,1340,1341,1342,1343,1344,1345,1346,1347,1348,1349,1350,1351,1352,1353,1354,1355,1356,1357,1358,1359,1360,1361,1362,1363,1364,1365,1366,1367,1368,1369,1370,1371,1372,1373,1374,1375,1376,1377,1378,1379,1380,1381,1382,1383,1384,1385,1386,1387,1388,1389,1390,1391,1392,1393,1394,1395,1396,1397,1398,1399,1400,1401,1402,1403,1404,1405,1406,1407,1408,1409,1410,1411,1412,1413,1414,1415,1416,1417,1418,1419,1420,1421,1422,1423,1424,1425,1426,1427,1428,1429,1430,1431,1432,1433,1434,1435,1436,1437,1438,1439,1440,1441,1442,1443,1444,1445,1446,1447,1448,1449,1450,1451,1452,1453,1454,1455,1456,1457,1458,1459,1460,1461,1462,1463,1464,1465,1466,1467,1468,1469,1470,1471,1472,1473,1474,1475,1476,1477,1478,1479,1480,1481,1482,1483,1484,1485,1486,1487,1488,1489,1490,1491,1492,1493,1494,1495,1496,1497,1498,1499,1500,1501,1502,1503,1504,1505,1506,1507,1508,1509,1510,1511,1512,1513,1514,1515,1516,1517,1518,1519,1520,1521,1522,1523,1524,1525,1526,1527,1528,1529,1530,1531,1532,1533,1534,1535,1536,1537,1538,1539,1540,1541,1542,1543,1544,1545,1546,1547,1548,1549,1550,1551,1552,1553,1554,1555,1556,1557,1558,1559,1560,1561,1562,1563,1564,1565,1566,1567,1568,1569,1570,1571,1572,1573,1574,1575,1576,1577,1578,1579,1580,1581,1582,1583,1584,1585,1586,1587,1588,1589,1590,1591,1592,1593,1594,1595,1596,1597,1598,1599,1600,1601,1602,1603,1604,1605,1606,1607,1608,1609,1610,1611,1612,1613,1614,1615,1616,1617,1618,1619,1620,1621,1622,1623,1624,1625,1626,1627,1628,1629,1630,1631,1632,1633,1634,1635,1636,1637,1638,1639,1640,1641,1642,1643,1644,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655,1656,1657,1658,1659,1660,1661,1662,1663,1664,1665,1666,1667,1668,1669,1670,1671,1672,1673,1674,1675,1676,1677,1678,1679,1680,1681,1682,1683,1684,1685,1686,1687,1688,1689,1690,1691,1692,1693,1694,1695,1696,1697,1698,1699,1700,1701,1702,1703,1704,1705,1706,1707,1708,1709,1710,1711,1712,1713,1714,1715,1716,1717,1718,1719,1720,1721,1722,1723,1724,1725,1726,1727,1728,1729,1730,1731,1732,1733,1734,1735,1736,1737,1738,1739,1740,1741,1742,1743,1744,1745,1746,1747,1748,1749,1750,1751,1752,1753,1754,1755,1756,1757,1758,1759,1760,1761,1762,1763,1764,1765,1766,1767,1768,1769,1770,1771,1772,1773,1774,1775,1776,1777,1778,1779,1780,1781,1782,1783,1784,1785,1786,1787,1788,1789,1790,1791,1792,1793,1794,1795,1796,1797,1798,1799,1800,1801,1802,1803,1804,1805,1806,1807,1808,1809,1810,1811,1812,1813,1814,1815,1816,1817,1818,1819,1820,1821,1822,1823,1824,1825,1826,1827,1828,1829,1830,1831,1832,1833,1834,1835,1836,1837,1838,1839,1840,1841,1842,1843,1844,1845,1846,1847,1848,1849,1850,1851,1852,1853,1854,1855,1856,1857,1858,1859,1860,1861,1862,1863,1864,1865,1866,1867,1868,1869,1870,1871,1872,1873,1874,1875,1876,1877,1878,1879,1880,1881,1882,1883,1884,1885,1886,1887,1888,1889,1890,1891,1892,1893,1894,1895,1896,1897,1898,1899,1900,1901,1902,1903,1904,1905,1906,1907,1908,1909,1910,1911,1912,1913,1914,1915,1916,1917,1918,1919,1920,1921,1922,1923,1924,1925,1926,1927,1928,1929,1930,1931,1932,1933,1934,1935,1936,1937,1938,1939,1940,1941,1942,1943,1944,1945,1946,1947,1948,1949,1950,1951,1952,1953,1954,1955,1956,1957,1958,1959,1960,1961,1962,1963,1964,1965,1966,1967,1968,1969,1970,1971,1972,1973,1974,1975,1976,1977,1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055,2056,2057,2058,2059,2060,2061,2062,2063,2064,2065,2066,2067,2068,2069,2070,2071,2072,2073,2074,2075,2076,2077,2078,2079,2080,2081,2082,2083,2084,2085,2086,2087,2088,2089,2090,2091,2092,2093,2094,2095,2096,2097,2098,2099,2100,2101,2102,2103,2104,2105,2106,2107,2108,2109,2110,2111,2112,2113,2114,2115,2116,2117,2118,2119,2120,2121,2122,2123,2124,2125,2126,2127,2128,2129,2130,2131,2132,2133,2134,2135,2136,2137,2138,2139,2140,2141,2142,2143,2144,2145,2146,2147,2148,2149,2150,2151,2152,2153,2154,2155,2156,2157,2158,2159,2160,2161,2162,2163,2164,2165,2166,2167,2168,2169,2170,2171,2172,2173,2174,2175,2176,2177,2178,2179,2180,2181,2182,2183,2184,2185,2186,2187,2188,2189,2190,2191,2192,2193,2194,2195,2196,2197,2198,2199,2200,2201,2202,2203,2204,2205,2206,2207,2208,2209,2210,2211,2212,2213,2214,2215,2216,2217,2218,2219,2220,2221,2222,2223,2224,2225,2226,2227,2228,2229,2230,2231,2232,2233,2234,2235,2236,2237,2238,2239,2240,2241,2242,2243,2244,2245,2246,2247,2248,2249,2250,2251,2252,2253,2254,2255,2256,2257,2258,2259,2260,2261,2262,2263,2264,2265,2266,2267,2268,2269,2270,2271,2272,2273,2274,2275,2276,2277,2278,2279,2280,2281,2282,2283,2284,2285,2286,2287,2288,2289,2290,2291,2292,2293,2294,2295,2296,2297,2298,2299,2300,2301,2302,2303,2304,2305,2306,2307,2308,2309,2310,2311,2312,2313,2314,2315,2316,2317,2318,2319,2320,2321,2322,2323,2324,2325,2326,2327,2328,2329,2330,2331,2332,2333,2334,2335,2336,2337,2338,2339,2340,2341,2342,2343,2344,2345,2346,2347,2348,2349,2350,2351,2352,2353,2354,2355,2356,2357,2358,2359,2360,2361,2362,2363,2364,2365,2366,2367,2368,2369,2370]);
+const MAX_OPEN_CHALLENGE_DEX_ID = 1928;
+const NO_EGG_ACTION_DEX_IDS = new Set([116,117,119,330,331,359,419,420,464,465,716,717,791,792,808,809,888,889,1087,1088,1089,1090,1929,1930,1931,1932,1933,1934,1935,1936,1937,1938,1939,1940,1941,1942,1943,1944,1945,1946,1947,1948,1949,1950,1951,1952,1953,1954,1955,1956,1957,1958,1959,1960,1961,1962,1963,1964,1965,1966,1967,1968,1969,1970,1971,1972,1973,1974,1975,1976,1977,1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055,2056,2057,2058,2059,2060,2061,2062,2063,2064,2065,2066,2067,2068,2069,2070,2071,2072,2073,2074,2075,2076,2077,2078,2079,2080,2081,2082,2083,2084,2085,2086,2087,2088,2089,2090,2091,2092,2093,2094,2095,2096,2097,2098,2099,2100,2101,2102,2103,2104,2105,2106,2107,2108,2109,2110,2111,2112,2113,2114,2115,2116,2117,2118,2119,2120,2121,2122,2123,2124,2125,2126,2127,2128,2129,2130,2131,2132,2133,2134,2135,2136,2137,2138,2139,2140,2141,2142,2143,2144,2145,2146,2147,2148,2149,2150,2151,2152,2153,2154,2155,2156,2157,2158,2159,2160,2161,2162,2163,2164,2165,2166,2167,2168,2169,2170,2171,2172,2173,2174,2175,2176,2177,2178,2179,2180,2181,2182,2183,2184,2185,2186,2187,2188,2189,2190,2191,2192,2193,2194,2195,2196,2197,2198,2199,2200,2201,2202,2203,2204,2205,2206,2207,2208,2209,2210,2211,2212,2213,2214,2215,2216,2217,2218,2219,2220,2221,2222,2223,2224,2225,2226,2227,2228,2229,2230,2231,2232,2233,2234,2235,2236,2237,2238,2239,2240,2241,2242,2243,2244,2245,2246,2247,2248,2249,2250,2251,2252,2253,2254,2255,2256,2257,2258,2259,2260,2261,2262,2263,2264,2265,2266,2267,2268,2269,2270,2271,2272,2273,2274,2275,2276,2277,2278,2279,2280,2281,2282,2283,2284,2285,2286,2287,2288,2289,2290,2291,2292,2293,2294,2295,2296,2297,2298,2299,2300,2301,2302,2303,2304,2305,2306,2307,2308,2309,2310,2311,2312,2313,2314,2315,2316,2317,2318,2319,2320,2321,2322,2323,2324,2325,2326,2327,2328,2329,2330,2331,2332,2333,2334,2335,2336,2337,2338,2339,2340,2341,2342,2343,2344,2345,2346,2347,2348,2349,2350,2351,2352,2353,2354,2355,2356,2357,2358,2359,2360,2361,2362,2363,2364,2365,2366,2367,2368,2369,2370]);
 const canObtainEggByActionDexId = (dexId) => {
   const id = Number(dexId) || 0;
-  return id > 0 && id <= MAX_OPEN_CHALLENGE_DEX_ID && !NO_EGG_ACTION_DEX_IDS.has(id);
+  return id > 0 && id <= MAX_OPEN_CHALLENGE_DEX_ID && (!NO_EGG_ACTION_DEX_IDS.has(id) || SHOP_EGG_DEX_IDS.has(id));
 };
 const BATTLE_BGM_SRC = "./BGM/小k橘子 - 战斗 (2015).ogg";
 const HATCH_MS = 5 * 60 * 1000;
 const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='24' fill='%23f1f5f9'/%3E%3Ccircle cx='60' cy='48' r='22' fill='%2394a3b8' opacity='0.35'/%3E%3Crect x='24' y='78' width='72' height='14' rx='7' fill='%2394a3b8' opacity='0.35'/%3E%3C/svg%3E";
 const ELEMENT_RELATION_IMAGE = "./属性克制.jpg";
 const BATTLE_FLOAT_TEXT_DURATION_MS_GLOBAL = 2000;
+const BATTLE_PREPARE_MIN_MS = 900;
+const BATTLE_PREPARE_STEP_MS = 22;
+const sceneBattleSpeedFactor = (scene) => 1 / clampBattleSpeed(scene && scene.battleSpeed);
+const battleSceneDelayMs = (scene, ms, minMs = 60) => Math.max(minMs, Math.round(Math.max(0, Number(ms) || 0) * sceneBattleSpeedFactor(scene)));
 
 const uid = () => `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 const normalize = (s) => String(s || "").replace(/[\u200b\u00a0]/g, "").trim();
 const ensureHttps = (url) => String(url || "").replace(/^http:\/\//i, "https://");
+const clampBattleSpeed = (value) => clamp(Math.floor(Number(value) || 1), 1, 4);
+const TIME_TUNNEL_ENVIRONMENT_IMAGE_BY_ELEMENT = {
+  "木系": "./time-tunnel-environments/木系.png",
+  "水系": "./time-tunnel-environments/水系.png",
+  "火系": "./time-tunnel-environments/火系.png",
+  "土系": "./time-tunnel-environments/土系.png",
+  "冰系": "./time-tunnel-environments/冰系.png",
+  "电系": "./time-tunnel-environments/电系.png",
+  "数码系": "./time-tunnel-environments/数码系.png",
+  "机械系": "./time-tunnel-environments/机械系.png",
+  "神秘系": "./time-tunnel-environments/神秘系.png",
+  "飞行系": "./time-tunnel-environments/飞行系.png",
+  "爬行系": "./time-tunnel-environments/爬行系.png",
+  "上古系": "./time-tunnel-environments/上古系.png",
+  "格斗系": "./time-tunnel-environments/格斗系.png",
+  "暗黑系": "./time-tunnel-environments/暗黑系.png",
+  "光明系": "./time-tunnel-environments/光明系.png",
+  "龙系": "./time-tunnel-environments/龙系.png",
+  "圣灵系": "./time-tunnel-environments/圣灵系.png",
+  "神兵系": "./time-tunnel-environments/神兵系.png",
+  "王系": "./time-tunnel-environments/王系.png"
+};
+const getTimeTunnelEnvironmentImage = (element) => TIME_TUNNEL_ENVIRONMENT_IMAGE_BY_ELEMENT[normalize(element)] || TIME_TUNNEL_ENVIRONMENT_IMAGE_BY_ELEMENT["木系"];
+let TIME_TUNNEL_ENVIRONMENT_BY_ELEMENT = null;
+const randomTimeTunnelEnvironment = () => {
+  const pool = TIME_TUNNEL_ENVIRONMENTS_ACTIVE.filter((env) => env.element !== "未知系");
+  const cfg = pool[Math.floor(Math.random() * pool.length)] || pool[0];
+  if (!TIME_TUNNEL_ENVIRONMENT_BY_ELEMENT) {
+    TIME_TUNNEL_ENVIRONMENT_BY_ELEMENT = Object.fromEntries(TIME_TUNNEL_ENVIRONMENTS_ACTIVE.map((env) => [env.element, { ...env, image: getTimeTunnelEnvironmentImage(env.element) }]));
+  }
+  return TIME_TUNNEL_ENVIRONMENT_BY_ELEMENT[cfg.element] || { ...cfg, image: getTimeTunnelEnvironmentImage(cfg.element) };
+};
+const getTimeTunnelBattleAnimSrc = (dexId) => {
+  const id = Number(dexId) || 0;
+  return id > 0 ? `./pet-action/${id}/pet${id}_1_1.webp` : PLACEHOLDER;
+};
 const clearBattleFloatTextIfExpired = (scene, force = false) => {
   if (!scene) return false;
   if (!force && Date.now() < (Number(scene._floatTextUntil) || 0)) return false;
@@ -101,6 +216,8 @@ const clearBattleFloatTextIfExpired = (scene, force = false) => {
   scene.healOnTarget = "";
   scene.damageTagOnAttacker = "";
   scene.damageTagOnTarget = "";
+  scene.actionNoticeOnAttacker = "";
+  scene.actionNoticeOnTarget = "";
   scene.critOnAttacker = false;
   scene.critOnTarget = false;
   scene.ppOnAttacker = "";
@@ -118,13 +235,31 @@ const clearBattleFloatTextIfExpired = (scene, force = false) => {
   }
   return true;
 };
+const showBattleActionNotice = (scene, side, text) => {
+  if (!scene || !text) return;
+  clearBattleFloatTextIfExpired(scene, true);
+  if (side === "attacker") scene.actionNoticeOnAttacker = text;
+  else scene.actionNoticeOnTarget = text;
+  markBattleFloatText(scene);
+};
 const markBattleFloatText = (scene) => {
   if (!scene) return;
-  scene._floatTextUntil = Date.now() + BATTLE_FLOAT_TEXT_DURATION_MS_GLOBAL;
+  const duration = battleSceneDelayMs(scene, BATTLE_FLOAT_TEXT_DURATION_MS_GLOBAL);
+  scene._floatTextUntil = Date.now() + duration;
   if (scene._floatTextTimer) clearTimeout(scene._floatTextTimer);
   scene._floatTextTimer = setTimeout(() => {
     clearBattleFloatTextIfExpired(scene);
-  }, BATTLE_FLOAT_TEXT_DURATION_MS_GLOBAL + 60);
+  }, duration + 60);
+};
+const markBattleDefeatVisualHold = (scene, ratio = 0.72) => {
+  if (!scene) return;
+  const duration = battleSceneDelayMs(scene, BATTLE_FLOAT_TEXT_DURATION_MS_GLOBAL * ratio);
+  scene._defeatVisualHoldUntil = Math.max(Number(scene._defeatVisualHoldUntil) || 0, Date.now() + duration);
+};
+const markBattleDefeatVisualHoldMs = (scene, ms) => {
+  if (!scene) return;
+  const duration = battleSceneDelayMs(scene, ms);
+  scene._defeatVisualHoldUntil = Math.max(Number(scene._defeatVisualHoldUntil) || 0, Date.now() + duration);
 };
 const queueAfterDamageFloat = (scene, fn) => {
   if (!scene || typeof fn !== "function") return;
@@ -139,7 +274,7 @@ const flushAfterDamageFloat = (scene) => {
     queue.forEach((fn) => {
       try { fn(); } catch (_) {}
     });
-  }, Math.round(BATTLE_FLOAT_TEXT_DURATION_MS_GLOBAL * 0.35));
+  }, battleSceneDelayMs(scene, BATTLE_FLOAT_TEXT_DURATION_MS_GLOBAL * 0.35, 60));
 };
 const resolveGuardianName = (name) => EXTRA_GUARDIAN_ALIAS[normalize(name)] || normalize(name);
 const isExtraGuardianName = (name) => EXTRA_GUARDIAN_NAMES.includes(resolveGuardianName(name));
@@ -153,6 +288,12 @@ const resolveBossName = (name) => {
 };
 const isExcludedBossName = (name) => EXCLUDED_BOSS_NAMES.includes(normalize(name));
 const isBossName = (name) => !isExcludedBossName(name) && BOSS_NAMES.includes(resolveBossName(name));
+const isBossDexId = (dexId) => BOSS_DEX_ID_TO_NAME.has(Number(dexId) || 0);
+const isBossEntry = (entry) => {
+  if (!entry) return false;
+  if (isBossDexId(entry.dexId)) return true;
+  return isBossName(entry.name);
+};
 const resolveShopEggName = (name) => {
   const raw = normalize(name);
   if (SHOP_EGG_NAMES.includes(raw)) return raw;
@@ -163,7 +304,7 @@ const normalizeElementName = (element) => {
   let raw = normalize(element);
   if (raw) {
     raw = raw.replace(/\uFFFD/g, "系");
-    raw = raw.replace(/\?/g, "系");
+    raw = raw.replace(/^\?$/, "?系");
     raw = raw.replace(/(木|水|火|土|冰|电|机械|数码|神秘|飞行|爬行|上古|格斗|暗黑|光明|龙|圣灵|神兵|王|普通|毒)$/, "$1系");
     raw = raw.replace(/系系$/g, "系");
   }
@@ -198,6 +339,7 @@ const normalizeElementName = (element) => {
     "超电系": "电系"
   };
   if (alias[raw]) return alias[raw];
+  if (raw === "超光系") return "光明系";
   if (!raw.endsWith("系")) {
     const withXi = `${raw}系`;
     if (PET_TYPE_ICON[withXi]) return withXi;
@@ -227,6 +369,7 @@ const PET_TYPE_ICON = {
   "王系": "./type/王系.png",
   "普通系": "./type/普通系.png",
   "毒系": "./type/毒系.png",
+  "?系": "",
   "未知系": ""
 };
 const PET_TYPE_TRANSPARENT_ICON = Object.fromEntries(
@@ -249,6 +392,38 @@ const ELEMENT_CHART = {
   "格斗系": { strong: ["冰系", "土系", "机械系", "暗黑系"], weak: ["飞行系", "神秘系"], immune: ["数码系"] },
   "暗黑系": { strong: ["神秘系", "数码系"], weak: ["格斗系", "光明系"] },
   "光明系": { strong: ["神秘系", "数码系", "暗黑系"], weak: ["木系", "土系", "冰系", "机械系"] }
+};
+const getElementFactor = (attackerElement, defenderElement) => {
+  const atk = normalize(attackerElement) || "未知系";
+  const def = normalize(defenderElement) || "未知系";
+  const chart = ELEMENT_CHART[atk];
+  if (!chart) return 1;
+  if ((chart.immune || []).includes(def)) return 0;
+  if ((chart.strong || []).includes(def)) return 2;
+  if ((chart.weak || []).includes(def)) return 0.5;
+  return 1;
+};
+const getElementList = (mainElement, subElement = "") => {
+  const out = [];
+  [mainElement, subElement].forEach((element) => {
+    const normalized = normalizeElementName(element);
+    if (normalized && normalized !== "未知系" && !out.includes(normalized)) out.push(normalized);
+  });
+  return out;
+};
+const getElementFactorAgainstElements = (attackerElement, defenderElements) => {
+  const elements = Array.isArray(defenderElements) ? defenderElements : [defenderElements];
+  const list = getElementList(elements[0], elements[1]);
+  if (list.length <= 0) return getElementFactor(attackerElement, "");
+  return list.reduce((factor, element) => factor * getElementFactor(attackerElement, element), 1);
+};
+const getBattleHitRateBoostFactor = (scene, side, targetSide, skillElement) => {
+  let factor = 1;
+  const targetElements = side === "attacker"
+    ? getElementList(scene.targetElement, scene.targetSubElement)
+    : getElementList(scene.attackerElement, scene.attackerSubElement);
+  if (targetElements.includes("飞行系")) factor *= 0.95;
+  return factor;
 };
 
 const expRequired = (level) => (level >= 100 ? Infinity : Math.floor(60 + level * 18 + Math.pow(level, 1.45) * 8));
@@ -329,7 +504,7 @@ const skillAttackTypeLabel = (skillOrType) => {
     const parsed = parseSkillTypeMeta(skill.type).attackType || "";
     const power = Number(skill.power);
     const desc = normalize(skill.desc);
-    if (Number.isFinite(power) && power <= 0 && !/(固定伤害|伤害\s*=|点伤害|威力)/.test(desc)) return "属性攻击";
+    if (Number.isFinite(power) && power <= 0 && !/(固定伤害|伤害\s*=|点伤害|威力|造成伤害)/.test(desc)) return "属性攻击";
     return parsed || "普通攻击";
   }
   return parseSkillTypeMeta(skillOrType).attackType || "普通攻击";
@@ -472,7 +647,38 @@ const BATTLE_STAGE_KEYS = ["atk", "def", "spAtk", "spDef", "speed", "accuracy", 
 const BATTLE_BASE_STAGE_KEYS = ["atk", "def", "spAtk", "spDef", "speed"];
 const ALL_ABILITY_STAGE_KEYS = ["atk", "def", "spAtk", "spDef", "speed", "accuracy", "evasion", "critStage"];
 const ELEMENT_NAMES = Object.keys(PET_TYPE_ICON || {});
+const BATTLE_ABILITY_KEYS = ["hp", "atk", "def", "spAtk", "spDef", "speed"];
+const TIME_TUNNEL_ENVIRONMENTS = [
+  { element: "木系", name: "星萤森林", tone: "#22c55e", accent: "#bef264", ground: "#14532d", motif: "forest" },
+  { element: "水系", name: "镜湖星湾", tone: "#0ea5e9", accent: "#67e8f9", ground: "#075985", motif: "lake" },
+  { element: "火系", name: "熔火星渊", tone: "#f97316", accent: "#fde047", ground: "#7f1d1d", motif: "lava" },
+  { element: "土系", name: "晶岩峡谷", tone: "#a16207", accent: "#facc15", ground: "#422006", motif: "crystal" },
+  { element: "冰系", name: "极光冰原", tone: "#38bdf8", accent: "#e0f2fe", ground: "#0c4a6e", motif: "ice" },
+  { element: "电系", name: "雷霆星塔", tone: "#facc15", accent: "#a78bfa", ground: "#312e81", motif: "storm" },
+  { element: "数码系", name: "数码矩阵", tone: "#22d3ee", accent: "#34d399", ground: "#042f2e", motif: "grid" },
+  { element: "机械系", name: "钢铁轨道城", tone: "#94a3b8", accent: "#38bdf8", ground: "#334155", motif: "mecha" },
+  { element: "神秘系", name: "星占秘境", tone: "#a855f7", accent: "#f0abfc", ground: "#3b0764", motif: "mystic" },
+  { element: "飞行系", name: "云海天廊", tone: "#60a5fa", accent: "#f8fafc", ground: "#1d4ed8", motif: "sky" },
+  { element: "爬行系", name: "古藤沙蜥谷", tone: "#84cc16", accent: "#fbbf24", ground: "#365314", motif: "vine" },
+  { element: "上古系", name: "太古遗迹", tone: "#f59e0b", accent: "#fde68a", ground: "#78350f", motif: "ruin" },
+  { element: "格斗系", name: "斗魂擂台", tone: "#ef4444", accent: "#fed7aa", ground: "#7f1d1d", motif: "arena" },
+  { element: "暗黑系", name: "暗月深域", tone: "#6366f1", accent: "#c084fc", ground: "#111827", motif: "dark" },
+  { element: "光明系", name: "圣光穹庭", tone: "#fef08a", accent: "#ffffff", ground: "#b45309", motif: "light" },
+  { element: "龙系", name: "龙息星崖", tone: "#14b8a6", accent: "#fb7185", ground: "#134e4a", motif: "dragon" },
+  { element: "圣灵系", name: "圣灵星殿", tone: "#f9a8d4", accent: "#fef3c7", ground: "#831843", motif: "holy" },
+  { element: "神兵系", name: "神兵剑冢", tone: "#eab308", accent: "#e5e7eb", ground: "#44403c", motif: "blade" },
+  { element: "王系", name: "星王御座", tone: "#f59e0b", accent: "#fef3c7", ground: "#581c87", motif: "royal" },
+  { element: "普通系", name: "晨星草原", tone: "#38bdf8", accent: "#bbf7d0", ground: "#166534", motif: "plain" },
+  { element: "毒系", name: "幽毒沼泽", tone: "#a3e635", accent: "#c084fc", ground: "#3f6212", motif: "swamp" }
+];
+const TIME_TUNNEL_ENVIRONMENTS_ACTIVE = TIME_TUNNEL_ENVIRONMENTS.filter((env) => env.element !== "普通系" && env.element !== "毒系");
+const TIME_TUNNEL_ENVIRONMENT_BUFF_ELEMENTS = new Set(["木系", "水系", "火系", "土系", "冰系", "电系", "数码系", "机械系", "神秘系", "飞行系", "爬行系", "上古系", "格斗系", "暗黑系", "光明系", "龙系", "圣灵系", "神兵系", "王系"]);
+const TIME_TUNNEL_MIN_CLEAR_FLOOR = 1;
+const TIME_TUNNEL_REWARD_INTERVAL = 5;
+const TIME_TUNNEL_REWARD_FLOOR = 5;
 const STATUS_LABEL_MAP = { poison: "中毒", burn: "烧伤", sleep: "睡眠", paralyze: "麻痹", freeze: "冰冻", leech: "寄生", bind: "束缚", weak: "衰弱", confuse: "混乱", fear: "害怕" };
+const STATUS_ANIM_FILE_MAP = { poison: "中毒", burn: "烧伤", sleep: "睡眠", paralyze: "麻痹", freeze: "冰冻", leech: "寄生", bind: "束缚", weak: "衰弱", confuse: "混乱", fear: "害怕" };
+const STATUS_ANIM_DURATION_MS = 1400;
 const SKILL_STATUS_HINT = ["属性攻击", "属性"];
 const ATTACK_TYPE_HINT = ["普通攻击", "特殊攻击", "属性攻击"];
 const ATTACK_TYPE_LABEL_BY_CODE = { 0: "普通攻击", 1: "特殊攻击", 2: "属性攻击" };
@@ -565,6 +771,7 @@ const parseRatioFromText = (text, fallback = null) => {
 };
 const createBattleState = () => ({
   stages: { atk: 0, def: 0, spAtk: 0, spDef: 0, speed: 0, accuracy: 0, evasion: 0 },
+  baseBoost: { atk: 0, def: 0, spAtk: 0, spDef: 0, speed: 0 },
   critStage: 0,
   statuses: { poison: 0, burn: 0, sleep: 0, paralyze: 0, freeze: 0, leech: 0, bind: 0, weak: 0, confuse: 0, fear: 0 },
   skipTurns: 0,
@@ -577,6 +784,9 @@ const normalizeBattleState = (state) => {
   const out = createBattleState();
   BATTLE_STAGE_KEYS.forEach((k) => {
     out.stages[k] = clamp(Number(s.stages && s.stages[k]) || 0, -6, 6);
+  });
+  ["atk", "def", "spAtk", "spDef", "speed"].forEach((k) => {
+    out.baseBoost[k] = Math.max(0, Math.floor(Number(s.baseBoost && s.baseBoost[k]) || 0));
   });
   Object.keys(out.statuses).forEach((k) => {
     out.statuses[k] = Math.max(0, Math.floor(Number(s.statuses && s.statuses[k]) || 0));
@@ -599,6 +809,13 @@ const normalizeBattleState = (state) => {
     trigger: normalize(e && e.trigger) === "attacked" ? "attacked" : "damaged"
   })) : [];
   return out;
+};
+const clearBattleStatuses = (state) => {
+  const next = normalizeBattleState(state);
+  Object.keys(next.statuses).forEach((key) => {
+    next.statuses[key] = 0;
+  });
+  return next;
 };
 const parseSkillTypeMeta = (typeText) => {
   const raw = normalize(typeText);
@@ -625,6 +842,7 @@ const parseSkillTypeMeta = (typeText) => {
   return { element, attackType };
 };
 const parseSkillAttackKind = (skillOrType) => {
+  if (skillOrType && typeof skillOrType === "object" && normalize(skillOrType.name) === "无锋巨刃") return "physical";
   const meta = skillOrType && typeof skillOrType === "object"
     ? { attackType: skillAttackTypeLabel(skillOrType) }
     : parseSkillTypeMeta(skillOrType);
@@ -664,25 +882,55 @@ const parseBonusFixedDamagePerHit = (skill) => {
   if (!Number.isFinite(chance) || !Number.isFinite(amount) || amount <= 0) return null;
   return { amount: Math.max(1, Math.floor(amount)), chance: clamp(chance, 0, 1) };
 };
-const calcBattleFixedDamageAmount = (scene, actorSide, skill, actorLevel = 1) => {
+const calcBattleFixedDamageAmount = (scene, actorSide, skill, actorLevel = 1, defenderLevel = 1) => {
   const name = normalize(skill && skill.name);
   if (name === "圣灵") {
     const speed = getBattleAbilityStat(scene, actorSide === "target" ? "target" : "attacker", "speed");
     return Math.max(1, Math.floor(speed / 3));
   }
-  const fixedByEffect = parseSkillEffects(skill).find((e) => normalize(e && e.kind) === "fixedDamageByLevel");
+  const effects = parseSkillEffects(skill);
+  const fixedByEffect = effects.find((e) => normalize(e && e.kind) === "fixedDamageByLevel");
   if (fixedByEffect) {
-    return Math.max(1, Math.floor((Number(actorLevel) || 1) * (Number(fixedByEffect.factor) || 1)));
+    const base = Math.max(1, Math.floor((Number(actorLevel) || 1) * (Number(fixedByEffect.factor) || 1)));
+    const bonus = effects
+      .filter((e) => normalize(e && e.kind) === "bonusFixedDamage" && (!Number.isFinite(Number(e.chance)) || Math.random() <= clamp(Number(e.chance) || 1, 0, 1)))
+      .reduce((sum, e) => sum + Math.max(0, Math.floor(Number(e.amount) || 0)), 0);
+    return Math.max(1, base + bonus);
   }
-  const speedRatioEffect = parseSkillEffects(skill).find((e) => normalize(e && e.kind) === "fixedDamageBySpeedRatio");
-  if (speedRatioEffect) {
-    const actorSpeed = getBattleAbilityStat(scene, actorSide === "target" ? "target" : "attacker", "speed");
+  const targetLevelEffect = effects.find((e) => normalize(e && e.kind) === "fixedDamageByTargetLevel");
+  if (targetLevelEffect) {
+    const base = Math.max(1, Math.floor((Number(defenderLevel) || 1) * (Number(targetLevelEffect.factor) || 1)));
+    const bonus = effects
+      .filter((e) => normalize(e && e.kind) === "bonusFixedDamage" && (!Number.isFinite(Number(e.chance)) || Math.random() <= clamp(Number(e.chance) || 1, 0, 1)))
+      .reduce((sum, e) => sum + Math.max(0, Math.floor(Number(e.amount) || 0)), 0);
+    return Math.max(1, base + bonus);
+  }
+  const selfLevelEffect = effects.find((e) => normalize(e && e.kind) === "fixedDamageBySelfLevel");
+  if (selfLevelEffect) {
+    const base = Math.max(1, Math.floor((Number(actorLevel) || 1) * (Number(selfLevelEffect.factor) || 1)));
+    const bonus = effects
+      .filter((e) => normalize(e && e.kind) === "bonusFixedDamage" && (!Number.isFinite(Number(e.chance)) || Math.random() <= clamp(Number(e.chance) || 1, 0, 1)))
+      .reduce((sum, e) => sum + Math.max(0, Math.floor(Number(e.amount) || 0)), 0);
+    return Math.max(1, base + bonus);
+  }
+  const statRatioEffect = effects.find((e) => normalize(e && e.kind) === "fixedDamageByStatRatio")
+    || effects.find((e) => normalize(e && e.kind) === "fixedDamageBySpeedRatio");
+  if (statRatioEffect) {
+    const statKey = normalize(statRatioEffect.statKey) || (normalize(statRatioEffect.kind) === "fixedDamageBySpeedRatio" ? "speed" : "speed");
+    const actorStat = getBattleAbilityStat(scene, actorSide === "target" ? "target" : "attacker", statKey);
     const defenderSide = actorSide === "target" ? "attacker" : "target";
-    const defenderSpeed = getBattleAbilityStat(scene, defenderSide, "speed");
-    const factor = Math.max(1, Number(speedRatioEffect.factor) || 500);
-    return Math.max(1, Math.floor((actorSpeed / Math.max(1, defenderSpeed)) * factor));
+    const defenderStat = getBattleAbilityStat(scene, defenderSide, statKey);
+    const factor = Math.max(1, Number(statRatioEffect.factor) || 500);
+    return Math.max(1, Math.floor((actorStat / Math.max(1, defenderStat)) * factor));
   }
-  return parseFixedDamageAmount(skill, actorLevel);
+  const baseFixed = parseFixedDamageAmount(skill, actorLevel);
+  if (baseFixed > 0) {
+    const bonus = effects
+      .filter((e) => normalize(e && e.kind) === "bonusFixedDamage" && (!Number.isFinite(Number(e.chance)) || Math.random() <= clamp(Number(e.chance) || 1, 0, 1)))
+      .reduce((sum, e) => sum + Math.max(0, Math.floor(Number(e.amount) || 0)), 0);
+    return Math.max(1, baseFixed + bonus);
+  }
+  return 0;
 };
 const critChanceByStage = (stage) => {
   const s = clamp(Math.floor(Number(stage) || 0), -6, 6);
@@ -694,6 +942,10 @@ const critChanceByStage = (stage) => {
 const stageMultiplier = (stage) => {
   const s = clamp(Math.floor(Number(stage) || 0), -6, 6);
   return s >= 0 ? (2 + s) / 2 : 2 / (2 - s);
+};
+const stageHitRateFactor = (accuracyStage, evasionStage) => {
+  const diff = clamp(Math.floor(Number(accuracyStage) || 0) - Math.floor(Number(evasionStage) || 0), -6, 6);
+  return clamp(1 + diff * 0.1, 0.4, 1.6);
 };
 const getSideState = (scene, side) => {
   if (!scene) return createBattleState();
@@ -708,8 +960,16 @@ const getBattleAbilityStat = (scene, side, key) => {
   const ability = side === "attacker" ? scene.attackerAbility : scene.targetAbility;
   const state = getSideState(scene, side);
   const base = Math.max(1, Number(ability && ability[key]) || 1);
+  const boost = state.baseBoost && typeof state.baseBoost === "object" ? Math.max(0, Number(state.baseBoost[key]) || 0) : 0;
   const m = stageMultiplier(state.stages[key] || 0);
-  let val = Math.max(1, Math.floor(base * m));
+  let val = Math.max(1, Math.floor((base + boost) * m));
+  (state.timedEffects || []).forEach((e) => {
+    if (normalize(e && e.kind) !== "abilityStatFactor") return;
+    const d = e.data || {};
+    const keys = Array.isArray(d.keys) ? d.keys : [];
+    if (!keys.includes(key)) return;
+    val = Math.max(1, Math.floor(val * clamp(Number(d.factor) || 1, 0.01, 3)));
+  });
   if (key === "def") {
     const hasDefenseHalve = (state.timedEffects || []).some((e) => normalize(e && e.kind) === "defenseHalve");
     if (hasDefenseHalve) val = Math.max(1, Math.floor(val * 0.5));
@@ -726,7 +986,26 @@ const hasStageGuard = (scene, side, delta) => {
     return Number(delta) < 0;
   });
 };
-const applyStageDelta = (scene, side, keys, delta) => {
+const mirrorOpponentStageBoosts = (scene, boostedSide, changedKeys, delta) => {
+  if (!scene || !Array.isArray(changedKeys) || changedKeys.length <= 0 || Number(delta) <= 0) return [];
+  const ownerSide = boostedSide === "attacker" ? "target" : "attacker";
+  const ownerState = getSideState(scene, ownerSide);
+  const effects = (ownerState.timedEffects || []).filter((e) => normalize(e && e.kind) === "mirrorOpponentStageBoost");
+  const mirrored = [];
+  effects.forEach((e) => {
+    const d = e.data || {};
+    const multiplier = Math.max(1, Math.floor(Number(d.multiplier) || 1));
+    const changed = applyStageDelta(scene, ownerSide, changedKeys, Number(delta) * multiplier, { skipStageMirror: true });
+    if (changed.length <= 0) return;
+    mirrored.push(...changed);
+    const ownerName = ownerSide === "attacker" ? scene.attackerName : scene.targetName;
+    const boostedName = boostedSide === "attacker" ? scene.attackerName : scene.targetName;
+    const suffix = multiplier > 1 ? `${multiplier}倍` : "";
+    pushBattleLog(scene, `${ownerName}同步${suffix}获得${boostedName}提升的能力等级：${changed.map((k) => battleStatLabel(k)).join("、")}`);
+  });
+  return mirrored;
+};
+const applyStageDelta = (scene, side, keys, delta, options = {}) => {
   const state = getSideState(scene, side);
   const n = clamp(Math.floor(Number(delta) || 0), -6, 6);
   if (n !== 0 && hasStageGuard(scene, side, n)) {
@@ -748,6 +1027,7 @@ const applyStageDelta = (scene, side, keys, delta) => {
     state.stages[k] = clamp(prev + n, -6, 6);
     if (state.stages[k] !== prev) changed.push(k);
   });
+  if (n > 0 && !options.skipStageMirror) mirrorOpponentStageBoosts(scene, side, changed, n);
   return changed;
 };
 const clearStageByMode = (scene, side, mode = "positive", keys = null) => {
@@ -801,6 +1081,28 @@ const copyPositiveStages = (scene, fromSide, toSide, keys = null) => {
   });
   return changed;
 };
+const applyBattleStagesSnapshot = (scene, side, snapshot = {}) => {
+  const state = getSideState(scene, side);
+  const changed = [];
+  ALL_ABILITY_STAGE_KEYS.forEach((k) => {
+    const next = clamp(Math.floor(Number(snapshot[k]) || 0), -6, 6);
+    if (k === "critStage") {
+      const prev = clamp(Math.floor(Number(state.critStage) || 0), -6, 6);
+      if (next !== prev) {
+        state.critStage = next;
+        changed.push(k);
+      }
+      return;
+    }
+    if (!BATTLE_STAGE_KEYS.includes(k)) return;
+    const prev = clamp(Math.floor(Number(state.stages[k]) || 0), -6, 6);
+    if (next !== prev) {
+      state.stages[k] = next;
+      changed.push(k);
+    }
+  });
+  return changed;
+};
 const swapBattleStages = (scene, leftSide, rightSide, keys = null) => {
   const left = getSideState(scene, leftSide);
   const right = getSideState(scene, rightSide);
@@ -827,6 +1129,77 @@ const swapBattleStages = (scene, leftSide, rightSide, keys = null) => {
     }
   });
   return changed;
+};
+const transferStagesByMode = (scene, fromSide, toSide, mode = "negative", keys = null) => {
+  const from = getSideState(scene, fromSide);
+  const list = Array.isArray(keys) && keys.length > 0 ? keys : ALL_ABILITY_STAGE_KEYS;
+  const changed = [];
+  list.forEach((k) => {
+    let value = 0;
+    if (k === "critStage") {
+      value = clamp(Math.floor(Number(from.critStage) || 0), -6, 6);
+    } else if (BATTLE_STAGE_KEYS.includes(k)) {
+      value = clamp(Math.floor(Number(from.stages[k]) || 0), -6, 6);
+    } else {
+      return;
+    }
+    const shouldMove = mode === "all" || (mode === "positive" ? value > 0 : value < 0);
+    if (!shouldMove || value === 0) return;
+    const moved = applyStageDelta(scene, toSide, [k], value);
+    if (moved.length <= 0) return;
+    if (k === "critStage") from.critStage = 0;
+    else from.stages[k] = 0;
+    changed.push(k);
+  });
+  return changed;
+};
+const transferStatusesByMode = (scene, fromSide, toSide, status = "all") => {
+  const from = getSideState(scene, fromSide);
+  const to = getSideState(scene, toSide);
+  const keys = normalize(status) === "all"
+    ? Object.keys(from.statuses || {})
+    : [normalize(status)].filter(Boolean);
+  const changed = [];
+  keys.forEach((key) => {
+    const turns = Math.max(0, Math.floor(Number(from.statuses && from.statuses[key]) || 0));
+    if (turns <= 0) return;
+    if (isStatusImmuneByElement(scene, toSide, key) || hasStatusShield(scene, toSide, key)) return;
+    to.statuses[key] = Math.max(Math.max(0, Number(to.statuses[key]) || 0), turns);
+    from.statuses[key] = 0;
+    changed.push(key);
+  });
+  return changed;
+};
+const applyInstantKoToSide = (scene, side) => {
+  if (!scene) return false;
+  const hpKey = side === "attacker" ? "attackerHp" : "targetHp";
+  const before = Math.max(0, Number(scene[hpKey]) || 0);
+  if (before <= 0) return false;
+  scene[hpKey] = 0;
+  if (side === "attacker" && Array.isArray(scene.team)) {
+    const idx = scene.team.findIndex((u) => u && u.id === scene.currentAttackerId);
+    if (idx >= 0) {
+      scene.team[idx].hp = 0;
+      scene.team[idx].battleState = normalizeBattleState(scene.attackerState);
+    }
+  }
+  syncBattleUiHpForSide(scene, side);
+  return true;
+};
+const showBattleInstantKoDamage = (scene, side, damageValue = 999999) => {
+  if (!scene) return;
+  const shown = Math.max(1, Math.floor(Number(damageValue) || 999999));
+  if (side === "attacker") scene.damageOnAttacker = `-${shown}`;
+  else scene.damageOnTarget = `-${shown}`;
+  markBattleFloatText(scene);
+};
+const applyBattleHitRateFactor = (scene, actorSide, targetSide, skillElement) => {
+  let factor = 1;
+  const targetElements = targetSide === "attacker"
+    ? getElementList(scene.attackerElement, scene.attackerSubElement)
+    : getElementList(scene.targetElement, scene.targetSubElement);
+  if (targetElements.includes("飞行系")) factor *= 0.95;
+  return factor;
 };
 const battleStatLabel = (k) => (
   k === "atk" ? "攻击" :
@@ -861,7 +1234,14 @@ const syncBattleUiHpForSide = (scene, side) => {
     scene.uiTargetHp = clamp(Number(scene.targetHp) || 0, 0, Number(scene.targetMaxHp) || 1);
   }
 };
-const TIMED_EFFECT_REFRESH_BY_KIND = new Set(["diceDrain", "defenseHalve", "destinyBond", "damageShield", "lastStand"]);
+const syncActivePetFromBattleScene = (scene) => {
+  if (!scene || !Array.isArray(scene.team)) return;
+  const idx = scene.team.findIndex((u) => u && u.id === scene.currentAttackerId);
+  if (idx < 0) return;
+  scene.team[idx].hp = clamp(Number(scene.attackerHp) || 0, 0, Number(scene.team[idx].maxHp) || 1);
+  scene.team[idx].battleState = normalizeBattleState(scene.attackerState);
+};
+const TIMED_EFFECT_REFRESH_BY_KIND = new Set(["diceDrain", "defenseHalve", "destinyBond", "damageShield", "lastStand", "mirrorOpponentStageBoost"]);
 const addTimedEffect = (scene, side, effect) => {
   const state = getSideState(scene, side);
   const next = {
@@ -878,6 +1258,53 @@ const addTimedEffect = (scene, side, effect) => {
   } else {
     state.timedEffects.push(next);
   }
+};
+const getTurnSequenceAttackEffect = (scene, side) => {
+  const state = getSideState(scene, side);
+  cleanupExpiredEffects(state);
+  return (state.timedEffects || []).find((e) => normalize(e && e.kind) === "turnSequenceAttack" && Math.max(0, Number(e && e.turns) || 0) > 0) || null;
+};
+const consumeTurnSequenceAttackSkill = (scene, side, skillPool) => {
+  const fx = getTurnSequenceAttackEffect(scene, side);
+  if (!fx) return null;
+  const d = fx.data || {};
+  const storedSkill = d.skill && typeof d.skill === "object" ? d.skill : {};
+  const skillName = normalize(storedSkill.name);
+  const skill = (Array.isArray(skillPool) ? skillPool : []).find((s) => normalize(s && s.name) === skillName) || storedSkill;
+  if (!skill || !skillName) return null;
+  const sourcePp = Math.max(0, Number(skill && skill.pp) || 0);
+  if (sourcePp <= 0) return null;
+  const currentTurns = Math.max(1, Math.floor(Number(fx.turns) || 1));
+      const doneTurns = Math.max(2, Math.floor(Number(d.doneTurns) || 1) + 1);
+  const basePower = Math.max(1, Math.floor(Number(d.initialPower) || Number(storedSkill.power) || Number(skill.power) || 1));
+  const add = Math.max(0, Math.floor(Number(d.powerAdd) || 0));
+  const multiplier = Math.max(1, Number(d.powerFactor) || 1);
+  const nextPower = add > 0 ? basePower + add * (doneTurns - 1) : Math.max(1, Math.floor(basePower * multiplier));
+  const next = {
+    ...skill,
+    power: nextPower,
+    pp: sourcePp,
+    _turnSequenceAuto: true,
+    _turnSequenceSourceSkill: skill,
+    _turnSequenceEffect: fx,
+    _turnSequenceOriginalPower: Number(skill.power)
+  };
+  return next;
+};
+const advanceTurnSequenceAttackEffect = (scene, side, skill, didApply) => {
+  const fx = skill && skill._turnSequenceEffect;
+  if (!fx || normalize(fx.kind) !== "turnSequenceAttack") return;
+  const d = fx.data || {};
+  const keepOnMiss = Boolean(d.keepOnMiss);
+  const failed = !didApply;
+  if (failed && d.resetOnFail) {
+    d.powerFactor = Math.max(1, Number(d.powerMultiplier) || 2);
+  } else if (!failed || keepOnMiss) {
+    d.powerFactor = Math.max(1, Number(d.powerFactor) || 1) * Math.max(1, Number(d.powerMultiplier) || 2);
+  }
+  d.doneTurns = Math.max(1, Math.floor(Number(d.doneTurns) || 1)) + 1;
+  fx.turns = Math.max(0, Math.floor(Number(fx.turns) || 0) - 1);
+  cleanupExpiredEffects(getSideState(scene, side));
 };
 const damageSideByMaxHpRatio = (scene, side, ratio) => {
   const hpKey = side === "attacker" ? "attackerHp" : "targetHp";
@@ -930,6 +1357,9 @@ const addOnDamagedEffect = (scene, side, effect) => {
   state.onDamagedEffects.push({
     turns: Math.max(1, Math.floor(Number(effect && effect.turns) || 1)),
     chance: clamp(Number(effect && effect.chance) || 0, 0, 1),
+    kind: normalize(effect && effect.kind) || "stage",
+    status: normalize(effect && effect.status),
+    statusTurns: Math.max(1, Math.floor(Number(effect && effect.statusTurns) || Number(effect && effect.turns) || 1)),
     allStatsDelta: clamp(Math.floor(Number(effect && effect.allStatsDelta) || 0), -6, 6),
     keys: Array.isArray(effect && effect.keys) ? effect.keys.filter((k) => typeof k === "string") : [],
     delta: clamp(Math.floor(Number(effect && effect.delta) || 0), -6, 6),
@@ -986,9 +1416,19 @@ const timedEffectBadgeMeta = (e) => {
   const kind = normalize(e && e.kind);
   const turns = Math.max(0, Number(e && e.turns) || 0);
   const d = e && e.data ? e.data : {};
+  const status = normalize(d.status || e.status);
+  if (STATUS_LABEL_MAP[status]) {
+    return { key: `status_fx_${status}`, label: STATUS_LABEL_MAP[status], turns, desc: `${STATUS_LABEL_MAP[status]}，剩余${turns}回合`, tone: "debuff" };
+  }
   if (kind === "damageReduction") {
     const ratio = Math.round((Number(d.ratio) || 0) * 100);
     return { key: `dr_${ratio}`, label: `减伤${ratio}%`, turns, desc: `受到伤害降低${ratio}%，剩余${turns}回合`, tone: "buff" };
+  }
+  if (kind === "typedDamageReduction") {
+    const ratio = Math.round((Number(d.ratio) || 0) * 100);
+    const attackKind = normalize(d.attackKind) || "all";
+    const attackLabel = attackKind === "physical" ? "普攻" : (attackKind === "special" ? "特攻" : "攻击");
+    return { key: `tdr_${attackKind}_${ratio}`, label: `${attackLabel}减伤${ratio}%`, turns, desc: `受到${attackLabel}伤害降低${ratio}%，剩余${turns}回合`, tone: "buff" };
   }
   if (kind === "elementPowerBuff") {
     const factorRaw = Number(d.factor) || 1;
@@ -1020,9 +1460,31 @@ const timedEffectBadgeMeta = (e) => {
     const amount = Math.max(1, Math.floor(Number(d.amount) || 1));
     return { key: `flat_hot_${amount}`, label: `回血${amount}`, turns, desc: `回合结束回复${amount}点体力，剩余${turns}回合`, tone: "buff" };
   }
+  if (kind === "endTurnHealByLostHp") {
+    return { key: "lost_hp_hot", label: "战魂回血", turns, desc: `回合结束按已损失体力回复，剩余${turns}回合`, tone: "buff" };
+  }
   if (kind === "damageShield") {
     const amount = Math.max(1, Math.floor(Number(d.amount) || 1));
     return { key: `damage_shield_${amount}`, label: `护盾${amount}`, turns, desc: `每回合抵抗${amount}点伤害，剩余${turns}回合`, tone: "buff" };
+  }
+  if (kind === "damageShieldByDamage") {
+    const amount = Math.max(1, Math.floor(Number(d.amount) || 1));
+    return { key: `damage_shield_by_damage_${amount}`, label: `伤害护盾${amount}`, turns, desc: `由伤害转化的护盾，可抵抗${amount}点伤害，剩余${turns}回合`, tone: "buff" };
+  }
+  if (kind === "timedStage") {
+    const delta = Number(d.delta) || 0;
+    const keys = Array.isArray(d.keys) ? d.keys : [];
+    const act = delta >= 0 ? "提升" : "降低";
+    return { key: `timed_stage_${keys.join("_")}_${delta}`, label: `每回合${act}`, turns, desc: `每回合${act}${Math.abs(delta)}级：${keys.map((k) => battleStatLabel(k)).join("、") || "能力等级"}，剩余${turns}回合`, tone: delta >= 0 ? "buff" : "debuff" };
+  }
+  if (kind === "elementDamageReduction") {
+    const element = normalize(d.element) || "全系";
+    const ratio = Math.round((Number(d.ratio) || 0) * 100);
+    return { key: `element_dr_${element}_${ratio}`, label: `${element}减伤${ratio}%`, turns, desc: `${element}攻击伤害降低${ratio}%，剩余${turns}回合`, tone: "buff" };
+  }
+  if (kind === "elementChange") {
+    const element = normalize(d.element) || "未知系";
+    return { key: `element_change_${element}`, label: `变为${element}`, turns, desc: `当前临时变为${element}，剩余${turns}回合`, tone: "buff" };
   }
   if (kind === "lastStand") {
     return { key: "last_stand", label: "不灭意志", turns, desc: `受到致命伤害时至少保留1点体力，剩余${turns}回合`, tone: "buff" };
@@ -1037,6 +1499,23 @@ const timedEffectBadgeMeta = (e) => {
   if (kind === "damageAbsorb") {
     return { key: "damage_absorb", label: "伤害吸收", turns, desc: `完全吸收受到的伤害并回复体力，剩余${turns}回合`, tone: "buff" };
   }
+  if (kind === "damageReflect") {
+    const ratio = Number(d.ratio) || 1;
+    const attackKind = normalize(d.attackKind) || "all";
+    const label = attackKind === "physical" ? "反弹普攻" : (attackKind === "special" ? "反弹特攻" : "伤害反弹");
+    return { key: `reflect_${attackKind}_${Math.round(ratio * 100)}`, label, turns, desc: `受到${attackKind === "physical" ? "普通攻击" : (attackKind === "special" ? "特殊攻击" : "攻击")}伤害后反弹${Math.round(ratio * 100)}%，剩余${turns}回合`, tone: "buff" };
+  }
+  if (kind === "damageReflectFlat") {
+    const amount = Math.max(1, Math.floor(Number(d.amount) || 1));
+    return { key: `reflect_flat_${amount}`, label: `反弹${amount}`, turns, desc: `受到攻击后反弹${amount}点伤害，剩余${turns}回合`, tone: "buff" };
+  }
+  if (kind === "statusShield") {
+    return { key: "status_shield", label: "异常免疫", turns, desc: `免疫异常状态，剩余${turns}回合`, tone: "buff" };
+  }
+  if (kind === "skillSealChance") {
+    const chance = Math.round((Number(d.chance) || 0) * 100);
+    return { key: `skill_seal_${chance}`, label: "无法使用技能", turns, desc: `${chance}%概率无法使用技能，剩余${turns}回合`, tone: "debuff" };
+  }
   if (kind === "stageGuard") {
     const mode = normalize(d.mode) || "debuff";
     const label = mode === "buff" ? "防止提升" : (mode === "all" ? "能力保护" : "防止削弱");
@@ -1044,6 +1523,14 @@ const timedEffectBadgeMeta = (e) => {
       ? `属性能力等级不能被提升，剩余${turns}回合`
       : (mode === "all" ? `属性能力等级不会变化，剩余${turns}回合` : `属性能力等级不会被削弱，剩余${turns}回合`);
     return { key: `stage_guard_${mode}`, label, turns, desc, tone: "buff" };
+  }
+  if (kind === "mirrorOpponentStageBoost") {
+    const multiplier = Math.max(1, Math.floor(Number(d.multiplier) || 1));
+    const label = multiplier > 1 ? "翻倍同步" : "同步强化";
+    const desc = multiplier > 1
+      ? `对方提升能力等级时，自己翻倍同步提升，剩余${turns}回合`
+      : `对方提升能力等级时，自己同步提升，剩余${turns}回合`;
+    return { key: `mirror_stage_boost_${multiplier}`, label, turns, desc, tone: "buff" };
   }
   if (kind === "delayedStage") {
     const delta = Number(d.delta) || 0;
@@ -1084,7 +1571,13 @@ const timedEffectBadgeMeta = (e) => {
   if (kind === "destinyBond") {
     return { key: "destiny_bond", label: "同归于尽", turns, desc: `本回合若被对手打败则双方同归于尽，剩余${turns}回合`, tone: "buff" };
   }
-  return { key: kind || "effect", label: "持续效果", turns, desc: `持续效果剩余${turns}回合`, tone: "buff" };
+  if (kind === "turnSequenceAttack") {
+    const skill = d.skill && typeof d.skill === "object" ? d.skill : {};
+    const skillName = normalize(skill.name) || "连续攻击";
+    return { key: `turn_sequence_${skillName}`, label: skillName, turns, desc: `${skillName}延续攻击，剩余${turns}回合`, tone: "buff" };
+  }
+  const fallbackLabel = normalize(d.label || e.label || kind) || "效果";
+  return { key: kind || fallbackLabel || "effect", label: fallbackLabel, turns, desc: `${fallbackLabel}剩余${turns}回合`, tone: "buff" };
 };
 const onDamagedBadgeMeta = (e) => {
   const turns = Math.max(0, Number(e && e.turns) || 0);
@@ -1141,16 +1634,25 @@ const statusChanceFromDesc = (desc, statusKeyword = "", fallback = 1) => {
 };
 const tickSideEffects = (scene, side) => {
   const state = getSideState(scene, side);
-  (state.timedEffects || []).forEach((e) => { e.turns = Math.max(0, Number(e.turns) - 1); });
+  (state.timedEffects || []).forEach((e) => {
+    if (normalize(e && e.kind) === "turnSequenceAttack") return;
+    e.turns = Math.max(0, Number(e.turns) - 1);
+  });
   (state.onDamagedEffects || []).forEach((e) => { e.turns = Math.max(0, Number(e.turns) - 1); });
   cleanupExpiredEffects(state);
 };
-const getDamageReductionFactor = (scene, side) => {
+const getDamageReductionFactor = (scene, side, atkKind = "all") => {
   const state = getSideState(scene, side);
   let ratio = 0;
   (state.timedEffects || []).forEach((e) => {
     if (e.kind === "damageReduction") {
       ratio = Math.max(ratio, clamp(Number(e.data && e.data.ratio) || 0, 0, 0.95));
+    }
+    if (normalize(e && e.kind) === "typedDamageReduction") {
+      const guardKind = normalize(e.data && e.data.attackKind) || "all";
+      if (guardKind === "all" || guardKind === normalize(atkKind)) {
+        ratio = Math.max(ratio, clamp(Number(e.data && e.data.ratio) || 0, 0, 0.95));
+      }
     }
   });
   return 1 - ratio;
@@ -1159,10 +1661,27 @@ const getDamageShieldAmount = (scene, side) => {
   const state = getSideState(scene, side);
   let amount = 0;
   (state.timedEffects || []).forEach((e) => {
-    if (normalize(e && e.kind) !== "damageShield") return;
+    if (normalize(e && e.kind) !== "damageShield" && normalize(e && e.kind) !== "damageShieldByDamage") return;
     amount = Math.max(amount, Math.floor(Number(e.data && e.data.amount) || 0));
   });
   return amount;
+};
+const getElementDamageReductionFactor = (scene, side, skillElement) => {
+  const state = getSideState(scene, side);
+  let ratio = 0;
+  (state.timedEffects || []).forEach((e) => {
+    if (normalize(e && e.kind) !== "elementDamageReduction") return;
+    const element = normalize(e.data && e.data.element);
+    if (element && element !== "all" && element !== normalize(skillElement)) return;
+    ratio = Math.max(ratio, clamp(Number(e.data && e.data.ratio) || 0, 0, 0.95));
+  });
+  (Array.isArray(scene && scene.globalTimedEffects) ? scene.globalTimedEffects : []).forEach((e) => {
+    if (normalize(e && e.kind) !== "elementDamageReduction") return;
+    const element = normalize(e.data && e.data.element);
+    if (element && element !== "all" && element !== normalize(skillElement)) return;
+    ratio = Math.max(ratio, clamp(Number(e.data && e.data.ratio) || 0, 0, 0.95));
+  });
+  return 1 - ratio;
 };
 const hasLastStandEffect = (scene, side) => {
   const state = getSideState(scene, side);
@@ -1192,6 +1711,67 @@ const getDamageAbsorbEffect = (scene, side) => {
   cleanupExpiredEffects(state);
   return (state.timedEffects || []).find((e) => normalize(e && e.kind) === "damageAbsorb" && Math.max(0, Number(e && e.turns) || 0) > 0) || null;
 };
+const getEffectiveBattleElement = (scene, side) => {
+  const state = getSideState(scene, side);
+  cleanupExpiredEffects(state);
+  const fx = [...(state.timedEffects || [])].reverse().find((e) => normalize(e && e.kind) === "elementChange" && Math.max(0, Number(e && e.turns) || 0) > 0);
+  if (fx && normalize(fx.data && fx.data.element)) return normalize(fx.data.element);
+  return side === "attacker" ? scene.attackerElement : scene.targetElement;
+};
+const getEffectiveBattleElements = (scene, side) => {
+  const state = getSideState(scene, side);
+  cleanupExpiredEffects(state);
+  const fx = [...(state.timedEffects || [])].reverse().find((e) => normalize(e && e.kind) === "elementChange" && Math.max(0, Number(e && e.turns) || 0) > 0);
+  if (fx && normalize(fx.data && fx.data.element)) return getElementList(fx.data.element);
+  return side === "attacker"
+    ? getElementList(scene.attackerElement, scene.attackerSubElement)
+    : getElementList(scene.targetElement, scene.targetSubElement);
+};
+const getBattleElementFactor = (scene, skillElement, defenderSide) => (
+  getElementFactorAgainstElements(skillElement, getEffectiveBattleElements(scene, defenderSide))
+);
+const getDamageReflectEffects = (scene, side, atkKind) => {
+  const state = getSideState(scene, side);
+  cleanupExpiredEffects(state);
+  return (state.timedEffects || []).filter((e) => {
+    if (normalize(e && e.kind) !== "damageReflect") return false;
+    if (Math.max(0, Number(e && e.turns) || 0) <= 0) return false;
+    const guardKind = normalize(e.data && e.data.attackKind) || "all";
+    return guardKind === "all" || guardKind === normalize(atkKind);
+  });
+};
+const getDamageReflectFlatEffects = (scene, side, atkKind) => {
+  const state = getSideState(scene, side);
+  cleanupExpiredEffects(state);
+  return (state.timedEffects || []).filter((e) => {
+    if (normalize(e && e.kind) !== "damageReflectFlat") return false;
+    if (Math.max(0, Number(e && e.turns) || 0) <= 0) return false;
+    const guardKind = normalize(e.data && e.data.attackKind) || "all";
+    return guardKind === "all" || guardKind === normalize(atkKind);
+  });
+};
+const applyDirectHpDamage = (scene, side, amount) => {
+  const hpKey = side === "attacker" ? "attackerHp" : "targetHp";
+  const before = Math.max(0, Number(scene[hpKey]) || 0);
+  scene[hpKey] = Math.max(hasLastStandEffect(scene, side) && before > 0 ? 1 : 0, before - Math.max(1, Math.floor(Number(amount) || 1)));
+  const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
+  if (side === "attacker" && Array.isArray(scene.team)) {
+    syncActivePetFromBattleScene(scene);
+  }
+  if (actual > 0) clearSleepAfterDamage(scene, side);
+  syncBattleUiHpForSide(scene, side);
+  return actual;
+};
+const hasStatusShield = (scene, side, status = "") => {
+  const state = getSideState(scene, side);
+  cleanupExpiredEffects(state);
+  return (state.timedEffects || []).some((e) => {
+    if (normalize(e && e.kind) !== "statusShield") return false;
+    if (Math.max(0, Number(e && e.turns) || 0) <= 0) return false;
+    const guard = normalize(e.data && e.data.status) || "all";
+    return guard === "all" || guard === normalize(status);
+  });
+};
 const getElementPowerFactorFromState = (state, skillElement) => {
   let mul = 1;
   (state && Array.isArray(state.timedEffects) ? state.timedEffects : []).forEach((e) => {
@@ -1220,19 +1800,108 @@ const getDamageBoostFactor = (scene, side) => {
   });
   return mul;
 };
+const countBattleStatuses = (scene, side) => {
+  const st = getSideState(scene, side);
+  return Object.keys(st.statuses || {}).filter((key) => Math.max(0, Number(st.statuses[key]) || 0) > 0).length;
+};
+const hasSkillEffectFlag = (skill, kind) => parseSkillEffects(skill).some((e) => {
+  const key = normalize(kind);
+  return normalize(e && e.kind) === key || (normalize(e && e.kind) === "flag" && normalize(e && e.flag) === key);
+});
+const getSkillActionPriority = (skill) => {
+  const effects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "priority");
+  if (effects.length > 0) {
+    return effects.reduce((best, e) => {
+      const val = Math.floor(Number(e.value) || 0);
+      return Math.abs(val) > Math.abs(best) ? val : best;
+    }, 0);
+  }
+  const desc = normalize(skill && skill.desc);
+  if (/先至\s*\+?\s*(\d+)/.test(desc)) {
+    const m = desc.match(/先至\s*\+?\s*(\d+)/);
+    return Math.max(1, Math.floor(Number(m && m[1]) || 1));
+  }
+  if (/后至\s*\+?\s*(\d+)/.test(desc)) {
+    const m = desc.match(/后至\s*\+?\s*(\d+)/);
+    return -Math.max(1, Math.floor(Number(m && m[1]) || 1));
+  }
+  if (/(先发后至|后发|后至|最后出手)/.test(desc)) return -1;
+  if (/(先发|先制|优先出手|先出手)/.test(desc)) return 1;
+  return 0;
+};
+const getSkillDynamicPower = (scene, actorSide, targetSide, skill) => {
+  const effects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "dynamicPower");
+  if (effects.length === 0) return null;
+  let power = null;
+  effects.forEach((e) => {
+    const mode = normalize(e.mode);
+    let next = null;
+    if (mode === "selfHpLost") {
+      const hp = Math.max(0, Number(actorSide === "attacker" ? scene.attackerHp : scene.targetHp) || 0);
+      const maxHp = Math.max(1, Number(actorSide === "attacker" ? scene.attackerMaxHp : scene.targetMaxHp) || 1);
+      const lostRatio = clamp(1 - hp / maxHp, 0, 1);
+      const min = Math.max(1, Number(e.minPower) || 20);
+      const max = Math.max(min, Number(e.maxPower) || 200);
+      next = Math.floor(min + (max - min) * lostRatio);
+    } else if (mode === "selfHpHigh") {
+      const hp = Math.max(0, Number(actorSide === "attacker" ? scene.attackerHp : scene.targetHp) || 0);
+      const maxHp = Math.max(1, Number(actorSide === "attacker" ? scene.attackerMaxHp : scene.targetMaxHp) || 1);
+      const ratio = clamp(hp / maxHp, 0, 1);
+      const min = Math.max(1, Number(e.minPower) || Number(skill.power) || 1);
+      const max = Math.max(min, Number(e.maxPower) || min * 2);
+      next = Math.floor(min + (max - min) * ratio);
+    } else if (mode === "targetHpHigh") {
+      const hp = Math.max(0, Number(targetSide === "attacker" ? scene.attackerHp : scene.targetHp) || 0);
+      const maxHp = Math.max(1, Number(targetSide === "attacker" ? scene.attackerMaxHp : scene.targetMaxHp) || 1);
+      const ratio = clamp(hp / maxHp, 0, 1);
+      const min = Math.max(1, Number(e.minPower) || Number(skill.power) || 1);
+      const max = Math.max(min, Number(e.maxPower) || 120);
+      next = Math.floor(min + (max - min) * ratio);
+    } else if (mode === "ppLow") {
+      const pp = Math.max(0, Number(skill && skill.pp) || 0);
+      next = pp <= 1 ? 120 : (pp <= 2 ? 80 : (pp <= 3 ? 60 : (pp <= 4 ? 50 : 40)));
+    } else if (mode === "selfHpHighStep") {
+      const hp = Math.max(0, Number(actorSide === "attacker" ? scene.attackerHp : scene.targetHp) || 0);
+      const maxHp = Math.max(1, Number(actorSide === "attacker" ? scene.attackerMaxHp : scene.targetMaxHp) || 1);
+      const lost = Math.max(0, maxHp - hp);
+      const step = Math.max(1, Math.floor(Number(e.step) || 100));
+      const drop = Math.max(0, Math.floor(Number(e.drop) || 20));
+      const max = Math.max(1, Number(e.maxPower) || 280);
+      const min = Math.max(1, Number(e.minPower) || 1);
+      next = Math.max(min, max - Math.floor(lost / step) * drop);
+    }
+    if (Number.isFinite(next) && next > 0) power = Math.max(power || 0, Math.floor(next));
+  });
+  return power;
+};
 const getSkillPowerOverride = (skill) => {
   const effects = parseSkillEffects(skill);
   const hit = effects.find((e) => normalize(e && e.kind) === "fixedPowerOverride" && Number(e && e.power) > 0);
   return hit ? Math.max(1, Number(hit.power) || 0) : null;
 };
+const getSkillIgnoreDefenseRatio = (skill, atkKind) => {
+  const effects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "ignoreDefense");
+  let ratio = 0;
+  effects.forEach((e) => {
+    const kind = normalize(e.attackKind) || "all";
+    if (kind !== "all" && kind !== normalize(atkKind)) return;
+    ratio = Math.max(ratio, clamp(Number(e.ratio) || 1, 0, 1));
+  });
+  return ratio;
+};
 const hasSkillEffectKind = (skill, kind) => parseSkillEffects(skill).some((e) => normalize(e && e.kind) === normalize(kind));
+const getSkillBaseAccuracy = (skill, fallback = 100) => {
+  const name = normalize(skill && skill.name);
+  if (name === "玄冥绝灭" || name === "光明漩涡") return 50;
+  return clamp(Number(fallback) || 100, 1, 100);
+};
 const hasDirectDamageSuppressedEffect = (skill) => parseSkillEffects(skill).some((e) => [
   "equalizeOpponentHpToSelf",
   "averageHp",
   "drainRemainingHpRatio"
 ].includes(normalize(e && e.kind)));
 const hasDiminishingGateEffect = (skill) => parseSkillEffects(skill).some((e) => normalize(e && e.kind) === "diminishingSuccessGate");
-const isGuardianBossProtectedTarget = (scene, side) => scene && (scene.mode === "guardian" || scene.mode === "boss") && side === "target";
+const isGuardianBossProtectedTarget = (scene, side) => scene && (scene.mode === "guardian" || scene.mode === "boss" || scene.mode === "timeTunnel") && side === "target";
 const isEffectBlockedByGuardianBoss = (scene, actor, effect) => {
   if (!effect || !effect.guardianBossImmune) return false;
   const side = effect.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
@@ -1267,12 +1936,14 @@ const calcBattleDirectDamage = ({
     : (atkKind === "special"
       ? getBattleAbilityStat(scene, defenderSide, "spDef")
       : getBattleAbilityStat(scene, defenderSide, "def"));
+  const ignoreDefenseRatio = getSkillIgnoreDefenseRatio(skill, atkKind);
+  const effectiveDefStat = ignoreDefenseRatio > 0 ? Math.max(1, Math.floor(defStat * (1 - ignoreDefenseRatio))) : defStat;
   const stab = normalize(actorElement) === normalize(skillElement) ? 1.5 : 1;
   const one = calcSkillDamageByOfficialStyle({
     level: actorLevel,
     power: Math.max(1, Number(power) || 1) * powerFactor * powerConditionFactor,
     atkStat,
-    defStat,
+    defStat: effectiveDefStat,
     stab,
     elementFactor,
     randomFactor
@@ -1300,12 +1971,93 @@ const manualHardcodedSkillEffects = (skill) => {
       { kind: "windGodPossession", target: "self", ratio: 0.5, boostDelta: 3, accuracyDelta: -3 }
     ];
   }
+  if (name === "远古记忆" || skillId === 19060) {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "mirrorOpponentStageBoost", target: "self", turns: 5, multiplier: 1 }
+    ];
+  }
+  if (name === "远古怒嚎" || skillId === 19110) {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "mirrorOpponentStageBoost", target: "self", turns: 4, multiplier: 1 },
+      { kind: "stageGuard", target: "self", mode: "debuff", turns: 4, requireHit: false }
+    ];
+  }
+  if (name === "落日吞天" || skillId === 16277 || skillId === 16411) {
+    return [
+      { kind: "stage", target: "opponent", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: -1, chance: 1, requireHit: true },
+      { kind: "status", target: "opponent", status: "bind", minTurns: 2, maxTurns: 5, chance: 1, requireHit: true },
+      { kind: "skip", target: "self", turns: 1, chance: 0.25, requireHit: true }
+    ];
+  }
+  if (name === "战武遗魂" || skillId === 16273) {
+    return [
+      { kind: "stage", target: "self", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: 1, chance: 1, requireHit: false },
+      { kind: "skip", target: "self", turns: 1, chance: 0.3, requireHit: false }
+    ];
+  }
+  if (name === "上古战魂" && skillId === 19077) {
+    return [
+      { kind: "stage", target: "self", keys: ["atk", "accuracy", "critStage", "def", "spDef", "speed"], delta: 1, chance: 1, requireHit: false },
+      { kind: "endTurnHealByLostHp", target: "self", lostAdd: 100, multiplier: 300, turns: 5 }
+    ];
+  }
+  if (name === "万物皆明" || skillId === 193 || skillId === 16221 || skillId === 16234) {
+    return [
+      { kind: "stage", target: "opponent", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: -1, chance: 1, requireHit: true },
+      { kind: "status", target: "opponent", status: "bind", minTurns: 2, maxTurns: 5, chance: 1, requireHit: true },
+      { kind: "skip", target: "self", turns: 1, chance: 1, requireHit: true }
+    ];
+  }
+  if (name === "玄王甲") {
+    return [
+      { kind: "damageReduction", target: "self", ratio: 0.5, turns: 3 },
+      { kind: "onDamagedStage", target: "self", applyTo: "attacker", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: -1, turns: 3, chance: 0.7, trigger: "damaged" }
+    ];
+  }
+  if (name === "玄雷甲" || skillId === 16312) {
+    return [
+      { kind: "priority", target: "self", value: 2 },
+      { kind: "damageReduction", target: "self", ratio: 0.5, turns: 3 },
+      { kind: "onDamagedStage", target: "self", applyTo: "attacker", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: -1, turns: 3, chance: 0.5, trigger: "damaged" },
+      { kind: "onDamagedStatus", target: "self", applyTo: "attacker", status: "paralyze", statusTurns: 3, turns: 3, chance: 0.2, trigger: "damaged" }
+    ];
+  }
+  if (name === "君临天下" && skillId === 23006) {
+    return [
+      { kind: "stage", target: "self", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: 1, chance: 1, requireHit: false },
+      { kind: "endTurnStageAndStatusChance", target: "self", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: 1, chance: 0.3, status: "confuse", statusTurns: 3, turns: 1 }
+    ];
+  }
+  if (name === "王之裁决" || skillId === 23007) {
+    return [
+      { kind: "clearStage", target: "opponent", mode: "all", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 0.4, requireHit: true }
+    ];
+  }
+  if (name === "万界必破" || skillId === 23008) {
+    return [
+      { kind: "multiHit", target: "opponent", min: 5, max: 10 },
+      { kind: "perHitRandomAbilityStatFactor", target: "opponent", groups: [["atk", "spAtk"], ["def", "spDef"]], factor: 0.85, turns: 3, chance: 0.08, guardianBossImmune: true }
+    ];
+  }
+  if (name === "麒麟怒雷" || skillId === 13298) {
+    return [
+      { kind: "multiHit", target: "opponent", min: 3, max: 3 },
+      { kind: "perHitStatus", target: "opponent", status: "paralyze", turns: 3, chance: 0.15 }
+    ];
+  }
+  if (name === "数码世界") {
+    return [
+      { kind: "stage", target: "both", keys: ["atk", "spAtk"], delta: -2, chance: 1, requireHit: false }
+    ];
+  }
   if (name === "火海焚烧") {
     return [
       { kind: "lockGodDrain", target: "opponent", turns: 2, ratio: 1 / 16, label: "火海焚烧" }
     ];
   }
-  if (name === "光刃") return [{ kind: "fixedDamageBySpeedRatio", target: "opponent", factor: 500 }];
+  if (name === "光刃") return [{ kind: "fixedDamageByStatRatio", target: "opponent", statKey: "speed", factor: 500 }];
   if (name === "七十二变") {
     return [
       { kind: "stage", target: "self", keys: ["def", "spDef", "evasion"], delta: 1, chance: 0.9, failEffectKey: "seventyTwoFail" },
@@ -1327,13 +2079,19 @@ const manualHardcodedSkillEffects = (skill) => {
   }
   if (name === "鲁莽") return [{ kind: "equalizeOpponentHpToSelf", target: "opponent", guardianBossImmune: true }];
   if (name === "痛苦之源") return [{ kind: "averageHp", target: "opponent", guardianBossImmune: true }];
+  if (name === "浴火凤凰") {
+    return [
+      { kind: "recoilByMaxHp", target: "self", ratio: 1 / 3, requireHit: false },
+      { kind: "endTurnHealFlat", target: "self", amount: 350, turns: 3 }
+    ];
+  }
   if (name === "数码干涉") {
     return [
       { kind: "recoilByMaxHp", target: "self", ratio: 0.5, requireHit: false },
       { kind: "lockGodDrain", target: "opponent", turns: 99, ratio: 1 / 4, label: "数码干涉", guardianBossImmune: true }
     ];
   }
-  if (name === "时之虫洞") return [{ kind: "delayedKo", target: "opponent", turns: 6 }];
+  if (name === "时之虫洞") return [{ kind: "delayedKo", target: "opponent", turns: 6, guardianBossImmune: true }];
   if (name === "千变万化") return [{ kind: "randomStatus", target: "opponent", turns: 3, chance: 0.3 }];
   if (name === "病毒入侵") {
     return [
@@ -1341,15 +2099,158 @@ const manualHardcodedSkillEffects = (skill) => {
       { kind: "lockGodDrain", target: "opponent", turns: 99, ratio: 1 / 16, label: "病毒入侵" }
     ];
   }
-  if (name === "魔狂暴") return [{ kind: "drainRemainingHpRatio", target: "opponent", ratio: 0.5 }];
+  if (name === "魔狂暴") return [{ kind: "drainRemainingHpRatio", target: "opponent", ratio: 0.5, guardianBossImmune: true }];
+  if (name === "黑洞") return [{ kind: "timedHeal", target: "self", turns: 99, ratio: 1 / 8 }];
+  if (name === "腐蚀酸云") return [{ kind: "mutualEndTurnDamageFlat", target: "both", turns: 5, amount: skillId === 2213 ? 300 : 200 }];
   if (name === "血印") {
     return [
+      { kind: "dynamicPower", target: "self", mode: "selfHpHighStep", minPower: 1, maxPower: 280, step: 100, drop: 20 },
       { kind: "recoilFlat", target: "self", amount: 100 },
       { kind: "heal", target: "self", ratio: 0.5, chance: 0.25 }
     ];
   }
+  if (name === "暗能") {
+    return [
+      { kind: "ppChange", target: "opponent", amount: -3, chance: 1, requireHit: false },
+      { kind: "ppChange", target: "self", amount: 2, chance: 1, requireHit: false }
+    ];
+  }
+  if (name === "苍雷") {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "clearStage", target: "opponent", mode: "positive", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 0.4, requireHit: true },
+      { kind: "stageGuard", target: "self", mode: "debuff", turns: 3, requireHit: true }
+    ];
+  }
+  if (name === "龙战玄黄") {
+    return [
+      { kind: "stage", target: "self", keys: ["atk", "spAtk", "def", "spDef", "accuracy"], delta: 1, chance: 1, requireHit: false },
+      { kind: "damageReduction", target: "self", ratio: 0.4, turns: 3 }
+    ];
+  }
+  if (name === "冰封禁制") {
+    return [
+      { kind: "skillSealChance", target: "opponent", turns: 3, chance: 1 / 3, requireHit: true }
+    ];
+  }
+  if (name === "灵之逆转" && skillId === 16250) {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "transferStage", target: "self", from: "opponent", to: "self", mode: "positive", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 0.3, requireHit: false, clearStageOnTransferSuccess: true }
+    ];
+  }
+  if (name === "灵之逆转" && skillId === 16253) {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "transferStage", target: "self", from: "opponent", to: "self", mode: "positive", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 0.15, requireHit: false },
+      { kind: "clearStage", target: "opponent", mode: "positive", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 0.4, requireHit: false },
+      { kind: "clearStage", target: "self", mode: "negative", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 0.2, requireHit: false }
+    ];
+  }
+  if (name === "瞬灵逆转") {
+    return [
+      { kind: "flag", flag: "mustHit" },
+      { kind: "copyStage", target: "opponent", copyTo: "self", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 0.3, requireHit: true, clearStageOnCopySuccess: true }
+    ];
+  }
+  if (name === "飓风·雷电") {
+    const effects = [
+      { kind: "lifesteal", target: "self", ratio: 1 / 3, selfHpBelowRatio: 0.5 }
+    ];
+    if (skillId === 16254) effects.push({ kind: "stage", target: "self", keys: ["accuracy"], delta: 1, chance: 1, requireHit: false });
+    if (skillId === 16314) effects.push({ kind: "stage", target: "self", keys: ["accuracy", "critStage"], delta: 1, chance: 1, requireHit: false });
+    return effects;
+  }
+  if (name === "噬灵雷电") return [{ kind: "lifesteal", target: "self", ratio: 1 / 3, selfHpBelowRatio: 0.5 }];
+  if (name === "真·血印") {
+    return [
+      { kind: "dynamicPower", target: "self", mode: "selfHpHigh", minPower: 1, maxPower: 120 },
+      { kind: "recoilFlat", target: "self", amount: 100 },
+      { kind: "heal", target: "self", ratio: 0.5, chance: 0.5 },
+      { kind: "status", target: "opponent", status: "fear", turns: 1, chance: 0.25 }
+    ];
+  }
+  if (name === "究极血印") {
+    return [
+      { kind: "dynamicPower", target: "self", mode: "selfHpHigh", minPower: 1, maxPower: 140 },
+      { kind: "recoilFlat", target: "self", amount: 100 },
+      { kind: "heal", target: "self", ratio: 0.5, chance: 0.5 },
+      { kind: "stage", target: "opponent", keys: ["def"], delta: -1, chance: 0.3 }
+    ];
+  }
+  if (name === "★究极血印") {
+    return [
+      { kind: "flag", flag: "mustHit" },
+      { kind: "dynamicPower", target: "self", mode: "selfHpHigh", minPower: 1, maxPower: 140 },
+      { kind: "recoilFlat", target: "self", amount: 100 },
+      { kind: "heal", target: "self", ratio: 0.5, chance: 0.5 },
+      { kind: "stage", target: "opponent", keys: ["def"], delta: -1, chance: 0.5 }
+    ];
+  }
+  if (name === "召唤雪崩") {
+    return [
+      { kind: "turnSequenceAttack", target: "opponent", turns: 5, powerMultiplier: 2, elementShelterMultiplier: 2 }
+    ];
+  }
+  if (["蛇缠身", "石轮回旋击"].includes(name)) {
+    return [
+      { kind: "turnSequenceAttack", target: "opponent", turns: 5, powerMultiplier: 2, elementShelterMultiplier: 2 }
+    ];
+  }
+  if (name === "狂沙吞噬") {
+    return [
+      { kind: "turnSequenceAttack", target: "opponent", turns: 3, powerMultiplier: 2, elementShelterMultiplier: 2 }
+    ];
+  }
+  if (name === "密宗拳") {
+    return [
+      { kind: "turnSequenceAttack", target: "opponent", turns: 5, powerMultiplier: 2, elementShelterMultiplier: 2, resetOnFail: true }
+    ];
+  }
+  if (name === "巨刃破邪") {
+    return [
+      { kind: "turnSequenceAttack", target: "opponent", turns: 5, powerMultiplier: 2, elementShelterMultiplier: 2 }
+    ];
+  }
+  if (name === "麦斗巨炮") {
+    return [
+      { kind: "turnSequenceAttack", target: "opponent", turns: 5, powerMultiplier: 2 },
+      { kind: "stage", target: "self", keys: ["atk"], delta: 1, chance: 0.5 }
+    ];
+  }
+  if (name === "链式反应") {
+    return [
+      { kind: "turnSequenceAttack", target: "opponent", turns: 4, powerAdd: 60 }
+    ];
+  }
+  if (name === "星诺火纹") {
+    return [
+      { kind: "turnSequenceAttack", target: "opponent", turns: 5, powerAdd: 30, keepOnMiss: true }
+    ];
+  }
+  if (name === "叮叮顶") {
+    return [
+      { kind: "turnSequenceAttack", target: "opponent", turns: 5, powerMultiplier: 2 }
+    ];
+  }
+  if (name === "狂暴炎冰") {
+    return [
+      { kind: "multiHit", target: "opponent", min: 3, max: 3, powerList: [60, 80, 120] }
+    ];
+  }
   if (name === "不灭的意志") return [{ kind: "lastStand", target: "self", turns: 1 }];
+  if (name === "意念之盾") return [{ kind: "typedDamageReduction", target: "self", attackKind: "physical", ratio: 0.5, turns: 5 }];
+  if (name === "念力壁") return [{ kind: "typedDamageReduction", target: "self", attackKind: "special", ratio: 0.5, turns: 5 }];
   if (name === "银光护盾") return [{ kind: "damageShield", target: "self", turns: 10, amount: skillId === 19013 ? 300 : 50 }];
+  if (name === "冰雾海") return [
+    { kind: "status", target: "opponent", status: "bind", turns: 5, chance: 1, requireHit: true },
+    { kind: "lockGodDrain", target: "opponent", turns: 5, ratio: 1 / 16, label: "冰雾海" }
+  ];
+  if (name === "无锋巨刃") return [
+    { kind: "fixedPowerOverride", power: 1 },
+    { kind: "forceAttackKind", attackKind: "physical" },
+    { kind: "ignoreDefense", target: "opponent", attackKind: "physical", ratio: 1 }
+  ];
   if (name === "腐蚀酸云") return [{ kind: "mutualEndTurnDamageFlat", target: "both", turns: 5, amount: skillId === 2213 ? 300 : 200 }];
   if (name === "一击必杀") return [{ kind: "fixedPowerOverride", power: 1 + Math.floor(Math.random() * 500) }];
   if (name === "火之净化" || name === "★火之净化") {
@@ -1371,6 +2272,16 @@ const manualHardcodedSkillEffects = (skill) => {
       return [{ kind: "damageBoost", target: "self", turns: 3, factor: skillId === 29386 ? 1.25 : 1.5 }];
     }
     return [{ kind: "dragonBaseBoost", target: "self", ratio: 0.1, maxStacks: 5 }];
+  }
+  if (name === "玄冥绝灭") {
+    return [{ kind: "instantKo", target: "opponent", chance: 0.5, requireHit: true, damageValue: 999999, stopSelfOnSuccess: 1, guardianBossImmune: true }];
+  }
+  if (name === "光明漩涡") {
+    return [
+      { kind: "priority", value: 1 },
+      { kind: "instantKo", target: "opponent", chance: 0.3, requireHit: true, damageValue: 999999, guardianBossImmune: true },
+      { kind: "transferStage", target: "self", from: "opponent", to: "self", mode: "positive", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 1, requireHit: true, doubleWhenSelfHpBelowHalf: true }
+    ];
   }
   if (name === "火之辉耀") return [{ kind: "lockGodDrain", target: "opponent", turns: 99, flat: 80, label: "火之辉耀" }];
   if (name === "障眼法") {
@@ -1409,8 +2320,45 @@ const parseSkillEffectsFromDesc = (skill) => {
   });
   const canonicalSkillName = name.replace(/决/g, "诀");
   const skillIdForDesc = Number(skill && skill.skillId) || 0;
+  const addEffectOnce = (effect) => {
+    const key = [
+      normalize(effect && effect.kind),
+      normalize(effect && effect.target),
+      normalize(effect && effect.mode),
+      normalize(effect && effect.attackKind),
+      normalize(effect && effect.status),
+      Number(effect && effect.turns) || 0,
+      Number(effect && effect.factor) || 0,
+      Number(effect && effect.amount) || 0,
+      Number(effect && effect.ratio) || 0
+    ].join("|");
+    const exists = effects.some((e) => [
+      normalize(e && e.kind),
+      normalize(e && e.target),
+      normalize(e && e.mode),
+      normalize(e && e.attackKind),
+      normalize(e && e.status),
+      Number(e && e.turns) || 0,
+      Number(e && e.factor) || 0,
+      Number(e && e.amount) || 0,
+      Number(e && e.ratio) || 0
+    ].join("|") === key);
+    if (!exists) add(effect);
+  };
+  const elementNamePattern = "(木系|火系|水系|冰系|土系|电系|光明系|暗黑系|神秘系|机械系|飞行系|龙系|上古系|数码系|格斗系|王系|神兵系|圣灵系|爬行系|普通系|毒系|雷系)";
   if (skillIdForDesc > 0 && skillIdForDesc < 24000 && desc.includes("一场战斗使用次数越多，成功率越低")) {
     add({ kind: "diminishingSuccessGate", target: "self" });
+  }
+  const priorityMatch = desc.match(/先至\s*\+?\s*(\d+)/);
+  const latePriorityMatch = desc.match(/后至\s*\+?\s*(\d+)/);
+  if (priorityMatch) {
+    addEffectOnce({ kind: "priority", target: "self", value: Math.max(1, Math.floor(Number(priorityMatch[1]) || 1)) });
+  } else if (latePriorityMatch) {
+    addEffectOnce({ kind: "priority", target: "self", value: -Math.max(1, Math.floor(Number(latePriorityMatch[1]) || 1)) });
+  } else if (/(先发后至|后发|后至|最后出手)/.test(desc)) {
+    addEffectOnce({ kind: "priority", target: "self", value: -1 });
+  } else if (/(先发|先制|优先出手|先出手)/.test(desc)) {
+    addEffectOnce({ kind: "priority", target: "self", value: 1 });
   }
   if (canonicalSkillName === "锁神诀") {
     return [
@@ -1481,6 +2429,16 @@ const parseSkillEffectsFromDesc = (skill) => {
     if (!m) return 1;
     const n = Number(m[1] || m[2]);
     return Number.isFinite(n) ? clamp(n / 100, 0, 1) : 1;
+  };
+  const parseChanceInText = (text, fallback = 1) => {
+    const t = normalize(text).replace(/％/g, "%");
+    if (t.includes("极大概率")) return 0.9;
+    if (t.includes("较高概率")) return 0.7;
+    if (t.includes("一定概率") || t.includes("有概率")) fallback = 0.3;
+    const m = t.match(/(\d+(?:\.\d+)?)\s*%\s*(?:概率|几率|机率)?|(?:概率|几率|机率)\s*(\d+(?:\.\d+)?)\s*%/);
+    if (!m) return fallback;
+    const n = Number(m[1] || m[2]);
+    return Number.isFinite(n) ? clamp(n / 100, 0, 1) : fallback;
   };
   const hasHitGateNear = (text, idx) => {
     const t = normalize(text);
@@ -1563,6 +2521,182 @@ const parseSkillEffectsFromDesc = (skill) => {
     }
   };
   parseElementPowerEffects(desc);
+  if (/(?:必定命中|必定击中|必中|一定命中|100%\s*命中)|(?:命中率)[^。；，\n]{0,8}(?:100%|百分百)/.test(desc)) {
+    addEffectOnce({ kind: "mustHit", target: "self" });
+  }
+  if (/(?:解除|清除|治愈|消除|净化)[^。；，\n]{0,18}(?:自身|自己|我方)?[^。；，\n]{0,12}(?:异常状态|不良状态|所有异常|全部异常)|(?:净化|解除|清除|治愈|消除)[^。；，\n]{0,18}(?:自身|自己|我方)?[^。；，\n]{0,12}所有[^。；，\n]{0,8}(?:异常|不良)/.test(desc)) {
+    addEffectOnce({ kind: "statusCure", target: "self", status: "all", chance: 1 });
+  }
+  if (/(?:异常状态|不良状态)[^。；，\n]{0,18}(?:不会|不能|无法|免疫|不出现)|(?:不会|不能|无法|免疫|不出现)[^。；，\n]{0,18}(?:异常状态|不良状态)/.test(desc)) {
+    addEffectOnce({ kind: "statusShield", target: "self", status: "all", turns: parseGeneralTurns(desc, 3) });
+  }
+  if (/(?:无视|闪避|免受|免疫)[^。；，\n]{0,18}(?:对手|对方|敌方)?[^。；，\n]{0,8}(?:本回合)?[^。；，\n]{0,8}(?:攻击|伤害)/.test(desc)) {
+    let attackKind = "all";
+    if (/(普通攻击|普攻|物理攻击)/.test(desc) && !/(特殊攻击|特攻|魔攻)/.test(desc)) attackKind = "physical";
+    else if (/(特殊攻击|特攻|魔攻)/.test(desc) && !/(普通攻击|普攻|物理攻击)/.test(desc)) attackKind = "special";
+    addEffectOnce({ kind: "attackImmunity", target: "self", turns: parseGeneralTurns(desc, /(本回合|当回合)/.test(desc) ? 1 : 3), chance: statusChanceFromDesc(desc, "", 1), attackKind });
+  }
+  const damageReductionMatch = desc.match(/(?:伤害抗性|伤害抵抗|受到伤害减少|承受伤害减少|减伤)[^。；，\n]{0,12}(?:提升|提高|增加)?\s*([0-9]+(?:\.[0-9]+)?)\s*%|(?:提升|提高|增加)[^。；，\n]{0,12}(?:伤害抗性|伤害抵抗|减伤)[^。；，\n]{0,8}([0-9]+(?:\.[0-9]+)?)\s*%/);
+  if (damageReductionMatch) {
+    addEffectOnce({ kind: "damageReduction", target: "self", ratio: clamp(Number(damageReductionMatch[1] || damageReductionMatch[2]) / 100, 0.01, 1), turns: parseGeneralTurns(desc, /(本回合|当回合)/.test(desc) ? 1 : 3) });
+  }
+  if (/(?:容易|更容易|较容易)[^。；，\n]{0,8}(?:暴击|会心)|(?:暴击|会心)[^。；，\n]{0,8}(?:容易|更容易|较容易)/.test(desc)) {
+    addEffectOnce({ kind: "critStage", target: "self", delta: 1 });
+  }
+  if (/(?:较高|很高|高)[^。；，\n]{0,8}(?:暴击|会心)|(?:暴击|会心)[^。；，\n]{0,8}(?:较高|很高|高)/.test(desc)) {
+    addEffectOnce({ kind: "critStage", target: "self", delta: 2 });
+  }
+  if (/(?:自身体力|自己体力|自身HP|自己HP|自身生命|自己生命)[^。；，\n]{0,18}(?:越少|越低|越小)[^。；，\n]{0,24}(?:威力|伤害)|(?:威力|伤害)[^。；，\n]{0,24}(?:自身体力|自己体力|自身HP|自己HP|自身生命|自己生命)[^。；，\n]{0,18}(?:越少|越低|越小)/.test(desc)) {
+    addEffectOnce({ kind: "dynamicPower", target: "self", mode: "selfHpLost", minPower: 20, maxPower: 200 });
+  }
+  if (/(?:自身体力|自己体力|自身HP|自己HP|自身生命|自己生命)[^。；，\n]{0,18}(?:越多|越高)[^。；，\n]{0,24}(?:威力|伤害)|(?:威力|伤害)[^。；，\n]{0,24}(?:自身体力|自己体力|自身HP|自己HP|自身生命|自己生命)[^。；，\n]{0,18}(?:越多|越高)/.test(desc)) {
+    const base = Math.max(1, Number(skill && skill.power) || 20);
+    addEffectOnce({ kind: "dynamicPower", target: "self", mode: "selfHpHigh", minPower: base, maxPower: base * 2 });
+  }
+  if (/(?:对方|敌方|目标)[^。；，\n]{0,12}(?:剩余)?(?:体力|HP|生命)[^。；，\n]{0,18}(?:越多|越高)[^。；，\n]{0,24}(?:威力|伤害)|(?:威力|伤害)[^。；，\n]{0,24}(?:对方|敌方|目标)[^。；，\n]{0,12}(?:剩余)?(?:体力|HP|生命)[^。；，\n]{0,18}(?:越多|越高)/.test(desc)) {
+    const maxPower = Math.max(1, Number(skill && skill.power) || 120);
+    addEffectOnce({ kind: "dynamicPower", target: "self", mode: "targetHpHigh", minPower: 1, maxPower });
+  }
+  if (/(?:PP|pp)[^。；，\n]{0,18}(?:越少|减少|降低)[^。；，\n]{0,24}(?:威力|伤害)|(?:威力|伤害)[^。；，\n]{0,24}(?:随着|随)[^。；，\n]{0,8}(?:PP|pp)[^。；，\n]{0,12}(?:减少|降低)/.test(desc)) {
+    addEffectOnce({ kind: "dynamicPower", target: "self", mode: "ppLow" });
+  }
+  const damageShieldByDamageMatch = desc.match(/(?:伤害|伤害值|造成伤害)(?:的)?\s*((?:\d+\s*\/\s*\d+)|(?:\d+(?:\.\d+)?\s*%)|一半|三分之一|四分之一|五分之一|六分之一|八分之一|十六分之一)[^。；，\n]{0,18}(?:作为|转化为|形成|制造)[^。；，\n]{0,12}(?:护盾)|(?:护盾)[^。；，\n]{0,18}(?:吸收|抵抗)[^。；，\n]{0,18}(?:伤害|伤害值)(?:的)?\s*((?:\d+\s*\/\s*\d+)|(?:\d+(?:\.\d+)?\s*%)|一半|三分之一|四分之一|五分之一|六分之一|八分之一|十六分之一)/);
+  if (damageShieldByDamageMatch) {
+    const ratio = parseRatioFromText(damageShieldByDamageMatch[1] || damageShieldByDamageMatch[2], null);
+    if (Number.isFinite(ratio) && ratio > 0) {
+      addEffectOnce({ kind: "damageShieldByDamage", target: "self", ratio: clamp(ratio, 0.01, 3), turns: parseGeneralTurns(desc, 3), requireHit: /命中/.test(desc) });
+    }
+  }
+  const flatShieldMatch = desc.match(/(?:吸取|夺取|扣除|减少)[^。；，\n]{0,12}(?:对方|敌方|目标)[^。；，\n]{0,12}([0-9]+)\s*点(?:体力值?|生命值?|HP|hp)[^。；，\n]{0,18}(?:作为|转化为|形成|制造)[^。；，\n]{0,12}护盾|护盾[^。；，\n]{0,18}(?:吸收|抵抗|承受)[^0-9。；，\n]{0,12}([0-9]+)\s*点(?:直接攻击)?伤害/);
+  if (flatShieldMatch) {
+    addEffectOnce({ kind: "damageShield", target: "self", amount: Math.max(1, Math.floor(Number(flatShieldMatch[1] || flatShieldMatch[2]) || 1)), turns: parseGeneralTurns(desc, 3), requireHit: /命中/.test(desc) });
+  }
+  const delayedAbsorbMatch = desc.match(/(?:下回合|下一回合)[^。；，\n]{0,16}(?:吸收|完全吸收)[^。；，\n]{0,20}(?:伤害|对方造成的伤害)[^。；，\n]{0,16}(?:转化为|回复|恢复)[^。；，\n]{0,12}(?:体力|生命|HP|hp)/);
+  if (delayedAbsorbMatch) {
+    addEffectOnce({ kind: "damageAbsorb", target: "self", turns: 1, chance: statusChanceFromDesc(desc, "", 1) });
+  }
+  const elementReductionMatch = desc.match(new RegExp(`(?:全场)?[^。；，\\n]{0,8}受(${elementNamePattern})(?:攻击)?伤害(?:减半|降低\\s*(\\d+(?:\\.\\d+)?)\\s*%)|(${elementNamePattern})(?:攻击)?伤害(?:减半|降低\\s*(\\d+(?:\\.\\d+)?)\\s*%)`));
+  if (elementReductionMatch) {
+    const element = normalizeElementName(elementReductionMatch[1] || elementReductionMatch[3]);
+    const pct = Number(elementReductionMatch[2] || elementReductionMatch[4]);
+    const ratio = Number.isFinite(pct) && pct > 0 ? clamp(pct / 100, 0.01, 0.95) : 0.5;
+    ["self", "opponent"].forEach((target) => addEffectOnce({ kind: "elementDamageReduction", target, element, ratio, turns: parseGeneralTurns(desc, 3) }));
+  }
+  const elementChangeMatch = desc.match(new RegExp(`(?:自己|自身|我方)?[^。；，\\n]{0,12}(?:变成|变为|转化为|改变为)(${elementNamePattern})(?:属性|系别)?`));
+  if (elementChangeMatch) {
+    addEffectOnce({ kind: "elementChange", target: "self", element: normalizeElementName(elementChangeMatch[1]), turns: parseGeneralTurns(desc, 3) });
+  }
+  const ignoreDefenseMatch = desc.match(/无视[^。；，\n]{0,12}(?:对方|敌方|目标)?[^。；，\n]{0,8}(防御和特防|双防|防御|特防)[^。；，\n]{0,8}(?:数值)?(?:的)?\s*([0-9]+(?:\.[0-9]+)?)?\s*%?/);
+  if (ignoreDefenseMatch) {
+    const statText = normalize(ignoreDefenseMatch[1]);
+    const ratio = ignoreDefenseMatch[2] ? clamp(Number(ignoreDefenseMatch[2]) / 100, 0.01, 1) : 1;
+    let attackKind = "all";
+    if (statText === "防御") attackKind = "physical";
+    else if (statText === "特防") attackKind = "special";
+    addEffectOnce({ kind: "ignoreDefense", target: "opponent", attackKind, ratio, requireHit: false });
+  }
+  const instantKoChance = (() => {
+    const m = desc.match(/(\d+(?:\.\d+)?)\s*%\s*(?:概率|几率|机率)?[^。；，\n]{0,8}(?:秒杀|直接击败|直接死亡|失去战斗能力)|(?:概率|几率|机率)\s*(\d+(?:\.\d+)?)\s*%[^。；，\n]{0,8}(?:秒杀|直接击败|直接死亡|失去战斗能力)/);
+    if (m) return clamp(Number(m[1] || m[2]) / 100, 0, 1);
+    if (/(一定概率|概率|几率|机率)[^。；，\n]{0,16}(?:秒杀|一击必杀|直接击败|直接死亡|失去战斗能力)/.test(desc)) return 0.3;
+    if (/(?:100%|必定)[^。；，\n]{0,16}(?:秒杀|一击必杀|直接击败|直接死亡|失去战斗能力)|(?:秒杀|一击必杀|直接击败|直接死亡|失去战斗能力)/.test(desc)) return 1;
+    return null;
+  })();
+  if (Number.isFinite(instantKoChance)) {
+    addEffectOnce({ kind: "instantKo", target: "opponent", chance: instantKoChance, requireHit: /攻击|命中/.test(desc), guardianBossImmune: true });
+  }
+  if (/(?:复制|拷贝)[^。；，\n]{0,24}(?:对方|敌方|目标)[^。；，\n]{0,24}(?:提升|增益|强化)[^。；，\n]{0,24}(?:属性能力等级|属性等级|能力等级|属性)|(?:对方|敌方|目标)[^。；，\n]{0,24}(?:提升|增益|强化)[^。；，\n]{0,24}(?:属性能力等级|属性等级|能力等级|属性|效果)[^。；，\n]{0,24}(?:复制|拷贝)/.test(desc)) {
+    addEffectOnce({ kind: "copyStage", target: "opponent", copyTo: "self", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: statusChanceFromDesc(desc, "", 1), requireHit: /命中/.test(desc) });
+  } else if (/(?:复制|拷贝)[^。；，\n]{0,16}(?:对方|敌方|目标)[^。；，\n]{0,16}(?:属性能力等级|属性等级|能力等级)|(?:消耗|扣除)[^。；，\n]{0,20}PP[^。；，\n]{0,16}(?:复制|拷贝)[^。；，\n]{0,16}(?:对方|敌方|目标)[^。；，\n]{0,16}(?:能力等级|属性等级)/.test(desc)) {
+    addEffectOnce({ kind: "copyStage", target: "opponent", copyTo: "self", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: statusChanceFromDesc(desc, "", 1), requireHit: /命中/.test(desc) });
+  }
+  const mirrorOpponentBoostText = /(?:对方|敌方|目标)[^。；，\n]{0,18}(?:提升|提高|上升|强化)[^。；，\n]{0,20}(?:属性能力等级|属性等级|能力等级|属性)[^。；，\n]{0,28}(?:也会|同样|自动|复制)[^。；，\n]{0,18}(?:给|加给|提升|复制给|获得|我方|自己|自身)|(?:对方|敌方|目标)[^。；，\n]{0,18}属性提升的效果[^。；，\n]{0,18}(?:复制|加给|给)[^。；，\n]{0,12}(?:我方|自己|自身)/.test(desc);
+  if (mirrorOpponentBoostText) {
+    addEffectOnce({
+      kind: "mirrorOpponentStageBoost",
+      target: "self",
+      turns: parseGeneralTurns(desc, /(本回合|当回合)/.test(desc) ? 1 : 3),
+      multiplier: /翻倍/.test(desc) ? 2 : 1
+    });
+  }
+  if (/(?:将|把)[^。；，\n]{0,12}(?:自身|自己|我方)[^。；，\n]{0,18}(?:被削弱|削弱|减益|降低|下降)[^。；，\n]{0,18}(?:属性能力等级|属性等级|能力等级)[^。；，\n]{0,16}(?:转移|转嫁|传递)[^。；，\n]{0,12}(?:给|至|到)[^。；，\n]{0,8}(?:对方|敌方|目标)/.test(desc)) {
+    addEffectOnce({ kind: "transferStage", target: "opponent", from: "self", to: "opponent", mode: "negative", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: statusChanceFromDesc(desc, "", 1), requireHit: /命中/.test(desc) });
+  }
+  if (/(?:将|把)[^。；，\n]{0,12}(?:对方|敌方|目标)[^。；，\n]{0,18}(?:提升|增益|强化)[^。；，\n]{0,18}(?:属性能力等级|属性等级|能力等级)[^。；，\n]{0,16}(?:转移|吸取|夺取)[^。；，\n]{0,12}(?:给|至|到)?[^。；，\n]{0,8}(?:自身|自己|我方)?/.test(desc)) {
+    addEffectOnce({ kind: "transferStage", target: "self", from: "opponent", to: "self", mode: "positive", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: statusChanceFromDesc(desc, "", 1), requireHit: /命中/.test(desc) });
+  }
+  if (/(?:吸取|夺取)[^。；，\n]{0,12}(?:对方|敌方|目标)[^。；，\n]{0,12}(?:全属性|属性能力等级|属性等级|能力等级)/.test(desc)) {
+    addEffectOnce({ kind: "transferStage", target: "self", from: "opponent", to: "self", mode: "positive", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: statusChanceFromDesc(desc, "", 1), requireHit: /命中/.test(desc) });
+  }
+  if (/(?:将|把)[^。；，\n]{0,12}(?:自身|自己|我方)[^。；，\n]{0,18}(?:不良状态|异常状态|异常|不良)[^。；，\n]{0,16}(?:转移|转嫁|传递)[^。；，\n]{0,12}(?:给|至|到)[^。；，\n]{0,8}(?:对方|敌方|目标)/.test(desc)) {
+    addEffectOnce({ kind: "transferStatus", target: "opponent", from: "self", to: "opponent", status: "all", chance: statusChanceFromDesc(desc, "", 1), requireHit: /命中/.test(desc) });
+  }
+  if (/(?:防御与攻击|攻击与防御|防御和攻击)[^。；\n]{0,18}(?:特防与特攻|特攻与特防)[^。；\n]{0,24}(?:交换|互换)|(?:交换|互换)[^。；\n]{0,24}(?:防御与攻击|攻击与防御|防御和攻击)[^。；\n]{0,18}(?:特防与特攻|特攻与特防)/.test(desc)) {
+    addEffectOnce({ kind: "swapStagePairs", target: "self", pairs: [["atk", "def"], ["spAtk", "spDef"]], chance: 1 });
+  }
+  if (/(?:任意一种|随机|各种)[^。；，\n]{0,12}(?:不良|异常)状态|(?:附加|给对方附加|令对方附加)\s*([0-9]+)\s*种(?:不良|异常)状态/.test(desc)) {
+    const countM = desc.match(/(?:附加|给对方附加|令对方附加)\s*([0-9]+)\s*种(?:不良|异常)状态/);
+    addEffectOnce({ kind: "randomStatus", target: "opponent", turns: 3, count: Math.max(1, Math.floor(Number(countM && countM[1]) || 1)), chance: statusChanceFromDesc(desc, "", /(一定概率|概率|几率|机率)/.test(desc) ? 0.3 : 1), requireHit: /命中|攻击/.test(desc) });
+  }
+  const statusCountDamageMatch = desc.match(/(?:对方|敌方|目标)[^。；，\n]{0,12}(?:身上)?(?:每个|每种)[^。；，\n]{0,8}(?:不良状态|异常状态)[^。；，\n]{0,20}(?:伤害|威力)[^。；，\n]{0,10}(?:增加|提升|提高|附加)\s*([0-9]+)\s*点|(?:每个|每种)[^。；，\n]{0,8}(?:不良状态|异常状态)[^。；，\n]{0,20}(?:令|使)?(?:对方|敌方|目标)?[^。；，\n]{0,10}(?:受到)?\s*([0-9]+)\s*点伤害/);
+  if (statusCountDamageMatch) {
+    addEffectOnce({ kind: "statusCountBonusDamage", target: "opponent", amountPerStatus: Math.max(1, Math.floor(Number(statusCountDamageMatch[1] || statusCountDamageMatch[2]) || 1)), requireHit: /攻击|命中/.test(desc) });
+  }
+  const targetLevelDamage = desc.match(/(?:伤害|伤害值)[^。；，\n]{0,12}(?:为|是|等于)?[^。；，\n]{0,8}(?:对方|敌方|目标)[^。；，\n]{0,8}等级[^。；，\n]{0,8}(?:的)?\s*([0-9]+(?:\.[0-9]+)?)\s*倍|(?:对方|敌方|目标)[^。；，\n]{0,8}等级[^。；，\n]{0,8}(?:的)?\s*([0-9]+(?:\.[0-9]+)?)\s*倍[^。；，\n]{0,12}(?:伤害|伤害值)/);
+  if (targetLevelDamage) {
+    addEffectOnce({ kind: "fixedDamageByTargetLevel", target: "opponent", factor: Number(targetLevelDamage[1] || targetLevelDamage[2]) || 1 });
+  }
+  const selfLevelDamage = desc.match(/(?:伤害|伤害值)[^。；，\n]{0,12}(?:为|是|等于|=)?[^。；，\n]{0,8}(?:自身|自己|我方)?[^。；，\n]{0,8}等级[^。；，\n]{0,8}[×xX*]\s*([0-9]+(?:\.[0-9]+)?)|(?:自身|自己|我方)?[^。；，\n]{0,8}等级[^。；，\n]{0,8}[×xX*]\s*([0-9]+(?:\.[0-9]+)?)[^。；，\n]{0,12}(?:伤害|伤害值)/);
+  if (selfLevelDamage && !/(?:对方|敌方|目标)[^。；，\n]{0,8}等级/.test(selfLevelDamage[0])) {
+    addEffectOnce({ kind: "fixedDamageBySelfLevel", target: "opponent", factor: Number(selfLevelDamage[1] || selfLevelDamage[2]) || 1 });
+  }
+  const statRatioDamageRules = [
+    { statKey: "atk", re: /(?:自身|自己|我方)[^。；，\n]{0,12}?(?:攻击|普攻|普通攻击)[^。；，\n]{0,12}?(?:与|和|\/)[^。；，\n]{0,12}?(?:对方|敌方|目标|对手)[^。；，\n]{0,12}?(?:攻击|普攻|普通攻击)[^。；，\n]{0,20}?比值越大[\s\S]{0,16}?(?:威力|伤害)[\s\S]{0,4}?(?:越大|越高)/ },
+    { statKey: "spAtk", re: /(?:自身|自己|我方)[^。；，\n]{0,12}?(?:特攻|特功|特殊攻击)[^。；，\n]{0,12}?(?:与|和|\/)[^。；，\n]{0,12}?(?:对方|敌方|目标|对手)[^。；，\n]{0,12}?(?:特攻|特功|特殊攻击)[^。；，\n]{0,20}?比值越大[\s\S]{0,16}?(?:威力|伤害)[\s\S]{0,4}?(?:越大|越高)/ },
+    { statKey: "speed", re: /(?:自身|自己|我方)[^。；，\n]{0,12}?(?:速度)[^。；，\n]{0,12}?(?:与|和|\/)[^。；，\n]{0,12}?(?:对方|敌方|目标|对手)[^。；，\n]{0,12}?(?:速度)[^。；，\n]{0,20}?比值越大[\s\S]{0,16}?(?:威力|伤害)[\s\S]{0,4}?(?:越大|越高)/ },
+    { statKey: "def", re: /(?:自身|自己|我方)[^。；，\n]{0,12}?(?:防御|普防|普通防御)[^。；，\n]{0,12}?(?:与|和|\/)[^。；，\n]{0,12}?(?:对方|敌方|目标|对手)[^。；，\n]{0,12}?(?:防御|普防|普通防御)[^。；，\n]{0,20}?比值越大[\s\S]{0,16}?(?:威力|伤害)[\s\S]{0,4}?(?:越大|越高)/ },
+    { statKey: "spDef", re: /(?:自身|自己|我方)[^。；，\n]{0,12}?(?:特防|特殊防御)[^。；，\n]{0,12}?(?:与|和|\/)[^。；，\n]{0,12}?(?:对方|敌方|目标|对手)[^。；，\n]{0,12}?(?:特防|特殊防御)[^。；，\n]{0,20}?比值越大[\s\S]{0,16}?(?:威力|伤害)[\s\S]{0,4}?(?:越大|越高)/ }
+  ];
+  const statRatioDamageRule = statRatioDamageRules.find((rule) => rule.re.test(desc));
+  if (statRatioDamageRule) {
+    addEffectOnce({ kind: "fixedDamageByStatRatio", target: "opponent", statKey: statRatioDamageRule.statKey, factor: 500 });
+  }
+  const bonusDamageRule = /(?:额外|附加|追加|另加|并附带)[^。；，\n]{0,10}([0-9]+)\s*点(?:固定)?(?:伤害值?|伤害)/g;
+  let bonusDamageMatch = null;
+  while ((bonusDamageMatch = bonusDamageRule.exec(desc))) {
+    addEffectOnce({ kind: "bonusFixedDamage", target: "opponent", amount: Math.max(1, Math.floor(Number(bonusDamageMatch[1]) || 0)), chance: parseChanceNear(desc, bonusDamageMatch.index || 0), requireHit: hasHitGateNear(desc, bonusDamageMatch.index || 0) });
+  }
+  const directFlatDamageRule = /(?:造成|扣除|减少|损失|给予|给)[^。；，\n]{0,14}(?:对方|敌方|目标|对手|对方全体|敌方全体)?[^。；，\n]{0,10}([0-9]+)\s*点(?:固定)?(?:伤害值?|伤害|体力值?|生命值?|HP|hp)|(?:对方|敌方|目标|对手)[^。；，\n]{0,10}(?:受到|承受)[^。；，\n]{0,10}([0-9]+)\s*点(?:固定)?(?:伤害值?|伤害)/g;
+  let directFlatDamageMatch = null;
+  while ((directFlatDamageMatch = directFlatDamageRule.exec(desc))) {
+    const seg = directFlatDamageMatch[0];
+    if (/(每回合|持续|回复|恢复|护盾|PP|pp|反弹|返还|返击|反击|额外|附加|追加|另加|并附带)/.test(seg)) continue;
+    addEffectOnce({ kind: "bonusFixedDamage", target: "opponent", amount: Math.max(1, Math.floor(Number(directFlatDamageMatch[1] || directFlatDamageMatch[2]) || 0)), chance: parseChanceNear(desc, directFlatDamageMatch.index || 0), requireHit: hasHitGateNear(desc, directFlatDamageMatch.index || 0) });
+  }
+  const reflectMatch = desc.match(/(?:反弹|返还|返击|反击)[^。；，\n]{0,24}(?:受到|承受|所受)?[^。；，\n]{0,16}(?:普通攻击|普攻|物理攻击|特殊攻击|特攻|魔攻|攻击)?[^。；，\n]{0,16}(?:伤害|伤害值)[^。；，\n]{0,8}(?:的)?\s*([0-9]+(?:\.[0-9]+)?)\s*倍|(?:受到|承受|所受|本回合受到|本回合承受)[^。；，\n]{0,24}(?:伤害|伤害值)?[^。；，\n]{0,8}(?:的)?\s*([0-9]+(?:\.[0-9]+)?)\s*倍[^。；，\n]{0,16}(?:反弹|返还|返击|反击)|(?:将|把)[^。；，\n]{0,16}(?:受到|承受|所受)[^。；，\n]{0,12}(?:伤害|伤害值)?[^。；，\n]{0,8}([0-9]+(?:\.[0-9]+)?)\s*倍[^。；，\n]{0,16}(?:反弹|返还|返击|反击)|(?:反弹|返还|返击|反击)?[^。；，\n]{0,12}(?:受到|承受|所受)[^。；，\n]{0,14}(?:普通攻击|普攻|物理攻击|特殊攻击|特攻|魔攻|攻击)?[^。；，\n]{0,12}(?:的)?\s*([0-9]+(?:\.[0-9]+)?)\s*倍[^。；，\n]{0,8}(?:伤害|伤害值)[^。；，\n]{0,12}(?:给对方|给对手|反弹|返还|返击|反击)/);
+  if (reflectMatch) {
+    let attackKind = "all";
+    if (/(普通攻击|普攻|物理攻击)/.test(desc) && !/(特殊攻击|特攻|魔攻)/.test(desc)) attackKind = "physical";
+    else if (/(特殊攻击|特攻|魔攻)/.test(desc) && !/(普通攻击|普攻|物理攻击)/.test(desc)) attackKind = "special";
+    addEffectOnce({ kind: "damageReflect", target: "self", attackKind, ratio: Math.max(0.01, Number(reflectMatch[1] || reflectMatch[2] || reflectMatch[3] || reflectMatch[4]) || 1), turns: parseGeneralTurns(desc, /(本回合|当回合)/.test(desc) ? 1 : 3) });
+  }
+  const flatReflectMatch = desc.match(/(?:受到|承受|所受)[^。；，\n]{0,16}(?:攻击|伤害)[^。；，\n]{0,12}(?:则|后|时)?[^。；，\n]{0,12}(?:反弹|返还|返击|反击)[^0-9。；，\n]{0,8}([0-9]+)\s*点(?:伤害|伤害值)?|(?:反弹|返还|返击|反击)[^0-9。；，\n]{0,8}([0-9]+)\s*点(?:伤害|伤害值)?[^。；，\n]{0,12}(?:给对方|给对手|给敌方|伤害给对方|伤害给对手)/);
+  if (flatReflectMatch) {
+    addEffectOnce({ kind: "damageReflectFlat", target: "self", attackKind: "all", amount: Math.max(1, Math.floor(Number(flatReflectMatch[1] || flatReflectMatch[2]) || 1)), turns: parseGeneralTurns(desc, /(本回合|当回合)/.test(desc) ? 1 : 3) });
+  }
+  const flatDrainMatch = desc.match(/每回合[^。；，\n]{0,20}(?:扣除|减少|损失|造成)[^。；，\n]{0,12}(?:对方|敌方|目标|对手)?[^。；，\n]{0,8}([0-9]+)\s*点(?:体力值?|生命值?|HP|hp|伤害值?|伤害)/);
+  if (flatDrainMatch && !/(双方|全场)/.test(flatDrainMatch[0])) {
+    const amount = Math.max(1, Math.floor(Number(flatDrainMatch[1]) || 1));
+    if (/(回复|恢复|吸取)/.test(desc.slice(flatDrainMatch.index || 0, (flatDrainMatch.index || 0) + 50))) {
+      addEffectOnce({ kind: "flatDrain", target: "opponent", amount, turns: parseGeneralTurns(desc, 3), label: name });
+    } else {
+      addEffectOnce({ kind: "lockGodDrain", target: "opponent", flat: amount, turns: parseGeneralTurns(desc, 3), label: name });
+    }
+  }
+  const mutualFlatDrainMatch = desc.match(/(?:双方|全场)[^。；，\n]{0,16}每回合[^。；，\n]{0,16}(?:扣除|减少|损失)[^。；，\n]{0,8}([0-9]+)\s*点(?:体力值?|生命值?|HP|hp|伤害值?|伤害)|每回合[^。；，\n]{0,16}(?:扣除|减少|损失)[^。；，\n]{0,8}(?:双方|全场)[^。；，\n]{0,8}(?:体力值?|生命值?|HP|hp)?\s*([0-9]+)\s*点/);
+  if (mutualFlatDrainMatch) {
+    addEffectOnce({ kind: "mutualEndTurnDamageFlat", target: "both", amount: Math.max(1, Math.floor(Number(mutualFlatDrainMatch[1] || mutualFlatDrainMatch[2]) || 1)), turns: parseGeneralTurns(desc, 3) });
+  }
   if (name === "欢乐之铃") {
     const turns = 5;
     const ratio = clamp(parseRatioFromText(desc, 0.1) || 0.1, 0.03, 1);
@@ -1670,12 +2804,18 @@ const parseSkillEffectsFromDesc = (skill) => {
 
   // 停行动副作用/控制
   // 这里必须精准识别“谁停止行动”，避免把“对方无法替换”误判成“对方无法行动”。
-  if ((desc.includes("停止行动") || desc.includes("无法行动")) && !hasExplicitSelfSkip) {
-    const turnsM = desc.match(/([0-9一二三四五六])\s*回合/);
-    const turns = turnsM ? cnNumToInt(turnsM[1], 1) : 1;
+  const stopHandledByInstantKo = /(秒杀|一击必杀|直接击败|直接死亡|失去战斗能力)[^。；，\n]{0,12}(?:后|成功后|且)?[^。；，\n]{0,12}(?:停止行动|无法行动)|(?:停止行动|无法行动)[^。；，\n]{0,12}(?:秒杀|一击必杀|直接击败|直接死亡|失去战斗能力)/.test(desc);
+  if ((desc.includes("停止行动") || desc.includes("无法行动")) && !hasExplicitSelfSkip && !stopHandledByInstantKo) {
+    const stopIdx = desc.search(/停止行动|无法行动/);
+    const leftStop = stopIdx >= 0 ? Math.max(0, desc.lastIndexOf("，", stopIdx), desc.lastIndexOf("；", stopIdx), desc.lastIndexOf("。", stopIdx), desc.lastIndexOf("\n", stopIdx)) : 0;
+    const rightCandidates = ["，", "；", "。", "\n"].map((mark) => desc.indexOf(mark, stopIdx >= 0 ? stopIdx : 0)).filter((idx) => idx >= 0);
+    const rightStop = rightCandidates.length ? Math.min(...rightCandidates) : desc.length;
+    const stopCtx = stopIdx >= 0 ? desc.slice(leftStop, Math.min(desc.length, rightStop + 1)) : desc;
+    const turnsM = stopCtx.match(/([0-9一二三四五六])\s*(?:~|-|～)\s*([0-9一二三四五六])\s*回合/) || stopCtx.match(/([0-9一二三四五六])\s*回合/);
+    const turns = turnsM ? cnNumToInt(turnsM[2] || turnsM[1], 1) : 1;
     const selfStop = /(?:自身|自己|自身体?|本回合)[^。；，\n]{0,12}(?:停止行动|无法行动)/.test(desc);
     const oppStop = /(?:对方|敌方)[^。；，\n]{0,12}(?:停止行动|无法行动)/.test(desc);
-    let target = "opponent";
+    let target = "self";
     if (selfStop && !oppStop) target = "self";
     else if (!selfStop && oppStop) target = "opponent";
     else if (selfStop && oppStop) {
@@ -1684,8 +2824,20 @@ const parseSkillEffectsFromDesc = (skill) => {
       const oppIdx = desc.search(/(?:对方|敌方)[^。；，\n]{0,12}(?:停止行动|无法行动)/);
       target = (selfIdx >= 0 && (oppIdx < 0 || selfIdx <= oppIdx)) ? "self" : "opponent";
     }
-    add({ kind: "skip", target, turns: Math.max(1, turns) });
+    add({ kind: "skip", target, turns: Math.max(1, turns), chance: parseChanceInText(stopCtx, 1), requireHit: hasHitGateNear(desc, stopIdx >= 0 ? stopIdx : 0) });
   }
+  const ppChangeRules = [
+    { re: /(?:回复|恢复|增加)[^。；，\n]{0,20}(?:自身|自己|我方|我方全体|全体)?[^。；，\n]{0,12}(?:所有技能|全部技能|技能)?\s*PP(?:值)?\s*([0-9]+)\s*点?|(?:回复|恢复|增加)[^。；，\n]{0,20}(?:自身|自己|我方|我方全体|全体)?[^。；，\n]{0,12}([0-9]+)\s*点?\s*PP/gi, target: "self", sign: 1 },
+    { re: /(?:扣除|减少|降低|消耗)[^。；，\n]{0,20}(?:对方|敌方|目标|对手)?[^。；，\n]{0,12}(?:所有技能|全部技能|技能)?\s*PP(?:值)?\s*([0-9]+)\s*点?|(?:扣除|减少|降低|消耗)[^。；，\n]{0,20}(?:对方|敌方|目标|对手)?[^。；，\n]{0,12}([0-9]+)\s*点?\s*PP/gi, target: "opponent", sign: -1 },
+    { re: /(?:扣除|减少|降低|消耗)[^。；，\n]{0,20}(?:自身|自己|我方)?[^。；，\n]{0,12}(?:所有技能|全部技能|技能)?\s*PP(?:值)?\s*([0-9]+)\s*点?|(?:扣除|减少|降低|消耗)[^。；，\n]{0,20}(?:自身|自己|我方)?[^。；，\n]{0,12}([0-9]+)\s*点?\s*PP/gi, target: "self", sign: -1 }
+  ];
+  ppChangeRules.forEach(({ re, target, sign }) => {
+    let pm = null;
+    while ((pm = re.exec(desc))) {
+      const amount = Math.max(1, Math.floor(Number(pm[1] || pm[2]) || 0)) * sign;
+      addEffectOnce({ kind: "ppChange", target, amount, chance: parseChanceNear(desc, pm.index || 0), requireHit: hasHitGateNear(desc, pm.index || 0) });
+    }
+  });
 
   // 自灭类副作用
   if (desc.includes("自身死亡") || desc.includes("自己死亡") || desc.includes("自爆") || desc.includes("濒死") || /牺牲自身|牺牲自己|献祭自己|自我牺牲/.test(desc)) {
@@ -1775,6 +2927,17 @@ const parseSkillEffectsFromDesc = (skill) => {
     return /(受到伤害|受击|每回合|回合后)/.test(ctx);
   };
   const listedStageEffectCount = addListedStageEffects(desc);
+  if (/(?:清除|解除|消除|重置|恢复)[^。；，\n]{0,24}(?:双方|全场)[^。；，\n]{0,18}(?:属性能力等级|属性等级|能力等级)|(?:双方|全场)[^。；，\n]{0,18}(?:属性能力等级|属性等级|能力等级)[^。；，\n]{0,24}(?:清除|解除|消除|重置|恢复)/.test(desc)) {
+    addEffectOnce({ kind: "clearStage", target: "self", mode: "all", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 1 });
+    addEffectOnce({ kind: "clearStage", target: "opponent", mode: "all", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 1 });
+  } else {
+    if (/(?:清除|解除|消除|重置|恢复)[^。；，\n]{0,24}(?:对方|敌方|目标)[^。；，\n]{0,18}(?:属性能力等级|属性等级|能力等级)|(?:对方|敌方|目标)[^。；，\n]{0,18}(?:属性能力等级|属性等级|能力等级)[^。；，\n]{0,24}(?:清除|解除|消除|重置|恢复)/.test(desc)) {
+      addEffectOnce({ kind: "clearStage", target: "opponent", mode: "all", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 1, requireHit: /命中/.test(desc) });
+    }
+    if (/(?:清除|解除|消除|重置|恢复)[^。；，\n]{0,24}(?:自身|自己|我方)[^。；，\n]{0,18}(?:属性能力等级|属性等级|能力等级)|(?:自身|自己|我方)[^。；，\n]{0,18}(?:属性能力等级|属性等级|能力等级)[^。；，\n]{0,24}(?:清除|解除|消除|重置|恢复)/.test(desc)) {
+      addEffectOnce({ kind: "clearStage", target: "self", mode: "all", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 1, requireHit: /命中/.test(desc) });
+    }
+  }
     const stageRule = new RegExp(`(提升|提高|上升|增加|增强|降低|下降|削弱|减少)(自身|自己|我方|敌方|对方)?(?:的)?(?:单体|1体|一体|全体|1只|一只)?(${stageKeywordsPattern}(?:[、,，和与]\\s*${stageKeywordsPattern})*)[^\\d一二三四五六两]*(\\d+|一|二|两|三|四|五|六)级`, "g");
   let sm = null;
   while ((sm = stageRule.exec(desc))) {
@@ -1920,7 +3083,7 @@ const parseSkillEffectsFromDesc = (skill) => {
     const keys = stageTextToKeys(stat);
     if (keys.length > 0) add({ kind: "onDamagedStage", target: "self", applyTo, keys, delta, turns: onDamagedTurns, chance: 1, trigger: "damaged" });
   }
-  if (name === "迷光镜") {
+      if (name === "迷光镜") {
     add({
       kind: "onDamagedStage",
       target: "self",
@@ -1931,6 +3094,22 @@ const parseSkillEffectsFromDesc = (skill) => {
       chance: 1,
       trigger: "damaged"
     });
+  }
+  if (name === "角斗") {
+    add({ kind: "status", target: "opponent", status: "bind", turns: 3, chance: 1, requireHit: true });
+  }
+  const timedStageRule = new RegExp(`每回合(?:结束时|末)?[^。；，\\n]{0,18}(提升|提高|上升|增加|增强|降低|下降|削弱|减少)(自身|自己|我方|对方|敌方|目标)?(?:的)?(?:全场|全体|单体|1体|一体)?(${stageKeywordsPattern}(?:[、,，和与]\\s*${stageKeywordsPattern})*)[^\\d一二三四五六两]*(\\d+|一|二|两|三|四|五|六)级`, "g");
+  let tsm = null;
+  while ((tsm = timedStageRule.exec(desc))) {
+    const op = tsm[1];
+    const sideHint = tsm[2] || "self";
+    const stat = tsm[3];
+    const lv = cnNumToInt(tsm[4], 1);
+    const delta = /提升|提高|上升|增加|增强/.test(op) ? lv : -lv;
+    const target = (sideHint.includes("对方") || sideHint.includes("敌方") || sideHint.includes("目标")) ? "opponent" : "self";
+    const keys = stat.split(/[、,，和与]/g).map((x) => stageTextToKeys(x)).flat().concat(stageTextToKeys(tsm[0]));
+    const uniqKeys = Array.from(new Set(keys));
+    if (uniqKeys.length > 0) addEffectOnce({ kind: "timedStage", target, keys: uniqKeys, delta, turns: parseGeneralTurns(desc, 3) });
   }
   const statusMap = [
     { key: "中毒", status: "poison", turns: 5 },
@@ -1949,7 +3128,6 @@ const parseSkillEffectsFromDesc = (skill) => {
     if (!hasStatusApplyIntent(desc, x.key)) return;
     const m = desc.match(new RegExp(`${x.key}\\s*([0-9一二三四五六])\\s*回合`));
     let turns = m ? cnNumToInt(m[1], x.turns) : x.turns;
-    if (x.status === "sleep" && !m) turns = 1 + Math.floor(Math.random() * 2);
     const selfStatus = new RegExp(`(?:自身|自己|我方)[^。；，\\n]{0,10}${x.key}|${x.key}[^。；，\\n]{0,10}(?:自身|自己|我方)`).test(desc);
     const opponentStatus = new RegExp(`(?:对方|敌方|目标)[^。；，\\n]{0,14}${x.key}|${x.key}[^。；，\\n]{0,14}(?:对方|敌方|目标)`).test(desc);
     const recoverySleep = x.status === "sleep" && (name === "恢复性睡眠" || /睡眠[^。；，\n]{0,18}(?:回复|恢复)|(?:回复|恢复)[^。；，\n]{0,18}睡眠/.test(desc));
@@ -1957,7 +3135,8 @@ const parseSkillEffectsFromDesc = (skill) => {
     const chance = statusChanceFromDesc(desc, x.key, 1);
     add({ kind: "status", target, status: x.status, turns, chance });
   });
-  if ((name === "玄灵甲") || (desc.includes("伤害抗性") && desc.includes("50"))) {
+  const hasHalfDamageReduction = /(受到|承受)[^。；，\n]{0,8}(?:攻击|伤害)?[^。；，\n]{0,8}(?:则|时|后)?[^。；，\n]{0,8}(?:伤害)?减半|(?:伤害抗性|伤害抵抗|抗性)[^。；，\n]{0,12}(?:提升|提高|增加)?[^。；，\n]{0,6}50\s*%/.test(desc);
+  if (name === "玄灵甲" || name === "玄雷甲" || name === "玄王甲" || hasHalfDamageReduction) {
     const turns = parseTurns(3);
     add({ kind: "damageReduction", target: "self", ratio: 0.5, turns });
     // 兜底：仅当通用解析未识别“受击后全属性下降”时再补，避免双触发
@@ -1998,13 +3177,68 @@ const parseSkillEffectsFromDesc = (skill) => {
       Number(e.amount) || 0,
       Number(e.requireHit ? 1 : 0),
       Number(e.chance) || 0,
-      normalize(e.applyTo)
+      normalize(e.applyTo),
+      normalize(e.from),
+      normalize(e.to),
+      normalize(e.mode),
+      normalize(e.attackKind),
+      Number(e.count) || 0,
+      Number(e.multiplier) || 0
     ].join("|");
     if (seen.has(key)) return;
     seen.add(key);
     dedup.push(e);
   });
   return dedup;
+};
+const dedupeSkillEffects = (effects) => {
+  const out = [];
+  const seen = new Set();
+  (Array.isArray(effects) ? effects : []).forEach((e) => {
+    const kind = normalize(e && e.kind);
+    const keyParts = [
+      kind,
+      normalize(e && e.target),
+      Array.isArray(e && e.keys) ? e.keys.map(normalize).sort().join(",") : "",
+      Number(e && e.delta) || 0,
+      normalize(e && e.status),
+      Number(e && e.turns) || 0,
+      Number(e && e.ratio) || 0,
+      normalize(e && e.element),
+      Number(e && e.factor) || 0,
+      Number(e && e.amount) || 0,
+      Number(e && e.chance) || 0,
+      normalize(e && e.applyTo),
+      normalize(e && e.from),
+      normalize(e && e.to),
+      normalize(e && e.mode),
+      normalize(e && e.attackKind),
+      Number(e && e.count) || 0,
+      Number(e && e.power) || 0,
+      Number(e && e.value) || 0,
+      Number(e && e.multiplier) || 0
+    ];
+    if (kind !== "stage" && kind !== "critStage" && kind !== "clearStage") {
+      keyParts.push(Number(e && e.requireHit ? 1 : 0));
+    }
+    const key = keyParts.join("|");
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push(e);
+  });
+  const critStageEffects = out.filter((e) => normalize(e && e.kind) === "critStage");
+  const shouldRemoveStageCritKey = (stageEffect) => critStageEffects.some((critEffect) => (
+    normalize(critEffect && critEffect.target) === normalize(stageEffect && stageEffect.target)
+    && (Number(critEffect && critEffect.delta) || 0) === (Number(stageEffect && stageEffect.delta) || 0)
+    && (Number(critEffect && critEffect.chance) || 0) === (Number(stageEffect && stageEffect.chance) || 0)
+    && Boolean(critEffect && critEffect.requireHit) === Boolean(stageEffect && stageEffect.requireHit)
+  ));
+  return out.map((e) => {
+    if (normalize(e && e.kind) !== "stage") return e;
+    if (!Array.isArray(e.keys) || !e.keys.map(normalize).includes("critStage")) return e;
+    if (!shouldRemoveStageCritKey(e)) return e;
+    return { ...e, keys: e.keys.filter((key) => normalize(key) !== "critStage") };
+  }).filter((e) => normalize(e && e.kind) !== "stage" || (Array.isArray(e.keys) && e.keys.length > 0));
 };
 const parseSkillEffects = (skill) => {
   const manual = manualHardcodedSkillEffects(skill);
@@ -2013,15 +3247,28 @@ const parseSkillEffects = (skill) => {
   const descEffects = parseSkillEffectsFromDesc(skill);
   const hasDiminishingGate = descEffects.some((e) => normalize(e && e.kind) === "diminishingSuccessGate");
   if (hardcoded.length > 0) {
-    return hasDiminishingGate && !hardcoded.some((e) => normalize(e && e.kind) === "diminishingSuccessGate")
+    const effects = hasDiminishingGate && !hardcoded.some((e) => normalize(e && e.kind) === "diminishingSuccessGate")
       ? [{ kind: "diminishingSuccessGate", target: "self" }].concat(cloneSkillEffectList(hardcoded))
       : cloneSkillEffectList(hardcoded);
+    return dedupeSkillEffects(effects);
   }
-  return descEffects;
+  return dedupeSkillEffects(descEffects);
 };
 if (typeof window !== "undefined") {
   window.AOLA_PARSE_SKILL_EFFECTS_FROM_DESC = parseSkillEffectsFromDesc;
 }
+const shouldApplySkillEffectByCondition = (scene, actor, effect) => {
+  if (!scene || !effect) return true;
+  const hpBelow = Number(effect.selfHpBelowRatio);
+  if (Number.isFinite(hpBelow) && hpBelow > 0) {
+    const hpKey = actor === "attacker" ? "attackerHp" : "targetHp";
+    const maxHpKey = actor === "attacker" ? "attackerMaxHp" : "targetMaxHp";
+    const hp = Math.max(0, Number(scene[hpKey]) || 0);
+    const maxHp = Math.max(1, Number(scene[maxHpKey]) || 1);
+    if (!(hp / maxHp < hpBelow)) return false;
+  }
+  return true;
+};
 const applySkillEffects = (scene, actor, skill, didHit) => {
   const effects = parseSkillEffects(skill);
   if (!effects.length) return [];
@@ -2034,6 +3281,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
   let diminishingGateSuccess = true;
   const chanceFailKeys = new Set();
   effects.forEach((e) => {
+    if (!shouldApplySkillEffectByCondition(scene, actor, e)) return;
     if (normalize(e && e.kind) === "diminishingSuccessGate") {
       if (!diminishingGateChecked) {
         const gate = rollDiminishingSkillSuccess(scene, actor, skill);
@@ -2049,7 +3297,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       logs.push(`${targetName}对${skill.name}的特殊效果免疫。`);
       return;
     }
-    if (!didHit && (e.kind === "status" || e.kind === "stage") && e.target === "opponent") return;
+    if (!didHit) return;
     if (e.kind === "elementShelter") {
       const side = sideByTarget(e.target || "self");
       getSideState(scene, side).elementShelter = true;
@@ -2065,13 +3313,15 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
         if (failKey) chanceFailKeys.add(failKey);
         return;
       }
-      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
-      const changed = applyStageDelta(scene, side, e.keys, e.delta);
-      if (changed.length > 0) {
-        const who = side === "attacker" ? scene.attackerName : scene.targetName;
-        const act = e.delta > 0 ? "提升" : "降低";
-        logs.push(`${who}${act}${Math.abs(e.delta)}级：${changed.map((k) => battleStatLabel(k)).join("、")}${chance < 1 ? `（概率${Math.round(chance * 100)}%）` : ""}`);
-      }
+      const sides = e.target === "both" ? ["attacker", "target"] : [e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker")];
+      sides.forEach((side) => {
+        const changed = applyStageDelta(scene, side, e.keys, e.delta);
+        if (changed.length > 0) {
+          const who = side === "attacker" ? scene.attackerName : scene.targetName;
+          const act = e.delta > 0 ? "提升" : "降低";
+          logs.push(`${who}${act}${Math.abs(e.delta)}级：${changed.map((k) => battleStatLabel(k)).join("、")}${chance < 1 ? `（概率${Math.round(chance * 100)}%）` : ""}`);
+        }
+      });
       return;
     }
     if (e.kind === "clearStage") {
@@ -2099,6 +3349,44 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
         const toWho = toSide === "attacker" ? scene.attackerName : scene.targetName;
         const fromWho = fromSide === "attacker" ? scene.attackerName : scene.targetName;
         logs.push(`${toWho}复制了${fromWho}提升的能力等级：${changed.map((k) => battleStatLabel(k)).join("、")}${chance < 1 ? `（概率${Math.round(chance * 100)}%）` : ""}`);
+        if (e.clearStageOnCopySuccess) {
+          const cleared = clearStageByMode(scene, fromSide, "positive", e.keys);
+          if (cleared.length > 0) logs.push(`${fromWho}被清除了提升的能力等级：${cleared.map((k) => battleStatLabel(k)).join("、")}`);
+        }
+      }
+      return;
+    }
+    if (e.kind === "transferStage") {
+      if (e.requireHit && !didHit) return;
+      const chance = clamp(Number(e.chance) || 1, 0, 1);
+      if (Math.random() > chance) return;
+      const fromSide = e.from === "opponent" ? (actor === "attacker" ? "target" : "attacker") : actor;
+      const toSide = e.to === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const mode = normalize(e.mode) || "negative";
+      const changed = transferStagesByMode(scene, fromSide, toSide, mode, e.keys);
+      if (changed.length > 0) {
+        const fromWho = fromSide === "attacker" ? scene.attackerName : scene.targetName;
+        const toWho = toSide === "attacker" ? scene.attackerName : scene.targetName;
+        const label = mode === "positive" ? "增益能力等级" : (mode === "all" ? "能力等级" : "减益能力等级");
+        logs.push(`${fromWho}将${label}转移给${toWho}：${changed.map((k) => battleStatLabel(k)).join("、")}${chance < 1 ? `（概率${Math.round(chance * 100)}%）` : ""}`);
+        if (e.clearStageOnTransferSuccess) {
+          const cleared = clearStageByMode(scene, fromSide, mode, e.keys);
+          if (cleared.length > 0) logs.push(`${fromWho}被清除了${label}：${cleared.map((k) => battleStatLabel(k)).join("、")}`);
+        }
+      }
+      return;
+    }
+    if (e.kind === "transferStatus") {
+      if (e.requireHit && !didHit) return;
+      const chance = clamp(Number(e.chance) || 1, 0, 1);
+      if (Math.random() > chance) return;
+      const fromSide = e.from === "opponent" ? (actor === "attacker" ? "target" : "attacker") : actor;
+      const toSide = e.to === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const changed = transferStatusesByMode(scene, fromSide, toSide, e.status || "all");
+      if (changed.length > 0) {
+        const fromWho = fromSide === "attacker" ? scene.attackerName : scene.targetName;
+        const toWho = toSide === "attacker" ? scene.attackerName : scene.targetName;
+        logs.push(`${fromWho}将异常状态转移给${toWho}：${changed.map((s) => statusLabel(s)).join("、")}${chance < 1 ? `（概率${Math.round(chance * 100)}%）` : ""}`);
       }
       return;
     }
@@ -2110,6 +3398,42 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       if (changed.length > 0) {
         logs.push(`${actorName}与${targetName}交换了能力等级：${changed.map((k) => battleStatLabel(k)).join("、")}${chance < 1 ? `（概率${Math.round(chance * 100)}%）` : ""}`);
       }
+      return;
+    }
+    if (e.kind === "swapStagePairs") {
+      if (e.requireHit && !didHit) return;
+      const chance = clamp(Number(e.chance) || 1, 0, 1);
+      if (Math.random() > chance) return;
+      const side = sideByTarget(e.target || "self");
+      const pairs = Array.isArray(e.pairs) ? e.pairs : [];
+      const state = getSideState(scene, side);
+      const snapshot = {};
+      ALL_ABILITY_STAGE_KEYS.forEach((k) => {
+        snapshot[k] = k === "critStage" ? (Number(state.critStage) || 0) : (Number(state.stages[k]) || 0);
+      });
+      pairs.forEach((pair) => {
+        const a = normalize(pair && pair[0]);
+        const b = normalize(pair && pair[1]);
+        if (!ALL_ABILITY_STAGE_KEYS.includes(a) || !ALL_ABILITY_STAGE_KEYS.includes(b)) return;
+        const temp = snapshot[a];
+        snapshot[a] = snapshot[b];
+        snapshot[b] = temp;
+      });
+      const changed = applyBattleStagesSnapshot(scene, side, snapshot);
+      if (changed.length > 0) {
+        const who = side === "attacker" ? scene.attackerName : scene.targetName;
+        logs.push(`${who}交换了自身能力等级：${changed.map((k) => battleStatLabel(k)).join("、")}${chance < 1 ? `（概率${Math.round(chance * 100)}%）` : ""}`);
+      }
+      return;
+    }
+    if (e.kind === "skillSealChance") {
+      if (e.requireHit && !didHit) return;
+      const chance = clamp(Number(e.chance) || 0, 0, 1);
+      const side = sideByTarget(e.target || "opponent");
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      addTimedEffect(scene, side, { kind: "skillSealChance", turns, data: { chance } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}受到冰封禁制影响，${Math.round(chance * 100)}%概率在${turns}回合内无法使用技能。`);
       return;
     }
     if (e.kind === "ppChange") {
@@ -2153,7 +3477,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       const before = Math.max(0, Number(scene[hpKey]) || 0);
       scene[hpKey] = Math.max(0, before - amount);
       const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
-      if (side === "attacker") applyBattleDamageToActivePet(scene);
+      if (side === "attacker") syncActivePetFromBattleScene(scene);
       syncBattleUiHpForSide(scene, side);
       if (side === "attacker") scene.damageOnAttacker = `-${actual}`;
       else scene.damageOnTarget = `-${actual}`;
@@ -2178,8 +3502,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       scene[actorHpKey] = clamp((Number(scene[actorHpKey]) || 0) + healed, 0, Number(scene[actorMaxHpKey]) || 0);
       syncBattleUiHpForSide(scene, actor);
       if (actor === "attacker") {
-        const idx = Array.isArray(scene.team) ? scene.team.findIndex((u) => u && u.id === scene.currentAttackerId) : -1;
-        if (idx >= 0) scene.team[idx].hp = scene.attackerHp;
+        syncActivePetFromBattleScene(scene);
       }
       if (side === "attacker") scene.damageOnAttacker = `-${actual}`;
       else scene.damageOnTarget = `-${actual}`;
@@ -2220,8 +3543,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       syncBattleUiHpForSide(scene, actor);
       syncBattleUiHpForSide(scene, side);
       if (actor === "attacker") {
-        const idx = Array.isArray(scene.team) ? scene.team.findIndex((u) => u && u.id === scene.currentAttackerId) : -1;
-        if (idx >= 0) scene.team[idx].hp = scene.attackerHp;
+        syncActivePetFromBattleScene(scene);
       }
       if (beforeA > avg) clearSleepAfterDamage(scene, actor);
       if (beforeB > avg) clearSleepAfterDamage(scene, side);
@@ -2243,14 +3565,42 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
         logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}免疫异常状态。`);
         return;
       }
+      if (hasStatusShield(scene, side)) {
+        logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}的异常免疫生效。`);
+        return;
+      }
       const chance = clamp(Number(e.chance) || 1, 0, 1);
       if (Math.random() > chance) return;
-      const options = ["poison", "burn", "sleep", "paralyze", "freeze", "confuse", "fear"].filter((s) => !isStatusImmuneByElement(scene, side, s));
+      let options = ["poison", "burn", "sleep", "paralyze", "freeze", "confuse", "fear"].filter((s) => !isStatusImmuneByElement(scene, side, s));
       if (options.length === 0) return;
-      const status = options[Math.floor(Math.random() * options.length)];
       const st = getSideState(scene, side);
-      st.statuses[status] = Math.max(st.statuses[status], Math.max(1, Math.floor(Number(e.turns) || 3)));
-      logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}陷入${statusLabel(status)}${st.statuses[status]}回合。`);
+      const count = Math.max(1, Math.floor(Number(e.count) || 1));
+      const applied = [];
+      for (let i = 0; i < count && options.length > 0; i += 1) {
+        const idx = Math.floor(Math.random() * options.length);
+        const status = options.splice(idx, 1)[0];
+        st.statuses[status] = Math.max(st.statuses[status], Math.max(1, Math.floor(Number(e.turns) || 3)));
+        applied.push(status);
+      }
+      if (applied.length > 0) logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}陷入${applied.map((s) => statusLabel(s)).join("、")}状态。`);
+      return;
+    }
+    if (e.kind === "instantKo") {
+      if (e.requireHit && !didHit) return;
+      const chance = clamp(Number(e.chance) || 1, 0, 1);
+      if (Math.random() > chance) return;
+      const side = sideByTarget(e.target || "opponent");
+      if (applyInstantKoToSide(scene, side)) {
+        const damageValue = Math.max(1, Math.floor(Number(e.damageValue) || 999999));
+        showBattleInstantKoDamage(scene, side, damageValue);
+        logs.push(`${skill.name}秒杀成功，对${side === "attacker" ? scene.attackerName : scene.targetName}造成 ${damageValue} 点伤害${chance < 1 ? `（概率${Math.round(chance * 100)}%）` : ""}。`);
+        if (Number(e.stopSelfOnSuccess) > 0) {
+          const actorState = getSideState(scene, actor);
+          actorState.skipTurns = Math.max(actorState.skipTurns, Math.floor(Number(e.stopSelfOnSuccess) || 1));
+          logs.push(`${actorName}因${skill.name}命中效果，下回合停止行动。`);
+        }
+        scene.forceDefeatSide = side;
+      }
       return;
     }
     if (e.kind === "destinyBond") {
@@ -2270,6 +3620,10 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
         logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}因系别免疫${statusLabel(e.status)}。`);
         return;
       }
+      if (hasStatusShield(scene, side, e.status)) {
+        logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}的异常免疫生效。`);
+        return;
+      }
       const chance = clamp(Number(e.chance) || 1, 0, 1);
       if (Math.random() > chance) return;
       const st = getSideState(scene, side);
@@ -2277,7 +3631,12 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
         st.statuses.sleep = 0;
         logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}因扣血类状态解除睡眠。`);
       }
-      st.statuses[e.status] = Math.max(st.statuses[e.status], Math.max(1, Math.floor(Number(e.turns) || 1)));
+      const minTurns = Math.max(1, Math.floor(Number(e.minTurns) || 0));
+      const maxTurns = Math.max(minTurns, Math.floor(Number(e.maxTurns) || 0));
+      const turns = maxTurns > 0
+        ? (minTurns + Math.floor(Math.random() * (maxTurns - minTurns + 1)))
+        : Math.max(1, Math.floor(Number(e.turns) || 1));
+      st.statuses[e.status] = Math.max(st.statuses[e.status], turns);
       if (e.status === "sleep" && clearSleepIfDamageStatusExists(st)) {
         logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}已有扣血类状态，睡眠被解除。`);
       }
@@ -2294,6 +3653,14 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       const chance = clamp(Number(e.chance) || 1, 0, 1);
       if (Math.random() > chance) return;
       const st = getSideState(scene, side);
+      if (normalize(e.status) === "all") {
+        const cleared = Object.keys(st.statuses || {}).filter((key) => Math.max(0, Number(st.statuses[key]) || 0) > 0);
+        if (cleared.length <= 0) return;
+        cleared.forEach((key) => { st.statuses[key] = 0; });
+        const who = side === "attacker" ? scene.attackerName : scene.targetName;
+        logs.push(`${who}解除了所有异常状态${chance < 1 ? `（概率${Math.round(chance * 100)}%）` : ""}`);
+        return;
+      }
       const prev = Math.max(0, Number(st.statuses[e.status]) || 0);
       if (prev <= 0) return;
       st.statuses[e.status] = 0;
@@ -2320,11 +3687,13 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       return;
     }
     if (e.kind === "skip") {
+      const chance = clamp(Number(e.chance) || 1, 0, 1);
+      if (Math.random() > chance) return;
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
       const st = getSideState(scene, side);
       st.skipTurns = Math.max(st.skipTurns, Math.max(1, Math.floor(Number(e.turns) || 1)));
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
-      logs.push(`${who}将停止行动${st.skipTurns}回合`);
+      logs.push(`${who}将停止行动${st.skipTurns}回合${chance < 1 ? `（概率${Math.round(chance * 100)}%）` : ""}`);
       return;
     }
     if (e.kind === "heal") {
@@ -2339,8 +3708,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       else scene.healOnTarget = `+${shownHeal}`;
       markBattleFloatText(scene);
       if (side === "attacker" && Array.isArray(scene.team)) {
-        const idx = scene.team.findIndex((u) => u.id === scene.currentAttackerId);
-        if (idx >= 0) scene.team[idx].hp = clamp(Number(scene.attackerHp) || 0, 0, scene.team[idx].maxHp);
+        syncActivePetFromBattleScene(scene);
       }
       logs.push(`${who}回复了 ${shownHeal} 点体力（实际恢复 ${healed}）`);
       return;
@@ -2354,7 +3722,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       const before = Math.max(0, Number(scene[hpKey]) || 0);
       scene[hpKey] = Math.max(0, before - amount);
       const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
-      if (side === "attacker") applyBattleDamageToActivePet(scene);
+      if (side === "attacker") syncActivePetFromBattleScene(scene);
       syncBattleUiHpForSide(scene, side);
       if (side === "attacker") scene.damageOnAttacker = `-${actual}`;
       else scene.damageOnTarget = `-${actual}`;
@@ -2436,8 +3804,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       const healed = Math.max(0, (Number(scene[hpKey]) || 0) - before);
       syncBattleUiHpForSide(scene, side);
       if (side === "attacker" && Array.isArray(scene.team)) {
-        const idx = scene.team.findIndex((u) => u.id === scene.currentAttackerId);
-        if (idx >= 0) scene.team[idx].hp = clamp(Number(scene.attackerHp) || 0, 0, scene.team[idx].maxHp);
+        syncActivePetFromBattleScene(scene);
       }
       queueAfterDamageFloat(scene, () => {
         if (!scene || scene.ended) return;
@@ -2462,7 +3829,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       scene[hpKey] = Math.max(0, before - recoil);
       const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
       if (side === "attacker") {
-        applyBattleDamageToActivePet(scene);
+        syncActivePetFromBattleScene(scene);
       }
       queueAfterDamageFloat(scene, () => {
         if (!scene || scene.ended) return;
@@ -2486,11 +3853,10 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       const before = Number(scene[hpKey]) || 0;
       scene[hpKey] = Math.max(0, before - recoil);
       const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
-      if (side === "attacker") applyBattleDamageToActivePet(scene);
+      if (side === "attacker") syncActivePetFromBattleScene(scene);
       syncBattleUiHpForSide(scene, side);
       if (side === "attacker") {
-        const idx = Array.isArray(scene.team) ? scene.team.findIndex((u) => u && u.id === scene.currentAttackerId) : -1;
-        if (idx >= 0) scene.team[idx].hp = scene.attackerHp;
+        syncActivePetFromBattleScene(scene);
       }
       if (side === "attacker") scene.damageOnAttacker = `-${recoil}`;
       else scene.damageOnTarget = `-${recoil}`;
@@ -2532,6 +3898,17 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       logs.push(`${who}获得减伤${Math.round((Number(e.ratio) || 0) * 100)}%，持续${e.turns}回合`);
       return;
     }
+    if (e.kind === "typedDamageReduction") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      const ratio = clamp(Number(e.ratio) || 0, 0.01, 0.95);
+      const attackKind = normalize(e.attackKind) || "all";
+      addTimedEffect(scene, side, { kind: "typedDamageReduction", turns, data: { ratio, attackKind } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      const attackLabel = attackKind === "physical" ? "普通攻击" : (attackKind === "special" ? "特殊攻击" : "攻击");
+      logs.push(`${who}获得${attackLabel}减伤${Math.round(ratio * 100)}%，持续${turns}回合`);
+      return;
+    }
     if (e.kind === "damageBoost") {
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
       const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
@@ -2548,6 +3925,73 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       addTimedEffect(scene, side, { kind: "damageShield", turns, data: { amount } });
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       logs.push(`${who}获得银光护盾，每回合抵抗${amount}点伤害，持续${turns}回合`);
+      return;
+    }
+    if (e.kind === "turnSequenceAttack") {
+      const totalTurns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      if (totalTurns <= 1) return;
+      const targetSide = sideByTarget(e.target || "opponent");
+      addTimedEffect(scene, actor, {
+        kind: "turnSequenceAttack",
+        turns: totalTurns - 1,
+        data: {
+          targetSide,
+          initialPower: Math.max(1, Number(skill.power) || 1),
+          skill: {
+            name: skill.name,
+            type: skill.type,
+            power: Math.max(1, Number(skill.power) || 1),
+            accuracy: skill.accuracy,
+            attackTypeCode: skill.attackTypeCode,
+            attackTypeLabel: skill.attackTypeLabel
+          },
+          powerFactor: Math.max(1, Number(e.powerMultiplier) || 2),
+          powerMultiplier: Math.max(1, Number(e.powerMultiplier) || 2),
+          powerAdd: Math.max(0, Math.floor(Number(e.powerAdd) || 0)),
+          elementShelterMultiplier: Math.max(1, Number(e.elementShelterMultiplier) || 1),
+          resetOnFail: Boolean(e.resetOnFail),
+          keepOnMiss: Boolean(e.keepOnMiss),
+          doneTurns: 1
+        }
+      });
+      logs.push(`${actorName}发动${skill.name}，接下来${totalTurns - 1}回合将自动继续使用该技能。`);
+      return;
+    }
+    if (e.kind === "damageShieldByDamage") {
+      if (!didHit) return;
+      const baseDamage = Math.max(0, Number(scene.lastDamage) || 0);
+      if (baseDamage <= 0) return;
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      const ratio = clamp(Number(e.ratio) || 0, 0.01, 3);
+      const amount = Math.max(1, Math.floor(baseDamage * ratio));
+      addTimedEffect(scene, side, { kind: "damageShieldByDamage", turns, data: { amount } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}将本次伤害的${Math.round(ratio * 100)}%转化为护盾，可抵抗${amount}点伤害，持续${turns}回合`);
+      return;
+    }
+    if (e.kind === "timedStage") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      const keys = Array.isArray(e.keys) ? e.keys.slice() : [];
+      const delta = Math.floor(Number(e.delta) || 0);
+      if (keys.length <= 0 || delta === 0) return;
+      addTimedEffect(scene, side, { kind: "timedStage", turns, data: { keys, delta } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}获得每回合${delta > 0 ? "提升" : "降低"}能力等级效果，持续${turns}回合`);
+      return;
+    }
+    if (e.kind === "endTurnStageAndStatusChance") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      const keys = Array.isArray(e.keys) ? e.keys.slice() : [];
+      const delta = Math.floor(Number(e.delta) || 0);
+      const chance = clamp(Number(e.chance) || 0, 0, 1);
+      const status = normalize(e.status);
+      const statusTurns = Math.max(1, Math.floor(Number(e.statusTurns) || 1));
+      addTimedEffect(scene, side, { kind: "endTurnStageAndStatusChance", turns, data: { keys, delta, chance, status, statusTurns } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}获得回合末概率强化效果，持续${turns}回合`);
       return;
     }
     if (e.kind === "lastStand") {
@@ -2573,6 +4017,16 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       logs.push(`${who}获得回合结束回复效果：回复${amount}点体力，持续${turns}回合`);
       return;
     }
+    if (e.kind === "endTurnHealByLostHp") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const lostAdd = Math.max(0, Math.floor(Number(e.lostAdd) || 0));
+      const multiplier = Math.max(1, Math.floor(Number(e.multiplier) || 1));
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      addTimedEffect(scene, side, { kind: "endTurnHealByLostHp", turns, data: { lostAdd, multiplier } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}获得战魂回血效果，持续${turns}回合`);
+      return;
+    }
     if (e.kind === "attackImmunity") {
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
       const attackKind = normalize(e.attackKind) || "all";
@@ -2581,6 +4035,35 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       const attackLabel = attackKind === "physical" ? "普通攻击" : (attackKind === "special" ? "特殊攻击" : "攻击");
       logs.push(`${who}获得${Math.round(chance * 100)}%概率免受${attackLabel}伤害，持续${e.turns}回合`);
+      return;
+    }
+    if (e.kind === "damageReflect") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      const attackKind = normalize(e.attackKind) || "all";
+      const ratio = Math.max(0.01, Number(e.ratio) || 1);
+      addTimedEffect(scene, side, { kind: "damageReflect", turns, data: { attackKind, ratio } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      const attackLabel = attackKind === "physical" ? "普通攻击" : (attackKind === "special" ? "特殊攻击" : "攻击");
+      logs.push(`${who}获得${attackLabel}伤害反弹效果，持续${turns}回合`);
+      return;
+    }
+    if (e.kind === "damageReflectFlat") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      const attackKind = normalize(e.attackKind) || "all";
+      const amount = Math.max(1, Math.floor(Number(e.amount) || 1));
+      addTimedEffect(scene, side, { kind: "damageReflectFlat", turns, data: { attackKind, amount } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}获得固定伤害反弹效果，持续${turns}回合`);
+      return;
+    }
+    if (e.kind === "statusShield") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      addTimedEffect(scene, side, { kind: "statusShield", turns, data: { status: normalize(e.status) || "all" } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}获得异常状态免疫，持续${turns}回合`);
       return;
     }
     if (e.kind === "diminishingAttackImmunity") {
@@ -2611,12 +4094,24 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       return;
     }
     if (e.kind === "stageGuard") {
+      if (e.requireHit && !didHit) return;
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
       const mode = normalize(e.mode) || "debuff";
       addTimedEffect(scene, side, { kind: "stageGuard", turns: e.turns, data: { mode } });
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       const label = mode === "buff" ? "提升" : (mode === "all" ? "变化" : "削弱");
       logs.push(`${who}获得能力等级保护，属性能力等级不会被${label}，持续${e.turns}回合`);
+      return;
+    }
+    if (e.kind === "mirrorOpponentStageBoost") {
+      if (e.requireHit && !didHit) return;
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      const multiplier = Math.max(1, Math.floor(Number(e.multiplier) || 1));
+      addTimedEffect(scene, side, { kind: "mirrorOpponentStageBoost", turns, data: { multiplier } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      const action = multiplier > 1 ? "翻倍同步对方提升的能力等级" : "同步对方提升的能力等级";
+      logs.push(`${who}获得${action}效果，持续${turns}回合`);
       return;
     }
     if (e.kind === "onDamagedAllStatDown") {
@@ -2626,11 +4121,14 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       logs.push(`${who}获得受击反制效果，持续${e.turns}回合`);
       return;
     }
-    if (e.kind === "onDamagedStage") {
+    if (e.kind === "onDamagedStage" || e.kind === "onDamagedStatus") {
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
       addOnDamagedEffect(scene, side, {
+        kind: e.kind === "onDamagedStatus" ? "status" : "stage",
         turns: e.turns,
         chance: e.chance,
+        status: e.status,
+        statusTurns: e.statusTurns,
         keys: Array.isArray(e.keys) ? e.keys.slice() : [],
         delta: Number(e.delta) || 0,
         applyTo: normalize(e.applyTo) === "self" ? "self" : "attacker",
@@ -2668,6 +4166,27 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       if (idx >= 0) scene.globalTimedEffects[idx] = next;
       else scene.globalTimedEffects.push(next);
       logs.push(`全场${e.element}技能威力调整为${Math.round((Number(e.factor) || 1) * 100)}%，持续${e.turns}回合`);
+      return;
+    }
+    if (e.kind === "elementDamageReduction") {
+      const side = sideByTarget(e.target || "self");
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      const ratio = clamp(Number(e.ratio) || 0.5, 0, 0.95);
+      const element = normalizeElementName(e.element) || "all";
+      addTimedEffect(scene, side, { kind: "elementDamageReduction", turns, data: { element, ratio } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      const label = element === "all" ? "受到的技能伤害" : `受到的${element}系攻击伤害`;
+      logs.push(`${who}${label}降低${Math.round(ratio * 100)}%，持续${turns}回合`);
+      return;
+    }
+    if (e.kind === "elementChange") {
+      const side = sideByTarget(e.target || "self");
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      const element = normalizeElementName(e.element);
+      if (!element) return;
+      addTimedEffect(scene, side, { kind: "elementChange", turns, data: { element } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      logs.push(`${who}临时变为${element}系，持续${turns}回合`);
       return;
     }
     if (e.kind === "mutualEndTurnDamageFlat") {
@@ -2769,10 +4288,24 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
       const st = getSideState(scene, side);
       const maxStacks = Math.max(1, Math.floor(Number(e.maxStacks) || 5));
-      st.dragonBaseBoostStacks = clamp(Math.floor(Number(st.dragonBaseBoostStacks) || 0) + 1, 0, maxStacks);
-      const changed = applyStageDelta(scene, side, ["atk", "def", "spAtk", "spDef", "speed"], 1);
-      logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}获得龙腾四海强化（${st.dragonBaseBoostStacks}/${maxStacks}）。`);
-      if (changed.length > 0) logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}提升1级：${changed.map((k) => battleStatLabel(k)).join("、")}`);
+      const currentStacks = clamp(Math.floor(Number(st.dragonBaseBoostStacks) || 0), 0, maxStacks);
+      if (currentStacks >= maxStacks) {
+        logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}的龙腾四海强化已达到上限（${maxStacks}/${maxStacks}）。`);
+        return;
+      }
+      st.dragonBaseBoostStacks = currentStacks + 1;
+      if (!st.baseBoost || typeof st.baseBoost !== "object") st.baseBoost = { atk: 0, def: 0, spAtk: 0, spDef: 0, speed: 0 };
+      const ability = side === "attacker" ? scene.attackerAbility : scene.targetAbility;
+      const ratio = Math.max(0.01, Number(e.ratio) || 0.1);
+      const keys = ["atk", "def", "spAtk", "spDef", "speed"];
+      const changed = [];
+      keys.forEach((key) => {
+        const base = Math.max(1, Number(ability && ability[key]) || 1);
+        const add = Math.max(1, Math.floor(base * ratio));
+        st.baseBoost[key] = Math.max(0, Math.floor(Number(st.baseBoost[key]) || 0) + add);
+        changed.push(`${battleStatLabel(key)}+${add}`);
+      });
+      logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}获得龙腾四海基础数值强化（${st.dragonBaseBoostStacks}/${maxStacks}）：${changed.join("、")}。`);
     }
   });
   if (logs.length > 0) {
@@ -2789,6 +4322,17 @@ const runOnDamagedEffects = (scene, damagedSide, attackerSide, options = {}) => 
     if (trigger === "attacked" && reason !== "attacked") return;
     if (trigger === "damaged" && reason !== "damaged") return;
     if (Math.random() > (Number(e.chance) || 0)) return;
+    if (normalize(e.kind) === "status") {
+      const status = normalize(e.status);
+      if (!status) return;
+      const appliedSide = normalize(e.applyTo) === "self" ? damagedSide : attackerSide;
+      const targetState = getSideState(scene, appliedSide);
+      targetState.statuses[status] = Math.max(targetState.statuses[status] || 0, Math.max(1, Math.floor(Number(e.statusTurns) || 1)));
+      const owner = damagedSide === "attacker" ? scene.attackerName : scene.targetName;
+      const victim = appliedSide === "attacker" ? scene.attackerName : scene.targetName;
+      pushBattleLog(scene, `${owner}触发反制效果，${victim}陷入${statusLabel(status)}${targetState.statuses[status]}回合`);
+      return;
+    }
     let changed = [];
     let appliedSide = attackerSide;
     if (Array.isArray(e.keys) && e.keys.length > 0 && Number(e.delta) !== 0) {
@@ -2818,6 +4362,13 @@ const beforeActionCheck = (scene, side) => {
     state.skipTurns -= 1;
     return { canAct: false, log: `${actorName}本回合无法行动。` };
   }
+  const seal = (state.timedEffects || []).find((e) => normalize(e && e.kind) === "skillSealChance" && Math.max(0, Number(e && e.turns) || 0) > 0);
+  if (seal) {
+    const chance = clamp(Number(seal.data && seal.data.chance) || 0, 0, 1);
+    if (Math.random() <= chance) {
+      return { canAct: false, log: `${actorName}受冰封禁制影响，本回合无法使用技能。` };
+    }
+  }
   if (state.statuses.sleep > 0) {
     state.statuses.sleep -= 1;
     return { canAct: false, log: `${actorName}陷入睡眠，无法行动。` };
@@ -2839,6 +4390,9 @@ const clearSleepAfterDamage = (scene, side) => {
   pushBattleLog(scene, `${actorName}受到伤害，睡眠解除。`);
   return true;
 };
+const applyTurnSequenceAttackEffects = (scene, side) => {
+  return 0;
+};
 const applyEndTurnStatus = (scene, side) => {
   const state = getSideState(scene, side);
   const actorName = side === "attacker" ? scene.attackerName : scene.targetName;
@@ -2852,9 +4406,20 @@ const applyEndTurnStatus = (scene, side) => {
   let totalHealSelf = 0;
   let totalHealOpp = 0;
   let damageStatusTriggered = false;
+  const triggeredStatuses = [];
   const maxHp = Math.max(1, Number(scene[maxHpKey]) || 1);
+  applyTurnSequenceAttackEffects(scene, side);
+  ["sleep", "paralyze", "confuse", "fear"].forEach((status) => {
+    if (Math.max(0, Number(state.statuses[status]) || 0) > 0) {
+      triggeredStatuses.push({ status, label: STATUS_LABEL_MAP[status] || status });
+    }
+  });
+  if (state.statuses.confuse > 0) {
+    state.statuses.confuse = Math.max(0, Number(state.statuses.confuse) - 1);
+  }
   const applyDot = (status, ratio, label) => {
     if (state.statuses[status] <= 0) return 0;
+    triggeredStatuses.push({ status, label });
     const dmg = Math.max(1, Math.floor(maxHp * ratio));
     const actual = Math.min(dmg, Math.max(0, Number(scene[hpKey]) || 0));
     scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - dmg);
@@ -2882,6 +4447,7 @@ const applyEndTurnStatus = (scene, side) => {
     applyDot("weak", ratios[elapsed] || 0.07, "衰弱");
   }
   if (state.statuses.leech > 0) {
+    triggeredStatuses.push({ status: "leech", label: "寄生" });
     const dmg = Math.max(1, Math.floor(maxHp * 0.1));
     const actual = Math.min(dmg, Math.max(0, Number(scene[hpKey]) || 0));
     scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - dmg);
@@ -2919,6 +4485,20 @@ const applyEndTurnStatus = (scene, side) => {
     if (actual > 0) {
       totalHealSelf += actual;
       pushBattleLog(scene, `${actorName}回合结束回复 ${actual}`);
+    }
+  });
+  (state.timedEffects || []).forEach((e) => {
+    if (normalize(e.kind) !== "endTurnHealByLostHp") return;
+    const maxHp = Math.max(1, Number(scene[maxHpKey]) || 1);
+    const hp = Math.max(0, Number(scene[hpKey]) || 0);
+    const lostHp = Math.max(0, maxHp - hp);
+    const lostAdd = Math.max(0, Math.floor(Number(e.data && e.data.lostAdd) || 0));
+    const multiplier = Math.max(1, Math.floor(Number(e.data && e.data.multiplier) || 1));
+    const amount = Math.max(1, Math.floor(((lostHp + lostAdd) / maxHp) * multiplier));
+    const { actual } = healSideByFlatAmount(scene, side, amount);
+    if (actual > 0) {
+      totalHealSelf += actual;
+      pushBattleLog(scene, `${actorName}上古战魂回复 ${actual}`);
     }
   });
   (state.timedEffects || []).forEach((e) => {
@@ -2981,6 +4561,34 @@ const applyEndTurnStatus = (scene, side) => {
     if (actual > 0) damageStatusTriggered = true;
     pushBattleLog(scene, `${label}：${actorName}受到${actual}点伤害。`);
   });
+  (state.timedEffects || []).forEach((e) => {
+    if (normalize(e.kind) !== "timedStage") return;
+    const d = e && e.data ? e.data : {};
+    const keys = Array.isArray(d.keys) ? d.keys : [];
+    const delta = Math.floor(Number(d.delta) || 0);
+    if (keys.length <= 0 || delta === 0) return;
+    const changed = applyStageDelta(scene, side, keys, delta);
+    if (changed.length <= 0) return;
+    pushBattleLog(scene, `${actorName}持续${delta > 0 ? "提升" : "降低"}${Math.abs(delta)}级：${changed.map((k) => battleStatLabel(k)).join("、")}`);
+  });
+  (state.timedEffects || []).forEach((e) => {
+    if (normalize(e.kind) !== "endTurnStageAndStatusChance") return;
+    const d = e && e.data ? e.data : {};
+    const chance = clamp(Number(d.chance) || 0, 0, 1);
+    if (Math.random() > chance) return;
+    const keys = Array.isArray(d.keys) ? d.keys : [];
+    const delta = Math.floor(Number(d.delta) || 0);
+    const changed = keys.length > 0 && delta !== 0 ? applyStageDelta(scene, side, keys, delta) : [];
+    const status = normalize(d.status);
+    if (status) {
+      state.statuses[status] = Math.max(state.statuses[status] || 0, Math.max(1, Math.floor(Number(d.statusTurns) || 1)));
+      triggeredStatuses.push({ status, label: STATUS_LABEL_MAP[status] || status });
+      pushBattleLog(scene, `${actorName}回合末效果触发，陷入${statusLabel(status)}${state.statuses[status]}回合。`);
+    }
+    if (changed.length > 0) {
+      pushBattleLog(scene, `${actorName}回合末效果触发：${delta > 0 ? "提升" : "降低"}${Math.abs(delta)}级：${changed.map((k) => battleStatLabel(k)).join("、")}`);
+    }
+  });
   const delayedStageToApply = [];
   (state.timedEffects || []).forEach((e) => {
     if (normalize(e.kind) !== "delayedStage") return;
@@ -3032,7 +4640,15 @@ const applyEndTurnStatus = (scene, side) => {
     markBattleFloatText(scene);
   }
   tickSideEffects(scene, side);
-  return totalDamage;
+  const uniqueStatuses = [];
+  const seenStatusFx = new Set();
+  triggeredStatuses.forEach((item) => {
+    const key = normalize(item && item.status) || normalize(item && item.label);
+    if (!key || seenStatusFx.has(key)) return;
+    seenStatusFx.add(key);
+    uniqueStatuses.push(item);
+  });
+  return { totalDamage, statuses: uniqueStatuses };
 };
 const tickGlobalTimedEffects = (scene) => {
   if (!scene || !Array.isArray(scene.globalTimedEffects)) return;
@@ -3074,7 +4690,10 @@ const parseMultiHitRangeFromDesc = (skill) => {
     const max = Math.max(min, Math.floor(Number(hardcoded.max) || min));
     const powerMultiplier = Math.max(1, Number(hardcoded.powerMultiplier) || 1);
     const elementShelterMultiplier = Math.max(1, Number(hardcoded.elementShelterMultiplier) || 1);
-    return { min, max, powerMultiplier, elementShelterMultiplier };
+    const powerList = Array.isArray(hardcoded.powerList)
+      ? hardcoded.powerList.map((x) => Math.max(1, Math.floor(Number(x) || 0))).filter((x) => x > 0)
+      : [];
+    return { min, max, powerMultiplier, elementShelterMultiplier, powerList };
   }
   const desc = normalize(skill && skill.desc);
   if (!desc) return null;
@@ -3753,8 +5372,10 @@ createApp({
         guardianWinCounts: {},
         equippedBadgeId: "",
         targetLevel: 10,
+        timeTunnelMaxClearedFloor: 0,
         battleLog: [],
         showDexPanel: false,
+        battleSpeed: 1,
         battleBackground: {
           mode: "default",
           src: DEFAULT_BATTLE_BG_SRC,
@@ -3848,6 +5469,7 @@ createApp({
           return source;
         })(),
         hCoins: Object.prototype.hasOwnProperty.call(loaded, "hCoins") ? Math.max(0, Math.floor(Number(loaded.hCoins) || 0)) : 200,
+        battleSpeed: clampBattleSpeed(loaded.battleSpeed || 1),
         guardianWinCounts: (() => {
           const source = loaded.guardianWinCounts && typeof loaded.guardianWinCounts === "object" ? loaded.guardianWinCounts : {};
           const out = {};
@@ -3864,6 +5486,7 @@ createApp({
         selectedAttackerId,
         selectedPetId: activePets.some((p) => p.id === loaded.selectedPetId) ? loaded.selectedPetId : ((activePets[0] && activePets[0].id) || ""),
         targetLevel: clamp(Number(loaded.targetLevel) || 10, 1, 100),
+        timeTunnelMaxClearedFloor: clamp(Math.floor(Number(loaded.timeTunnelMaxClearedFloor) || 0), 0, TIME_TUNNEL_OPEN_MAX_FLOOR),
         battleLog: sanitizeBattleLog(loaded.battleLog),
         showDexPanel: false,
         battleBackground: (() => {
@@ -3874,6 +5497,45 @@ createApp({
           return { mode, src, name };
         })()
       };
+    };
+
+    const extractSavePayload = (raw) => {
+      let cur = raw;
+      for (let i = 0; i < 4; i += 1) {
+        if (!cur || typeof cur !== "object" || Array.isArray(cur)) return cur;
+        if (cur.save && typeof cur.save === "object") {
+          cur = cur.save.save && typeof cur.save.save === "object" ? cur.save.save : cur.save;
+          continue;
+        }
+        if (cur.state && typeof cur.state === "object") { cur = cur.state; continue; }
+        if (cur.data && typeof cur.data === "object") { cur = cur.data; continue; }
+        if (cur.payload && typeof cur.payload === "object") { cur = cur.payload; continue; }
+        return cur;
+      }
+      return cur;
+    };
+    const looksLikeGameSave = (raw) => {
+      const obj = extractSavePayload(raw);
+      if (!obj || typeof obj !== "object" || Array.isArray(obj)) return false;
+      const arrayFields = ["activePets", "bagPetIds", "activatedDexIds", "defeatedDexIds", "obtainedEggDexIds", "eggs", "battleLog"];
+      if (arrayFields.some((key) => Array.isArray(obj[key]))) return true;
+      if (obj.items && typeof obj.items === "object") return true;
+      if (obj.guardianWinCounts && typeof obj.guardianWinCounts === "object") return true;
+      if (Object.prototype.hasOwnProperty.call(obj, "hCoins")) return true;
+      if (Object.prototype.hasOwnProperty.call(obj, "timeTunnelMaxClearedFloor")) return true;
+      return false;
+    };
+    const parseLocalSaveText = (text) => {
+      const rawText = String(text || "").trim();
+      if (!rawText) throw new Error("本地存档文件为空。");
+      let parsed = null;
+      try {
+        parsed = JSON.parse(rawText);
+      } catch {
+        throw new Error("本地存档不是有效的 JSON 文件。");
+      }
+      if (!looksLikeGameSave(parsed)) throw new Error("本地存档格式不正确，未覆盖当前进度。");
+      return extractSavePayload(parsed);
     };
 
     const storageAdapter = createStorageAdapter();
@@ -3945,6 +5607,17 @@ createApp({
     const writeBgmVolume = (value) => {
       try { localStorage.setItem(BGM_VOLUME_KEY, String(clamp(Number(value) || 0, 0, 1))); } catch {}
     };
+    const readBattleSpeed = () => {
+      try {
+        const raw = Number(localStorage.getItem(BATTLE_SPEED_KEY));
+        return Number.isFinite(raw) ? clampBattleSpeed(raw) : 1;
+      } catch {
+        return 1;
+      }
+    };
+    const writeBattleSpeed = (value) => {
+      try { localStorage.setItem(BATTLE_SPEED_KEY, String(clampBattleSpeed(value))); } catch {}
+    };
     const saveState = (nextState) => {
       if (playMode.value !== "guest" && storageAdapter.mode === "localStorage") return;
       try { storageAdapter.saveRaw(JSON.stringify(nextState)); } catch {}
@@ -3961,7 +5634,12 @@ createApp({
     const authLoading = ref(false);
     const saveLoading = ref(false);
     const lastServerSavedAt = ref("");
+    const guestImportInput = ref(null);
     const bgmVolume = ref(readBgmVolume());
+    const battleSpeed = ref(readBattleSpeed());
+    const settingsTab = ref("sound");
+    const isAndroidWebView = isAndroidWebViewRuntime();
+    const battlePrepare = ref({ open: false, progress: 0, label: "", target: null, targets: [], teamSlots: [] });
     const dexSearch = ref("");
     const dexElementFilter = ref("全部系别");
     const dexDefeatFilter = ref("全部战绩");
@@ -3969,30 +5647,44 @@ createApp({
     const warehouseElementFilter = ref("全部系别");
     const warehouseSortMode = ref("created");
     const nowTs = ref(Date.now());
+    const viewportSize = ref({
+      width: typeof window === "undefined" ? 1700 : Math.max(1, Number(window.innerWidth) || 1700),
+      height: typeof window === "undefined" ? 765 : Math.max(1, Number(window.innerHeight) || 765)
+    });
     const battleResult = ref(null);
+    const timeTunnelDoorScene = ref(null);
     const evolutionQueue = ref([]);
     const activeEvolution = ref(null);
     const battleScene = ref(null);
     const showGuardianPanel = ref(false);
     const showBossPanel = ref(false);
     const showStudyPanel = ref(false);
+    const showTimeTunnelPanel = ref(false);
+    const showTimeTunnelEnvironmentPanel = ref(false);
+    const timeTunnelEnvironmentScene = ref(null);
     const showTargetPanel = ref(false);
     const showGuardianChallengePanel = ref(false);
     const showBossChallengePanel = ref(false);
     const showSwitchPanel = ref(false);
+    const showGlobalSettingsPanel = ref(false);
     const selectedWarehousePetId = ref("");
     const showWarehouseActionModal = ref(false);
     const skillLongPressTimer = ref(null);
     const switchPanelMode = ref("manual");
     const selectedGuardianDexId = ref(null);
     const selectedBossDexId = ref(null);
+    const timeTunnelSelectedFloor = ref(1);
     const toast = ref({ show: false, message: "" });
+    const rewardFlyToast = ref({ show: false, message: "", seq: 0 });
+    const rewardFlyToastQueue = [];
+    let rewardFlyToastRunning = false;
     const evolvingIds = ref([]);
     const selectedSkillName = ref("");
     const selectedInfoTab = ref("skills");
     const replaceSkillCtx = ref(null);
     const bagReplaceCtx = ref(null);
     const showElementPanel = ref(false);
+    const showBagPanel = ref(false);
     const showWarehousePanel = ref(false);
     const showShopPanel = ref(false);
     const showBadgePanel = ref(false);
@@ -4009,6 +5701,12 @@ createApp({
         name: "40级经验果",
         price: 0,
         desc: "初始一次性道具，只能给低于 Lv.40 的亚比使用，使用后直接升至 Lv.40"
+      },
+      {
+        id: "time_tunnel_big_exp_fruit",
+        name: "大经验果",
+        price: 0,
+        desc: "阶段奖励道具，可指定亚比获得 100000 经验，商店无法购买"
       }
     ];
     const shopItems = ref([
@@ -4080,6 +5778,16 @@ createApp({
       }
     ]);
     const itemCatalog = computed(() => initialOnlyItems.concat(shopItems.value));
+    const getTimeTunnelRewardInfo = (floor) => {
+      const safeFloor = Math.max(1, Math.floor(Number(floor) || 1));
+      const nextRewardFloor = Math.ceil(safeFloor / TIME_TUNNEL_REWARD_INTERVAL) * TIME_TUNNEL_REWARD_INTERVAL;
+      const remain = Math.max(0, nextRewardFloor - safeFloor);
+      return {
+        nextRewardFloor,
+        remain,
+        isRewardFloor: safeFloor > 0 && safeFloor % TIME_TUNNEL_REWARD_INTERVAL === 0
+      };
+    };
     const battleBgmAudio = ref(null);
     const sceneBgmAudio = ref(null);
     const currentSceneBgmSrc = ref("");
@@ -4118,6 +5826,71 @@ createApp({
       showToast(mode === "custom" ? "已应用自定义战斗背景。" : "已恢复默认战斗背景。");
     };
     const resetBattleBackground = () => applyBattleBackground({ mode: "default", src: DEFAULT_BATTLE_BG_SRC, name: "默认战斗背景" });
+    const applyBattleSpeed = (value) => {
+      const next = clampBattleSpeed(value);
+      battleSpeed.value = next;
+      if (state.value && typeof state.value === "object") state.value.battleSpeed = next;
+      if (battleScene.value && typeof battleScene.value === "object") battleScene.value.battleSpeed = next;
+      writeBattleSpeed(next);
+      showToast(`战斗速度已切换为 ${next}x。`);
+      return next;
+    };
+    const buildBattlePrepareTarget = (targetEntry, targetLevel) => targetEntry ? {
+        dexId: Number(targetEntry.dexId) || 0,
+        name: normalize(targetEntry.name) || "挑战目标",
+        level: clamp(Number(targetLevel) || 1, 1, 100),
+        image: ensureHttps(targetEntry.image) || PLACEHOLDER,
+        element: normalize(targetEntry.element),
+        subElement: normalize(targetEntry.subElement)
+      } : null;
+    const buildBattlePreparePayload = (targetEntry, targetLevel, extra = {}) => {
+      const target = buildBattlePrepareTarget(targetEntry, targetLevel);
+      const targets = Array.isArray(extra.targets) && extra.targets.length > 0
+        ? extra.targets.map((x) => buildBattlePrepareTarget(x.entry, x.level)).filter(Boolean)
+        : (target ? [target] : []);
+      const pets = bagSlots.value.map((slot, idx) => {
+        const pet = slot && slot.pet;
+        if (!pet) return { idx, empty: true };
+        return {
+          idx,
+          empty: false,
+          dexId: Number(pet.dexId) || Number(resolvePetCurrentDexId(pet)) || 0,
+          name: petDisplayName(pet),
+          level: clamp(Number(pet.level) || 1, 1, 100),
+          image: bagPetVisual(pet).src || petCurrentForm(pet).img || PLACEHOLDER,
+          animated: Boolean(bagPetVisual(pet).animated),
+          element: normalize(pet.element),
+          subElement: normalize(pet.subElement)
+        };
+      });
+      while (pets.length < 6) pets.push({ idx: pets.length, empty: true });
+      return { target, targets, teamSlots: pets.slice(0, 6) };
+    };
+    const openBattlePrepare = (label, targetEntry = null, targetLevel = 1, extra = {}) => {
+      const payload = buildBattlePreparePayload(targetEntry, targetLevel, extra);
+      battlePrepare.value = {
+        open: true,
+        progress: 0,
+        label: normalize(label) || "战斗准备中",
+        target: payload.target,
+        targets: payload.targets,
+        teamSlots: payload.teamSlots
+      };
+    };
+    const closeBattlePrepare = () => {
+      battlePrepare.value = { open: false, progress: 0, label: "", target: null, targets: [], teamSlots: [] };
+    };
+    const startBattlePrepare = async (label, targetEntry, targetLevel, fn, extra = {}) => {
+      openBattlePrepare(label, targetEntry, targetLevel, extra);
+      const total = BATTLE_PREPARE_MIN_MS + battleDelayMs(1800, 200);
+      const steps = Math.max(20, Math.ceil(total / BATTLE_PREPARE_STEP_MS));
+      for (let i = 1; i <= steps; i += 1) {
+        await new Promise((resolve) => setTimeout(resolve, Math.max(16, Math.round(total / steps))));
+        battlePrepare.value.progress = Math.min(100, Math.round((i / steps) * 100));
+      }
+      closeBattlePrepare();
+      return typeof fn === "function" ? fn() : undefined;
+    };
     const onBattleBackgroundFilePick = async (event) => {
       const input = event && event.target;
       const file = input && input.files && input.files[0];
@@ -4144,6 +5917,9 @@ createApp({
       };
       reader.readAsDataURL(file);
     };
+    const battleSpeedLabel = computed(() => `${clampBattleSpeed(battleSpeed.value)}x`);
+    const battleSpeedFactor = computed(() => 1 / clampBattleSpeed(battleSpeed.value));
+    const battleDelayMs = (ms, minMs = 60) => Math.max(minMs, Math.round(Math.max(0, Number(ms) || 0) * battleSpeedFactor.value));
     const guardianBadgeThresholds = [
       { count: 1, suffix: "斗士", tone: "amber" },
       { count: 10, suffix: "的克星", tone: "rose" },
@@ -4257,6 +6033,32 @@ createApp({
       toast.value = { show: true, message };
       setTimeout(() => { toast.value.show = false; }, 2200);
     };
+    const playNextRewardFlyToast = () => {
+      if (rewardFlyToastRunning) return;
+      const next = rewardFlyToastQueue.shift();
+      if (!next) {
+        rewardFlyToast.value = { show: false, message: "", seq: rewardFlyToast.value.seq };
+        return;
+      }
+      rewardFlyToastRunning = true;
+      rewardFlyToast.value = {
+        show: true,
+        message: next,
+        seq: Math.max(0, Number(rewardFlyToast.value.seq) || 0) + 1
+      };
+      setTimeout(() => {
+        rewardFlyToast.value = { show: false, message: "", seq: rewardFlyToast.value.seq };
+        rewardFlyToastRunning = false;
+        playNextRewardFlyToast();
+      }, 3300);
+    };
+    const queueRewardFlyToasts = (messages) => {
+      (Array.isArray(messages) ? messages : [messages]).forEach((message) => {
+        const text = normalize(message);
+        if (text) rewardFlyToastQueue.push(text);
+      });
+      playNextRewardFlyToast();
+    };
     const apiBaseUrl = () => {
       const protocol = String(window.location && window.location.protocol || "");
       if (protocol === "http:" || protocol === "https:") return "";
@@ -4352,6 +6154,29 @@ createApp({
       showToast("已以游客身份进入，进度将保存到本机。");
       refreshSceneBgm();
     };
+    const importGuestLocalSave = async (eventOrFile = null) => {
+      const file = eventOrFile && eventOrFile.target
+        ? eventOrFile.target.files && eventOrFile.target.files[0]
+        : (eventOrFile || (guestImportInput.value && guestImportInput.value.files && guestImportInput.value.files[0]));
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const imported = sanitizeState(parseLocalSaveText(text));
+        authUser.value = null;
+        lastServerSavedAt.value = "";
+        writeAuthToken("");
+        playMode.value = "guest";
+        writeSessionMode("guest");
+        state.value = imported;
+        saveState(state.value);
+        showToast("已导入本地存档并进入游客模式。");
+        refreshSceneBgm();
+      } catch (err) {
+        showToast(err && err.message ? err.message : "本地存档导入失败。");
+      } finally {
+        if (guestImportInput.value) guestImportInput.value.value = "";
+      }
+    };
     const submitAuth = async () => {
       if (authLoading.value) return;
       const username = normalize(authUsername.value);
@@ -4419,6 +6244,29 @@ createApp({
     const closeBattleResult = () => {
       battleResult.value = null;
       scheduleNextAutoBattle();
+    };
+    const restoreTimeTunnelEnvironmentAfterBattle = (scene, win) => {
+      if (!scene || scene.mode !== "timeTunnel" || !scene.timeTunnelMeta) return;
+      const floor = Math.max(1, Math.floor(Number(scene.timeTunnelMeta.floor) || 1));
+      const envElement = normalizeElementName(scene.timeTunnelMeta.environmentElement);
+      const envName = normalize(scene.timeTunnelMeta.environmentName);
+      let envScene = timeTunnelEnvironmentScene.value;
+      if (!envScene || Number(envScene.floor) !== floor) {
+        envScene = buildTimeTunnelFloorScene(floor);
+        timeTunnelEnvironmentScene.value = envScene;
+      }
+      if (envScene && envElement) {
+        envScene.environment = {
+          ...(envScene.environment || {}),
+          element: envElement,
+          name: envName || (envScene.environment && envScene.environment.name) || "",
+          image: getTimeTunnelEnvironmentImage(envElement)
+        };
+      }
+      showTimeTunnelPanel.value = false;
+      showTimeTunnelEnvironmentPanel.value = true;
+      if (!win) timeTunnelDoorScene.value = null;
+      playSceneBgm(TIME_TUNNEL_BGM_SRC);
     };
     const stopAutoBattleRun = (message = "") => {
       if (!autoBattleRun.value) return;
@@ -4528,6 +6376,7 @@ createApp({
     const refreshSceneBgm = () => {
       if (battleScene.value && battleScene.value.open) return;
       if (!playMode.value) return playSceneBgm(LOGIN_BGM_SRC);
+      if (showTimeTunnelPanel.value || showTimeTunnelEnvironmentPanel.value) return playSceneBgm(TIME_TUNNEL_BGM_SRC);
       if (showStudyPanel.value) return playSceneBgm(STUDY_BGM_SRC);
       if (showShopPanel.value) return playSceneBgm(SHOP_BGM_SRC);
       if (showWarehousePanel.value) return playSceneBgm(WAREHOUSE_BGM_SRC);
@@ -4592,23 +6441,39 @@ createApp({
       }, { deep: true });
     }
     let timer = null;
-    const handleAutoSave = () => saveState(state.value);
+    const handleAutoSave = () => {
+      if (playMode.value === "guest") saveState(state.value);
+    };
+    const handleVisibilityAutoSave = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") handleAutoSave();
+    };
+    const updateViewportSize = () => {
+      if (typeof window === "undefined") return;
+      viewportSize.value = {
+        width: Math.max(1, Number(window.innerWidth) || 1700),
+        height: Math.max(1, Number(window.innerHeight) || 765)
+      };
+    };
     onMounted(() => {
       timer = setInterval(() => { nowTs.value = Date.now(); }, 1000);
+      updateViewportSize();
+      loadPetActionLayout();
       checkAuthSession();
-      if (storageAdapter.mode === "file") {
-        window.addEventListener("beforeunload", handleAutoSave);
-        window.addEventListener("pagehide", handleAutoSave);
-      }
+      window.addEventListener("resize", updateViewportSize);
+      window.addEventListener("orientationchange", updateViewportSize);
+      window.addEventListener("beforeunload", handleAutoSave);
+      window.addEventListener("pagehide", handleAutoSave);
+      document.addEventListener("visibilitychange", handleVisibilityAutoSave);
     });
     onBeforeUnmount(() => {
       if (timer) clearInterval(timer);
       stopBattleBgm();
       stopSceneBgm();
-      if (storageAdapter.mode === "file") {
-        window.removeEventListener("beforeunload", handleAutoSave);
-        window.removeEventListener("pagehide", handleAutoSave);
-      }
+      window.removeEventListener("resize", updateViewportSize);
+      window.removeEventListener("orientationchange", updateViewportSize);
+      window.removeEventListener("beforeunload", handleAutoSave);
+      window.removeEventListener("pagehide", handleAutoSave);
+      document.removeEventListener("visibilitychange", handleVisibilityAutoSave);
     });
 
     watch(() => state.value.activePets.map((p) => p.id).join("|"), () => {
@@ -4732,7 +6597,7 @@ createApp({
       name: petDisplayName(p),
       level: p.level
     })));
-    const itemInventoryRows = computed(() => shopItems.value.map((it) => ({
+    const itemInventoryRows = computed(() => itemCatalog.value.map((it) => ({
       ...it,
       count: getItemCount(it.id),
       countLabel: it.id === "double_exp_device" || it.id === "auto_battle_device" ? `${getItemCount(it.id)} 次` : `× ${getItemCount(it.id)}`
@@ -4769,31 +6634,33 @@ createApp({
     const warehouseElementOptions = computed(() => {
       const set = new Set();
       warehousePets.value.forEach((p) => {
-        const e = normalize(p.element);
+        const e = normalizeElementName(p.element);
         if (e) set.add(e);
       });
       return ["全部系别"].concat(Array.from(set).sort((a, b) => a.localeCompare(b, "zh-Hans-CN")));
     });
     const filteredWarehousePets = computed(() => {
       const keyword = normalize(warehouseSearch.value).toLowerCase();
-      const element = normalize(warehouseElementFilter.value);
+      const element = normalizeElementName(warehouseElementFilter.value) || normalize(warehouseElementFilter.value);
+      const orderOf = (pet) => Number(pet && pet.createdAt) || 0;
+      const powerOf = (pet) => calcPetBattlePower(pet);
       const list = warehousePets.value.filter((pet) => {
         const name = normalize(petDisplayName(pet)).toLowerCase();
         const speciesName = normalize(pet.speciesName).toLowerCase();
-        const petElement = normalize(pet.element);
+        const petElement = normalizeElementName(pet.element);
         const hitName = !keyword || name.includes(keyword) || speciesName.includes(keyword);
         const hitElement = !element || element === "全部系别" || petElement === element;
         return hitName && hitElement;
       });
-      const createdOrder = (pet) => Number(pet && pet.createdAt) || 0;
-      if (warehouseSortMode.value === "level") {
-        return list.slice().sort((a, b) =>
-          (Number(b.level) || 0) - (Number(a.level) || 0) ||
-          (Number(a.dexId) || 0) - (Number(b.dexId) || 0) ||
-          createdOrder(a) - createdOrder(b)
-        );
-      }
-      return list.slice().sort((a, b) => createdOrder(a) - createdOrder(b));
+      const mode = normalize(warehouseSortMode.value);
+      return list.slice().sort((a, b) => {
+        if (mode === "power_asc") return powerOf(a) - powerOf(b) || orderOf(a) - orderOf(b);
+        if (mode === "power_desc") return powerOf(b) - powerOf(a) || orderOf(a) - orderOf(b);
+        if (mode === "level_asc") return (Number(a.level) || 0) - (Number(b.level) || 0) || orderOf(a) - orderOf(b);
+        if (mode === "level_desc") return (Number(b.level) || 0) - (Number(a.level) || 0) || orderOf(a) - orderOf(b);
+        if (mode === "created_desc") return orderOf(b) - orderOf(a);
+        return orderOf(a) - orderOf(b);
+      });
     });
     const safeEggs = computed(() => state.value.eggs.filter((e) => e && e.id));
     const safeBattleLog = computed(() => sanitizeBattleLog(state.value.battleLog));
@@ -4801,31 +6668,60 @@ createApp({
     const dexElementOptions = computed(() => {
       const set = new Set();
       visibleDexEntries.forEach((d) => {
-        const e = normalize(d.element);
+        const e = normalizeElementName(d.element);
         if (e) set.add(e);
-        const se = normalize(d.subElement);
+        const se = normalizeElementName(d.subElement);
         if (se) set.add(se);
       });
       return ["全部系别"].concat(Array.from(set).sort((a, b) => a.localeCompare(b, "zh-Hans-CN")));
     });
     const filteredDex = computed(() => {
       const q = normalize(dexSearch.value).toLowerCase();
-      const element = normalize(dexElementFilter.value);
+      const element = normalizeElementName(dexElementFilter.value) || normalize(dexElementFilter.value);
       const defeat = normalize(dexDefeatFilter.value);
       return visibleDexEntries.filter((d) => {
         const hitName = !q || d.name.toLowerCase().includes(q);
-        const hitElement = !element || element === "全部系别" || normalize(d.element) === element || normalize(d.subElement) === element;
+        const hitElement = !element || element === "全部系别" || normalizeElementName(d.element) === element || normalizeElementName(d.subElement) === element;
         const won = hasDefeatedDex(d.dexId);
         const hitDefeat = !defeat || defeat === "全部战绩" || (defeat === "已击败" ? won : !won);
         return hitName && hitElement && hitDefeat;
       });
     });
     const guardianDexEntries = computed(() => visibleDexEntries.filter((d) => isGuardianName(d.name)));
-    const bossDexEntries = computed(() => visibleDexEntries.filter((d) => isBossName(d.name)));
-    const shopEggEntries = computed(() => SHOP_EGG_NAMES.map((name) => {
-      const entry = dexEntries.find((d) => normalize(d.name) === name) || dexEntries.find((d) => resolveShopEggName(d.name) === name);
-      return entry ? { ...entry, price: SHOP_EGG_PRICE } : null;
-    }).filter(Boolean));
+    const bossDexEntries = computed(() => visibleDexEntries.filter((d) => isBossEntry(d)));
+    const timeTunnelMaxClearedFloor = computed(() => Math.max(0, Math.floor(Number(state.value.timeTunnelMaxClearedFloor) || 0)));
+    const timeTunnelFloorRows = computed(() => TIME_TUNNEL_SELECT_FLOORS.map((floor) => ({
+      floor,
+      open: floor <= Math.max(1, timeTunnelMaxClearedFloor.value + 1),
+      locked: floor > Math.max(1, timeTunnelMaxClearedFloor.value + 1),
+      cleared: timeTunnelMaxClearedFloor.value >= floor
+    })));
+    const selectedTimeTunnelFloorRow = computed(() => timeTunnelFloorRows.value.find((x) => x.floor === Number(timeTunnelSelectedFloor.value)) || timeTunnelFloorRows.value[0]);
+    const timeTunnelEnvironmentEnemies = computed(() => {
+      const scene = timeTunnelEnvironmentScene.value;
+      return scene && Array.isArray(scene.enemies) ? scene.enemies : [];
+    });
+    const timeEnvViewportStyle = computed(() => {
+      const designW = 1700;
+      const designH = 765;
+      const vw = Math.max(1, Number(viewportSize.value.width) || designW);
+      const vh = Math.max(1, Number(viewportSize.value.height) || designH);
+      const scale = Math.min(vw / designW, vh / designH);
+      return {
+        width: `${designW}px`,
+        height: `${designH}px`,
+        left: `${Math.max(0, (vw - designW * scale) / 2)}px`,
+        top: `${Math.max(0, (vh - designH * scale) / 2)}px`,
+        transform: `scale(${scale})`
+      };
+    });
+    const shopEggEntries = computed(() => dexEntries.filter((entry) => {
+      const id = Number(entry && entry.dexId) || 0;
+      if (SHOP_EGG_EXCLUDED_NAMES.has(normalize(entry && entry.name))) return false;
+      if (SHOP_EGG_DEX_IDS.has(id)) return true;
+      const name = resolveShopEggName(entry && entry.name);
+      return SHOP_EGG_NAMES.includes(name);
+    }).map((entry) => ({ ...entry, price: SHOP_EGG_PRICE })));
     const selectedGuardianEntry = computed(() => {
       const id = Number(selectedGuardianDexId.value) || 0;
       if (!id) return null;
@@ -4838,19 +6734,19 @@ createApp({
     });
     const selectedGuardianIsExtra = computed(() => Boolean(selectedGuardianEntry.value && isExtraGuardianName(selectedGuardianEntry.value.name)));
     const selectedGuardianChallengeText = computed(() => selectedGuardianIsExtra.value
-      ? "进阶守护者挑战：Lv.100 单阶段，体力种族为原种族值×10，天赋值均为50，除体力外学习力均为102，免疫异常状态，通关后可获得对应亚比蛋和 1000 H币。"
+      ? "进阶守护者挑战：Lv.100 单阶段，体力种族为原种族值×10，天赋值均为50，除体力外学习力均为102，在现有基础上所有能力值再提升25%，免疫异常状态，通关后可获得对应亚比蛋和 1000 H币。"
       : "基础守护者挑战：从 Lv.30 开始逐级挑战至 Lv.100，体力种族为原种族值×5，天赋值均为30，除体力外学习力均为102，免疫异常状态，每击败一个阶段会清空我方能力等级，通关后获得对应亚比蛋和 500 H币。");
-    const selectedBossChallengeText = computed(() => "BOSS挑战：Lv.100 单阶段，体力种族为原种族值×15，天赋值均为60，除体力外学习力均为102。击败后获得对应亚比蛋和 2000 H币。");
+    const selectedBossChallengeText = computed(() => "BOSS挑战：Lv.100 单阶段，体力种族为原种族值×15，天赋值均为60，除体力外学习力均为102，在现有基础上所有能力值再提升50%。击败后获得对应亚比蛋和 2000 H币。");
     const challengeLockMessage = (entry) => {
       if (!entry) return "该亚比暂不可挑战。";
-      if (isBossName(entry.name)) return "该亚比为BOSS，请从【BOSS挑战】入口挑战。";
+      if (isBossEntry(entry)) return "该亚比为BOSS，请从【BOSS挑战】入口挑战。";
       if (isGuardianName(entry.name)) return "该亚比为守护者，请从【守护者挑战】入口挑战。";
       if (isShopEggName(entry.name)) return "该亚比蛋仅可从【亚比商店/道具】购买，不能通过图鉴挑战获取。";
       return "该亚比暂不可挑战。";
     };
     const canChallengeFromDex = (entry) => {
       if (!entry) return false;
-      return !isGuardianName(entry.name) && !isBossName(entry.name) && !isShopEggName(entry.name);
+      return !isGuardianName(entry.name) && !isBossEntry(entry) && !isShopEggName(entry.name);
     };
     const canStartChallengeByDex = (entry) => {
       if (!entry) return false;
@@ -4995,6 +6891,12 @@ createApp({
       if (!pet || !species || !species.raceStats) return null;
       return species.raceStats;
     });
+    const abilityBarMax = (key, context = "") => {
+      const statKey = String(key || "");
+      const ctx = String(context || "");
+      if ((ctx === "guardian" || ctx === "boss") && statKey === "hp") return 0;
+      return 2000;
+    };
     const selectedAbilityStats = computed(() => {
       const pet = selectedPet.value;
       const race = selectedRaceStats.value;
@@ -5011,6 +6913,31 @@ createApp({
       };
       out.total = out.hp + out.atk + out.def + out.spAtk + out.spDef + out.speed;
       return out;
+    });
+    const guardianBossAbilityBarMax = (value, statKey, sceneMode) => {
+      if ((sceneMode === "guardian" || sceneMode === "boss") && statKey === "hp") return Math.max(1, Math.floor(Number(value) || 0));
+      return 2000;
+    };
+    const calcAbilityTotal = (stats) => {
+      const s = stats && typeof stats === "object" ? stats : {};
+      return STAT_KEYS.reduce((sum, key) => sum + (Math.max(0, Number(s[key]) || 0)), 0);
+    };
+    const calcBattlePowerFromAbilityTotal = (total) => Math.floor(Math.max(0, Number(total) || 0) * 3.6);
+    const calcPetBattlePower = (pet) => {
+      if (!pet) return 0;
+      const species = getSpeciesByDexId(resolvePetCurrentDexId(pet), pet.speciesName) || getSpeciesByDexId(pet.dexId, pet.speciesName);
+      const race = species && species.raceStats;
+      if (!race) return 0;
+      return calcBattlePowerFromAbilityTotal(calcAbilityTotal(calcPetAbilityByRace(race, pet.level, pet.talent, pet.study)));
+    };
+    const selectedPetBattlePower = computed(() => {
+      const ability = selectedAbilityStats.value;
+      return calcBattlePowerFromAbilityTotal(ability ? ability.total : calcPetBattlePower(selectedPet.value));
+    });
+    const bagBattlePower = computed(() => bagPets.value.reduce((sum, pet) => sum + calcPetBattlePower(pet), 0));
+    const maxBagBattlePower = computed(() => {
+      const list = safeActivePets.value.map((pet) => calcPetBattlePower(pet)).sort((a, b) => b - a);
+      return list.slice(0, 6).reduce((sum, value) => sum + value, 0);
     });
     const calcPetAbilityByRace = (raceStats, level, talentRaw, studyRaw) => {
       const race = raceStats && typeof raceStats === "object" ? raceStats : createZeroStats();
@@ -5134,22 +7061,12 @@ createApp({
       return sum / picked.length;
     };
 
-    const getElementFactor = (attackerElement, defenderElement) => {
-      const atk = normalize(attackerElement) || "未知系";
-      const def = normalize(defenderElement) || "未知系";
-      const chart = ELEMENT_CHART[atk];
-      if (!chart) return 1;
-      if ((chart.immune || []).includes(def)) return 0;
-      if ((chart.strong || []).includes(def)) return 2;
-      if ((chart.weak || []).includes(def)) return 0.5;
-      return 1;
-    };
     const buildElementAttackGroupsAgainst = (entry) => {
-      const defender = normalizeElementName(entry && entry.element) || "";
+      const defenderElements = getElementList(entry && entry.element, entry && entry.subElement);
       const rows = ELEMENT_NAMES
         .map((element) => normalizeElementName(element))
         .filter((element) => element && element !== "未知系")
-        .map((element) => ({ element, factor: getElementFactor(element, defender) }));
+        .map((element) => ({ element, factor: getElementFactorAgainstElements(element, defenderElements) }));
       return {
         strong: rows.filter((row) => row.factor >= 2).map((row) => row.element),
         weak: rows.filter((row) => row.factor > 0 && row.factor <= 0.5).map((row) => row.element),
@@ -5173,7 +7090,7 @@ createApp({
       const attacker = firstPet.value;
       const target = selectedDexEntry.value;
       if (!attacker || !target) return 1;
-      return getElementFactor(attacker.element, target.element);
+      return getElementFactorAgainstElements(attacker.element, getElementList(target.element, target.subElement));
     });
     const predictedElementText = computed(() => {
       const attacker = firstPet.value;
@@ -5294,6 +7211,28 @@ createApp({
     };
     const PET_BATTLE_ANIM_ROOT = "./pet-action";
     const SKILL_EFFECT_ROOT = "./skill-effect";
+    const FULLSCREEN_SKILL_EFFECT_ROOT = "./skill-effect-fullscreen";
+    const FULLSCREEN_SKILL_EFFECT_NAMES = new Set([
+      "飓风雷电",
+      "万物皆明",
+      "真战无落日",
+      "月影无踪",
+      "真舞八重击",
+      "真血印",
+      "真神武噬月",
+      "龙之煌炎"
+    ]);
+    const FULLSCREEN_SKILL_EFFECT_ID_BY_NAME = {
+      飓风雷电: 16254,
+      万物皆明: 16234,
+      月影无踪: 16235,
+      真战无落日: 16310,
+      真舞八重击: 3321,
+      真血印: 17294,
+      真神武噬月: 16311,
+      龙之煌炎: 20067
+    };
+    const PET_ACTION_LAYOUT_URL = "./pet-action-layout.json";
     const BATTLE_DAMAGE_VISUAL_DELAY_MS = 900;
     const BATTLE_SKILL_EFFECT_DURATION_MS = 900;
     const BATTLE_SKILL_EFFECT_SETTLE_MS = 200;
@@ -5306,6 +7245,18 @@ createApp({
     const webpDurationCache = new Map();
     const gifDurationCache = new Map();
     const skillEffectObjectUrlCache = new Map();
+    const skillEffectCoreBoundsCache = new Map();
+    const petActionLayout = ref({});
+    const loadPetActionLayout = async () => {
+      try {
+        const res = await fetch(`${PET_ACTION_LAYOUT_URL}?v=20260520_layout`);
+        if (!res.ok) return;
+        const data = await res.json();
+        petActionLayout.value = data && typeof data === "object" ? data : {};
+      } catch (_) {
+        petActionLayout.value = {};
+      }
+    };
     const getAnimatedWebpDurationMs = async (src) => {
       const key = String(src || "");
       if (!key) return PET_ANIM_FALLBACK_IDLE_DELAY_MS;
@@ -5410,11 +7361,344 @@ createApp({
       const stateCode = stateKey === "idle" ? "1" : (stateKey === "hit" ? "2" : (stateKey === "status" ? "6" : "4"));
       return `${PET_BATTLE_ANIM_ROOT}/${id}/pet${id}_${sideCode}_${stateCode}.webp`;
     };
+    const stripUrlQuery = (src) => normalize(src).split("?")[0] || normalize(src);
+    const getSkillEffectCoreBounds = (src) => {
+      const key = stripUrlQuery(src);
+      if (!key) return Promise.resolve(null);
+      if (skillEffectCoreBoundsCache.has(key)) return skillEffectCoreBoundsCache.get(key);
+      if (typeof document === "undefined" || typeof Image === "undefined") return Promise.resolve(null);
+      const promise = new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+          try {
+            const w = Math.max(1, Number(img.naturalWidth) || Number(img.width) || 1);
+            const h = Math.max(1, Number(img.naturalHeight) || Number(img.height) || 1);
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d", { willReadFrequently: true });
+            if (!ctx) return resolve(null);
+            ctx.drawImage(img, 0, 0, w, h);
+            const data = ctx.getImageData(0, 0, w, h).data;
+            let minX = w;
+            let minY = h;
+            let maxX = -1;
+            let maxY = -1;
+            for (let y = 0; y < h; y += 1) {
+              for (let x = 0; x < w; x += 1) {
+                const i = (y * w + x) * 4;
+                const alpha = data[i + 3];
+                if (alpha <= 8) continue;
+                const bright = Math.max(data[i], data[i + 1], data[i + 2]);
+                if (bright <= 6) continue;
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+              }
+            }
+            if (maxX < minX || maxY < minY) return resolve(null);
+            resolve({ w, h, x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 });
+          } catch (err) {
+            resolve(null);
+          }
+        };
+        img.onerror = () => resolve(null);
+        img.src = key;
+      });
+      skillEffectCoreBoundsCache.set(key, promise);
+      return promise;
+    };
+    const getPetBattleStateCode = (scene, side) => {
+      const safeSide = side === "target" ? "target" : "attacker";
+      const src = normalize(safeSide === "target" ? (scene && scene.targetImage) : (scene && scene.attackerImage));
+      const match = src.match(/_(\d+)\.webp(?:\?|$)/);
+      return match ? match[1] : "1";
+    };
+    const getPetAnimLayoutStyle = (dexId, sideCode = "1", stateCode = "1", targetBodyH = 120, alignMode = "bottom") => {
+      const sideMeta = petActionLayout.value && petActionLayout.value[String(dexId)] && petActionLayout.value[String(dexId)][sideCode];
+      const idle = sideMeta && sideMeta.idle;
+      const action = sideMeta && sideMeta.actions && (sideMeta.actions[stateCode] || sideMeta.actions["1"]);
+      const idleBox = idle && Array.isArray(idle.bbox) ? idle.bbox : null;
+      const actionBox = action && Array.isArray(action.bbox) ? action.bbox : null;
+      if (!idle || !action || !idleBox || !actionBox) return {};
+      const idleH = Math.max(1, idleBox[3] - idleBox[1]);
+      const safeTargetBodyH = Math.max(1, Number(targetBodyH) || 120);
+      const scale = safeTargetBodyH / idleH;
+      const renderW = `${Math.max(1, Math.round((Number(action.w) || 1) * scale))}px`;
+      const renderH = `${Math.max(1, Math.round((Number(action.h) || 1) * scale))}px`;
+      const idleCenterX = (idleBox[0] + idleBox[2]) / 2;
+      const actionCenterX = (actionBox[0] + actionBox[2]) / 2;
+      const idleBottom = idleBox[3];
+      const actionBottom = actionBox[3];
+      const offsetX = alignMode === "center"
+        ? `${Math.round(((Number(action.w) || 1) / 2 - actionCenterX) * scale)}px`
+        : `${Math.round((idleCenterX - actionCenterX) * scale)}px`;
+      const offsetY = alignMode === "center"
+        ? `${Math.round(((Number(action.h) || 1) / 2 - (actionBox[1] + actionBox[3]) / 2) * scale)}px`
+        : `${Math.round((idleBottom - actionBottom) * scale)}px`;
+      const clipTop = `${(Math.max(0, actionBox[1]) / Math.max(1, Number(action.h) || 1) * 100).toFixed(4)}%`;
+      const clipRight = `${((Math.max(0, Number(action.w) || 1) - Math.min(Number(action.w) || 1, actionBox[2])) / Math.max(1, Number(action.w) || 1) * 100).toFixed(4)}%`;
+      const clipBottom = `${((Math.max(0, Number(action.h) || 1) - Math.min(Number(action.h) || 1, actionBox[3])) / Math.max(1, Number(action.h) || 1) * 100).toFixed(4)}%`;
+      const clipLeft = `${(Math.max(0, actionBox[0]) / Math.max(1, Number(action.w) || 1) * 100).toFixed(4)}%`;
+      return { renderW, renderH, offsetX, offsetY, clipTop, clipRight, clipBottom, clipLeft };
+    };
+    const getPetActionLayoutMeta = (dexId, sideCode = "1", stateCode = "1") => {
+      const sideMeta = petActionLayout.value && petActionLayout.value[String(dexId)] && petActionLayout.value[String(dexId)][sideCode];
+      const idle = sideMeta && sideMeta.idle;
+      const action = sideMeta && sideMeta.actions && (sideMeta.actions[stateCode] || sideMeta.actions["1"]);
+      const actionBox = action && Array.isArray(action.bbox) ? action.bbox : null;
+      if (!idle || !action || !actionBox) return null;
+      return { idle, action, actionBox };
+    };
+    const getBattleUiPx = (vw, vh) => clamp(Math.min(vw * 0.000625, vh * 0.001112), 0.72, 1.08);
+    const getBattleTargetSpriteRightX = (vw, vh) => {
+      const uiPx = getBattleUiPx(vw, vh);
+      if (vw <= 900) return (8 * uiPx) + (vw * 0.33);
+      return (32 * uiPx) + (vw * 0.28);
+    };
+    const getBattlePetAnimLayoutStyle = (dexId, sideCode, stateCode, targetBodyH) => {
+      const style = getPetAnimLayoutStyle(dexId, sideCode, stateCode, targetBodyH, "bottom");
+      const id = Number(dexId) || 0;
+      if (!style.renderW) return style;
+      const alignTargetRightEdge = (baseStyle) => {
+        if (String(sideCode) !== "1" || !baseStyle || !baseStyle.renderW) return baseStyle;
+        const meta = getPetActionLayoutMeta(id, sideCode, stateCode);
+        if (!meta) return baseStyle;
+        const frameW = Math.max(1, Number(meta.action && meta.action.w) || 1);
+        const renderW = Math.max(1, parseFloat(baseStyle.renderW) || 1);
+        const scale = renderW / frameW;
+        const bodyRight = Math.min(frameW, Number(meta.actionBox && meta.actionBox[2]) || frameW);
+        return {
+          ...baseStyle,
+          offsetX: `${Math.round((frameW - bodyRight) * scale)}px`
+        };
+      };
+      const rightAlignedStyle = alignTargetRightEdge(style);
+      if (String(sideCode) !== "1") return rightAlignedStyle;
+      const meta = getPetActionLayoutMeta(id, sideCode, stateCode);
+      if (!meta) return rightAlignedStyle;
+      const frameW = Math.max(1, Number(meta.action && meta.action.w) || 1);
+      const renderW = Math.max(1, parseFloat(rightAlignedStyle.renderW) || 1);
+      const scale = renderW / frameW;
+      const bodyLeft = Math.max(0, Number(meta.actionBox[0]) || 0);
+      const bodyRight = Math.min(frameW, Number(meta.actionBox[2]) || frameW);
+      const bodyW = Math.max(1, bodyRight - bodyLeft);
+      const frameH = Math.max(1, Number(meta.action && meta.action.h) || 1);
+      const bodyCenterY = ((Number(meta.actionBox[1]) || 0) + (Number(meta.actionBox[3]) || frameH)) / 2;
+      const centeredOffsetY = `${Math.round((frameH / 2 - bodyCenterY) * scale)}px`;
+      const vw = Math.max(1, Number(viewportSize.value && viewportSize.value.width) || 1700);
+      const vh = Math.max(1, Number(viewportSize.value && viewportSize.value.height) || 765);
+      const safeLeft = vw <= 900 ? 8 * getBattleUiPx(vw, vh) : 16 * getBattleUiPx(vw, vh);
+      const maxBodyW = Math.max(1, getBattleTargetSpriteRightX(vw, vh) - safeLeft);
+      const scaledBodyW = bodyW * scale;
+      if (scaledBodyW > maxBodyW) {
+        const cappedTargetBodyH = Math.max(1, Number(targetBodyH) || 1) * (maxBodyW / scaledBodyW);
+        const cappedStyle = alignTargetRightEdge(getPetAnimLayoutStyle(id, sideCode, stateCode, cappedTargetBodyH, "bottom"));
+        const cappedScale = (Math.max(1, parseFloat(cappedStyle.renderW) || 1)) / frameW;
+        return {
+          ...cappedStyle,
+          offsetY: `${Math.round((frameH / 2 - bodyCenterY) * cappedScale)}px`
+        };
+      }
+      return {
+        ...rightAlignedStyle,
+        offsetY: centeredOffsetY
+      };
+    };
+    const battlePetImageStyle = (side) => {
+      const scene = battleScene.value;
+      const safeSide = side === "target" ? "target" : "attacker";
+      const dexId = resolveBattleSideDexId(scene, safeSide);
+      const sideCode = safeSide === "target" ? "1" : "2";
+      const stateCode = getPetBattleStateCode(scene, safeSide);
+      const vw = Math.max(1, Number(viewportSize.value && viewportSize.value.width) || 1700);
+      const vh = Math.max(1, Number(viewportSize.value && viewportSize.value.height) || 765);
+      const targetBodyH = clamp(Math.min(vw * 0.252, vh * 0.252), vw * 0.14, vw * 0.266)
+        * (stateCode === "4" ? 1.18 : 1);
+      const style = getBattlePetAnimLayoutStyle(dexId, sideCode, stateCode, targetBodyH);
+      if (!style.renderW) return {};
+      return {
+        "--battle-pet-render-width": style.renderW,
+        "--battle-pet-render-height": style.renderH,
+        "--battle-pet-offset-x": style.offsetX,
+        "--battle-pet-offset-y": style.offsetY,
+        "--battle-pet-clip-top": style.clipTop || "0%",
+        "--battle-pet-clip-right": style.clipRight || "0%",
+        "--battle-pet-clip-bottom": style.clipBottom || "0%",
+        "--battle-pet-clip-left": style.clipLeft || "0%"
+      };
+    };
+    const petAnimImageStyle = (petOrDexId, targetBodyH = 96, side = "target") => {
+      const dexId = typeof petOrDexId === "object"
+        ? (Number(petOrDexId && petOrDexId.dexId) || Number(resolvePetCurrentDexId(petOrDexId)) || 0)
+        : (Number(petOrDexId) || 0);
+      const sideCode = side === "attacker" ? "2" : "1";
+      const style = getPetAnimLayoutStyle(dexId, sideCode, "1", targetBodyH, "center");
+      if (!style.renderW) return {};
+      return {
+        "--pet-anim-render-width": style.renderW,
+        "--pet-anim-render-height": style.renderH,
+        "--pet-anim-offset-x": style.offsetX,
+        "--pet-anim-offset-y": style.offsetY,
+        "--pet-anim-clip-top": style.clipTop || "0%",
+        "--pet-anim-clip-right": style.clipRight || "0%",
+        "--pet-anim-clip-bottom": style.clipBottom || "0%",
+        "--pet-anim-clip-left": style.clipLeft || "0%"
+      };
+    };
+    const bagFocusPetAnimImageStyle = (petOrDexId) => {
+      const dexId = typeof petOrDexId === "object"
+        ? (Number(petOrDexId && petOrDexId.dexId) || Number(resolvePetCurrentDexId(petOrDexId)) || 0)
+        : (Number(petOrDexId) || 0);
+      const vw = Math.max(1, Number(viewportSize.value && viewportSize.value.width) || 1700);
+      const vh = Math.max(1, Number(viewportSize.value && viewportSize.value.height) || 765);
+      const landscapeAndroid = isAndroidWebView && vw >= vh;
+      const targetBodyH = landscapeAndroid
+        ? Math.max(1, Math.min(vw * 0.13, vh * 0.46))
+        : Math.max(1, Math.min(vw * 0.24, vh * 0.44)) * 0.72;
+      const style = getPetAnimLayoutStyle(dexId, "1", "1", targetBodyH, "center");
+      if (!style.renderW) return {};
+      return {
+        "--pet-anim-render-width": style.renderW,
+        "--pet-anim-render-height": style.renderH,
+        "--pet-anim-offset-x": style.offsetX,
+        "--pet-anim-offset-y": style.offsetY,
+        "--pet-anim-clip-top": style.clipTop || "0%",
+        "--pet-anim-clip-right": style.clipRight || "0%",
+        "--pet-anim-clip-bottom": style.clipBottom || "0%",
+        "--pet-anim-clip-left": style.clipLeft || "0%"
+      };
+    };
+    const bagSlotPetAnimImageStyle = (petOrDexId) => {
+      const dexId = typeof petOrDexId === "object"
+        ? (Number(petOrDexId && petOrDexId.dexId) || Number(resolvePetCurrentDexId(petOrDexId)) || 0)
+        : (Number(petOrDexId) || 0);
+      const vw = Math.max(1, Number(viewportSize.value && viewportSize.value.width) || 1700);
+      const vh = Math.max(1, Number(viewportSize.value && viewportSize.value.height) || 765);
+      const targetBodyH = Math.max(1, Math.min(vw * 0.042, vh * 0.082));
+      const style = getPetAnimLayoutStyle(dexId, "1", "1", targetBodyH, "bottom");
+      if (!style.renderW) return {};
+      return {
+        "--pet-anim-render-width": style.renderW,
+        "--pet-anim-render-height": style.renderH,
+        "--pet-anim-offset-x": style.offsetX,
+        "--pet-anim-offset-y": style.offsetY,
+        "--pet-anim-clip-top": style.clipTop || "0%",
+        "--pet-anim-clip-right": style.clipRight || "0%",
+        "--pet-anim-clip-bottom": style.clipBottom || "0%",
+        "--pet-anim-clip-left": style.clipLeft || "0%"
+      };
+    };
+    const getBattlePreparePetAnimLayoutStyle = (dexId, targetBodyH, mode = "single") => {
+      const id = Number(dexId) || 0;
+      const safeMode = normalize(mode);
+      if (safeMode !== "team" || id < 797 || id > 1928) return getPetAnimLayoutStyle(id, "1", "1", targetBodyH, "bottom");
+      const meta = getPetActionLayoutMeta(id, "1", "1");
+      if (!meta) return {};
+      const { action, actionBox } = meta;
+      const bodyW = Math.max(1, actionBox[2] - actionBox[0]);
+      const bodyH = Math.max(1, actionBox[3] - actionBox[1]);
+      const frameW = Math.max(1, Number(action.w) || 1);
+      const frameH = Math.max(1, Number(action.h) || 1);
+      const frameLimitW = targetBodyH * 3.6;
+      const frameLimitH = targetBodyH * 3.6;
+      const bodyScale = targetBodyH / bodyH;
+      const frameScale = Math.min(frameLimitW / frameW, frameLimitH / frameH);
+      const scale = Math.max(0.01, Math.min(bodyScale, frameScale));
+      const renderW = `${Math.max(1, Math.round(frameW * scale))}px`;
+      const renderH = `${Math.max(1, Math.round(frameH * scale))}px`;
+      const bodyCenterX = (actionBox[0] + actionBox[2]) / 2;
+      const bodyCenterY = (actionBox[1] + actionBox[3]) / 2;
+      return {
+        renderW,
+        renderH,
+        offsetX: `${Math.round((frameW / 2 - bodyCenterX) * scale)}px`,
+        offsetY: `${Math.round((frameH / 2 - bodyCenterY) * scale)}px`,
+        clipTop: "0%",
+        clipRight: "0%",
+        clipBottom: "0%",
+        clipLeft: "0%"
+      };
+    };
+    const battlePreparePetAnimImageStyle = (petOrDexId, mode = "single") => {
+      const dexId = typeof petOrDexId === "object"
+        ? (Number(petOrDexId && petOrDexId.dexId) || Number(resolvePetCurrentDexId(petOrDexId)) || 0)
+        : (Number(petOrDexId) || 0);
+      const vw = Math.max(1, Number(viewportSize.value && viewportSize.value.width) || 1700);
+      const vh = Math.max(1, Number(viewportSize.value && viewportSize.value.height) || 765);
+      const safeMode = normalize(mode);
+      const targetBodyH = safeMode === "team"
+        ? Math.max(1, Math.min(vw * 0.07, vh * 0.13))
+        : (safeMode === "mini"
+          ? Math.max(1, Math.min(vw * 0.07, vh * 0.15))
+          : Math.max(1, Math.min(vw * 0.18, vh * 0.38)));
+      const style = getBattlePreparePetAnimLayoutStyle(dexId, targetBodyH, safeMode);
+      if (!style.renderW) return {};
+      return {
+        "--pet-anim-render-width": style.renderW,
+        "--pet-anim-render-height": style.renderH,
+        "--pet-anim-offset-x": style.offsetX,
+        "--pet-anim-offset-y": style.offsetY,
+        "--pet-anim-clip-top": style.clipTop || "0%",
+        "--pet-anim-clip-right": style.clipRight || "0%",
+        "--pet-anim-clip-bottom": style.clipBottom || "0%",
+        "--pet-anim-clip-left": style.clipLeft || "0%"
+      };
+    };
+    const warehousePetAnimImageStyle = (petOrDexId, mode = "list") => {
+      const dexId = typeof petOrDexId === "object"
+        ? (Number(petOrDexId && petOrDexId.dexId) || Number(resolvePetCurrentDexId(petOrDexId)) || 0)
+        : (Number(petOrDexId) || 0);
+      const vw = Math.max(1, Number(viewportSize.value && viewportSize.value.width) || 1700);
+      const vh = Math.max(1, Number(viewportSize.value && viewportSize.value.height) || 765);
+      const safeMode = normalize(mode);
+      const targetBodyH = safeMode === "action"
+        ? Math.max(1, Math.min(vw * 0.03, vh * 0.075))
+        : Math.max(1, Math.min(vw * 0.038, vh * 0.088));
+      const style = getPetAnimLayoutStyle(dexId, "1", "1", targetBodyH, "bottom");
+      if (!style.renderW) return {};
+      return {
+        "--pet-anim-render-width": style.renderW,
+        "--pet-anim-render-height": style.renderH,
+        "--pet-anim-offset-x": style.offsetX,
+        "--pet-anim-offset-y": style.offsetY,
+        "--pet-anim-clip-top": style.clipTop || "0%",
+        "--pet-anim-clip-right": style.clipRight || "0%",
+        "--pet-anim-clip-bottom": style.clipBottom || "0%",
+        "--pet-anim-clip-left": style.clipLeft || "0%"
+      };
+    };
+    const timeTunnelPetAnimImageStyle = (petOrDexId) => {
+      const dexId = typeof petOrDexId === "object"
+        ? (Number(petOrDexId && petOrDexId.dexId) || Number(resolvePetCurrentDexId(petOrDexId)) || 0)
+        : (Number(petOrDexId) || 0);
+      const targetBodyH = Math.max(1, Math.min(1700 * 0.22, 765 * 0.42));
+      const style = getPetAnimLayoutStyle(dexId, "1", "1", targetBodyH, "bottom");
+      if (!style.renderW) return {};
+      return {
+        "--pet-anim-render-width": style.renderW,
+        "--pet-anim-render-height": style.renderH,
+        "--pet-anim-offset-x": style.offsetX,
+        "--pet-anim-offset-y": style.offsetY,
+        "--pet-anim-clip-top": style.clipTop || "0%",
+        "--pet-anim-clip-right": style.clipRight || "0%",
+        "--pet-anim-clip-bottom": style.clipBottom || "0%",
+        "--pet-anim-clip-left": style.clipLeft || "0%"
+      };
+    };
+    const timeTunnelEnemyScaleStyle = () => ({ transform: "scale(3)" });
+    const getBattleSkillEffectId = (skill) => {
+      const name = normalizeSkillKey(skill && skill.name).replace(/[·.\s]/g, "");
+      return Number(FULLSCREEN_SKILL_EFFECT_ID_BY_NAME[name]) || Number(skill && skill.skillId) || 0;
+    };
     const getBattleSkillEffectPath = (skill, actionSeq = 0) => {
-      const id = Number(skill && skill.skillId) || 0;
+      const id = getBattleSkillEffectId(skill);
       if (id <= 0) return "";
       const cacheBust = actionSeq > 0 ? `?fx=${actionSeq}` : "";
-      return `${SKILL_EFFECT_ROOT}/effect${id}.gif${cacheBust}`;
+      const root = isFullscreenSkillEffect(skill) ? FULLSCREEN_SKILL_EFFECT_ROOT : SKILL_EFFECT_ROOT;
+      return `${root}/effect${id}.gif${cacheBust}`;
     };
     const bagPetVisual = (pet) => {
       if (!pet) return { src: PLACEHOLDER, animated: false };
@@ -5466,17 +7750,66 @@ createApp({
       const dexId = resolveBattleSideDexId(scene, side === "target" ? "target" : "attacker");
       return Boolean(getPetBattleAnimPath(dexId, side === "target" ? "target" : "attacker", "idle"));
     };
+    const buildFullscreenSkillEffectLayout = (bounds) => {
+      return {
+        width: "100vw",
+        height: "100vh",
+        left: "40%",
+        top: "50%"
+      };
+    };
     const battleSkillEffectStyle = (side) => {
-      const duration = Math.max(300, Number(battleScene.value && battleScene.value.skillEffectFx && battleScene.value.skillEffectFx.durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS);
+      const fx = battleScene.value && battleScene.value.skillEffectFx;
+      const duration = Math.max(120, Number(fx && fx.durationMs) || battleDelayMs(BATTLE_SKILL_EFFECT_DURATION_MS, 120));
+      if (side === "fullscreen") {
+        const layout = buildFullscreenSkillEffectLayout(fx && fx.coreBounds);
+        return {
+          "--skill-fx-duration": `${duration}ms`,
+          "--skill-fx-fullscreen-width": layout.width,
+          "--skill-fx-fullscreen-height": layout.height,
+          "--skill-fx-fullscreen-left": layout.left,
+          "--skill-fx-fullscreen-top": layout.top
+        };
+      }
       const localX = side === "target" ? "52%" : "48%";
       return { "--skill-fx-local-x": localX, "--skill-fx-local-y": "50%", "--skill-fx-duration": `${duration}ms` };
     };
+    const battleStatusEffectStyle = (side) => {
+      const duration = Math.max(360, battleDelayMs(STATUS_ANIM_DURATION_MS, 180));
+      const localX = side === "target" ? "52%" : "48%";
+      return { "--status-fx-local-x": localX, "--status-fx-local-y": "50%", "--status-fx-duration": `${duration}ms` };
+    };
+    const showBattleStatusEffectFx = (scene, side, statuses = []) => {
+      if (!scene || !Array.isArray(statuses) || statuses.length === 0) return;
+      const first = statuses.find((x) => x && normalize(x.status || x.key || x.label)) || statuses[0];
+      const statusKey = normalize(first && (first.status || first.key));
+      const label = normalize(first && first.label) || statusLabel(statusKey) || "";
+      const fileLabel = STATUS_ANIM_FILE_MAP[statusKey] || label;
+      if (!fileLabel) return;
+      const seq = Date.now() + Math.random();
+      scene.statusEffectFx = {
+        side: side === "target" ? "target" : "attacker",
+        src: `./pet-state/${fileLabel}.gif`,
+        label,
+        seq,
+        durationMs: battleSceneDelayMs(scene, STATUS_ANIM_DURATION_MS, 180)
+      };
+      setTimeout(() => {
+        const live = battleScene.value;
+        if (!live || live !== scene || !live.statusEffectFx || live.statusEffectFx.seq !== seq) return;
+        live.statusEffectFx = null;
+      }, scene.statusEffectFx.durationMs + 80);
+    };
     const setBattleSkillEffectFx = (scene, fx, durationMs, expireMs) => {
       if (!scene || !fx) return;
-      const safeDuration = Math.max(BATTLE_SKILL_EFFECT_DURATION_MS, Number(durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS);
-      const safeExpire = Math.max(safeDuration, Number(expireMs) || safeDuration);
+      const safeDuration = battleSceneDelayMs(scene, Number(durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS, 120);
+      const safeExpire = Math.max(safeDuration, battleSceneDelayMs(scene, Number(expireMs) || Number(durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS, 120));
       scene.skillEffectFx = { ...fx, durationMs: safeDuration };
       scene._skillEffectUntil = Date.now() + safeExpire;
+    };
+    const isFullscreenSkillEffect = (skill) => {
+      const name = normalizeSkillKey(skill && skill.name).replace(/[·.\s]/g, "");
+      return FULLSCREEN_SKILL_EFFECT_NAMES.has(name);
     };
     const clearBattleSkillEffectFxIfExpired = (scene, seq) => {
       if (!scene || !scene.skillEffectFx) return;
@@ -5516,7 +7849,7 @@ createApp({
             const live = battleScene.value;
             if (!live || live !== scene || live.ended) return;
             applyBattleAnimImage(live, "target", "idle");
-            }, Math.max(1, duration));
+            }, battleSceneDelayMs(scene, duration, 80));
           });
         } else {
           scene._petAnimTargetPlayLock = false;
@@ -5535,7 +7868,7 @@ createApp({
           const live = battleScene.value;
           if (!live || live !== scene || live.ended) return;
           applyBattleAnimImage(live, "attacker", "idle");
-          }, Math.max(1, duration));
+          }, battleSceneDelayMs(scene, duration, 80));
         });
       } else {
         scene._petAnimAttackerPlayLock = false;
@@ -5551,11 +7884,21 @@ createApp({
       return effects.some((e) => {
         const kind = normalize(e && e.kind);
         const target = normalize(e && e.target) || "self";
-        if (target !== "self") return false;
-        if (kind === "heal" || kind === "healFlat" || kind === "healFlatTeam" || kind === "timedHeal") return true;
-        if (kind === "windGodPossession") return true;
-        if (kind === "attackImmunity" || kind === "stageGuard" || kind === "damageReduction" || kind === "healOverTime") return true;
-        if (kind === "globalElementPower" || kind === "elementPowerBuff" || kind === "delayedStage") return true;
+        const selfDestination = target === "self"
+          || normalize(e && e.copyTo) === "self"
+          || normalize(e && e.to) === "self"
+          || normalize(e && e.applyTo) === "self";
+        if (!selfDestination) return false;
+        if ([
+          "heal", "healFlat", "healFlatTeam", "timedHeal", "healOverTime", "flatHealOverTime", "endTurnHealFlat",
+          "statusCure", "statusShield", "stageGuard",
+          "attackImmunity", "diminishingAttackImmunity", "damageAbsorb", "diminishingDamageAbsorb",
+          "damageShield", "damageShieldByDamage", "damageReduction", "typedDamageReduction", "damageBoost",
+          "damageReflect", "damageReflectFlat", "recoilByDamage",
+          "windGodPossession", "elementShelter", "elementChange", "elementDamageReduction",
+          "globalElementPower", "elementPowerBuff", "delayedStage", "timedStage",
+          "copyStage", "transferStage", "transferStatus", "swapStage", "swapStagePairs", "lastStand"
+        ].includes(kind)) return true;
         if (kind === "stage" || kind === "critStage") return Number(e && e.delta) > 0;
         return false;
       });
@@ -5568,14 +7911,16 @@ createApp({
       const effectSide = (actionStateKey === "status" || atkKind === "status")
         ? (isSelfSideStatusSkillFx(skill) ? actorSide : targetSide)
         : targetSide;
+      const visualSide = isFullscreenSkillEffect(skill) ? "fullscreen" : effectSide;
       const actorDexId = resolveBattleSideDexId(scene, actorSide);
       const actionSrc = getPetBattleAnimPath(actorDexId, actorSide, actionStateKey);
       const effectSrc = getBattleSkillEffectPath(skill, actionSeq);
       const runAfterEffect = () => {
         if (typeof afterEffect === "function") afterEffect();
       };
+      markBattleDefeatVisualHold(scene, 1);
       getAnimatedWebpDurationMs(actionSrc).then((duration) => {
-        const actionDelay = Math.max(1, Number(duration) || PET_ANIM_FALLBACK_IDLE_DELAY_MS);
+        const actionDelay = battleSceneDelayMs(scene, Number(duration) || PET_ANIM_FALLBACK_IDLE_DELAY_MS, 80);
         setTimeout(() => {
           const live = battleScene.value;
           if (!live || live !== scene || live.ended) {
@@ -5587,26 +7932,42 @@ createApp({
             return;
           }
           getAnimatedGifTiming(effectSrc).then((effectTiming) => {
-            const holdMs = Math.max(BATTLE_SKILL_EFFECT_DURATION_MS, Number(effectTiming && effectTiming.durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS);
-            const removeMs = Math.max(holdMs, Number(effectTiming && effectTiming.removeMs) || holdMs);
+            const rawHoldMs = Math.max(BATTLE_SKILL_EFFECT_DURATION_MS, Number(effectTiming && effectTiming.durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS);
+            const rawRemoveMs = Math.max(rawHoldMs, Number(effectTiming && effectTiming.removeMs) || rawHoldMs);
+            const removeMs = battleSceneDelayMs(scene, rawRemoveMs, 120);
             const singleLoopSrc = (effectTiming && effectTiming.src) || effectSrc;
-            setBattleSkillEffectFx(scene, { side: effectSide, src: singleLoopSrc, seq: actionSeq }, holdMs, removeMs);
+            const applyFx = (coreBounds = null) => setBattleSkillEffectFx(scene, { side: visualSide, src: singleLoopSrc, seq: actionSeq, coreBounds }, rawHoldMs, rawRemoveMs);
+            if (visualSide === "fullscreen") {
+              getSkillEffectCoreBounds(singleLoopSrc).then((bounds) => {
+                const current = battleScene.value;
+                if (current && current === scene && scene.skillEffectFx && scene.skillEffectFx.seq === actionSeq) scene.skillEffectFx.coreBounds = bounds;
+              });
+            }
+            applyFx(null);
+            markBattleDefeatVisualHold(scene, 1);
             setTimeout(() => {
               const current = battleScene.value;
               if (current && current === scene) clearBattleSkillEffectFxIfExpired(scene, actionSeq);
               runAfterEffect();
             }, removeMs);
           }).catch(() => {
-            setBattleSkillEffectFx(scene, { side: effectSide, src: effectSrc, seq: actionSeq }, BATTLE_SKILL_EFFECT_DURATION_MS);
+            if (visualSide === "fullscreen") {
+              getSkillEffectCoreBounds(effectSrc).then((bounds) => {
+                const current = battleScene.value;
+                if (current && current === scene && scene.skillEffectFx && scene.skillEffectFx.seq === actionSeq) scene.skillEffectFx.coreBounds = bounds;
+              });
+            }
+            setBattleSkillEffectFx(scene, { side: visualSide, src: effectSrc, seq: actionSeq, coreBounds: null }, BATTLE_SKILL_EFFECT_DURATION_MS);
+            markBattleDefeatVisualHold(scene, 1);
             setTimeout(() => {
               const current = battleScene.value;
               if (current && current === scene) clearBattleSkillEffectFxIfExpired(scene, actionSeq);
               runAfterEffect();
-            }, BATTLE_SKILL_EFFECT_DURATION_MS);
+            }, battleSceneDelayMs(scene, BATTLE_SKILL_EFFECT_DURATION_MS, 120));
           });
         }, actionDelay);
       }).catch(() => {
-        setTimeout(runAfterEffect, BATTLE_DAMAGE_VISUAL_DELAY_MS);
+        setTimeout(runAfterEffect, battleSceneDelayMs(scene, BATTLE_DAMAGE_VISUAL_DELAY_MS, 120));
       });
     };
     const buildBattleUnitFromPet = (pet) => {
@@ -5652,7 +8013,7 @@ createApp({
         battleState: createBattleState()
       };
     };
-    const buildBattleTarget = ({ entry, level, forceHpRace500 = false, hpRaceOverride = null, hpRaceMultiplier = null, talentOverride = null, studyOverride = null, displayName = "", displayImage = "" }) => {
+    const buildBattleTarget = ({ entry, level, forceHpRace500 = false, hpRaceOverride = null, hpRaceMultiplier = null, battleBoostRatio = 0, talentOverride = null, studyOverride = null, displayName = "", displayImage = "" }) => {
       if (!entry) return null;
       const species = getSpeciesByDexId(entry.dexId, entry.name);
       if (!species || !species.raceStats) return null;
@@ -5670,7 +8031,18 @@ createApp({
         spDef: safeNonNegInt(species.raceStats.spDef),
         speed: safeNonNegInt(species.raceStats.speed)
       };
-      const ability = calcPetAbilityByRace(race, level, talentOverride || createUniformTalent30(), studyOverride || createZeroStats());
+      const baseAbility = calcPetAbilityByRace(race, level, talentOverride || createUniformTalent30(), studyOverride || createZeroStats());
+      const boostRatio = Number(battleBoostRatio) || 0;
+      const ability = boostRatio > 0
+        ? (() => {
+            const next = { ...baseAbility };
+            BATTLE_ABILITY_KEYS.forEach((key) => {
+              next[key] = Math.max(1, Math.floor((Number(next[key]) || 0) * (1 + boostRatio)));
+            });
+            next.total = calcAbilityTotal(next);
+            return next;
+          })()
+        : baseAbility;
       const targetUnlockedSkills = (species.skills || []).filter((s) => Number(s.level) <= level).map((s) => ({
         skillId: Number(s && s.skillId) || null,
         dexId: Number(entry && entry.dexId) || Number(s && s.dexId) || 0,
@@ -5702,26 +8074,138 @@ createApp({
         battleState: createBattleState()
       };
     };
-    const setupBattleScene = ({ targetEntry, targetLevel, forceTargetHpRace500 = false, targetHpRaceOverride = null, targetHpRaceMultiplier = null, targetTalentOverride = null, targetStudyOverride = null, mode = "normal", guardianMeta = null, autoBattleMeta = null }) => {
+    const normalizeTargetSkill = (skill, entry) => ({
+      skillId: Number(skill && skill.skillId) || null,
+      dexId: Number(entry && entry.dexId) || Number(skill && skill.dexId) || 0,
+      skillKey: normalize(skill && skill.skillKey) || `${normalizeSkillKey(skill && skill.name)}#${normalize(skill && skill.element) || normalize(entry && entry.element) || "未知系"}`,
+      name: normalizeSkillKey(skill && skill.name) || "未知技能",
+      attackTypeCode: Number.isFinite(Number(skill && skill.attackTypeCode)) ? Number(skill.attackTypeCode) : null,
+      attackTypeLabel: normalize(skill && skill.attackTypeLabel),
+      type: buildSkillTypeText(
+        normalize(skill && skill.type) || `${normalize(skill && skill.element) || normalize(entry && entry.element) || "未知系"}/${normalize(skill && skill.attackTypeLabel) || "普通攻击"}`,
+        skill && skill.attackTypeCode,
+        skill && skill.attackTypeLabel
+      ),
+      power: Number(skill && skill.power) > 0 ? Number(skill.power) : 0,
+      ppMax: Math.max(1, Number(skill && (skill.ppMax || skill.pp)) || 10),
+      pp: Math.max(1, Number(skill && (skill.pp || skill.ppMax)) || 10),
+      level: Math.max(0, Number(skill && skill.level) || 0),
+      accuracy: safeSkillAccuracy(skill),
+      desc: normalize(skill && skill.desc)
+    });
+    const applyTimeTunnelTargetSkills = (target, entry) => {
+      if (!target || !entry) return target;
+      const extras = TIME_TUNNEL_EXTRA_SKILLS_BY_DEX_ID[Number(entry.dexId) || 0];
+      if (!Array.isArray(extras) || extras.length === 0) return target;
+      if (Number(entry.dexId) === 461) {
+        target.skills = extras.map((skill) => normalizeTargetSkill(skill, entry));
+        return target;
+      }
+      const seen = new Set((Array.isArray(target.skills) ? target.skills : []).map((s) => normalizeSkillKey(s && s.name)).filter(Boolean));
+      extras.forEach((skill) => {
+        const name = normalizeSkillKey(skill && skill.name);
+        if (!name || seen.has(name)) return;
+        target.skills.push(normalizeTargetSkill(skill, entry));
+        seen.add(name);
+      });
+      return target;
+    };
+    const buildTimeTunnelTarget = (enemy) => {
+      const dexId = Number(enemy && enemy.dexId) || 0;
+      const entry = dexById.get(dexId);
+      if (!entry) return null;
+      const species = getSpeciesByDexId(entry.dexId, entry.name);
+      const baseRace = species && species.raceStats ? species.raceStats : createZeroStats();
+      const study = createGuardianStudy();
+      study.hp = 0;
+      const raceHp = Math.max(1, Math.round(safeNonNegInt(baseRace.hp) * 5));
+      const target = buildBattleTarget({
+        entry,
+        level: clamp(Number(enemy && enemy.level) || 1, 1, 100),
+        talentOverride: createUniformTalent30(),
+        studyOverride: study,
+        displayName: entry.name,
+        displayImage: getTimeTunnelBattleAnimSrc(entry.dexId),
+        forceHpRace500: false,
+        hpRaceOverride: raceHp,
+        battleBoostRatio: 0
+      });
+      return applyTimeTunnelTargetSkills(target, entry);
+    };
+    const hasTimeTunnelEnvironmentElement = (unit, environmentElement) => {
+      const envElement = normalizeElementName(environmentElement);
+      if (!envElement) return false;
+      return normalizeElementName(unit && unit.element) === envElement || normalizeElementName(unit && unit.subElement) === envElement;
+    };
+    const applyTimeTunnelEnvironmentBuffToUnit = (unit, environmentElement) => {
+      if (!unit || !hasTimeTunnelEnvironmentElement(unit, environmentElement)) return unit;
+      const nextAbility = { ...(unit.ability || {}) };
+      BATTLE_ABILITY_KEYS.forEach((key) => {
+        if (Number(nextAbility[key]) > 0) nextAbility[key] = Math.floor(Number(nextAbility[key]) * 1.1);
+      });
+      unit.ability = nextAbility;
+      unit.maxHp = Math.max(1, Number(nextAbility.hp) || Number(unit.maxHp) || 1);
+      unit.hp = unit.maxHp;
+      unit._timeTunnelEnvironmentBuffed = true;
+      return unit;
+    };
+    const openTimeTunnelDoor = (scene) => {
+      if (!scene) return;
+      const floor = Math.max(1, Math.floor(Number(scene.floor) || 1));
+      if (floor >= TIME_TUNNEL_OPEN_MAX_FLOOR) return;
+      timeTunnelDoorScene.value = {
+        floor,
+        environment: scene.environment || null,
+        enemies: Array.isArray(scene.enemies) ? scene.enemies : [],
+        nextFloor: floor + 1
+      };
+    };
+    const enterTimeTunnelNextFloor = () => {
+      const door = timeTunnelDoorScene.value;
+      if (!door) return;
+      timeTunnelDoorScene.value = null;
+      const nextFloor = Math.max(1, Math.floor(Number(door.nextFloor) || 1));
+      if (nextFloor > TIME_TUNNEL_OPEN_MAX_FLOOR) return showToast("下一层尚未开放。");
+      timeTunnelSelectedFloor.value = nextFloor;
+      showTimeTunnelPanel.value = false;
+      const scene = buildTimeTunnelFloorScene(nextFloor);
+      if (!scene) return;
+      timeTunnelEnvironmentScene.value = scene;
+      showTimeTunnelEnvironmentPanel.value = true;
+      playSceneBgm(TIME_TUNNEL_BGM_SRC);
+    };
+    const setupBattleScene = ({ targetEntry, targetLevel, forceTargetHpRace500 = false, targetHpRaceOverride = null, targetHpRaceMultiplier = null, targetTalentOverride = null, targetStudyOverride = null, mode = "normal", guardianMeta = null, autoBattleMeta = null, timeTunnelMeta = null }) => {
+      battleSpeed.value = 1;
+      if (state.value && typeof state.value === "object") state.value.battleSpeed = 1;
+      writeBattleSpeed(1);
       const team = bagPets.value.map((pet) => buildBattleUnitFromPet(pet)).filter(Boolean);
       if (team.length === 0) {
         showToast("背包中没有可出战亚比。");
         return false;
       }
-      const target = buildBattleTarget({
-        entry: targetEntry,
-        level: targetLevel,
-        forceHpRace500: forceTargetHpRace500,
-        hpRaceOverride: targetHpRaceOverride,
-        hpRaceMultiplier: targetHpRaceMultiplier,
-        talentOverride: targetTalentOverride,
-        studyOverride: targetStudyOverride,
-        displayName: mode === "normal" ? targetEntry.name : targetEntry.name,
-        displayImage: targetEntry.image
-      });
+      if (mode === "timeTunnel" && timeTunnelMeta && timeTunnelMeta.environmentElement) {
+        team.forEach((unit) => applyTimeTunnelEnvironmentBuffToUnit(unit, timeTunnelMeta.environmentElement));
+      }
+      const target = mode === "timeTunnel"
+        ? buildTimeTunnelTarget({ dexId: Number(targetEntry && targetEntry.dexId) || 0, level: targetLevel })
+        : buildBattleTarget({
+          entry: targetEntry,
+          level: targetLevel,
+          forceHpRace500: forceTargetHpRace500,
+          hpRaceOverride: targetHpRaceOverride,
+          hpRaceMultiplier: targetHpRaceMultiplier,
+          battleBoostRatio: Number(guardianMeta && guardianMeta.statBoostRatio) || 0,
+          talentOverride: targetTalentOverride,
+          studyOverride: targetStudyOverride,
+          displayName: mode === "normal" ? targetEntry.name : targetEntry.name,
+          displayImage: targetEntry.image
+        });
       if (!target) {
         showToast("挑战目标缺少可用种族值或技能数据。");
         return false;
+      }
+      if (mode === "timeTunnel" && timeTunnelMeta && timeTunnelMeta.environmentElement) {
+        applyTimeTunnelEnvironmentBuffToUnit(target, timeTunnelMeta.environmentElement);
       }
       const expMultiplier = mode !== "study" && consumeItemCount("double_exp_device", 1) ? 2 : 1;
       battleScene.value = {
@@ -5729,8 +8213,10 @@ createApp({
         ended: false,
         win: false,
         mode,
+        battleSpeed: clampBattleSpeed(battleSpeed.value),
         guardianMeta: guardianMeta || null,
         studyMeta: mode === "study" ? (guardianMeta || null) : null,
+        timeTunnelMeta: timeTunnelMeta || null,
         autoBattleMeta: autoBattleMeta || null,
         expMultiplier,
         team,
@@ -5787,6 +8273,8 @@ createApp({
         healOnTarget: "",
         damageTagOnAttacker: "",
         damageTagOnTarget: "",
+        actionNoticeOnAttacker: "",
+        actionNoticeOnTarget: "",
         critOnAttacker: false,
         critOnTarget: false,
         skillEffectFx: null,
@@ -5798,16 +8286,20 @@ createApp({
         comboTotalOnTarget: "",
         comboTotalDelayOnAttacker: 0,
         comboTotalDelayOnTarget: 0,
+        statusEffectFx: null,
         forceDefeatSide: "",
         pendingEndTurnTick: false,
         pendingFinish: false
       };
       battleActionTab.value = "skills";
       resetBattleAnimIdle(battleScene.value);
-      const startLog = mode === "guardian" ? "守护者挑战开始。挑战方先手。" : (mode === "boss" ? "BOSS挑战开始。挑战方先手。" : (mode === "study" ? `${guardianMeta && guardianMeta.label ? guardianMeta.label : ""}学习力战场开始。挑战方先手。` : "对战开始。挑战方先手。"));
+      const startLog = mode === "guardian" ? "守护者挑战开始。按速度和技能优先度决定先手。" : (mode === "boss" ? "BOSS挑战开始。按速度和技能优先度决定先手。" : (mode === "timeTunnel" ? `时空隧道第${timeTunnelMeta && timeTunnelMeta.floor ? timeTunnelMeta.floor : 1}层开始。击败本层全部亚比才能开启下一层。` : (mode === "study" ? `${guardianMeta && guardianMeta.label ? guardianMeta.label : ""}学习力战场开始。按速度和技能优先度决定先手。` : "对战开始。按速度和技能优先度决定先手。")));
       pushBattleLog(battleScene.value, startLog);
       if (expMultiplier > 1) pushBattleLog(battleScene.value, `双倍经验器生效，本场胜利经验变为 ${expMultiplier} 倍。`);
       if (autoBattleMeta) pushBattleLog(battleScene.value, `自动战斗仪生效，本轮剩余自动挑战 ${Math.max(0, Number(autoBattleMeta.remainingAfterStart) || 0)} 次。`);
+      if (mode === "timeTunnel" && timeTunnelMeta && timeTunnelMeta.environmentElement) {
+        pushBattleLog(battleScene.value, `${timeTunnelMeta.environmentName || "时空环境"}展开，${timeTunnelMeta.environmentElement}亚比全属性数值提升10%。`);
+      }
       pushBattleLog(battleScene.value, "第1回合开始。");
       playBattleBgm();
       if (autoBattleMeta) scheduleAutoBattlePlayerAction(battleScene.value, 650);
@@ -5832,11 +8324,80 @@ createApp({
         if (!live || live !== scene || live.ended || live.pendingFinish || live.isActing || !live.autoBattleMeta || !autoBattleRun.value) return;
         const skill = pickAutoBattleSkill(live);
         if (!skill) {
-          finalizeBattleScene(live, false, "自动战斗可用技能不足");
+          stopAutoBattleRun("我方可用技能PP不足，自动战斗已停止。");
+          pushBattleLog(live, "我方可用技能PP不足，自动战斗已停止，可手动使用道具或换宠。");
+          live.isActing = false;
           return;
         }
         castBattleSkill(skill.name);
-      }, Math.max(0, Number(delayMs) || 0));
+      }, battleSceneDelayMs(scene, Math.max(0, Number(delayMs) || 0), 0));
+    };
+    const scheduleTurnSequencePlayerAction = (scene = battleScene.value, delayMs = 500) => {
+      if (!scene || !getTurnSequenceAttackEffect(scene, "attacker")) return;
+      setTimeout(() => {
+        const live = battleScene.value;
+        if (!live || live !== scene || live.ended || live.pendingFinish || live.isActing) return;
+        const fx = getTurnSequenceAttackEffect(live, "attacker");
+        const skillName = normalize(fx && fx.data && fx.data.skill && fx.data.skill.name);
+        if (!skillName) return;
+        castBattleSkill(skillName);
+      }, battleSceneDelayMs(scene, Math.max(0, Number(delayMs) || 0), 0));
+    };
+    const playTimeTunnelMoraleFx = (scene) => {
+      if (!scene) return;
+      scene.actionNoticeOnTarget = "斗志激发";
+      scene.statusEffectFx = {
+        side: "target",
+        src: "./pet-state/斗志.gif",
+        label: "斗志",
+        seq: Date.now() + Math.random(),
+        durationMs: battleSceneDelayMs(scene, 1400, 240)
+      };
+      markBattleFloatText(scene);
+      const seq = scene.statusEffectFx.seq;
+      setTimeout(() => {
+        const live = battleScene.value;
+        if (!live || live !== scene || !live.statusEffectFx || live.statusEffectFx.seq !== seq) return;
+        live.statusEffectFx = null;
+      }, scene.statusEffectFx.durationMs + 120);
+    };
+    const switchTimeTunnelNextTarget = (scene) => {
+      if (!scene || scene.mode !== "timeTunnel" || !scene.timeTunnelMeta) return false;
+      const meta = scene.timeTunnelMeta;
+      const enemies = Array.isArray(meta.enemies) ? meta.enemies : [];
+      const nextIndex = Math.max(0, Math.floor(Number(meta.index) || 0)) + 1;
+      const nextEnemy = enemies[nextIndex];
+      if (!nextEnemy) return false;
+      const target = buildTimeTunnelTarget(nextEnemy);
+      if (!target) return false;
+      if (meta.environmentElement) applyTimeTunnelEnvironmentBuffToUnit(target, meta.environmentElement);
+      meta.index = nextIndex;
+      scene.targetDexId = target.dexId;
+      scene.targetName = target.name;
+      scene.targetImage = target.image;
+      scene.targetLevel = target.level;
+      scene.targetElement = target.element;
+      scene.targetSubElement = target.subElement;
+      scene.targetAbility = target.ability;
+      scene.targetHp = target.hp;
+      scene.targetMaxHp = target.maxHp;
+      scene.uiTargetHp = target.hp;
+      scene.uiTargetMaxHp = target.maxHp;
+      scene.targetState = normalizeBattleState(target.battleState);
+      applyStageDelta(scene, "target", ALL_ABILITY_STAGE_KEYS, 1);
+      scene.targetSkills = target.skills;
+      scene.globalTimedEffects = [];
+      scene.fxTargetDefeated = false;
+      scene.fxTargetShake = false;
+      scene.damageOnTarget = "";
+      scene.healOnTarget = "";
+      scene.damageTagOnTarget = "";
+      scene.comboHitsOnTarget = [];
+      scene.comboTotalOnTarget = "";
+      resetBattleAnimIdle(scene);
+      pushBattleLog(scene, `${target.name} Lv.${target.level} 上场，斗志激发，全属性提升1级。`);
+      playTimeTunnelMoraleFx(scene);
+      return true;
     };
     const scheduleBattleDefeatResolution = (scene, defeatedSide, reason = "") => {
       if (!scene || scene.ended || scene.pendingFinish) return;
@@ -5844,6 +8405,17 @@ createApp({
       scene.pendingEndTurnTick = false;
       scene.isActing = true;
       if (scene._defeatExitTimer) clearTimeout(scene._defeatExitTimer);
+      const visualHoldUntil = Math.max(
+        Number(scene._defeatVisualHoldUntil) || 0,
+        Number(scene._skillEffectUntil) || 0,
+        Number(scene._floatTextUntil) || 0
+      );
+      const visualHoldDelay = Math.max(0, visualHoldUntil - Date.now());
+      const exitDelay = Math.max(BATTLE_DEFEAT_EXIT_START_DELAY_MS, visualHoldDelay);
+      const resolutionDelay = Math.max(
+        BATTLE_DEFEAT_RESOLUTION_DELAY_MS,
+        exitDelay + BATTLE_DEFEAT_EXIT_DURATION_MS
+      );
       scene._defeatExitTimer = setTimeout(() => {
         const live = battleScene.value;
         if (!live || live !== scene || scene.ended) return;
@@ -5855,12 +8427,18 @@ createApp({
           scene.fxAttackerShake = false;
           scene.fxAttackerDefeated = true;
         }
-      }, BATTLE_DEFEAT_EXIT_START_DELAY_MS);
+      }, battleSceneDelayMs(scene, exitDelay, 120));
       setTimeout(() => {
         const live = battleScene.value;
         if (!live || live !== scene || scene.ended) return;
         scene.pendingFinish = false;
         if (defeatedSide === "target") {
+          if (switchTimeTunnelNextTarget(scene)) {
+            scene.isActing = false;
+            scene.pendingEndTurnTick = false;
+            pushBattleLog(scene, `第${scene.turnCount}回合继续。`);
+            return;
+          }
           finalizeBattleScene(scene, true, reason);
           return;
         }
@@ -5878,7 +8456,7 @@ createApp({
           return;
         }
         finalizeBattleScene(scene, false, reason || "我方背包亚比全部倒下");
-      }, Math.max(BATTLE_DEFEAT_RESOLUTION_DELAY_MS, BATTLE_DEFEAT_EXIT_START_DELAY_MS + BATTLE_DEFEAT_EXIT_DURATION_MS));
+      }, battleSceneDelayMs(scene, resolutionDelay, 180));
     };
     const resolveBattleDefeatIfNeeded = (scene, reason = "") => {
       if (!scene || scene.ended || scene.pendingFinish) return false;
@@ -5934,6 +8512,11 @@ createApp({
     };
     const pickTargetSkill = (scene, candidates) => {
       let list = Array.isArray(candidates) ? candidates.filter((s) => s && s.pp > 0) : [];
+      if (scene && scene.mode === "timeTunnel" && Number(scene.targetDexId) === 461) {
+        const fixedSkillNames = TIME_TUNNEL_EXTRA_SKILLS_BY_DEX_ID[461].map((skill) => normalize(skill && skill.name));
+        const preferred = list.filter((s) => fixedSkillNames.includes(normalize(s && s.name)));
+        if (preferred.length > 0) return preferred[Math.floor(Math.random() * preferred.length)];
+      }
       if (scene && scene.mode === "boss" && Math.max(1, Number(scene.turnCount) || 1) === 1) {
         const bossName = resolveBossName(scene.targetName);
         const fixedName = bossName === "骰子大王" ? "骰子炸弹" : (bossName === "龙族大法师" ? "风神附体" : "");
@@ -5948,13 +8531,27 @@ createApp({
         if (safeList.length > 0) list = safeList;
       }
       if (list.length <= 1) return list[0] || null;
-      if (!scene || scene.mode !== "guardian") return list[Math.floor(Math.random() * list.length)];
+      const isHardChallenge = scene && (scene.mode === "guardian" || scene.mode === "boss");
+      if (!isHardChallenge) return list[Math.floor(Math.random() * list.length)];
       const maxPower = Math.max(...list.map((s) => Math.max(0, Number(s.power) || 0)), 0);
       const weights = list.map((s) => {
         const power = Math.max(0, Number(s.power) || 0);
-        if (power <= 0 || maxPower <= 0) return 1;
-        const ratio = power / maxPower;
-        return 1 + Math.pow(ratio, 2) * 4;
+        const effects = parseSkillEffects(s);
+        const selfBoostScore = effects.reduce((sum, e) => {
+          const kind = normalize(e && e.kind);
+          const target = normalize(e && e.target);
+          if (target !== "self") return sum;
+          if (kind === "stage") {
+            const keys = Array.isArray(e.keys) ? e.keys : [];
+            const usefulKeys = keys.filter((k) => ["atk", "spAtk", "def", "spDef", "speed", "accuracy", "critStage"].includes(normalize(k))).length;
+            return sum + Math.max(0, Number(e.delta) || 0) * Math.max(1, usefulKeys);
+          }
+          if (kind === "critStage") return sum + Math.max(0, Number(e.delta) || 1);
+          if (kind === "damageBoost") return sum + Math.max(1, Math.round(((Number(e.factor) || 1) - 1) * 8));
+          return sum;
+        }, 0);
+        const powerScore = power > 0 && maxPower > 0 ? Math.pow(power / maxPower, 2) * 6 : 0;
+        return Math.max(1, 1 + powerScore + selfBoostScore * 2.5);
       });
       const total = weights.reduce((sum, n) => sum + n, 0);
       let roll = Math.random() * total;
@@ -5964,31 +8561,162 @@ createApp({
       }
       return list[list.length - 1];
     };
-    const useGuardianAutoPpBean = (scene) => {
-      if (!scene || scene.mode !== "guardian" || !Array.isArray(scene.targetSkills)) return false;
+    const useTargetAutoPpBean = (scene) => {
+      if (!scene || !Array.isArray(scene.targetSkills)) return false;
       let restored = 0;
       scene.targetSkills.forEach((s) => {
         if (!s) return;
         const cur = Math.max(0, Number(s.pp) || 0);
         const mx = Math.max(1, Number(s.ppMax) || cur || 1);
-        restored += Math.max(0, mx - cur);
-        s.pp = mx;
+        const next = mx;
+        restored += Math.max(0, next - cur);
+        s.pp = next;
+        s.ppMax = Math.max(mx, next);
       });
       scene.ppOnTarget = `PP+${restored}`;
       markBattleFloatText(scene);
-      pushBattleLog(scene, `${scene.targetName} 技能 PP 不足，自动使用 PP 豆回复 ${restored} PP，本回合不攻击。`);
-      scene.pendingEndTurnTick = true;
+      pushBattleLog(scene, `${scene.targetName} 技能 PP 不足，自动使用高级PP豆回复 ${restored} PP。`);
       return true;
+    };
+    const targetNeedsAutoPpBean = (scene) => {
+      const skills = scene && Array.isArray(scene.targetSkills) ? scene.targetSkills : [];
+      const totals = skills.reduce((acc, s) => {
+        if (!s) return acc;
+        const cur = Math.max(0, Number(s.pp) || 0);
+        const mx = Math.max(cur, Number(s.ppMax) || cur || 0);
+        acc.current += cur;
+        acc.max += mx;
+        return acc;
+      }, { current: 0, max: 0 });
+      return totals.max > 0 && totals.current < totals.max / 2;
+    };
+    const useTargetAutoPpBeanAsAction = (scene) => {
+      if (!targetNeedsAutoPpBean(scene)) return false;
+      return useTargetAutoPpBean(scene);
+    };
+    const finishBattleTurnVisuals = (turnEnd) => {
+      if (!turnEnd || turnEnd.ended || turnEnd.pendingFinish) return;
+      turnEnd.pendingEndTurnTick = false;
+      setTimeout(() => {
+        if (!battleScene.value || battleScene.value !== turnEnd || turnEnd.ended || turnEnd.pendingFinish) return;
+        battleScene.value.fxSkillText = "";
+        battleScene.value.fxAttackerSkillText = "";
+        battleScene.value.fxTargetSkillText = "";
+        clearBattleFloatTextIfExpired(battleScene.value);
+        clearBattleSkillEffectFxIfExpired(battleScene.value);
+        battleScene.value.fxTargetShake = false;
+        battleScene.value.fxAttackerShake = false;
+        battleScene.value.statusEffectFx = null;
+        battleScene.value._petAnimActionMarks = {};
+        if (battleScene.value._petAnimTargetAutoIdleTimer) { clearTimeout(battleScene.value._petAnimTargetAutoIdleTimer); battleScene.value._petAnimTargetAutoIdleTimer = null; }
+        if (battleScene.value._petAnimAttackerAutoIdleTimer) { clearTimeout(battleScene.value._petAnimAttackerAutoIdleTimer); battleScene.value._petAnimAttackerAutoIdleTimer = null; }
+        battleScene.value._petAnimTargetPlayLock = false;
+        battleScene.value._petAnimAttackerPlayLock = false;
+        resetBattleAnimIdle(battleScene.value);
+        battleScene.value.turnCount = Math.max(1, Number(battleScene.value.turnCount) || 1) + 1;
+        pushBattleLog(battleScene.value, `第${battleScene.value.turnCount}回合开始。`);
+        battleScene.value.isActing = false;
+        if (getTurnSequenceAttackEffect(battleScene.value, "attacker")) {
+          scheduleTurnSequencePlayerAction(battleScene.value, 500);
+          return;
+        }
+        scheduleAutoBattlePlayerAction(battleScene.value, 500);
+      }, battleSceneDelayMs(turnEnd, BATTLE_FLOAT_TEXT_DURATION_MS, 120));
+    };
+    const settleBattleTurn = (turnEnd) => {
+      if (!turnEnd || turnEnd.ended || turnEnd.pendingFinish) return false;
+      if (turnEnd.pendingEndTurnTick) {
+        const attackerEndFx = applyEndTurnStatus(turnEnd, "attacker");
+        showBattleStatusEffectFx(turnEnd, "attacker", attackerEndFx && attackerEndFx.statuses);
+        applyBattleDamageToActivePet(turnEnd);
+        if (resolveBattleDefeatIfNeeded(turnEnd, "我方背包亚比全部倒下")) {
+          pushBattleLog(turnEnd, `${turnEnd.attackerName} 倒下。`);
+          return false;
+        }
+        if (!turnEnd.ended && !turnEnd.pendingFinish) {
+          const targetEndFx = applyEndTurnStatus(turnEnd, "target");
+          showBattleStatusEffectFx(turnEnd, "target", targetEndFx && targetEndFx.statuses);
+          if (resolveBattleDefeatIfNeeded(turnEnd)) {
+            pushBattleLog(turnEnd, `${turnEnd.targetName} 倒下。`);
+            return false;
+          }
+        }
+        tickGlobalTimedEffects(turnEnd);
+        if (resolveBattleDefeatIfNeeded(turnEnd)) return false;
+      }
+      finishBattleTurnVisuals(turnEnd);
+      return true;
+    };
+    const getBattleActionSpeed = (scene, side) => getBattleAbilityStat(scene, side, "speed");
+    const compareBattleActions = (scene, a, b) => {
+      const pa = a && a.skill ? getSkillActionPriority(a.skill) : 0;
+      const pb = b && b.skill ? getSkillActionPriority(b.skill) : 0;
+      if (pa !== pb) return pb - pa;
+      const sa = getBattleActionSpeed(scene, a.side);
+      const sb = getBattleActionSpeed(scene, b.side);
+      if (sa !== sb) return sb - sa;
+      return (Number(a.tie) || 0) - (Number(b.tie) || 0);
+    };
+    const queueBattleTurnActions = (scene, actions, delayMs = 0) => {
+      if (!scene || scene.ended || scene.pendingFinish) return;
+      const ordered = (Array.isArray(actions) ? actions : [])
+        .map((a) => {
+          if (!a || !a.side) return a;
+          const pool = a.side === "attacker" ? scene.skills : scene.targetSkills;
+          const autoSkill = consumeTurnSequenceAttackSkill(scene, a.side, pool);
+          if (!autoSkill) return a;
+          const who = a.side === "attacker" ? scene.attackerName : scene.targetName;
+          pushBattleLog(scene, `${who}延续${autoSkill.name}，本回合自动使用该技能。`);
+          return { ...a, skill: autoSkill, autoTurnSequence: true };
+        })
+        .filter((a) => a && a.side && a.skill)
+        .map((a) => ({ ...a, tie: Math.random() }))
+        .sort((a, b) => compareBattleActions(scene, a, b));
+      const runAt = (index) => {
+        const live = battleScene.value;
+        if (!live || live !== scene || live.ended || live.pendingFinish) return;
+        const action = ordered[index];
+        if (!action) {
+          settleBattleTurn(live);
+          return;
+        }
+        if (action.side === "attacker" && Math.max(0, Number(live.attackerHp) || 0) <= 0) {
+          runAt(index + 1);
+          return;
+        }
+        if (action.side === "target" && Math.max(0, Number(live.targetHp) || 0) <= 0) {
+          runAt(index + 1);
+          return;
+        }
+        if (!action.skill) {
+          runAt(index + 1);
+          return;
+        }
+        if (action.side === "target" && (action.skill._autoPpBeanAction || useTargetAutoPpBeanAsAction(live))) {
+          if (action.skill._autoPpBeanAction) useTargetAutoPpBeanAsAction(live);
+          setTimeout(() => runAt(index + 1), battleSceneDelayMs(live, BATTLE_FLOAT_TEXT_DURATION_MS, 120));
+          return;
+        }
+        if (action.side === "attacker" && Math.max(0, Number(action.skill.pp) || 0) <= 0) {
+          pushBattleLog(live, `${live.attackerName}的${action.skill.name} PP不足，无法使用。`);
+          runAt(index + 1);
+          return;
+        }
+        const result = runBattleSkill(live, action.side, action.skill);
+        if (live.ended || live.pendingFinish || result.ended) return;
+        setTimeout(() => runAt(index + 1), battleSceneDelayMs(live, Math.max(BATTLE_FLOAT_TEXT_DURATION_MS, Number(result && result.visualDelayMs) || 0, BATTLE_COUNTER_ATTACK_DELAY_MS), 120));
+      };
+      setTimeout(() => runAt(0), battleSceneDelayMs(scene, Math.max(0, Number(delayMs) || 0), 0));
     };
     const runBattleSkill = (scene, actor, skill) => {
       if (!scene || !skill || scene.ended) return { ended: scene && scene.ended, visualDelayMs: 0 };
       const isAttacker = actor === "attacker";
       const actorName = isAttacker ? scene.attackerName : scene.targetName;
       let targetName = isAttacker ? scene.targetName : scene.attackerName;
-      const actorElement = isAttacker ? scene.attackerElement : scene.targetElement;
-      let targetElement = isAttacker ? scene.targetElement : scene.attackerElement;
       const actorSide = isAttacker ? "attacker" : "target";
       let targetSide = isAttacker ? "target" : "attacker";
+      const actorElement = getEffectiveBattleElement(scene, actorSide);
+      let targetElements = getEffectiveBattleElements(scene, targetSide);
       const suppressDirectDamage = hasDirectDamageSuppressedEffect(skill);
       const hasDiminishingSelfEffect = hasDiminishingGateEffect(skill);
       const beforeAct = beforeActionCheck(scene, actorSide);
@@ -5996,6 +8724,7 @@ createApp({
         pushBattleLog(scene, beforeAct.log);
       }
       if (!beforeAct.canAct) {
+        showBattleActionNotice(scene, actorSide, "本回合无法行动");
         return { ended: false, skipped: true, visualDelayMs: BATTLE_FLOAT_TEXT_DURATION_MS };
       }
       if (hasUsedOncePerBattleSkill(scene, actorSide, skill)) {
@@ -6009,6 +8738,9 @@ createApp({
         return { ended: false, skipped: true, visualDelayMs: BATTLE_FLOAT_TEXT_DURATION_MS };
       }
       skill.pp = Math.max(0, Number(skill.pp) - 1);
+      if (skill._turnSequenceSourceSkill && skill._turnSequenceSourceSkill !== skill) {
+        skill._turnSequenceSourceSkill.pp = skill.pp;
+      }
       markOncePerBattleSkillUsed(scene, actorSide, skill);
 
       scene.fxSkillText = skill.name;
@@ -6021,6 +8753,8 @@ createApp({
       scene.healOnTarget = "";
       scene.damageTagOnAttacker = "";
       scene.damageTagOnTarget = "";
+      scene.actionNoticeOnAttacker = "";
+      scene.actionNoticeOnTarget = "";
       scene.critOnAttacker = false;
       scene.critOnTarget = false;
       if (isAttacker) {
@@ -6037,27 +8771,32 @@ createApp({
       const actorDexIdForDelay = resolveBattleSideDexId(scene, actorSide);
       const actorState = getSideState(scene, actorSide);
       if ((atkKind === "physical" || atkKind === "special") && Math.max(0, Number(actorState.statuses.confuse) || 0) > 0) {
-        actorState.statuses.confuse = Math.max(0, Number(actorState.statuses.confuse) - 1);
         if (Math.random() < 0.5) {
           targetSide = actorSide;
           targetName = actorName;
-          targetElement = actorElement;
+          targetElements = getEffectiveBattleElements(scene, targetSide);
           pushBattleLog(scene, `${actorName}陷入混乱，攻击作用于自己。`);
         }
       }
       const actorLevel = isAttacker ? scene.attackerLevel : scene.targetLevel;
-      const fixedDamage = calcBattleFixedDamageAmount(scene, actorSide, skill, actorLevel);
-      const isStatusAnim = suppressDirectDamage || hasDiminishingSelfEffect || atkKind === "status" || (Number(skill.power) <= 0 && fixedDamage <= 0);
+      const defenderLevel = isAttacker ? scene.targetLevel : scene.attackerLevel;
+      const fixedDamage = calcBattleFixedDamageAmount(scene, actorSide, skill, actorLevel, defenderLevel);
+      const dynamicPower = getSkillDynamicPower(scene, actorSide, targetSide, skill);
+      const turnSequencePower = Number(skill && skill._turnSequenceAuto ? skill.power : 0) || 0;
+      const skillElement = parseSkillElement(skill.type);
+      const elementFactorForEffectGate = getElementFactorAgainstElements(skillElement, targetElements);
+      const hasUsablePower = fixedDamage > 0 || Number(skill.power) > 0 || Number(dynamicPower) > 0 || turnSequencePower > 0 || hasSkillEffectKind(skill, "multiHit");
+      const isStatusAnim = suppressDirectDamage || hasDiminishingSelfEffect || atkKind === "status" || !hasUsablePower;
       const actionStateKey = isStatusAnim ? "status" : "atk";
       const visualDelayMs = (getPetBattleAnimPath(actorDexIdForDelay, actorSide, actionStateKey) || getBattleSkillEffectPath(skill, actionSeq))
         ? Math.max(BATTLE_FLOAT_TEXT_DURATION_MS, BATTLE_COUNTER_ATTACK_DELAY_MS + BATTLE_DAMAGE_VISUAL_DELAY_MS)
         : BATTLE_FLOAT_TEXT_DURATION_MS;
+      markBattleDefeatVisualHoldMs(scene, visualDelayMs);
       if (isAttacker) {
         applyBattleAnimImage(scene, "attacker", actionStateKey, actionSeq);
       } else {
         applyBattleAnimImage(scene, "target", actionStateKey, actionSeq);
       }
-      const skillElement = parseSkillElement(skill.type);
       const powerFactor = getElementPowerFactor(scene, actorSide, skillElement) * getDamageBoostFactor(scene, actorSide);
       const powerOverride = getSkillPowerOverride(skill);
       const actorStatuses = getSideState(scene, actorSide).statuses || {};
@@ -6065,10 +8804,17 @@ createApp({
         && (Math.max(0, Number(actorStatuses.poison) || 0) > 0 || Math.max(0, Number(actorStatuses.paralyze) || 0) > 0 || Math.max(0, Number(actorStatuses.burn) || 0) > 0)
         ? 2
         : 1;
-      const acc = atkKind === "status" ? 100 : clamp(Number(skill.accuracy) || 100, 1, 100);
-      const actorAcc = stageMultiplier(getSideState(scene, actorSide).stages.accuracy || 0);
-      const targetEva = stageMultiplier(getSideState(scene, targetSide).stages.evasion || 0);
-      const finalHitRate = clamp((acc / 100) * (actorAcc / targetEva), 0.05, 1);
+      const effectsForHit = parseSkillEffects(skill);
+      const selfOnlyStatusSkill = atkKind === "status" && effectsForHit.length > 0 && effectsForHit.every((e) => {
+        const kind = normalize(e && e.kind);
+        if (kind === "flag" || kind === "priority" || kind === "dynamicPower") return true;
+        return normalize(e && e.target) === "self";
+      });
+      const acc = selfOnlyStatusSkill ? 100 : getSkillBaseAccuracy(skill, Number(skill.accuracy) || 100);
+      const actorAccStage = getSideState(scene, actorSide).stages.accuracy || 0;
+      const targetEvaStage = getSideState(scene, targetSide).stages.evasion || 0;
+      const hitRateElementFactor = applyBattleHitRateFactor(scene, actorSide, targetSide, skillElement);
+      const finalHitRate = hasSkillEffectFlag(skill, "mustHit") || selfOnlyStatusSkill ? 1 : clamp((acc / 100) * stageHitRateFactor(actorAccStage, targetEvaStage) * hitRateElementFactor, 0.1, 1);
       const hardcodedMultiHit = fixedDamage > 0 ? null : parseMultiHitRangeFromDesc(skill);
       const didHit = hardcodedMultiHit ? true : Math.random() <= finalHitRate;
 
@@ -6088,7 +8834,20 @@ createApp({
           markBattleFloatText(scene);
         };
         scheduleBattleSkillEffectVisual(scene, actorSide, targetSide, skill, atkKind, actionStateKey, actionSeq, showMissVisual);
-      } else if (suppressDirectDamage || hasDiminishingSelfEffect || atkKind === "status" || (Number(skill.power) <= 0 && fixedDamage <= 0)) {
+      } else if (elementFactorForEffectGate <= 0 && !selfOnlyStatusSkill) {
+        elementFactor = 0;
+        pushBattleLog(scene, `${actorName} 使用 ${skill.name}，但${compareElementLabel(elementFactor)}，技能效果没有生效。`);
+        const showInvalidVisual = () => {
+          const live = battleScene.value;
+          if (!live || live !== scene || live.ended) return;
+          if (isAttacker) scene.damageOnTarget = "无效";
+          else scene.damageOnAttacker = "无效";
+          markBattleFloatText(scene);
+          flushAfterDamageFloat(scene);
+        };
+        scheduleBattleSkillEffectVisual(scene, actorSide, targetSide, skill, atkKind, actionStateKey, actionSeq, showInvalidVisual);
+        skillEffectDidApply = false;
+      } else if (suppressDirectDamage || hasDiminishingSelfEffect || atkKind === "status" || !hasUsablePower) {
         pushBattleLog(scene, `${actorName} 使用 ${skill.name}（属性技能）。`);
         scheduleBattleSkillEffectVisual(scene, actorSide, targetSide, skill, atkKind, actionStateKey, actionSeq, () => flushAfterDamageFloat(scene));
         skillEffectDidApply = true;
@@ -6111,8 +8870,9 @@ createApp({
           };
           scheduleBattleSkillEffectVisual(scene, actorSide, targetSide, skill, atkKind, actionStateKey, actionSeq, showImmuneVisual);
           damage = 0;
+          skillEffectDidApply = false;
         } else {
-        elementFactor = fixedDamage > 0 ? 1 : getElementFactor(skillElement, targetElement);
+        elementFactor = fixedDamage > 0 ? 1 : elementFactorForEffectGate;
         const stab = normalize(actorElement) === normalize(skillElement) ? 1.5 : 1;
         const isNoEdgeBlade = normalize(skill && skill.name) === "无锋巨刃";
         const atkStat = atkKind === "special"
@@ -6124,11 +8884,15 @@ createApp({
             ? getBattleAbilityStat(scene, targetSide, "spDef")
             : getBattleAbilityStat(scene, targetSide, "def"));
         if (powerConditionFactor > 1) pushBattleLog(scene, `${actorName}处于异常状态，激发力量威力提升为2倍。`);
-        const reduceFactor = getDamageReductionFactor(scene, targetSide);
+        const reduceFactor = getDamageReductionFactor(scene, targetSide, atkKind) * getElementDamageReductionFactor(scene, targetSide, skillElement);
         const mh = hardcodedMultiHit;
         const bonusFixedPerHit = mh ? parseBonusFixedDamagePerHit(skill) : null;
+        const bonusFixedEffects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "bonusFixedDamage");
+        const statusCountBonusEffects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "statusCountBonusDamage");
+        const perHitEffects = mh ? parseSkillEffects(skill).filter((e) => ["perHitStatus", "perHitRandomAbilityStatFactor"].includes(normalize(e && e.kind))) : [];
         const hitTimes = mh ? (mh.min + Math.floor(Math.random() * (mh.max - mh.min + 1))) : 1;
         const perHitPowerMultiplier = mh ? Math.max(1, Number(mh.powerMultiplier) || 1) : 1;
+        const perHitPowerList = mh && Array.isArray(mh.powerList) ? mh.powerList : [];
         const shelterMultiplier = mh && getSideState(scene, actorSide).elementShelter
           ? Math.max(1, Number(mh.elementShelterMultiplier) || 1)
           : 1;
@@ -6141,6 +8905,25 @@ createApp({
           skillEffectDidApply = true;
         } else if (elementFactor <= 0) {
           for (let i = 0; i < hitTimes; i += 1) comboHitList.push("无效");
+          const showInvalidVisual = () => {
+            const live = battleScene.value;
+            if (!live || live !== scene || live.ended) return;
+            if (targetSide === "target") {
+              scene.damageOnTarget = "无效";
+              scene.comboHitsOnTarget = comboHitList.slice();
+              scene.comboTotalOnTarget = "";
+              scene.comboTotalDelayOnTarget = 0;
+            } else {
+              scene.damageOnAttacker = "无效";
+              scene.comboHitsOnAttacker = comboHitList.slice();
+              scene.comboTotalOnAttacker = "";
+              scene.comboTotalDelayOnAttacker = 0;
+            }
+            markBattleFloatText(scene);
+            flushAfterDamageFloat(scene);
+          };
+          scheduleBattleSkillEffectVisual(scene, actorSide, targetSide, skill, atkKind, actionStateKey, actionSeq, showInvalidVisual);
+          skillEffectDidApply = false;
         } else {
         let powerStep = 0;
         for (let i = 0; i < hitTimes; i += 1) {
@@ -6166,7 +8949,7 @@ createApp({
             skill,
             atkKind,
             skillElement,
-            power: powerOverride || (isNoEdgeBlade ? 1 : Number(skill.power)),
+            power: powerOverride || (perHitPowerList[i] || dynamicPower) || (isNoEdgeBlade ? 1 : Number(skill.power)),
             powerFactor: powerFactor * shelterMultiplier * Math.pow(perHitPowerMultiplier, powerStep),
             powerConditionFactor,
             elementFactor,
@@ -6176,11 +8959,24 @@ createApp({
           if (bonusFixedPerHit && Math.random() <= bonusFixedPerHit.chance) {
             one += bonusFixedPerHit.amount;
           }
+          bonusFixedEffects.forEach((e) => {
+            const chance = clamp(Number(e.chance) || 1, 0, 1);
+            if (Math.random() <= chance) one += Math.max(1, Math.floor(Number(e.amount) || 1));
+          });
+          statusCountBonusEffects.forEach((e) => {
+            if (e.requireHit && !hitOk) return;
+            const count = countBattleStatuses(scene, targetSide);
+            if (count <= 0) return;
+            const amount = Math.max(1, Math.floor(Number(e.amountPerStatus) || Number(e.amount) || 1)) * count;
+            one += amount;
+            pushBattleLog(scene, `${targetName}身上的不良状态使${skill.name}追加${amount}点伤害。`);
+          });
           const shield = getDamageShieldAmount(scene, targetSide);
           if (shield > 0) {
             const beforeShield = one;
             one = Math.max(0, one - shield);
-            if (beforeShield > one) pushBattleLog(scene, `${targetName}的银光护盾抵抗${beforeShield - one}点伤害。`);
+            const shieldLabel = (getSideState(scene, targetSide).timedEffects || []).some((fx) => normalize(fx && fx.kind) === "damageShieldByDamage" && Math.max(0, Number(fx && fx.turns) || 0) > 0) ? "伤害护盾" : "银光护盾";
+            if (beforeShield > one) pushBattleLog(scene, `${targetName}的${shieldLabel}抵抗${beforeShield - one}点伤害。`);
           }
           const actorCritStage = getSideState(scene, actorSide).critStage || 0;
           const crit = Math.random() < critChanceByStage(actorCritStage);
@@ -6193,6 +8989,30 @@ createApp({
           damage += one;
           landedHitCount += 1;
           skillEffectDidApply = true;
+          perHitEffects.forEach((e) => {
+            const chance = clamp(Number(e.chance) || 0, 0, 1);
+            if (Math.random() > chance) return;
+            const side = e.target === "self" ? actorSide : targetSide;
+            if (e.guardianBossImmune && isGuardianBossProtectedTarget(scene, side)) return;
+            const state = getSideState(scene, side);
+            if (normalize(e.kind) === "perHitStatus") {
+              const status = normalize(e.status);
+              if (!status || isStatusImmuneByElement(scene, side, status) || hasStatusShield(scene, side, status)) return;
+              state.statuses[status] = Math.max(state.statuses[status] || 0, Math.max(1, Math.floor(Number(e.turns) || 1)));
+              pushBattleLog(scene, `${skill.name}第${i + 1}击触发，${side === "attacker" ? scene.attackerName : scene.targetName}陷入${statusLabel(status)}${state.statuses[status]}回合。`);
+              return;
+            }
+            if (normalize(e.kind) === "perHitRandomAbilityStatFactor") {
+              const groups = Array.isArray(e.groups) ? e.groups.filter((g) => Array.isArray(g) && g.length > 0) : [];
+              const group = groups.length ? groups[Math.floor(Math.random() * groups.length)] : [];
+              const keys = group.filter((k) => BATTLE_STAGE_KEYS.includes(k));
+              if (keys.length <= 0) return;
+              const factor = clamp(Number(e.factor) || 1, 0.01, 3);
+              const turns = Math.max(1, Math.floor(Number(e.turns) || 3));
+              addTimedEffect(scene, side, { kind: "abilityStatFactor", turns, data: { keys, factor } });
+              pushBattleLog(scene, `${skill.name}第${i + 1}击触发，${side === "attacker" ? scene.attackerName : scene.targetName}${keys.map((k) => battleStatLabel(k)).join("、")}数值降低${Math.round((1 - factor) * 100)}%。`);
+            }
+          });
           powerStep += 1;
         }
         }
@@ -6207,8 +9027,7 @@ createApp({
       let selfPowerDamage = 0;
       let selfPowerElementFactor = 1;
       if (damage > 0 && hasSkillEffectKind(skill, "selfSamePower")) {
-        const selfElement = actorSide === "attacker" ? scene.attackerElement : scene.targetElement;
-        selfPowerElementFactor = getElementFactor(skillElement, selfElement);
+        selfPowerElementFactor = getBattleElementFactor(scene, skillElement, actorSide);
         selfPowerDamage = calcBattleDirectDamage({
           scene,
           actorSide,
@@ -6217,12 +9036,12 @@ createApp({
           skill,
           atkKind,
           skillElement,
-          power: powerOverride || Number(skill.power),
+          power: powerOverride || dynamicPower || Number(skill.power),
           powerFactor,
           powerConditionFactor,
           elementFactor: selfPowerElementFactor,
           randomFactor: 0.925,
-          reduceFactor: getDamageReductionFactor(scene, actorSide)
+          reduceFactor: getDamageReductionFactor(scene, actorSide, atkKind) * getElementDamageReductionFactor(scene, actorSide, skillElement)
         });
       }
       if (damage > 0) {
@@ -6291,6 +9110,7 @@ createApp({
             }
           }
           markBattleFloatText(scene);
+          if (Number(scene.attackerHp) <= 0 || Number(scene.targetHp) <= 0) markBattleDefeatVisualHold(scene);
           flushAfterDamageFloat(scene);
         };
         if (targetSide === "target") {
@@ -6321,6 +9141,32 @@ createApp({
         } else {
           pushBattleLog(scene, `${actorName} 使用 ${skill.name}，对 ${damageTargetName} 造成 ${damage} 点伤害（${compareElementLabel(elementFactor)}）。`);
         }
+        const reflectEffects = getDamageReflectEffects(scene, targetSide, atkKind);
+        reflectEffects.forEach((fx) => {
+          const ratio = Math.max(0.01, Number(fx.data && fx.data.ratio) || 1);
+          const reflect = Math.max(1, Math.floor(damage * ratio));
+          const hpKey = actorSide === "attacker" ? "attackerHp" : "targetHp";
+          const before = Math.max(0, Number(scene[hpKey]) || 0);
+          scene[hpKey] = Math.max(hasLastStandEffect(scene, actorSide) && before > 0 ? 1 : 0, before - reflect);
+          const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
+          if (actorSide === "attacker") {
+            applyBattleDamageToActivePet(scene);
+            scene.damageOnAttacker = `-${actual}`;
+          } else {
+            scene.damageOnTarget = `-${actual}`;
+          }
+          if (actual > 0) clearSleepAfterDamage(scene, actorSide);
+          syncBattleUiHpForSide(scene, actorSide);
+          pushBattleLog(scene, `${targetName}的伤害反弹生效，${actorName}受到 ${actual} 点反弹伤害。`);
+        });
+        const flatReflectEffects = getDamageReflectFlatEffects(scene, targetSide, atkKind);
+        flatReflectEffects.forEach((fx) => {
+          const amount = Math.max(1, Math.floor(Number(fx.data && fx.data.amount) || 1));
+          const actual = applyDirectHpDamage(scene, actorSide, amount);
+          if (actorSide === "attacker") scene.damageOnAttacker = `-${actual}`;
+          else scene.damageOnTarget = `-${actual}`;
+          pushBattleLog(scene, `${targetName}的固定伤害反弹生效，${actorName}受到 ${actual} 点反弹伤害。`);
+        });
         runOnDamagedEffects(scene, targetSide, actorSide, { reason: "attacked" });
         const damagedTriggerTimes = Math.max(1, landedHitCount || comboHitList.filter((x) => /^-\d+/.test(String(x))).length);
         for (let i = 0; i < damagedTriggerTimes; i += 1) {
@@ -6352,7 +9198,10 @@ createApp({
       if (skillEffectDidApply && damage <= 0) {
         runOnDamagedEffects(scene, targetSide, actorSide, { reason: "attacked" });
       }
-      applySkillEffects(scene, actorSide, skill, skillEffectDidApply);
+      const hasOnlyInvalidHits = comboHitList.length > 0 && comboHitList.every((x) => normalize(x) === "无效" || normalize(x) === "MISS");
+      const canApplySkillEffect = skillEffectDidApply && elementFactor > 0 && !hasOnlyInvalidHits;
+      applySkillEffects(scene, actorSide, skill, canApplySkillEffect);
+      advanceTurnSequenceAttackEffect(scene, actorSide, skill, canApplySkillEffect);
       if (resolveBattleDefeatIfNeeded(scene, isAttacker ? "" : "我方背包亚比全部倒下")) return { ended: true, visualDelayMs };
       scene.pendingEndTurnTick = true;
 
@@ -6361,72 +9210,20 @@ createApp({
     const queueTargetCounterAttack = (delayMs = BATTLE_COUNTER_ATTACK_DELAY_MS) => {
       const scene = battleScene.value;
       if (!scene || scene.ended || scene.pendingFinish) return;
-      const finishTurnVisuals = (turnEnd) => {
-        if (!turnEnd || turnEnd.ended || turnEnd.pendingFinish) return;
-        turnEnd.pendingEndTurnTick = false;
-        setTimeout(() => {
-          if (!battleScene.value || battleScene.value !== turnEnd || turnEnd.ended || turnEnd.pendingFinish) return;
-          battleScene.value.fxSkillText = "";
-          battleScene.value.fxAttackerSkillText = "";
-          battleScene.value.fxTargetSkillText = "";
-          clearBattleFloatTextIfExpired(battleScene.value);
-          clearBattleSkillEffectFxIfExpired(battleScene.value);
-          battleScene.value.fxTargetShake = false;
-          battleScene.value.fxAttackerShake = false;
-          battleScene.value._petAnimActionMarks = {};
-          if (battleScene.value._petAnimTargetAutoIdleTimer) { clearTimeout(battleScene.value._petAnimTargetAutoIdleTimer); battleScene.value._petAnimTargetAutoIdleTimer = null; }
-          if (battleScene.value._petAnimAttackerAutoIdleTimer) { clearTimeout(battleScene.value._petAnimAttackerAutoIdleTimer); battleScene.value._petAnimAttackerAutoIdleTimer = null; }
-          battleScene.value._petAnimTargetPlayLock = false;
-          battleScene.value._petAnimAttackerPlayLock = false;
-          resetBattleAnimIdle(battleScene.value);
-          battleScene.value.turnCount = Math.max(1, Number(battleScene.value.turnCount) || 1) + 1;
-          pushBattleLog(battleScene.value, `第${battleScene.value.turnCount}回合开始。`);
-          battleScene.value.isActing = false;
-          scheduleAutoBattlePlayerAction(battleScene.value, 500);
-        }, BATTLE_FLOAT_TEXT_DURATION_MS);
-      };
-      const settleEndTurn = (turnEnd) => {
-        if (!turnEnd || turnEnd.ended || turnEnd.pendingFinish) return false;
-        if (turnEnd.pendingEndTurnTick) {
-          applyEndTurnStatus(turnEnd, "attacker");
-          applyBattleDamageToActivePet(turnEnd);
-          if (resolveBattleDefeatIfNeeded(turnEnd, "我方背包亚比全部倒下")) {
-            pushBattleLog(turnEnd, `${turnEnd.attackerName} 倒下。`);
-            return false;
-          }
-          if (!turnEnd.ended && !turnEnd.pendingFinish) {
-            applyEndTurnStatus(turnEnd, "target");
-            if (resolveBattleDefeatIfNeeded(turnEnd)) {
-              pushBattleLog(turnEnd, `${turnEnd.targetName} 倒下。`);
-              return false;
-            }
-          }
-          tickGlobalTimedEffects(turnEnd);
-          if (resolveBattleDefeatIfNeeded(turnEnd)) return false;
-        }
-        finishTurnVisuals(turnEnd);
-        return true;
-      };
       setTimeout(() => {
         const live = battleScene.value;
         if (!live || live.ended || live.pendingFinish) return;
-        const candidates = battleSceneTargetSkills.value.filter((s) => s.pp > 0);
-        if (candidates.length === 0) {
-          if (useGuardianAutoPpBean(live)) {
-            setTimeout(() => {
-              const turnEnd = battleScene.value;
-              if (!turnEnd || turnEnd !== live) return;
-              settleEndTurn(turnEnd);
-            }, BATTLE_FLOAT_TEXT_DURATION_MS);
-            return;
-          }
-          finalizeBattleScene(live, true, "挑战目标技能 PP 耗尽");
-          live.isActing = false;
+        if (useTargetAutoPpBeanAsAction(live)) {
+          setTimeout(() => {
+            const turnEnd = battleScene.value;
+            if (!turnEnd || turnEnd !== live) return;
+            settleBattleTurn(turnEnd);
+          }, battleSceneDelayMs(live, BATTLE_FLOAT_TEXT_DURATION_MS, 120));
           return;
         }
-        const skill = pickTargetSkill(live, candidates);
+        const skill = pickTargetSkill(live, battleSceneTargetSkills.value.filter((s) => s.pp > 0));
         if (!skill) {
-          settleEndTurn(live);
+          settleBattleTurn(live);
           return;
         }
         const result = runBattleSkill(live, "target", skill);
@@ -6434,9 +9231,9 @@ createApp({
         setTimeout(() => {
           const turnEnd = battleScene.value;
           if (!turnEnd || turnEnd !== live) return;
-          settleEndTurn(turnEnd);
-        }, Math.max(BATTLE_FLOAT_TEXT_DURATION_MS, Number(result && result.visualDelayMs) || 0));
-      }, Math.max(0, Number(delayMs) || 0));
+          settleBattleTurn(turnEnd);
+        }, battleSceneDelayMs(live, Math.max(BATTLE_FLOAT_TEXT_DURATION_MS, Number(result && result.visualDelayMs) || 0), 120));
+      }, battleSceneDelayMs(scene, Math.max(0, Number(delayMs) || 0), 0));
     };
     const applyBattleDamageToActivePet = (scene) => {
       if (!scene || !Array.isArray(scene.team)) return;
@@ -6595,7 +9392,26 @@ createApp({
             expDistribution.push(grantExp(activePet, expGain));
           }
         }
-        if (scene.mode === "guardian") {
+        if (scene.mode === "timeTunnel") {
+          const floor = Math.max(1, Math.floor(Number(scene.timeTunnelMeta && scene.timeTunnelMeta.floor) || 1));
+          hCoinGain = floor * 300;
+          state.value.timeTunnelMaxClearedFloor = Math.max(timeTunnelMaxClearedFloor.value, floor);
+          unlockText = `时空隧道第${floor}层挑战成功，通往下一层的门已开启。`;
+          pushBattleLog(scene, unlockText);
+          if (floor % TIME_TUNNEL_REWARD_INTERVAL === 0) {
+            state.value.hCoins = Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) + 1000;
+            addItemCount("double_exp_device", 10);
+            addItemCount("auto_battle_device", 10);
+            addItemCount("time_tunnel_big_exp_fruit", 1);
+            pushBattleLog(scene, "阶段奖励已发放：双倍经验器 x10、自动战斗仪 x10、大经验果 x1、1000 H币。");
+            queueRewardFlyToasts([
+              "获取双倍经验器×10！",
+              "获取自动战斗仪×10！",
+              "获取大经验果×1！",
+              "获取1000H币！"
+            ]);
+          }
+        } else if (scene.mode === "guardian") {
           hCoinGain = isExtraGuardianName(target.name) ? 1000 : 500;
           const advanced = switchGuardianStage(scene);
           if (advanced) {
@@ -6712,6 +9528,16 @@ createApp({
           }, 900);
         }
       }
+      if (scene.mode === "timeTunnel") {
+        restoreTimeTunnelEnvironmentAfterBattle(scene, win);
+      }
+      if (win && scene.mode === "timeTunnel") {
+        openTimeTunnelDoor({
+          floor: Math.max(1, Math.floor(Number(scene.timeTunnelMeta && scene.timeTunnelMeta.floor) || 1)),
+          environment: scene.timeTunnelMeta ? { element: scene.timeTunnelMeta.environmentElement, name: scene.timeTunnelMeta.environmentName } : null,
+          enemies: Array.isArray(scene.timeTunnelMeta && scene.timeTunnelMeta.enemies) ? scene.timeTunnelMeta.enemies : []
+        });
+      }
       if (win) {
         const evoList = (expDistribution || []).filter((x) => x && x.evolved);
         if (evoList.length > 0) {
@@ -6737,42 +9563,28 @@ createApp({
       const scene = battleScene.value;
       if (!scene || !scene.open || scene.ended || scene.isActing || scene.pendingFinish) return;
       const key = normalizeSkillKey(skillName);
-      const skill = (scene.skills || []).find((s) => normalizeSkillKey(s.name) === key);
+      const autoSkill = consumeTurnSequenceAttackSkill(scene, "attacker", scene.skills);
+      const skill = autoSkill || (scene.skills || []).find((s) => normalizeSkillKey(s.name) === key);
       if (!skill || skill.pp <= 0) return;
       if (hasUsedOncePerBattleSkill(scene, "attacker", skill)) {
         showToast(`${skill.name} 一场战斗只能使用一次。`);
         return;
       }
+      if (autoSkill) pushBattleLog(scene, `${scene.attackerName}延续${skill.name}，本回合自动使用该技能。`);
       scene.isActing = true;
-      const result = runBattleSkill(scene, "attacker", skill);
-      if (scene.ended) {
-        scene.isActing = false;
-        return;
-      }
-      if (scene.pendingFinish) return;
-      const noPp = (scene.skills || []).every((s) => s.pp <= 0);
-      if (noPp) {
-        finalizeBattleScene(scene, false, "技能 PP 耗尽");
-        scene.isActing = false;
-        return;
-      }
-      Promise.resolve(result && result.visualDone).then(() => {
-        const live = battleScene.value;
-        if (!live || live !== scene || live.ended || live.pendingFinish) return;
-        queueTargetCounterAttack(BATTLE_COUNTER_ATTACK_DELAY_MS);
-      });
+      const targetSkill = targetNeedsAutoPpBean(scene)
+        ? { name: "__AUTO_PP_BEAN__", pp: 1, ppMax: 1, _autoPpBeanAction: true }
+        : pickTargetSkill(scene, battleSceneTargetSkills.value.filter((s) => s.pp > 0));
+      queueBattleTurnActions(scene, [
+        { side: "attacker", skill },
+        { side: "target", skill: targetSkill }
+      ]);
     };
     const consumeBattleTurnAfterItem = () => {
       const scene = battleScene.value;
       if (!scene || !scene.open || scene.ended || scene.pendingFinish) return;
       const beforeAct = beforeActionCheck(scene, "attacker");
       if (beforeAct.log) pushBattleLog(scene, beforeAct.log);
-      const noPp = (scene.skills || []).every((s) => s.pp <= 0);
-      if (noPp) {
-        finalizeBattleScene(scene, false, "技能 PP 耗尽");
-        scene.isActing = false;
-        return;
-      }
       scene.isActing = true;
       queueTargetCounterAttack();
     };
@@ -6783,6 +9595,9 @@ createApp({
         pushBattleLog(scene, `${scene.attackerName}处于束缚状态，无法主动替换亚比。`);
         showToast("束缚状态下无法主动换宠。");
         return;
+      }
+      if (switchPanelMode.value === "manual") {
+        scene.attackerState = clearBattleStatuses(scene.attackerState);
       }
       applyBattleDamageToActivePet(scene);
       const id = String(unitId || "");
@@ -6873,7 +9688,7 @@ createApp({
 
     const dexStatus = (entry) => {
       if (isGuardianName(entry.name)) return "守护者";
-      if (isBossName(entry.name)) return "BOSS";
+      if (isBossEntry(entry)) return "BOSS";
       if (isShopEggName(entry.name)) return "商店蛋";
       if (state.value.activatedDexIds.includes(entry.dexId)) return "已激活";
       return "未激活";
@@ -7055,6 +9870,12 @@ createApp({
     const toggleDexPanel = () => { state.value.showDexPanel = !state.value.showDexPanel; };
     const openDexPanel = () => { state.value.showDexPanel = true; };
     const closeDexPanel = () => { state.value.showDexPanel = false; };
+    const openBagPanel = () => {
+      showBagPanel.value = true;
+    };
+    const closeBagPanel = () => {
+      showBagPanel.value = false;
+    };
     const openWarehousePanel = () => {
       showWarehousePanel.value = true;
       playSceneBgm(WAREHOUSE_BGM_SRC);
@@ -7145,6 +9966,7 @@ createApp({
       if (getItemCount(id) <= 0) return showToast("该道具数量不足。");
       if (id === "double_exp_device") return showToast("双倍经验器会在非学习力战斗开始时自动消耗 1 次，并使胜利经验翻倍。");
       if (id === "auto_battle_device") return showToast("自动战斗仪请在图鉴挑战信息中使用，可连续挑战同一目标。");
+      if (id === "time_tunnel_big_exp_fruit") return showToast("大经验果为阶段奖励道具，可指定亚比获得 100000 经验。");
       if (battleScene.value && battleScene.value.currentAttackerId) {
         shopTargetPetId.value = battleScene.value.currentAttackerId;
       }
@@ -7202,6 +10024,13 @@ createApp({
         showToast(`${petDisplayName(pet)} 已升至 Lv.40。`);
         return;
       }
+      if (id === "time_tunnel_big_exp_fruit") {
+        const gain = 100000;
+        grantExp(pet, gain);
+        addItemCount(id, -1);
+        showToast(`${petDisplayName(pet)} 获得 ${gain} 经验。`);
+        return;
+      }
       if (id === "pp_bean_s" || id === "pp_bean_m" || id === "pp_bean_l") {
         const gain = id === "pp_bean_s" ? 5 : (id === "pp_bean_m" ? 10 : 20);
         const scene = battleScene.value;
@@ -7227,7 +10056,7 @@ createApp({
         markBattleFloatText(actor);
         setTimeout(() => {
           if (battleScene.value && battleScene.value === actor) actor.ppOnAttacker = "";
-        }, BATTLE_FLOAT_TEXT_DURATION_MS);
+        }, battleSceneDelayMs(actor, BATTLE_FLOAT_TEXT_DURATION_MS, 120));
         pushBattleLog(actor, `${petDisplayName(pet)} 使用 ${itemNameById(id, "PP豆")}：每个已装备技能回复 ${gain} PP，${detail.join("，")}（实际合计+${deltaSum}）`);
         battleActionTab.value = "skills";
         showToast(`${petDisplayName(pet)} 的技能 PP 回复 ${gain} 点。`);
@@ -7254,7 +10083,7 @@ createApp({
           markBattleFloatText(scene);
           setTimeout(() => {
             if (battleScene.value && battleScene.value === scene) scene.healOnAttacker = "";
-          }, BATTLE_FLOAT_TEXT_DURATION_MS);
+          }, battleSceneDelayMs(scene, BATTLE_FLOAT_TEXT_DURATION_MS, 120));
           pushBattleLog(scene, `${petDisplayName(pet)} 使用 ${shopItems.value.find((x) => x.id === id)?.name || "体力糖"}，回复 ${heal} 体力（实际恢复 ${healedActual}）`);
         }
         battleActionTab.value = "skills";
@@ -7470,12 +10299,12 @@ createApp({
       state.value.targetLevel = String(raw);
       const tl = raw;
       closeTargetPanel();
-      setupBattleScene({
+      startBattlePrepare(`正在准备挑战 ${target.name}...`, target, tl, () => setupBattleScene({
         targetEntry: target,
         targetLevel: tl,
         forceTargetHpRace500: false,
         mode: "normal"
-      });
+      }));
     };
     const startAutoBattleChallenge = () => {
       const run = autoBattleRun.value;
@@ -7502,23 +10331,25 @@ createApp({
       run.completed = Math.max(0, Math.floor(Number(run.completed) || 0)) + 1;
       state.value.selectedDexId = target.dexId;
       state.value.targetLevel = String(level);
-      const started = setupBattleScene({
-        targetEntry: target,
-        targetLevel: level,
-        forceTargetHpRace500: false,
-        mode: "normal",
-        autoBattleMeta: {
-          completed: run.completed,
-          remainingAfterStart: run.remaining
+      return startBattlePrepare(`正在准备自动挑战 ${target.name}...`, target, level, () => {
+        const started = setupBattleScene({
+          targetEntry: target,
+          targetLevel: level,
+          forceTargetHpRace500: false,
+          mode: "normal",
+          autoBattleMeta: {
+            completed: run.completed,
+            remainingAfterStart: run.remaining
+          }
+        });
+        if (!started) {
+          addItemCount("auto_battle_device", 1);
+          run.remaining += 1;
+          run.completed = Math.max(0, run.completed - 1);
+          return false;
         }
+        return true;
       });
-      if (!started) {
-        addItemCount("auto_battle_device", 1);
-        run.remaining += 1;
-        run.completed = Math.max(0, run.completed - 1);
-        return false;
-      }
-      return true;
     };
     const startAutoBattleFromDex = () => {
       const target = selectedDexEntry.value;
@@ -7551,6 +10382,104 @@ createApp({
     const closeGuardianPanel = () => { showGuardianPanel.value = false; };
     const openBossPanel = () => { showBossPanel.value = true; };
     const closeBossPanel = () => { showBossPanel.value = false; };
+    const openTimeTunnelPanel = () => {
+      timeTunnelSelectedFloor.value = Math.max(1, timeTunnelMaxClearedFloor.value || 1);
+      showTimeTunnelPanel.value = true;
+      playSceneBgm(TIME_TUNNEL_BGM_SRC);
+    };
+    const closeTimeTunnelPanel = () => {
+      showTimeTunnelPanel.value = false;
+      showTimeTunnelEnvironmentPanel.value = false;
+      timeTunnelDoorScene.value = null;
+      timeTunnelEnvironmentScene.value = null;
+      refreshSceneBgm();
+    };
+    const selectTimeTunnelFloor = (floor) => {
+      timeTunnelSelectedFloor.value = Math.max(1, Math.floor(Number(floor) || 1));
+    };
+    const buildTimeTunnelFloorScene = (floor) => {
+      const safeFloor = Math.max(1, Math.floor(Number(floor) || 1));
+      const maxEnterFloor = Math.max(TIME_TUNNEL_MIN_CLEAR_FLOOR, (timeTunnelMaxClearedFloor.value || 0) + 1);
+      if (safeFloor > maxEnterFloor) {
+        showToast("该层时空坐标尚未稳定，暂未开放。");
+        return null;
+      }
+      const cfg = TIME_TUNNEL_FLOORS.find((x) => x.floor === safeFloor);
+      if (!cfg || !Array.isArray(cfg.enemies) || cfg.enemies.length === 0) {
+        showToast("该层挑战数据缺失。");
+        return null;
+      }
+      const enemies = cfg.enemies.map((enemy) => {
+        const entry = dexById.get(Number(enemy.dexId));
+        return entry ? {
+          dexId: Number(enemy.dexId) || 0,
+          level: clamp(Number(enemy.level) || 1, 1, 100),
+          entry,
+          name: normalize(entry.name) || `亚比${enemy.dexId}`,
+          image: getTimeTunnelBattleAnimSrc(entry.dexId),
+          element: normalize(entry.element),
+          subElement: normalize(entry.subElement)
+        } : null;
+      }).filter(Boolean);
+      if (enemies.length !== cfg.enemies.length) {
+        showToast("该层挑战目标数据缺失。");
+        return null;
+      }
+      const environment = randomTimeTunnelEnvironment();
+      return { floor: safeFloor, environment, enemies };
+    };
+    const enterSelectedTimeTunnelFloor = () => {
+      if (bagPets.value.length === 0) return showToast("背包中没有可出战亚比。");
+      const scene = buildTimeTunnelFloorScene(timeTunnelSelectedFloor.value);
+      if (!scene) return;
+      showTimeTunnelPanel.value = false;
+      timeTunnelEnvironmentScene.value = scene;
+      showTimeTunnelEnvironmentPanel.value = true;
+      playSceneBgm(TIME_TUNNEL_BGM_SRC);
+    };
+    const backToTimeTunnelPanel = () => {
+      if (!timeTunnelEnvironmentScene.value) return;
+      showTimeTunnelEnvironmentPanel.value = false;
+      showTimeTunnelPanel.value = true;
+      timeTunnelEnvironmentScene.value = null;
+      playSceneBgm(TIME_TUNNEL_BGM_SRC);
+    };
+    const startTimeTunnelFloor = (floor, sceneOverride = null) => {
+      const safeFloor = Math.max(1, Math.floor(Number(floor) || 1));
+      const maxEnterFloor = Math.max(TIME_TUNNEL_MIN_CLEAR_FLOOR, (timeTunnelMaxClearedFloor.value || 0) + 1);
+      if (safeFloor > maxEnterFloor) return showToast("该层时空坐标尚未稳定，暂未开放。");
+      const scene = sceneOverride || buildTimeTunnelFloorScene(safeFloor);
+      if (!scene || !Array.isArray(scene.enemies) || scene.enemies.length === 0) return;
+      if (bagPets.value.length === 0) return showToast("背包中没有可出战亚比。");
+      const first = scene.enemies[0];
+      const entry = first.entry;
+      if (!entry) return showToast("该层首个挑战目标数据缺失。");
+      showTimeTunnelPanel.value = false;
+      showTimeTunnelEnvironmentPanel.value = false;
+      timeTunnelEnvironmentScene.value = scene;
+      timeTunnelDoorScene.value = null;
+      const meta = {
+        floor: safeFloor,
+        index: 0,
+        environmentElement: normalizeElementName(scene.environment && scene.environment.element),
+        environmentName: normalize(scene.environment && scene.environment.name),
+        enemies: scene.enemies.map((x) => ({ dexId: Number(x.dexId) || 0, level: clamp(Number(x.level) || 1, 1, 100) }))
+      };
+      startBattlePrepare(`正在进入时空隧道第${safeFloor}层...`, entry, first.level, () => setupBattleScene({
+        targetEntry: entry,
+        targetLevel: first.level,
+        targetTalentOverride: createUniformTalent50(),
+        targetStudyOverride: createGuardianStudy(),
+        mode: "timeTunnel",
+        timeTunnelMeta: meta
+      }), { targets: scene.enemies.map((x) => ({ entry: { ...x.entry, image: x.image }, level: x.level })) });
+    };
+    const startCurrentTimeTunnelBattle = () => {
+      const scene = timeTunnelEnvironmentScene.value;
+      if (!scene) return showToast("时空环境数据缺失。");
+      timeTunnelDoorScene.value = null;
+      return startTimeTunnelFloor(scene.floor, scene);
+    };
     const openStudyPanel = () => {
       showStudyPanel.value = true;
       playSceneBgm(STUDY_BGM_SRC);
@@ -7564,7 +10493,7 @@ createApp({
       if (!meta) return showToast("学习力战场守卫数据缺失。");
       if (bagPets.value.length === 0) return showToast("背包中没有可出战亚比。");
       closeStudyPanel();
-      setupBattleScene({
+      startBattlePrepare(`正在进入${meta.label}...`, meta.targetEntry, 10, () => setupBattleScene({
         targetEntry: meta.targetEntry,
         targetLevel: 10,
         forceTargetHpRace500: false,
@@ -7572,7 +10501,7 @@ createApp({
         targetStudyOverride: createZeroStats(),
         mode: "study",
         guardianMeta: meta
-      });
+      }));
     };
     const openTargetPanel = () => {
       if (!selectedDexEntry.value) return showToast("请先在图鉴中选择挑战目标。");
@@ -7610,10 +10539,11 @@ createApp({
         levels: extraGuardian ? EXTRA_GUARDIAN_LEVELS.slice() : GUARDIAN_LEVELS.slice(),
         stageIndex: 0,
         hpRaceMultiplier: extraGuardian ? 10 : 5,
-        talentValue: extraGuardian ? 50 : 30
+        talentValue: extraGuardian ? 50 : 30,
+        statBoostRatio: extraGuardian ? 0.25 : 0
       };
       const level = meta.levels[0];
-      setupBattleScene({
+      startBattlePrepare(`正在进入守护者挑战 ${entry.name}...`, entry, level, () => setupBattleScene({
         targetEntry: entry,
         targetLevel: level,
         forceTargetHpRace500: false,
@@ -7622,7 +10552,7 @@ createApp({
         targetStudyOverride: createGuardianStudy(),
         mode: "guardian",
         guardianMeta: meta
-      });
+      }));
     };
     const confirmGuardianChallenge = () => {
       const entry = selectedGuardianEntry.value;
@@ -7631,7 +10561,7 @@ createApp({
     };
     const openBossChallengePanel = (dexId) => {
       const entry = dexById.get(Number(dexId));
-      if (!entry || !isBossName(entry.name)) return;
+      if (!entry || !isBossEntry(entry)) return;
       if (!isDexIdInOpenChallengeRange(entry)) return showToast(openChallengeRangeMessage());
       selectedBossDexId.value = entry.dexId;
       closeBossPanel();
@@ -7640,19 +10570,20 @@ createApp({
     const closeBossChallengePanel = () => { showBossChallengePanel.value = false; };
     const startBossChallenge = (dexId) => {
       const entry = dexById.get(Number(dexId));
-      if (!entry || !isBossName(entry.name)) return showToast("该亚比不是BOSS。");
+      if (!entry || !isBossEntry(entry)) return showToast("该亚比不是BOSS。");
       if (!isDexIdInOpenChallengeRange(entry)) return showToast(openChallengeRangeMessage());
       if (bagPets.value.length === 0) return showToast("背包中没有可出战亚比。");
       closeBossChallengePanel();
-      setupBattleScene({
+      startBattlePrepare(`正在进入BOSS挑战 ${entry.name}...`, entry, 100, () => setupBattleScene({
         targetEntry: entry,
         targetLevel: 100,
         forceTargetHpRace500: false,
         targetHpRaceMultiplier: 15,
         targetTalentOverride: createUniformTalent60(),
         targetStudyOverride: createGuardianStudy(),
-        mode: "boss"
-      });
+        mode: "boss",
+        guardianMeta: { statBoostRatio: 0.5 }
+      }));
     };
     const confirmBossChallenge = () => {
       const entry = selectedBossEntry.value;
@@ -7738,6 +10669,11 @@ createApp({
       lastServerSavedAt,
       bgmVolume,
       bgmVolumePercent,
+      battleSpeed,
+      battleSpeedLabel,
+      battlePrepare,
+      settingsTab,
+      applyBattleSpeed,
       battleBackground,
       onBattleBackgroundFilePick,
       resetBattleBackground,
@@ -7754,11 +10690,13 @@ createApp({
       activeEvolution,
       battleScene,
       showSwitchPanel,
+      showGlobalSettingsPanel,
       selectedWarehousePetId,
       showWarehouseActionModal,
       selectedWarehouseActionPet,
       switchPanelMode,
       showElementPanel,
+      showBagPanel,
       showWarehousePanel,
       showShopPanel,
       showBadgePanel,
@@ -7788,6 +10726,8 @@ createApp({
       selectedPetEquippedSkills,
       selectedRaceStats,
       selectedAbilityStats,
+      abilityBarMax,
+      selectedPetBattlePower,
       selectedPetTalent,
       selectedPetStudy,
       selectedStudyTotal,
@@ -7803,6 +10743,8 @@ createApp({
       firstPet,
       bagPets,
       bagCount,
+      bagBattlePower,
+      maxBagBattlePower,
       safeActivePets,
       warehousePets,
       warehouseElementOptions,
@@ -7812,6 +10754,7 @@ createApp({
       shopBuyQuantities,
       shopEggEntries,
       itemInventoryRows,
+      rewardFlyToast,
       shopTargetPetId,
       shopTargetOptions,
       safeEggs,
@@ -7867,7 +10810,16 @@ createApp({
       battleAbilityNow,
       battleSceneAvailablePets,
       isBattleAnimSide,
+      battlePetImageStyle,
+      bagFocusPetAnimImageStyle,
+      bagSlotPetAnimImageStyle,
+      warehousePetAnimImageStyle,
+      battlePreparePetAnimImageStyle,
+      timeTunnelPetAnimImageStyle,
+      timeTunnelEnemyScaleStyle,
+      petAnimImageStyle,
       battleSkillEffectStyle,
+      battleStatusEffectStyle,
       canCastBattleSkill,
       castBattleSkill,
       switchBattlePet,
@@ -7883,11 +10835,21 @@ createApp({
       showGuardianPanel,
       showBossPanel,
       showStudyPanel,
+      showTimeTunnelPanel,
+      showTimeTunnelEnvironmentPanel,
+      timeTunnelEnvironmentScene,
+      timeTunnelDoorScene,
+      timeEnvViewportStyle,
       showTargetPanel,
       showGuardianChallengePanel,
       showBossChallengePanel,
       guardianDexEntries,
       bossDexEntries,
+      timeTunnelMaxClearedFloor,
+      timeTunnelFloorRows,
+      selectedTimeTunnelFloorRow,
+      timeTunnelEnvironmentEnemies,
+      getTimeTunnelRewardInfo,
       studyBattlefields: STUDY_BATTLEFIELDS,
       selectedGuardianEntry,
       selectedBossEntry,
@@ -7900,6 +10862,14 @@ createApp({
       closeGuardianPanel,
       openBossPanel,
       closeBossPanel,
+      openTimeTunnelPanel,
+      closeTimeTunnelPanel,
+      selectTimeTunnelFloor,
+      enterSelectedTimeTunnelFloor,
+      backToTimeTunnelPanel,
+      startTimeTunnelFloor,
+      startCurrentTimeTunnelBattle,
+      enterTimeTunnelNextFloor,
       openStudyPanel,
       closeStudyPanel,
       startStudyBattle,
@@ -7921,6 +10891,8 @@ createApp({
       toggleDexPanel,
       openDexPanel,
       closeDexPanel,
+      openBagPanel,
+      closeBagPanel,
       openWarehousePanel,
       closeWarehousePanel,
       toggleWarehousePetActions,
@@ -7972,6 +10944,8 @@ createApp({
       resetProgress,
       submitAuth,
       enterGuestMode,
+      importGuestLocalSave,
+      guestImportInput,
       logoutUser,
       saveToServer,
       loadServerSave,
