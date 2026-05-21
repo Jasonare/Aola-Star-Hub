@@ -53,7 +53,8 @@ const verifyPassword = (password, user) => {
 
 const userSaveDir = (userId) => path.join(SAVE_ROOT, String(userId));
 const userSaveFile = (userId) => path.join(userSaveDir(userId), "save.json");
-const TEST_USER_ID = "test-account-all-pets-1-796";
+const TEST_USER_ID = "test-account-all-pets-1-1928";
+const LEGACY_TEST_USER_IDS = ["test-account-all-pets-1-796"];
 const TEST_USERNAME = "test";
 const TEST_PASSWORD = "test123456";
 
@@ -90,7 +91,7 @@ const createTestSaveState = () => {
   const clean = (s) => String(s || "").replace(/[\u200b\u00a0]/g, "").trim();
   const now = Date.now();
   const openedDexRows = (Array.isArray(dexRows) ? dexRows : [])
-    .filter((d) => Number(d && d.dexId) >= 1 && Number(d && d.dexId) <= 796);
+    .filter((d) => Number(d && d.dexId) >= 1 && Number(d && d.dexId) <= 1928);
   const openedDexIds = new Set(openedDexRows.map((d) => Number(d.dexId)));
   const chainRootByDex = new Map();
   const chainOrderByDex = new Map();
@@ -173,7 +174,7 @@ const ensureTestAccount = () => {
   const { salt, hash } = hashPassword(TEST_PASSWORD);
   let user = db.users.find((u) => String(u.username || "").toLowerCase() === TEST_USERNAME);
   if (user) {
-    user.id = user.id || TEST_USER_ID;
+    user.id = TEST_USER_ID;
     user.salt = salt;
     user.passwordHash = hash;
     user.updatedAt = new Date().toISOString();
@@ -182,7 +183,17 @@ const ensureTestAccount = () => {
     db.users.push(user);
   }
   saveUsersDb(db);
-  writeJsonFile(userSaveFile(user.id), {
+  const currentSaveFile = userSaveFile(user.id);
+  if (fs.existsSync(currentSaveFile)) return;
+  const legacySaveFile = LEGACY_TEST_USER_IDS.map((id) => userSaveFile(id)).find((file) => fs.existsSync(file));
+  if (legacySaveFile) {
+    const legacy = readJsonFile(legacySaveFile, null);
+    if (legacy && typeof legacy === "object") {
+      writeJsonFile(currentSaveFile, { ...legacy, userId: user.id, username: user.username });
+      return;
+    }
+  }
+  writeJsonFile(currentSaveFile, {
     userId: user.id,
     username: user.username,
     savedAt: new Date().toISOString(),
