@@ -18,7 +18,14 @@ $copyFiles = @(
   "aola-dex-1-100.js",
   "aola-species-data.js",
   "aola-skill-data.js",
+  "aola-skill-effects-hardcoded.js",
   "aola-evolution-chains.js",
+  "pet-action-layout.json",
+  "aola_pet_skill_extract.json",
+  "aola_pet_skill_extract_skills.json",
+  "aola-battle-background-default.png",
+  "Aola-Star-Hub-bg.png",
+  "Aola-Star-Hub-icon.png",
   "属性克制.jpg"
 )
 
@@ -29,7 +36,18 @@ foreach ($f in $copyFiles) {
   }
 }
 
-$dirs = @("vendor", "type", "BGM")
+$dirs = @(
+  "vendor",
+  "type",
+  "type-transparent",
+  "BGM",
+  "time-tunnel-environments",
+  "pet-action",
+  "pet-img",
+  "pet-state",
+  "skill-effect",
+  "skill-effect-fullscreen"
+)
 foreach ($d in $dirs) {
   $srcDir = Join-Path $srcRoot $d
   if (Test-Path -LiteralPath $srcDir) {

@@ -11,7 +11,7 @@ android {
         minSdk 24
         targetSdk 34
         versionCode 1
-        versionName '1.0.0'
+        versionName '0.2.0'
     }
 
     buildTypes {
@@ -27,6 +27,12 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+    }
+
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach {
+            outputFileName = "Aola Star Hub-${variant.versionName}-setup.apk"
+        }
     }
 }
 

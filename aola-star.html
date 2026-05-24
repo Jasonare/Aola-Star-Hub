@@ -1474,23 +1474,162 @@
       max-height: calc(100vh - calc(16 * var(--ui-px))) !important;
       border-radius: calc(18 * var(--ui-px)) !important;
     }
+    html.android-webview.android-landscape .pet-detail-overlay {
+      align-items: center !important;
+      padding: calc(8 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .pet-detail-modal {
+      width: calc(100vw - calc(16 * var(--ui-px))) !important;
+      max-width: calc(100vw - calc(16 * var(--ui-px))) !important;
+      height: calc(100vh - calc(16 * var(--ui-px))) !important;
+      max-height: calc(100vh - calc(16 * var(--ui-px))) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      padding: calc(10 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .pet-detail-grid {
+      display: grid !important;
+      grid-template-columns: minmax(calc(210 * var(--ui-px)), 30vw) minmax(0, 1fr) !important;
+      gap: calc(10 * var(--ui-px)) !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+    }
+    html.android-webview.android-landscape .pet-detail-left {
+      grid-column: 1 !important;
+      min-width: 0 !important;
+      min-height: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      overflow: hidden !important;
+      padding: calc(10 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .pet-detail-left img {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      max-height: min(52vh, calc(360 * var(--ui-px))) !important;
+    }
+    html.android-webview.android-landscape .pet-detail-right {
+      grid-column: 2 !important;
+      min-width: 0 !important;
+      min-height: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+    }
+    html.android-webview.android-landscape .pet-detail-right > .inline-flex {
+      flex: 0 0 auto !important;
+    }
+    html.android-webview.android-landscape .pet-detail-panel {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+    }
+    .pet-detail-skill-list-all {
+      max-height: min(52vh, calc(520 * var(--ui-px))) !important;
+    }
+    html.android-webview.android-landscape .pet-detail-panel {
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    html.android-webview.android-landscape .pet-detail-panel > template,
+    html.android-webview.android-landscape .pet-detail-skill-list {
+      min-height: 0 !important;
+    }
+    html.android-webview.android-landscape .pet-detail-skill-list {
+      flex: 1 1 auto !important;
+      max-height: none !important;
+    }
+    html.android-webview.android-landscape .challenge-detail-modal {
+      width: min(calc(900 * var(--ui-px)), calc(100vw - calc(32 * var(--ui-px)))) !important;
+      max-width: calc(100vw - calc(32 * var(--ui-px))) !important;
+      max-height: calc(100vh - calc(32 * var(--ui-px))) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+    }
+    html.android-webview.android-landscape .challenge-detail-grid {
+      display: grid !important;
+      grid-template-columns: minmax(calc(188 * var(--ui-px)), 28vw) minmax(0, 1fr) !important;
+      gap: calc(10 * var(--ui-px)) !important;
+      align-items: stretch !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+    html.android-webview.android-landscape .challenge-detail-left {
+      min-width: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+    }
+    html.android-webview.android-landscape .challenge-detail-left img {
+      width: min(20vh, calc(132 * var(--ui-px))) !important;
+      height: min(20vh, calc(132 * var(--ui-px))) !important;
+    }
+    html.android-webview.android-landscape .challenge-detail-right {
+      min-width: 0 !important;
+      overflow-y: auto !important;
+    }
     html.android-webview.android-landscape header {
-      padding: calc(10 * var(--ui-px)) calc(12 * var(--ui-px)) !important;
-      margin-bottom: calc(10 * var(--ui-px)) !important;
+      padding: calc(8 * var(--ui-px)) calc(10 * var(--ui-px)) !important;
+      margin-bottom: calc(8 * var(--ui-px)) !important;
+      border-radius: calc(18 * var(--ui-px)) !important;
     }
-    html.android-webview.android-landscape header .flex.flex-wrap.gap-2 > button.h-9 {
-      height: auto !important;
-      min-height: calc(34 * var(--ui-px)) !important;
-      padding: calc(5 * var(--ui-px)) calc(10 * var(--ui-px)) !important;
-      font-size: calc(12 * var(--ui-px)) !important;
+    html.android-webview.android-landscape header > .flex {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) minmax(calc(104 * var(--ui-px)), calc(132 * var(--ui-px))) minmax(calc(230 * var(--ui-px)), calc(300 * var(--ui-px))) !important;
+      align-items: stretch !important;
+      gap: calc(8 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape header .grid.grid-cols-2 {
+      grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+      gap: calc(5 * var(--ui-px)) !important;
+      min-width: 0 !important;
+    }
+    html.android-webview.android-landscape header .grid.grid-cols-2 > div,
+    html.android-webview.android-landscape header .rounded-2xl {
+      padding: calc(5 * var(--ui-px)) calc(6 * var(--ui-px)) !important;
+      border-radius: calc(12 * var(--ui-px)) !important;
+      min-width: 0 !important;
+    }
+    html.android-webview.android-landscape header .text-lg {
+      font-size: calc(13 * var(--ui-px)) !important;
+      line-height: 1.12 !important;
+    }
+    html.android-webview.android-landscape header .text-sm {
+      font-size: calc(11 * var(--ui-px)) !important;
+      line-height: 1.15 !important;
+    }
+    html.android-webview.android-landscape header .text-\[10px\] {
+      font-size: calc(8.5 * var(--ui-px)) !important;
       line-height: 1.1 !important;
-      white-space: normal !important;
-      overflow-wrap: anywhere;
     }
+    html.android-webview.android-landscape header .mt-3 {
+      margin-top: calc(6 * var(--ui-px)) !important;
+      display: grid !important;
+      grid-template-columns: repeat(9, minmax(0, 1fr)) calc(34 * var(--ui-px)) !important;
+      gap: calc(6 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape header .mt-3 > button.h-9,
+    html.android-webview.android-landscape header .flex.flex-wrap.gap-2 > button.h-9 {
+      height: calc(34 * var(--ui-px)) !important;
+      min-height: calc(34 * var(--ui-px)) !important;
+      padding: calc(3 * var(--ui-px)) calc(4 * var(--ui-px)) !important;
+      font-size: calc(10.5 * var(--ui-px)) !important;
+      line-height: 1.1 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: clip !important;
+    }
+    html.android-webview.android-landscape header .mt-3 > button.w-9,
     html.android-webview.android-landscape header .flex.flex-wrap.gap-2 > button.w-9 {
       width: calc(34 * var(--ui-px)) !important;
       min-width: calc(34 * var(--ui-px)) !important;
+      height: calc(34 * var(--ui-px)) !important;
       padding: 0 !important;
+      margin-left: 0 !important;
     }
     html.android-webview.android-landscape .bag-panel {
       --bag-main-h: clamp(calc(210 * var(--ui-px)), 58vh, calc(330 * var(--ui-px)));
@@ -1535,19 +1674,284 @@
       padding: calc(8 * var(--ui-px)) !important;
     }
     html.android-webview.android-landscape .bag-slot-card {
+      height: var(--bag-slot-h) !important;
       border-radius: calc(14 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .bag-slot-card .pet-anim-frame {
+      top: calc(4 * var(--ui-px)) !important;
+      height: var(--bag-slot-img-h) !important;
+      overflow: hidden !important;
+      align-items: flex-end !important;
+    }
+    html.android-webview.android-landscape .bag-slot-card .bottom-2 {
+      bottom: calc(5 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .bag-slot-card .text-xs {
+      font-size: calc(10 * var(--ui-px)) !important;
+      line-height: 1.05 !important;
+    }
+    html.android-webview.android-landscape .bag-slot-card .text-\[10px\] {
+      font-size: calc(9 * var(--ui-px)) !important;
+      line-height: 1.05 !important;
     }
     html.android-webview.android-landscape .grid.grid-cols-6 {
       grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+    html.android-webview.android-landscape .dex-card {
+      display: grid !important;
+      grid-template-rows: auto minmax(0, 1fr) auto !important;
+      min-height: clamp(0px, 26vh, calc(190 * var(--ui-px))) !important;
+      padding: calc(7 * var(--ui-px)) !important;
+      overflow: hidden !important;
+    }
+    html.android-webview.android-landscape .dex-card-head {
+      min-height: calc(20 * var(--ui-px)) !important;
+      margin-bottom: calc(3 * var(--ui-px)) !important;
+      overflow: hidden !important;
+    }
+    html.android-webview.android-landscape .dex-card-image-wrap {
+      min-height: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      overflow: hidden !important;
+    }
+    html.android-webview.android-landscape .dex-card-image {
+      width: clamp(calc(56 * var(--ui-px)), 9.5vh, calc(86 * var(--ui-px))) !important;
+      height: clamp(calc(56 * var(--ui-px)), 9.5vh, calc(86 * var(--ui-px))) !important;
+      max-width: 100% !important;
+    }
+    html.android-webview.android-landscape .dex-card-name {
+      min-height: calc(18 * var(--ui-px)) !important;
+      margin-top: calc(3 * var(--ui-px)) !important;
+      line-height: 1.12 !important;
     }
     html.android-webview.android-landscape .warehouse-list-pet-frame {
       width: clamp(calc(42 * var(--ui-px)), 7vw, calc(58 * var(--ui-px)));
       height: clamp(calc(42 * var(--ui-px)), 7vw, calc(58 * var(--ui-px)));
     }
+    html.android-webview.android-landscape .time-env-tools {
+      left: clamp(1.1rem, 2.2vw, 2rem) !important;
+      bottom: clamp(1.1rem, 3.4vh, 2.4rem) !important;
+      gap: clamp(0.75rem, 1.6vw, 1.5rem) !important;
+    }
     html.android-webview.android-landscape .time-env-tool-btn {
-      width: calc(48 * var(--ui-px));
-      height: calc(48 * var(--ui-px));
-      border-radius: calc(14 * var(--ui-px));
+      width: clamp(4.6rem, 7.6vw, 7.2rem) !important;
+      height: clamp(4.6rem, 7.6vw, 7.2rem) !important;
+      border-radius: clamp(1.25rem, 2vw, 2rem) !important;
+    }
+    html.android-webview.android-landscape .time-env-tool-btn svg {
+      width: clamp(2.55rem, 4.2vw, 4rem) !important;
+      height: clamp(2.55rem, 4.2vw, 4rem) !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-root {
+      --battle-command-panel-w: 30vw;
+      --battle-speed-column-w: clamp(calc(48 * var(--ui-px)), 5vw, calc(68 * var(--ui-px)));
+      --battle-target-card-w: 32vw;
+      --battle-top-card-h: clamp(calc(138 * var(--ui-px)), 23vh, calc(172 * var(--ui-px)));
+      --battle-log-left: calc(32 * var(--ui-px) + var(--battle-target-card-w) + calc(10 * var(--ui-px)));
+      --battle-log-right-gap: calc(var(--battle-command-panel-w) + calc(48 * var(--ui-px)));
+      display: block !important;
+      padding: 0 !important;
+      font-size: calc(16 * var(--ui-px));
+      overflow: hidden !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-wrap {
+      position: absolute !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      grid-column: auto !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-target {
+      left: calc(32 * var(--ui-px)) !important;
+      right: auto !important;
+      top: calc(32 * var(--ui-px)) !important;
+      bottom: auto !important;
+      width: var(--battle-target-card-w) !important;
+      max-width: var(--battle-target-card-w) !important;
+      display: block !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-attacker {
+      left: auto !important;
+      right: calc(20 * var(--ui-px)) !important;
+      top: 8vh !important;
+      bottom: auto !important;
+      width: var(--battle-command-panel-w) !important;
+      max-width: var(--battle-command-panel-w) !important;
+      display: block !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-target-card {
+      order: initial !important;
+      width: var(--battle-target-card-w) !important;
+      max-width: var(--battle-target-card-w) !important;
+      height: var(--battle-top-card-h) !important;
+      border-radius: calc(16 * var(--ui-px)) !important;
+      padding: calc(12 * var(--ui-px)) !important;
+      overflow: hidden !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-attacker-card,
+    html.android-webview.android-landscape .battle-mobile-hpbox {
+      position: static !important;
+      right: auto !important;
+      bottom: auto !important;
+      order: initial !important;
+      width: var(--battle-command-panel-w) !important;
+      max-width: var(--battle-command-panel-w) !important;
+      min-width: 0 !important;
+      margin: calc(6 * var(--ui-px)) 0 0 0 !important;
+      border-radius: calc(16 * var(--ui-px)) !important;
+      padding: calc(12 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .battle-command-layout {
+      width: var(--battle-command-panel-w) !important;
+      max-width: var(--battle-command-panel-w) !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) var(--battle-speed-column-w) !important;
+      grid-template-areas:
+        "actions speed"
+        "skills speed" !important;
+      gap: calc(6 * var(--ui-px)) !important;
+      align-items: stretch !important;
+      margin-top: 0 !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-skillpanel {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-actions {
+      order: initial !important;
+      grid-area: actions !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-skills {
+      order: initial !important;
+      grid-area: skills !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-speed {
+      grid-area: speed !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-target-sprite {
+      order: initial !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin-top: calc(8 * var(--ui-px)) !important;
+      justify-content: flex-end !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-target .battle-mobile-sprite {
+      height: 24vh !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-attacker-main {
+      position: absolute !important;
+      right: calc(var(--battle-command-panel-w) + 3.4vw) !important;
+      bottom: 13vh !important;
+      width: 15vw !important;
+      display: flex !important;
+      align-items: flex-end !important;
+      justify-content: flex-end !important;
+      margin-top: 0 !important;
+      z-index: 8 !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-attacker-visual {
+      width: 15vw !important;
+      max-width: 15vw !important;
+      height: 26vh !important;
+      display: flex !important;
+      align-items: flex-end !important;
+      justify-content: flex-end !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-log {
+      position: absolute !important;
+      left: var(--battle-log-left) !important;
+      right: auto !important;
+      top: calc(32 * var(--ui-px)) !important;
+      bottom: auto !important;
+      width: calc(100vw - var(--battle-log-left) - var(--battle-log-right-gap)) !important;
+      max-width: calc(100vw - var(--battle-log-left) - var(--battle-log-right-gap)) !important;
+      min-width: 0 !important;
+      height: var(--battle-top-card-h) !important;
+      max-height: var(--battle-top-card-h) !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+      justify-self: auto !important;
+      align-self: auto !important;
+      grid-column: auto !important;
+      transform: none !important;
+      padding: calc(7 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .battle-stage-line {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      grid-template-columns: none !important;
+      gap: calc(4 * var(--ui-px)) !important;
+      white-space: nowrap !important;
+    }
+    html.android-webview.android-landscape .battle-stage-line > span {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+      font-size: calc(10 * var(--ui-px)) !important;
+      padding: calc(2 * var(--ui-px)) calc(6 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-compact-title {
+      font-size: calc(20 * var(--ui-px)) !important;
+      line-height: 1.25 !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-compact-level {
+      font-size: calc(16 * var(--ui-px)) !important;
+      line-height: 1.25 !important;
+    }
+    html.android-webview.android-landscape .battle-command-layout .battle-command-btn {
+      height: calc(40 * var(--ui-px)) !important;
+      padding-left: calc(6 * var(--ui-px)) !important;
+      padding-right: calc(6 * var(--ui-px)) !important;
+      border-radius: calc(13 * var(--ui-px)) !important;
+      font-size: calc(13 * var(--ui-px)) !important;
+      white-space: nowrap !important;
+    }
+    html.android-webview.android-landscape .battle-command-layout .battle-skill-row {
+      height: auto !important;
+      min-height: calc(48 * var(--ui-px)) !important;
+      padding-top: calc(4 * var(--ui-px)) !important;
+      padding-bottom: calc(4 * var(--ui-px)) !important;
+      border-radius: calc(12 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .battle-command-layout .battle-item-row {
+      height: auto !important;
+      min-height: calc(36 * var(--ui-px)) !important;
+      border-radius: calc(12 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-log .max-h-\[220px\] {
+      max-height: calc(var(--battle-top-card-h) - calc(42 * var(--ui-px))) !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-log > div:first-child {
+      height: calc(28 * var(--ui-px)) !important;
+      font-size: calc(11 * var(--ui-px)) !important;
+      border-radius: calc(10 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .battle-command-skill-list {
+      min-height: calc(236 * var(--ui-px)) !important;
+      max-height: 52vh !important;
+      padding: calc(7 * var(--ui-px)) !important;
+      overflow: hidden !important;
+    }
+    html.android-webview.android-landscape .battle-command-skill-list .space-y-2 {
+      display: grid !important;
+      gap: calc(5 * var(--ui-px)) !important;
+      max-height: none !important;
+      overflow-y: hidden !important;
+    }
+    html.android-webview.android-landscape .battle-command-skill-list .space-y-2 > :not([hidden]) ~ :not([hidden]) {
+      margin-top: 0 !important;
+    }
+    html.android-webview.android-landscape .battle-speed-panel {
+      padding: calc(6 * var(--ui-px)) !important;
+      gap: calc(6 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .battle-speed-option {
+      height: calc(36 * var(--ui-px)) !important;
+      font-size: calc(12 * var(--ui-px)) !important;
     }
   </style>
 </head>
@@ -1630,7 +2034,6 @@
               <div class="text-sm font-black text-slate-900 truncate">{{ authUser.username }}｜{{ authUser.id }}</div>
               <div class="text-[10px] font-bold text-slate-500 truncate">{{ authUser.saveDir }}</div>
             </div>
-            <button @click="logoutUser" class="h-8 px-3 rounded-lg bg-slate-200 text-slate-700 text-xs font-black shrink-0">退出</button>
           </div>
           <div class="mt-2 flex items-center gap-2">
             <button @click="saveToServer" :disabled="saveLoading" class="h-8 px-3 rounded-lg bg-emerald-600 text-white text-xs font-black disabled:opacity-50">存档</button>
@@ -1645,7 +2048,6 @@
               <div class="text-sm font-black text-slate-900 truncate">游客登录｜本机进度</div>
               <div class="text-[10px] font-bold text-slate-500 truncate">localStorage：{{ playMode === 'guest' ? '启用' : '未启用' }}</div>
             </div>
-            <button @click="logoutUser" class="h-8 px-3 rounded-lg bg-slate-200 text-slate-700 text-xs font-black shrink-0">返回登录</button>
           </div>
         </template>
       </div>
@@ -1783,16 +2185,16 @@
                     <div class="flex items-center justify-between gap-2">
                       <div class="min-w-0">
                         <div class="flex items-center gap-1">
-                          <span v-if="skillName" class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {})).label, 16)" :title="skillTypeMeta(safeSkillType(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {})).label"></span>
+                          <span v-if="skillName" class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(selectedPetSkillByName(skillName) || {})).label, 16)" :title="skillTypeMeta(safeSkillType(selectedPetSkillByName(skillName) || {})).label"></span>
                           <div class="text-sm font-black text-sky-950 truncate">{{ skillName || '空白技能' }}</div>
                         </div>
                         <div v-if="skillName" class="mt-0.5 text-[10px] font-black text-sky-700">
-                          威力 {{ safeSkillPower(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }} | PP {{ safeSkillPP(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }}
+                          威力 {{ safeSkillPower(selectedPetSkillByName(skillName) || {}) }} | PP {{ safeSkillPP(selectedPetSkillByName(skillName) || {}) }}
                         </div>
                       </div>
                       <button v-if="skillName && !(selectedPet && selectedPet.previewAllSkills)" @click="startDirectReplaceSkill(skillName)" class="h-7 px-3 rounded-lg text-xs font-black bg-orange-500 text-white">替换</button>
                     </div>
-                    <div v-if="skillName" class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">{{ skillDisplayDesc(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }}</div>
+                    <div v-if="skillName" class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">{{ skillDisplayDesc(selectedPetSkillByName(skillName) || {}) }}</div>
                   </div>
                 </div>
               </template>
@@ -1894,9 +2296,19 @@
     </section>
   </div>
 
-
-
-  
+  <div v-if="showReleaseNotesModal && authReady" class="fixed inset-0 z-[120] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-6">
+    <div class="w-full max-w-3xl max-h-[92vh] rounded-3xl border border-cyan-100 bg-white shadow-2xl flex flex-col app-modal" @click.stop>
+      <div class="shrink-0 border-b border-slate-100 px-4 py-4 md:px-6">
+        <h2 class="text-base md:text-xl font-black text-slate-900">{{ releaseNotes.title }}</h2>
+      </div>
+      <ol class="min-h-0 overflow-y-auto scrollbar px-5 py-4 md:px-7 space-y-2 list-decimal list-outside ml-5 text-xs md:text-sm font-bold leading-6 text-slate-700">
+        <li v-for="(item, index) in releaseNotes.items" :key="'release_note_' + index">{{ item }}</li>
+      </ol>
+      <div class="shrink-0 border-t border-slate-100 px-4 py-3 md:px-6 flex justify-end">
+        <button @click="closeReleaseNotesModal" class="h-10 px-6 rounded-xl bg-cyan-600 text-white text-sm font-black">我知道了</button>
+      </div>
+    </div>
+  </div>
 
   <div v-show="state.showDexPanel" style="display:none" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeDexPanel">
     <div class="w-full max-w-6xl h-[90vh] md:h-[760px] rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl flex flex-col app-panel-modal" @click.stop>
@@ -1916,16 +2328,18 @@
         图鉴提示：只有击败某亚比的最终形态，才会获得该亚比蛋。守护者请从【守护者挑战】入口挑战，BOSS请从【BOSS挑战】入口挑战，商店蛋亚比只能从【亚比商店/道具】购买。
       </div>
       <div class="grid grid-cols-6 gap-1 md:gap-2 flex-1 overflow-y-auto pr-1 scrollbar">
-        <button v-for="entry in filteredDex" :key="'dex_'+entry.dexId" @click="canChallengeFromDex(entry) ? (selectDex(entry.dexId), closeDexPanel()) : null" class="rounded-xl border bg-white p-1.5 md:p-2 text-left min-h-[164px]" :class="canChallengeFromDex(entry) ? 'border-slate-200 hover:border-indigo-300' : 'border-amber-300 bg-amber-50 cursor-not-allowed'">
-          <div class="flex items-center gap-1 mb-1">
+        <button v-for="entry in filteredDex" :key="'dex_'+entry.dexId" @click="canChallengeFromDex(entry) ? (selectDex(entry.dexId), closeDexPanel()) : null" class="dex-card rounded-xl border bg-white p-1.5 md:p-2 text-left min-h-[164px]" :class="canChallengeFromDex(entry) ? 'border-slate-200 hover:border-indigo-300' : 'border-amber-300 bg-amber-50 cursor-not-allowed'">
+          <div class="dex-card-head flex items-center gap-1 mb-1">
             <div class="text-[10px] font-black text-slate-500">#{{ entry.dexId }}</div>
             <span class="element-icon" :style="petElementIconStyle(entry.element, 15)" :title="entry.element || ''"></span>
             <span v-if="entry.subElement" class="element-icon" :style="petElementIconStyle(entry.subElement, 15)" :title="entry.subElement || ''"></span>
             <span v-if="hasDefeatedDex(entry.dexId)" class="rounded bg-emerald-500 px-1.5 py-0.5 text-[9px] font-black text-white" :class="canChallengeFromDex(entry) ? 'ml-auto' : ''">WIN</span>
             <span v-if="!canChallengeFromDex(entry)" class="ml-auto text-[10px] font-black" :class="dexStatus(entry)==='BOSS' ? 'text-rose-700' : (dexStatus(entry)==='商店蛋' ? 'text-violet-700' : 'text-amber-700')">{{ dexStatus(entry) }}</span>
           </div>
-          <img :src="entry.image" @error="withFallback" class="w-20 h-20 object-contain mx-auto">
-          <div class="text-[11px] md:text-sm font-black text-slate-800 text-center mt-1 truncate">{{ entry.name }}</div>
+          <div class="dex-card-image-wrap">
+            <img :src="entry.image" @error="withFallback" class="dex-card-image w-20 h-20 object-contain mx-auto">
+          </div>
+          <div class="dex-card-name text-[11px] md:text-sm font-black text-slate-800 text-center mt-1 truncate">{{ entry.name }}</div>
         </button>
       </div>
     </div>
@@ -2153,16 +2567,16 @@
                     <div class="flex items-center justify-between gap-2">
                       <div class="min-w-0">
                         <div class="flex items-center gap-1">
-                          <span v-if="skillName" class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {})).label, 16)" :title="skillTypeMeta(safeSkillType(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {})).label"></span>
+                          <span v-if="skillName" class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(selectedPetSkillByName(skillName) || {})).label, 16)" :title="skillTypeMeta(safeSkillType(selectedPetSkillByName(skillName) || {})).label"></span>
                           <div class="text-sm font-black text-sky-950 truncate">{{ skillName || '空白技能' }}</div>
                         </div>
                         <div v-if="skillName" class="mt-0.5 text-[10px] font-black text-sky-700">
-                          威力 {{ safeSkillPower(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }} | PP {{ safeSkillPP(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }}
+                          威力 {{ safeSkillPower(selectedPetSkillByName(skillName) || {}) }} | PP {{ safeSkillPP(selectedPetSkillByName(skillName) || {}) }}
                         </div>
                       </div>
                       <button v-if="skillName && !(selectedPet && selectedPet.previewAllSkills)" @click="startDirectReplaceSkill(skillName)" class="h-7 px-3 rounded-lg text-xs font-black bg-orange-500 text-white">替换</button>
                     </div>
-                    <div v-if="skillName" class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">{{ skillDisplayDesc(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }}</div>
+                    <div v-if="skillName" class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">{{ skillDisplayDesc(selectedPetSkillByName(skillName) || {}) }}</div>
                   </div>
                 </div>
               </template>
@@ -2328,22 +2742,22 @@
           </div>
           <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 pet-detail-panel">
         <template v-if="selectedInfoTab === 'skills'">
-          <div class="space-y-2 overflow-y-auto pr-1 scrollbar" :class="(selectedPet && selectedPet.previewAllSkills) ? 'max-h-[232px]' : 'max-h-[46vh]'">
+          <div class="pet-detail-skill-list space-y-2 overflow-y-auto pr-1 scrollbar" :class="(selectedPet && selectedPet.previewAllSkills) ? 'pet-detail-skill-list-all' : 'max-h-[46vh]'">
             <div v-for="(skillName, idx) in selectedPetEquippedSkills" :key="'eq_slot_'+idx+'_'+skillName" class="rounded-xl border border-slate-200 bg-white px-3 py-2">
               <div class="flex items-center justify-between gap-2">
                 <div class="min-w-0">
                   <div class="flex items-center gap-1">
-                    <span v-if="skillName" class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {})).label, 15)" :title="skillTypeMeta(safeSkillType(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {})).label"></span>
+                    <span v-if="skillName" class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(selectedPetSkillByName(skillName) || {})).label, 15)" :title="skillTypeMeta(safeSkillType(selectedPetSkillByName(skillName) || {})).label"></span>
                     <div class="text-sm font-black text-slate-800 truncate">{{ skillName || '空白技能' }}</div>
                   </div>
                   <div v-if="skillName" class="mt-0.5 text-[10px] font-black text-slate-500">
-                    {{ skillTypeMeta(safeSkillType(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {})).label }} | {{ skillAttackTypeLabel(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }} | 威力 {{ safeSkillPower(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }} | 命中 {{ safeSkillAccuracy(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }} | PP {{ safeSkillPP(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }}
+                    {{ skillTypeMeta(safeSkillType(selectedPetSkillByName(skillName) || {})).label }} | {{ skillAttackTypeLabel(selectedPetSkillByName(skillName) || {}) }} | 威力 {{ safeSkillPower(selectedPetSkillByName(skillName) || {}) }} | 命中 {{ safeSkillAccuracy(selectedPetSkillByName(skillName) || {}) }} | PP {{ safeSkillPP(selectedPetSkillByName(skillName) || {}) }}
                   </div>
                 </div>
                 <button v-if="skillName && !(selectedPet && selectedPet.previewAllSkills)" @click="startDirectReplaceSkill(skillName)" class="h-7 px-3 rounded-lg text-xs font-black bg-indigo-50 text-indigo-700">替换</button>
               </div>
               <div v-if="skillName" class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">
-                {{ skillDisplayDesc(availableSkillsForSelectedPet.find(s => safeSkillName(s)===skillName) || {}) }}
+                {{ skillDisplayDesc(selectedPetSkillByName(skillName) || {}) }}
               </div>
             </div>
           </div>
@@ -2503,7 +2917,7 @@
       <div class="flex items-center justify-between mb-3">
         <div>
           <h3 class="text-lg font-black text-slate-900">徽章</h3>
-          <p class="text-xs font-bold text-slate-500">守护者挑战成功 1 次、10 次、100 次可激活对应徽章。</p>
+          <p class="text-xs font-bold text-slate-500">守护者挑战可激活成长徽章，本版本首次 BOSS 胜利可获得对应 BOSS 勋章。</p>
         </div>
         <button @click="closeBadgePanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
@@ -2515,7 +2929,7 @@
         <button @click="unequipBadge" class="h-9 px-4 rounded-xl bg-white border border-amber-200 text-amber-700 text-sm font-black">卸下</button>
       </div>
       <div v-if="ownedBadges.length===0" class="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center text-sm font-black text-slate-500">
-        暂未获得徽章，挑战守护者即可开始收集。
+        暂未获得徽章，挑战守护者或首次击败 BOSS 即可开始收集。
       </div>
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[58vh] overflow-y-auto pr-1 scrollbar">
         <button
@@ -2526,7 +2940,7 @@
           :class="state.equippedBadgeId===badge.id ? 'border-yellow-400 bg-yellow-50 shadow-lg' : 'border-slate-200 bg-white hover:bg-slate-50'"
         >
           <div class="text-base font-black text-slate-900">{{ badge.name }}</div>
-          <div class="text-[11px] font-bold text-slate-500 mt-1">{{ badge.guardianName }} 已挑战成功 {{ badge.currentCount }} 次</div>
+          <div class="text-[11px] font-bold text-slate-500 mt-1">{{ badge.description || (badge.guardianName + ' 已挑战成功 ' + badge.currentCount + ' 次') }}</div>
           <div class="mt-2 inline-flex h-6 items-center rounded-full bg-slate-900 px-3 text-[11px] font-black text-white">
             {{ state.equippedBadgeId===badge.id ? '佩戴中' : '点击佩戴' }}
           </div>
@@ -2552,18 +2966,18 @@
 
   <template v-if="showGuardianChallengePanel">
     <div v-if="selectedGuardianEntry" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeGuardianChallengePanel">
-      <div class="w-full max-w-[92vw] md:max-w-3xl rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl max-h-[88vh] overflow-y-auto app-modal" @click.stop>
+      <div class="w-full max-w-[92vw] md:max-w-3xl rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl max-h-[88vh] overflow-y-auto app-modal challenge-detail-modal" @click.stop>
         <div class="flex items-center justify-between mb-3">
           <h3 class="text-lg font-black text-slate-900">守护者挑战</h3>
           <button @click="closeGuardianChallengePanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 challenge-detail-grid">
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center challenge-detail-left">
             <img :src="selectedGuardianEntry.image" @error="withFallback" class="w-20 h-20 md:w-28 md:h-28 object-contain mx-auto">
             <div class="mt-2 text-sm font-black text-slate-800">{{ selectedGuardianEntry.name }}</div>
             <button @click="openSelectedGuardianDetail" class="mt-2 h-8 px-3 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-black">查看详情</button>
           </div>
-          <div class="space-y-3">
+          <div class="space-y-3 challenge-detail-right">
             <div class="rounded-xl border border-amber-100 bg-amber-50 p-3 text-xs font-bold text-amber-800">
               {{ selectedGuardianChallengeText }}
             </div>
@@ -2608,18 +3022,18 @@
 
   <template v-if="showBossChallengePanel">
     <div v-if="selectedBossEntry" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBossChallengePanel">
-      <div class="w-full max-w-[92vw] md:max-w-3xl rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl max-h-[88vh] overflow-y-auto app-modal" @click.stop>
+      <div class="w-full max-w-[92vw] md:max-w-3xl rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl max-h-[88vh] overflow-y-auto app-modal challenge-detail-modal" @click.stop>
         <div class="flex items-center justify-between mb-3">
           <h3 class="text-lg font-black text-slate-900">BOSS挑战</h3>
           <button @click="closeBossChallengePanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 challenge-detail-grid">
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center challenge-detail-left">
             <img :src="selectedBossEntry.image" @error="withFallback" class="w-20 h-20 md:w-28 md:h-28 object-contain mx-auto">
             <div class="mt-2 text-sm font-black text-slate-800">{{ selectedBossEntry.name }}</div>
             <button @click="openSelectedBossDetail" class="mt-2 h-8 px-3 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-black">查看详情</button>
           </div>
-          <div class="space-y-3">
+          <div class="space-y-3 challenge-detail-right">
             <div class="rounded-xl border border-rose-100 bg-rose-50 p-3 text-xs font-bold text-rose-800">
               {{ selectedBossChallengeText }}
             </div>
@@ -2879,7 +3293,7 @@
           <div :class="['relative h-[260px] flex items-end justify-end battle-mobile-sprite w-full', battleScene.fxTargetShake && !battleScene.fxTargetDefeated ? 'battle-shake-right' : '']">
             <div v-if="battleScene.fxTargetSkillText" class="absolute top-[18%] left-[calc(50%+72px)] text-sm font-black whitespace-nowrap battle-skill-float">{{ battleScene.fxTargetSkillText }}</div>
             <div :class="['battle-pet-visual-anchor', battleScene.fxTargetDefeated ? 'battle-defeated-exit' : '']">
-              <img :src="battleScene.targetImage" :style="battlePetImageStyle('target')" @error="withFallback" class="battle-pet-img battle-target-pet-img drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
+              <img :src="battleScene.targetImage" :style="battlePetImageStyle('target')" @error="(event) => withBattlePetFallback(event, 'target')" class="battle-pet-img battle-target-pet-img drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
               <img v-if="battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'target'" :key="'skill_fx_target_' + battleScene.skillEffectFx.seq" :src="battleScene.skillEffectFx.src" class="battle-skill-effect-gif" :style="battleSkillEffectStyle('target')" alt="">
               <img v-if="battleScene.statusEffectFx && battleScene.statusEffectFx.side === 'target'" :key="'status_fx_target_' + battleScene.statusEffectFx.seq" :src="battleScene.statusEffectFx.src" class="battle-status-effect-gif" :style="battleStatusEffectStyle('target')" alt="">
               <span v-if="battleScene.statusEffectFx && battleScene.statusEffectFx.side === 'target' && battleScene.statusEffectFx.label === '斗志'" :key="'morale_target_' + battleScene.statusEffectFx.seq" class="battle-morale-aura"></span>
@@ -3019,7 +3433,7 @@
       <div class="battle-mobile-attacker-main">
       <div :class="['relative h-[300px] flex items-end justify-start battle-mobile-sprite battle-mobile-attacker-visual', battleScene.fxAttackerShake && !battleScene.fxAttackerDefeated ? 'battle-shake-left' : '']">
         <div :class="['battle-pet-visual-anchor', battleScene.fxAttackerDefeated ? 'battle-defeated-exit' : '']">
-          <img :src="battleScene.attackerImage" :style="battlePetImageStyle('attacker')" @error="withFallback" class="battle-pet-img battle-attacker-pet-img drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
+          <img :src="battleScene.attackerImage" :style="battlePetImageStyle('attacker')" @error="(event) => withBattlePetFallback(event, 'attacker')" class="battle-pet-img battle-attacker-pet-img drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
           <img v-if="battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'attacker'" :key="'skill_fx_attacker_' + battleScene.skillEffectFx.seq" :src="battleScene.skillEffectFx.src" class="battle-skill-effect-gif" :style="battleSkillEffectStyle('attacker')" alt="">
           <img v-if="battleScene.statusEffectFx && battleScene.statusEffectFx.side === 'attacker'" :key="'status_fx_attacker_' + battleScene.statusEffectFx.seq" :src="battleScene.statusEffectFx.src" class="battle-status-effect-gif" :style="battleStatusEffectStyle('attacker')" alt="">
         </div>
