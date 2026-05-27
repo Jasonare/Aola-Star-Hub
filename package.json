@@ -1,6 +1,6 @@
 {
   "name": "Aola-Star-Hub",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Aola Star Hub frontend with local save server and Electron shell.",
   "main": "electron/main.js",

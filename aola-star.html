@@ -403,10 +403,10 @@
     }
     .battle-skill-effect-fullscreen > img {
       position: absolute;
-      left: 40%;
-      top: 50%;
-      width: 100vw;
-      height: 100vh;
+      left: 35%;
+      top: 40%;
+      width: 150vw;
+      height: 150vh;
       max-width: none !important;
       max-height: none !important;
       object-fit: fill;
@@ -1320,6 +1320,21 @@
         justify-self: start;
         align-self: end;
       }
+      .battle-mobile-log-collapsed {
+        height: calc(34 * var(--ui-px)) !important;
+        max-height: calc(34 * var(--ui-px)) !important;
+        padding: calc(3 * var(--ui-px)) !important;
+        align-self: start;
+      }
+      .battle-log-toggle {
+        width: 100%;
+        min-width: 0;
+      }
+      .battle-log-toggle-icon {
+        flex: 0 0 auto;
+        font-size: calc(10 * var(--ui-px));
+        opacity: .86;
+      }
       .battle-mobile-actions { order: 1; }
       .battle-mobile-skills { order: 2; }
       .battle-mobile-attacker-main {
@@ -1606,25 +1621,39 @@
       font-size: calc(8.5 * var(--ui-px)) !important;
       line-height: 1.1 !important;
     }
-    html.android-webview.android-landscape header .mt-3 {
+    html.android-webview.android-landscape header .home-action-grid {
       margin-top: calc(6 * var(--ui-px)) !important;
       display: grid !important;
-      grid-template-columns: repeat(9, minmax(0, 1fr)) calc(34 * var(--ui-px)) !important;
+      grid-template-columns: repeat(5, minmax(0, 1fr)) calc(34 * var(--ui-px)) !important;
       gap: calc(6 * var(--ui-px)) !important;
+      align-items: stretch !important;
     }
-    html.android-webview.android-landscape header .mt-3 > button.h-9,
-    html.android-webview.android-landscape header .flex.flex-wrap.gap-2 > button.h-9 {
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(1) { grid-column: 1; grid-row: 1; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(2) { grid-column: 2; grid-row: 1; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(3) { grid-column: 3; grid-row: 1; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(4) { grid-column: 4; grid-row: 1; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(5) { grid-column: 5; grid-row: 1; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(6) { grid-column: 1; grid-row: 2; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(7) { grid-column: 2; grid-row: 2; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(8) { grid-column: 3; grid-row: 2; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(9) { grid-column: 4; grid-row: 2; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(10) { grid-column: 5; grid-row: 2; }
+    html.android-webview.android-landscape header .home-action-grid > button.h-9:not(.home-settings-btn) {
       height: calc(34 * var(--ui-px)) !important;
       min-height: calc(34 * var(--ui-px)) !important;
+      width: 100% !important;
+      min-width: 0 !important;
       padding: calc(3 * var(--ui-px)) calc(4 * var(--ui-px)) !important;
       font-size: calc(10.5 * var(--ui-px)) !important;
       line-height: 1.1 !important;
       white-space: nowrap !important;
       overflow: hidden !important;
-      text-overflow: clip !important;
+      text-overflow: ellipsis !important;
     }
-    html.android-webview.android-landscape header .mt-3 > button.w-9,
-    html.android-webview.android-landscape header .flex.flex-wrap.gap-2 > button.w-9 {
+    html.android-webview.android-landscape header .home-action-grid > .home-settings-btn {
+      grid-column: 6 !important;
+      grid-row: 2 !important;
+      justify-self: end !important;
       width: calc(34 * var(--ui-px)) !important;
       min-width: calc(34 * var(--ui-px)) !important;
       height: calc(34 * var(--ui-px)) !important;
@@ -1750,7 +1779,7 @@
       --battle-target-card-w: 32vw;
       --battle-top-card-h: clamp(calc(138 * var(--ui-px)), 23vh, calc(172 * var(--ui-px)));
       --battle-log-left: calc(32 * var(--ui-px) + var(--battle-target-card-w) + calc(10 * var(--ui-px)));
-      --battle-log-right-gap: calc(var(--battle-command-panel-w) + calc(48 * var(--ui-px)));
+      --battle-log-right-gap: calc(var(--battle-command-panel-w) + calc(88 * var(--ui-px)));
       display: block !important;
       padding: 0 !important;
       font-size: calc(16 * var(--ui-px));
@@ -1879,6 +1908,14 @@
       transform: none !important;
       padding: calc(7 * var(--ui-px)) !important;
     }
+    html.android-webview.android-landscape .battle-mobile-log-collapsed {
+      height: calc(32 * var(--ui-px)) !important;
+      max-height: calc(32 * var(--ui-px)) !important;
+      padding: calc(2 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .battle-mobile-log-collapsed .battle-log-toggle {
+      height: calc(28 * var(--ui-px)) !important;
+    }
     html.android-webview.android-landscape .battle-stage-line {
       display: flex !important;
       flex-wrap: nowrap !important;
@@ -1922,13 +1959,21 @@
       min-height: calc(36 * var(--ui-px)) !important;
       border-radius: calc(12 * var(--ui-px)) !important;
     }
+    html.android-webview.android-landscape .battle-mobile-log .battle-log-body,
     html.android-webview.android-landscape .battle-mobile-log .max-h-\[220px\] {
       max-height: calc(var(--battle-top-card-h) - calc(42 * var(--ui-px))) !important;
     }
-    html.android-webview.android-landscape .battle-mobile-log > div:first-child {
+    html.android-webview.android-landscape .battle-mobile-log > div:first-child,
+    html.android-webview.android-landscape .battle-log-toggle {
       height: calc(28 * var(--ui-px)) !important;
       font-size: calc(11 * var(--ui-px)) !important;
       border-radius: calc(10 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .battle-log-toggle-icon {
+      flex: 0 0 auto;
+      font-size: calc(10 * var(--ui-px)) !important;
+      color: rgb(207 250 254);
+      opacity: .86;
     }
     html.android-webview.android-landscape .battle-command-skill-list {
       min-height: calc(236 * var(--ui-px)) !important;
@@ -2052,7 +2097,7 @@
         </template>
       </div>
     </div>
-    <div class="mt-3 flex items-center gap-2">
+    <div class="home-action-grid mt-3 flex items-center gap-2">
       <button
         @click="openDexPanel"
         class="h-9 px-4 rounded-xl text-sm font-black bg-white border border-slate-300 text-slate-700"
@@ -2108,8 +2153,14 @@
         徽章
       </button>
       <button
+        @click="openGameplayGuideModal"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-indigo-50 border border-indigo-300 text-indigo-700"
+      >
+        玩法引导
+      </button>
+      <button
         @click="showGlobalSettingsPanel = true"
-        class="ml-auto h-9 w-9 rounded-xl border border-slate-300 bg-white text-slate-700 flex items-center justify-center shadow-sm hover:bg-slate-50 active:scale-95 transition"
+        class="home-settings-btn ml-auto h-9 w-9 rounded-xl border border-slate-300 bg-white text-slate-700 flex items-center justify-center shadow-sm hover:bg-slate-50 active:scale-95 transition"
         title="全局设置"
       >
         <svg viewBox="0 0 24 24" class="w-5 h-5 fill-none stroke-current stroke-[2]" stroke-linecap="round" stroke-linejoin="round">
@@ -2306,6 +2357,20 @@
       </ol>
       <div class="shrink-0 border-t border-slate-100 px-4 py-3 md:px-6 flex justify-end">
         <button @click="closeReleaseNotesModal" class="h-10 px-6 rounded-xl bg-cyan-600 text-white text-sm font-black">我知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showGameplayGuideModal" class="fixed inset-0 z-[120] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-6">
+    <div class="w-full max-w-3xl max-h-[92vh] rounded-3xl border border-indigo-100 bg-white shadow-2xl flex flex-col app-modal" @click.stop>
+      <div class="shrink-0 border-b border-slate-100 px-4 py-4 md:px-6">
+        <h2 class="text-base md:text-xl font-black text-slate-900">Hub版本玩法引导</h2>
+      </div>
+      <div class="min-h-0 overflow-y-auto scrollbar px-5 py-4 md:px-7 space-y-3 text-xs md:text-sm font-bold leading-6 text-slate-700">
+        <p v-for="(line, index) in gameplayGuideLines" :key="'gameplay_guide_' + index">{{ line }}</p>
+      </div>
+      <div class="shrink-0 border-t border-slate-100 px-4 py-3 md:px-6 flex justify-end">
+        <button @click="closeGameplayGuideModal" class="h-10 px-6 rounded-xl bg-indigo-600 text-white text-sm font-black">我知道了</button>
       </div>
     </div>
   </div>
@@ -3034,6 +3099,16 @@
             <button @click="openSelectedBossDetail" class="mt-2 h-8 px-3 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-black">查看详情</button>
           </div>
           <div class="space-y-3 challenge-detail-right">
+            <div class="grid grid-cols-3 gap-2">
+              <button
+                v-for="option in bossDifficultyOptions"
+                :key="'boss_difficulty_' + option.key"
+                @click="selectedBossDifficulty = option.key"
+                :class="['h-9 rounded-xl border text-xs font-black transition', selectedBossDifficulty === option.key ? 'border-rose-500 bg-rose-500 text-white shadow-sm' : 'border-rose-200 bg-white text-rose-700 hover:bg-rose-50']"
+              >
+                {{ option.label }}
+              </button>
+            </div>
             <div class="rounded-xl border border-rose-100 bg-rose-50 p-3 text-xs font-bold text-rose-800">
               {{ selectedBossChallengeText }}
             </div>
@@ -3457,12 +3532,15 @@
       </div>
     </div>
 
-    <div class="absolute left-3 right-3 md:left-8 md:right-auto bottom-3 md:bottom-8 w-auto md:w-[21%] min-w-0 md:min-w-[260px] rounded-2xl border border-cyan-200/20 bg-slate-900/40 p-3 battle-mobile-log">
-      <div class="h-9 px-3 rounded-xl bg-cyan-700/70 text-cyan-100 text-sm font-black flex items-center justify-center">战斗日志｜第{{ battleScene.turnCount || 1 }}回合</div>
-      <div ref="battleSceneLogRef" class="max-h-[220px] overflow-auto scrollbar pr-1 mt-2">
+    <div class="absolute left-3 right-3 md:left-8 md:right-auto bottom-3 md:bottom-8 w-auto md:w-[21%] min-w-0 md:min-w-[260px] rounded-2xl border border-cyan-200/20 bg-slate-900/40 p-3 battle-mobile-log" :class="{ 'battle-mobile-log-collapsed': battleLogCollapsed }">
+      <button type="button" @click.stop="toggleBattleLogCollapsed" class="battle-log-toggle h-9 px-3 rounded-xl bg-cyan-700/70 text-cyan-100 text-sm font-black flex items-center justify-between gap-2 w-full">
+        <span class="truncate">战斗日志｜第{{ battleScene.turnCount || 1 }}回合</span>
+        <span class="battle-log-toggle-icon">{{ battleLogCollapsed ? '展开' : '收起' }}</span>
+      </button>
+      <div v-show="!battleLogCollapsed" ref="battleSceneLogRef" class="battle-log-body max-h-[220px] overflow-auto scrollbar pr-1 mt-2">
         <div v-for="(line, idx) in battleScene.logs" :key="'battle_log_' + idx" class="text-xs font-bold text-slate-200 mb-1">{{ line }}</div>
       </div>
-      <div v-if="battleScene.ended" class="mt-3 rounded-xl border p-3" :class="battleScene.win ? 'border-emerald-400/60 bg-emerald-500/10' : 'border-rose-400/60 bg-rose-500/10'">
+      <div v-if="battleScene.ended && !battleLogCollapsed" class="mt-3 rounded-xl border p-3" :class="battleScene.win ? 'border-emerald-400/60 bg-emerald-500/10' : 'border-rose-400/60 bg-rose-500/10'">
         <div :class="['text-base font-black', battleScene.win ? 'text-emerald-300' : 'text-rose-300']">{{ battleScene.win ? '挑战胜利' : '挑战失败' }}</div>
         <div class="text-xs font-bold text-slate-200 mt-1">{{ battleScene.summary }}</div>
         <div class="text-xs font-bold text-slate-300 mt-1">获得经验：{{ battleScene.expGain }}</div>
@@ -3474,7 +3552,7 @@
   </div>
 </div>
 
-<div v-cloak v-if="bagReplaceCtx" class="fixed inset-0 z-[112] bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4" @click="cancelReplaceBag">
+<div v-cloak v-if="bagReplaceCtx" class="fixed inset-0 z-[220] bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4" @click="cancelReplaceBag">
   <div class="w-full max-w-3xl rounded-3xl border border-white bg-white p-4 shadow-2xl app-modal" @click.stop>
     <div class="text-lg font-black text-slate-900 mb-1">背包已满，选择替换亚比</div>
     <div class="text-xs font-bold text-slate-500 mb-3">将要放入：{{ petDisplayName(state.activePets.find(p => p && p.id === bagReplaceCtx.incomingPetId) || {}) }}</div>
