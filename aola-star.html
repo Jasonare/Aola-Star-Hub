@@ -20,7 +20,7 @@
       window.addEventListener("orientationchange", syncAndroidViewportClass);
     })();
   </script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./vendor/tailwind.css">
   <style>
     [v-cloak] { display: none !important; }
     :root {
@@ -96,7 +96,7 @@
       box-shadow: 0 6px 18px rgba(249,115,22,.16);
     }
     .bag-panel {
-      --bag-main-h: clamp(calc(260 * var(--ui-px)), 44vh, calc(360 * var(--ui-px)));
+      --bag-main-h: clamp(calc(300 * var(--ui-px)), 53vh, calc(430 * var(--ui-px)));
       --bag-pet-h: clamp(calc(180 * var(--ui-px)), 31vh, calc(260 * var(--ui-px)));
       --bag-info-h: clamp(168px, 28vh, 235px);
       --bag-slot-h: clamp(calc(96 * var(--ui-px)), 16vh, calc(130 * var(--ui-px)));
@@ -105,9 +105,18 @@
     .bag-focus-grid {
       grid-template-columns: minmax(280px, .95fr) minmax(420px, 1.05fr) !important;
     }
-    .bag-focus-card { min-height: var(--bag-main-h); }
+    .bag-focus-card {
+      height: var(--bag-main-h);
+      min-height: var(--bag-main-h);
+      max-height: var(--bag-main-h);
+    }
     .bag-focus-pet { height: var(--bag-pet-h); }
-    .bag-info-panel { min-height: var(--bag-main-h); }
+    .bag-info-panel {
+      height: var(--bag-main-h);
+      min-height: var(--bag-main-h);
+      max-height: var(--bag-main-h);
+      overflow: hidden;
+    }
     .bag-info-scroll { height: var(--bag-info-h); }
     .bag-slot-card { height: var(--bag-slot-h); }
     .bag-slot-pet { height: var(--bag-slot-img-h); }
@@ -145,6 +154,10 @@
     .bag-focus-pet-frame,
     .battle-prepare-pet-frame {
       align-items: center;
+    }
+    .bag-focus-pet-frame {
+      align-items: flex-start;
+      padding-top: 0 !important;
     }
     @media (max-width: 1023px) {
       .bag-focus-grid { grid-template-columns: 1fr !important; }
@@ -505,9 +518,9 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(circle at 26% 24%, rgba(56, 189, 248, .16), transparent 38%),
-        radial-gradient(circle at 76% 78%, rgba(16, 185, 129, .12), transparent 34%),
-        linear-gradient(180deg, rgba(2, 6, 23, .78), rgba(2, 6, 23, .82));
+        radial-gradient(circle at 26% 24%, rgba(56, 189, 248, .06), transparent 38%),
+        radial-gradient(circle at 76% 78%, rgba(16, 185, 129, .05), transparent 34%),
+        linear-gradient(180deg, rgba(2, 6, 23, 0), rgba(2, 6, 23, 0));
       z-index: 1;
       pointer-events: none;
     }
@@ -875,6 +888,160 @@
       width: 2.05rem;
       height: 2.05rem;
       filter: drop-shadow(0 2px 5px rgba(0,0,0,.35));
+    }
+    .pet-item-seal {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .08rem;
+      border-radius: 8px;
+      border: 1px solid rgba(147,197,253,.55);
+      background:
+        radial-gradient(circle at 22% 26%, rgba(226,232,240,.95) 0 1px, transparent 2px),
+        radial-gradient(circle at 78% 34%, rgba(191,219,254,.75) 0 1px, transparent 2px),
+        radial-gradient(circle at 54% 74%, rgba(56,189,248,.62) 0 1px, transparent 2px),
+        radial-gradient(circle at 50% 50%, rgba(30,64,175,.34), transparent 52%),
+        linear-gradient(135deg, #020617, #0f172a 48%, #1e1b4b);
+      color: #dbeafe;
+      text-shadow: 0 1px 2px rgba(2,6,23,.9);
+      box-shadow: 0 8px 24px rgba(2,6,23,.42), inset 0 0 18px rgba(96,165,250,.18);
+    }
+    .pet-item-seal::before {
+      content: "";
+      width: .82rem;
+      height: .82rem;
+      border-radius: 4px;
+      background:
+        radial-gradient(circle at 50% 50%, #f5d0fe 0 12%, #a855f7 14% 30%, transparent 32%),
+        conic-gradient(from 45deg, #38bdf8, #a855f7, #e879f9, #312e81, #38bdf8);
+      transform: rotate(45deg);
+      box-shadow: 0 0 10px rgba(168,85,247,.6), inset 0 0 7px rgba(15,23,42,.75);
+    }
+    .pet-item-seal-img {
+      width: 4.41rem;
+      height: 4.41rem;
+      object-fit: cover;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .bag-focus-card .pet-item-seal-img {
+      width: 4.69rem;
+      height: 4.69rem;
+      padding: 0;
+      object-fit: cover;
+    }
+    .pet-item-seal.has-img::before {
+      display: none;
+    }
+    .pet-item-seal-level {
+      color: #e0f2fe;
+      font-size: 1.05rem;
+      font-weight: 900;
+      line-height: 1;
+      text-shadow: 0 1px 3px rgba(2,6,23,.9);
+      white-space: nowrap;
+    }
+    .qixing-seal-grid-card {
+      min-height: 86px;
+      border-radius: 10px;
+      border: 1px solid rgba(125,211,252,.65);
+      background: linear-gradient(180deg, rgba(240,249,255,.96), rgba(224,242,254,.88));
+      transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease;
+    }
+    .qixing-seal-grid-card.is-selected {
+      border-color: rgba(245,158,11,.95);
+      box-shadow: 0 0 0 2px rgba(251,191,36,.28), 0 10px 24px rgba(14,116,144,.18);
+      transform: translateY(-1px);
+    }
+    .qixing-seal-grid-img {
+      width: 4.57rem;
+      height: 4.57rem;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 0;
+      background: transparent;
+      display: block;
+    }
+    .weekly-boss-seal-img {
+      width: 4.25rem;
+      height: 4.25rem;
+      object-fit: cover;
+      object-position: center;
+      background: transparent;
+      display: block;
+      flex: none;
+    }
+    .qixing-gacha-modal {
+      background:
+        radial-gradient(circle at 24% 18%, rgba(30,64,175,.24), transparent 32%),
+        radial-gradient(circle at 72% 26%, rgba(14,165,233,.16), transparent 34%),
+        linear-gradient(145deg, #020617, #0f172a 48%, #111827);
+    }
+    .qixing-prize-card {
+      border: 1px solid rgba(125,211,252,.22);
+      background: linear-gradient(145deg, rgba(15,23,42,.92), rgba(30,41,59,.72));
+      box-shadow: inset 0 0 18px rgba(59,130,246,.08);
+    }
+    .qixing-prize-card.is-disabled {
+      opacity: .42;
+      filter: grayscale(.7);
+    }
+    .badge-honor-blackgold {
+      position: relative;
+      overflow: hidden;
+      border-color: rgba(234,179,8,.7) !important;
+      background:
+        linear-gradient(#111827, #111827) padding-box,
+        conic-gradient(from 0deg, #fef3c7, #f59e0b, #22d3ee, #a855f7, #f97316, #fef3c7) border-box !important;
+      color: #fef3c7 !important;
+      box-shadow: 0 16px 36px rgba(15,23,42,.32), inset 0 0 22px rgba(250,204,21,.15) !important;
+    }
+    .badge-honor-blackgold::after {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,.36) 49%, transparent 60%);
+      animation: honorSheen 3.6s linear infinite;
+      pointer-events: none;
+    }
+    .badge-honor-blackgold .honor-text,
+    .badge-honor-blackgold div {
+      color: inherit !important;
+      position: relative;
+      z-index: 1;
+    }
+    .weekly-boss-modal {
+      background:
+        radial-gradient(circle at 22% 20%, rgba(250,204,21,.24), transparent 30%),
+        radial-gradient(circle at 75% 12%, rgba(56,189,248,.18), transparent 28%),
+        linear-gradient(135deg, #111827, #1f2937 48%, #431407);
+    }
+    .weekly-boss-stage {
+      min-height: clamp(360px, 56vh, 520px);
+      background:
+        radial-gradient(ellipse at 50% 82%, rgba(250,204,21,.34), transparent 32%),
+        linear-gradient(180deg, rgba(255,255,255,.96), rgba(254,243,199,.82));
+    }
+    .weekly-boss-pet-frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 390px;
+      overflow: visible;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .weekly-boss-pet {
+      width: min(80%, 340px);
+      height: min(80%, 340px);
+      filter: drop-shadow(0 16px 18px rgba(0,0,0,.28));
+    }
+    @keyframes honorSheen {
+      0% { transform: translateX(-45%) rotate(0deg); }
+      100% { transform: translateX(45%) rotate(0deg); }
     }
     @keyframes moraleAura {
       0% { opacity: 0; transform: translate(-50%, -50%) scale(.72); }
@@ -1624,7 +1791,7 @@
     html.android-webview.android-landscape header .home-action-grid {
       margin-top: calc(6 * var(--ui-px)) !important;
       display: grid !important;
-      grid-template-columns: repeat(5, minmax(0, 1fr)) calc(34 * var(--ui-px)) !important;
+      grid-template-columns: repeat(6, minmax(0, 1fr)) calc(34 * var(--ui-px)) !important;
       gap: calc(6 * var(--ui-px)) !important;
       align-items: stretch !important;
     }
@@ -1633,11 +1800,13 @@
     html.android-webview.android-landscape header .home-action-grid > button:nth-child(3) { grid-column: 3; grid-row: 1; }
     html.android-webview.android-landscape header .home-action-grid > button:nth-child(4) { grid-column: 4; grid-row: 1; }
     html.android-webview.android-landscape header .home-action-grid > button:nth-child(5) { grid-column: 5; grid-row: 1; }
-    html.android-webview.android-landscape header .home-action-grid > button:nth-child(6) { grid-column: 1; grid-row: 2; }
-    html.android-webview.android-landscape header .home-action-grid > button:nth-child(7) { grid-column: 2; grid-row: 2; }
-    html.android-webview.android-landscape header .home-action-grid > button:nth-child(8) { grid-column: 3; grid-row: 2; }
-    html.android-webview.android-landscape header .home-action-grid > button:nth-child(9) { grid-column: 4; grid-row: 2; }
-    html.android-webview.android-landscape header .home-action-grid > button:nth-child(10) { grid-column: 5; grid-row: 2; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(6) { grid-column: 6; grid-row: 1; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(7) { grid-column: 1; grid-row: 2; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(8) { grid-column: 2; grid-row: 2; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(9) { grid-column: 3; grid-row: 2; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(10) { grid-column: 4; grid-row: 2; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(11) { grid-column: 5; grid-row: 2; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(12) { grid-column: 6; grid-row: 2; }
     html.android-webview.android-landscape header .home-action-grid > button.h-9:not(.home-settings-btn) {
       height: calc(34 * var(--ui-px)) !important;
       min-height: calc(34 * var(--ui-px)) !important;
@@ -1651,7 +1820,7 @@
       text-overflow: ellipsis !important;
     }
     html.android-webview.android-landscape header .home-action-grid > .home-settings-btn {
-      grid-column: 6 !important;
+      grid-column: 7 !important;
       grid-row: 2 !important;
       justify-self: end !important;
       width: calc(34 * var(--ui-px)) !important;
@@ -1659,6 +1828,9 @@
       height: calc(34 * var(--ui-px)) !important;
       padding: 0 !important;
       margin-left: 0 !important;
+    }
+    html.android-webview.android-landscape .qixing-gacha-layout {
+      grid-template-columns: minmax(0, 1.05fr) minmax(calc(260 * var(--ui-px)), .95fr) !important;
     }
     html.android-webview.android-landscape .bag-panel {
       --bag-main-h: clamp(calc(210 * var(--ui-px)), 58vh, calc(330 * var(--ui-px)));
@@ -1676,7 +1848,7 @@
       min-height: var(--bag-main-h) !important;
     }
     html.android-webview.android-landscape .bag-focus-pet-frame {
-      overflow: hidden;
+      overflow: visible !important;
       padding-left: calc(20 * var(--ui-px)) !important;
       padding-right: calc(20 * var(--ui-px)) !important;
       padding-bottom: calc(20 * var(--ui-px)) !important;
@@ -2011,7 +2183,7 @@
     <div class="login-card">
       <div class="mb-6">
         <div class="text-4xl font-black tracking-tight text-white">Aola Star Hub</div>
-        <p class="mt-2 text-sm font-bold text-cyan-100/75 leading-6">注册用户使用服务器存档，游客支持本地进度和导入本地存档，两者互不影响。</p>
+        <p class="mt-2 text-sm font-bold text-cyan-100/75 leading-6">注册用户使用服务器存档，桌面端登录后可导入本地存档，游客支持本地进度。</p>
       </div>
       <div class="flex gap-2 mb-4">
         <button @click="authMode='login'" class="flex-1 login-ghost-btn" :class="authMode==='login' ? '!bg-cyan-500 !text-white !border-cyan-300' : ''">登录</button>
@@ -2027,10 +2199,8 @@
       </label>
       <button @click="submitAuth" :disabled="authLoading" class="login-primary-btn w-full mt-4 disabled:opacity-50">{{ authMode==='register' ? '注册并进入游戏' : '登录并读取存档' }}</button>
       <button @click="enterGuestMode" :disabled="authLoading" class="login-ghost-btn w-full mt-3 disabled:opacity-50">游客登录（使用本地进度）</button>
-      <input ref="guestImportInput" type="file" accept="application/json,.json" class="hidden" @change="importGuestLocalSave">
-      <button @click="guestImportInput && guestImportInput.click()" :disabled="authLoading" class="login-ghost-btn w-full mt-3 disabled:opacity-50">游客导入本地存档</button>
       <div class="mt-5 rounded-2xl border border-cyan-300/20 bg-slate-950/35 p-3 text-xs font-bold text-cyan-100/75 leading-5">
-        登录用户不会读取本机 localStorage 进度；只有点击“存档”后才会保存到对应用户目录。
+        登录用户会保存到对应用户目录；导入本地存档时会自动绑定为当前登录用户。
       </div>
     </div>
   </div>
@@ -2067,7 +2237,7 @@
           </div>
         </div>
       </div>
-      <div class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-2 text-left min-w-[130px] md:min-w-[180px]">
+      <div class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-2 text-left min-w-[130px] md:min-w-[180px]" :class="equippedBadge && equippedBadge.special === 'weeklyHonor' ? 'badge-honor-blackgold' : ''">
         <div class="text-[10px] font-black text-amber-500">当前佩戴徽章</div>
         <div class="text-sm font-black text-amber-900 truncate">{{ equippedBadge ? equippedBadge.name : '未佩戴徽章' }}</div>
       </div>
@@ -2081,8 +2251,10 @@
             </div>
           </div>
           <div class="mt-2 flex items-center gap-2">
-            <button @click="saveToServer" :disabled="saveLoading" class="h-8 px-3 rounded-lg bg-emerald-600 text-white text-xs font-black disabled:opacity-50">存档</button>
-            <button @click="loadServerSave" :disabled="saveLoading" class="h-8 px-3 rounded-lg bg-indigo-600 text-white text-xs font-black disabled:opacity-50">读取存档</button>
+            <input ref="userImportInput" type="file" accept="application/json,.json" class="hidden" @change="importUserLocalSave">
+            <button @click="userImportInput && userImportInput.click()" :disabled="saveLoading" class="h-8 px-3 rounded-lg bg-cyan-600 text-white text-xs font-black disabled:opacity-50">导入存档</button>
+            <button @click="exportLocalSave" :disabled="saveLoading" class="h-8 px-3 rounded-lg bg-emerald-600 text-white text-xs font-black disabled:opacity-50">导出存档</button>
+            <button @click="logoutUser" :disabled="saveLoading" class="h-8 px-3 rounded-lg bg-slate-700 text-white text-xs font-black disabled:opacity-50">退出登录</button>
             <div class="text-[10px] font-bold text-slate-500 truncate">{{ lastServerSavedAt ? ('上次存档：' + lastServerSavedAt) : '尚未读取服务器存档' }}</div>
           </div>
         </template>
@@ -2093,6 +2265,10 @@
               <div class="text-sm font-black text-slate-900 truncate">游客登录｜本机进度</div>
               <div class="text-[10px] font-bold text-slate-500 truncate">localStorage：{{ playMode === 'guest' ? '启用' : '未启用' }}</div>
             </div>
+          </div>
+          <div class="mt-2 flex items-center gap-2">
+            <button @click="exportLocalSave" class="h-8 px-3 rounded-lg bg-emerald-600 text-white text-xs font-black">导出存档</button>
+            <button @click="logoutGuest" class="h-8 px-3 rounded-lg bg-slate-700 text-white text-xs font-black">退出登录</button>
           </div>
         </template>
       </div>
@@ -2114,7 +2290,7 @@
         @click="openShopPanel"
         class="h-9 px-4 rounded-xl text-sm font-black bg-emerald-50 border border-emerald-300 text-emerald-700"
       >
-        亚比商店/道具
+        亚比商店
       </button>
       <button
         @click="openGuardianPanel"
@@ -2127,6 +2303,19 @@
         class="h-9 px-4 rounded-xl text-sm font-black bg-rose-50 border border-rose-300 text-rose-700"
       >
         BOSS挑战
+      </button>
+      <button
+        @click="openWeeklyBossPanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-zinc-900 border border-yellow-300 text-yellow-100 inline-flex items-center justify-center text-center gap-2"
+      >
+        <span>当周BOSS</span>
+        <span v-if="weeklyBossCleared" class="rounded-full bg-emerald-400 px-2 py-0.5 text-[10px] font-black text-emerald-950">挑战成功</span>
+      </button>
+      <button
+        @click="openQixingGachaPanel"
+        class="h-9 px-4 rounded-xl text-sm font-black bg-slate-900 border border-cyan-300 text-cyan-100"
+      >
+        启星转盘
       </button>
       <button
         @click="openTimeTunnelPanel"
@@ -2194,6 +2383,10 @@
                 <span class="battle-power-icon"></span>
                 <span>{{ selectedPetBattlePower }}</span>
               </div>
+              <div v-if="selectedPetEquippedItem" class="pet-item-seal has-img px-2 py-1 text-xs font-black">
+                <img v-if="selectedPetEquippedItem.image" :src="selectedPetEquippedItem.image" @error="withFallback" class="pet-item-seal-img">
+                <span class="pet-item-seal-level">Lv.{{ selectedPetEquippedItem.level }}</span>
+              </div>
             </div>
             <div class="absolute inset-x-8 bottom-8 h-20 rounded-[50%] bg-cyan-300/30 blur-sm"></div>
             <div class="pet-anim-frame bag-focus-pet-frame absolute inset-0 px-8 pb-8">
@@ -2227,6 +2420,8 @@
               <button @click="setInfoTab('ability')" class="h-9 px-4 rounded-t-xl text-sm font-black border border-sky-200" :class="selectedInfoTab === 'ability' ? 'bg-lime-400 text-sky-950' : 'bg-white text-sky-700'">能力</button>
               <button v-if="!(selectedPet && selectedPet.hideStudyTalentTabs)" @click="setInfoTab('study')" class="h-9 px-4 rounded-t-xl text-sm font-black border border-sky-200" :class="selectedInfoTab === 'study' ? 'bg-lime-400 text-sky-950' : 'bg-white text-sky-700'">学习力</button>
               <button v-if="!(selectedPet && selectedPet.hideStudyTalentTabs)" @click="setInfoTab('talent')" class="h-9 px-4 rounded-t-xl text-sm font-black border border-sky-200" :class="selectedInfoTab === 'talent' ? 'bg-lime-400 text-sky-950' : 'bg-white text-sky-700'">天赋</button>
+              <button @click="setInfoTab('items')" class="h-9 px-4 rounded-t-xl text-sm font-black border border-sky-200" :class="selectedInfoTab === 'items' ? 'bg-lime-400 text-sky-950' : 'bg-white text-sky-700'">道具栏</button>
+              <button @click="setInfoTab('traits')" class="h-9 px-4 rounded-t-xl text-sm font-black border border-sky-200" :class="selectedInfoTab === 'traits' ? 'bg-lime-400 text-sky-950' : 'bg-white text-sky-700'">特性栏</button>
               <button @click="setInfoTab('race')" class="h-9 px-4 rounded-t-xl text-sm font-black border border-sky-200" :class="selectedInfoTab === 'race' ? 'bg-lime-400 text-sky-950' : 'bg-white text-sky-700'">种族值</button>
             </div>
             <div class="bag-info-scroll overflow-y-auto rounded-xl border border-sky-200 bg-white/85 p-3 scrollbar">
@@ -2258,6 +2453,33 @@
                   <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>特防</span><span>{{ selectedAbilityStats.spDef }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-violet-400" :style="{ width: Math.min(100, (selectedAbilityStats.spDef/500)*100)+'%' }"></div></div></div>
                   <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>速度</span><span>{{ selectedAbilityStats.speed }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-amber-400" :style="{ width: Math.min(100, (selectedAbilityStats.speed/500)*100)+'%' }"></div></div></div>
                   <div class="md:col-span-2 text-xs font-black text-indigo-700">总和：{{ selectedAbilityStats.total }}</div>
+                </div>
+              </template>
+              <template v-else-if="selectedInfoTab === 'items'">
+                <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
+                  <button v-for="item in petItemInventoryRows" :key="'bag_pet_item_'+item.id" @click="useBagItemOnSelectedPet(item.id)" class="rounded-xl border border-sky-200 bg-sky-50 px-2 py-2 text-left min-h-[86px]">
+                    <div class="text-xs font-black text-sky-950 leading-4">{{ item.name }}</div>
+                    <div class="mt-2 text-[11px] font-black text-sky-700">{{ item.countLabel }}</div>
+                    <div class="mt-1 text-[10px] font-bold text-slate-500 leading-4 line-clamp-2">{{ item.desc }}</div>
+                  </button>
+                </div>
+              </template>
+              <template v-else-if="selectedInfoTab === 'traits'">
+                <div class="rounded-xl border border-sky-200 bg-white p-3 text-xs font-bold text-slate-700">
+                  <div class="text-sm font-black text-sky-950">当前特性</div>
+                  <div class="mt-1">{{ selectedPetFeatureText }}</div>
+                  <div class="mt-3 grid grid-cols-3 md:grid-cols-6 gap-2">
+                    <button v-for="seal in qixingSealRows" :key="'bag_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`启星之印 Lv.${seal.level}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
+                      <img :src="qixingSealImageSrc" @error="withFallback" class="qixing-seal-grid-img mx-auto">
+                    </button>
+                  </div>
+                  <div class="mt-3 flex flex-wrap items-center gap-2">
+                    <span>启星碎片 × {{ getItemCount('qixing_fragment') }}</span>
+                    <span v-if="selectedQixingSeal && selectedQixingSealLevel < 4">升下一级需要 × {{ selectedQixingSealNextCost }}</span>
+                    <button v-if="selectedQixingSeal && !selectedQixingSealEquippedOnSelectedPet" @click="equipPetItemToSelectedPet('qixing_seal')" :disabled="!canEquipSelectedQixingSeal" class="h-8 px-3 rounded-lg bg-slate-900 text-white font-black disabled:opacity-50">装配</button>
+                    <button v-if="selectedQixingSealEquippedOnSelectedPet" @click="unequipPetItem(petId(selectedPet))" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
+                    <button @click="upgradeQixingSeal" :disabled="!selectedQixingSeal || selectedQixingSealLevel>=4" class="h-8 px-3 rounded-lg bg-amber-400 text-slate-950 font-black disabled:opacity-50">升级</button>
+                  </div>
                 </div>
               </template>
               <template v-else-if="selectedInfoTab === 'talent' || selectedInfoTab === 'study' || selectedInfoTab === 'race'">
@@ -2390,7 +2612,7 @@
         <button @click="closeDexPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
       <div class="rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2 text-[11px] font-black text-indigo-700 mb-3">
-        图鉴提示：只有击败某亚比的最终形态，才会获得该亚比蛋。守护者请从【守护者挑战】入口挑战，BOSS请从【BOSS挑战】入口挑战，商店蛋亚比只能从【亚比商店/道具】购买。
+        图鉴提示：只有击败某亚比的最终形态，才会获得该亚比蛋。守护者请从【守护者挑战】入口挑战，BOSS请从【BOSS挑战】入口挑战，商店蛋亚比只能从【亚比商店】购买。
       </div>
       <div class="grid grid-cols-6 gap-1 md:gap-2 flex-1 overflow-y-auto pr-1 scrollbar">
         <button v-for="entry in filteredDex" :key="'dex_'+entry.dexId" @click="canChallengeFromDex(entry) ? (selectDex(entry.dexId), closeDexPanel()) : null" class="dex-card rounded-xl border bg-white p-1.5 md:p-2 text-left min-h-[164px]" :class="canChallengeFromDex(entry) ? 'border-slate-200 hover:border-indigo-300' : 'border-amber-300 bg-amber-50 cursor-not-allowed'">
@@ -2595,6 +2817,10 @@
                 <span class="battle-power-icon"></span>
                 <span>{{ selectedPetBattlePower }}</span>
               </div>
+              <div v-if="selectedPetEquippedItem" class="pet-item-seal has-img px-2 py-1 text-xs font-black">
+                <img v-if="selectedPetEquippedItem.image" :src="selectedPetEquippedItem.image" @error="withFallback" class="pet-item-seal-img">
+                <span class="pet-item-seal-level">Lv.{{ selectedPetEquippedItem.level }}</span>
+              </div>
             </div>
             <div class="absolute inset-x-8 bottom-8 h-20 rounded-[50%] bg-cyan-300/30 blur-sm"></div>
             <div class="pet-anim-frame bag-focus-pet-frame absolute inset-0 px-8 pb-8">
@@ -2623,6 +2849,8 @@
               <button @click="setInfoTab('ability')" class="h-9 px-4 rounded-t-xl text-sm font-black border border-sky-200" :class="selectedInfoTab === 'ability' ? 'bg-lime-400 text-sky-950' : 'bg-white text-sky-700'">能力</button>
               <button v-if="!(selectedPet && selectedPet.hideStudyTalentTabs)" @click="setInfoTab('study')" class="h-9 px-4 rounded-t-xl text-sm font-black border border-sky-200" :class="selectedInfoTab === 'study' ? 'bg-lime-400 text-sky-950' : 'bg-white text-sky-700'">学习力</button>
               <button v-if="!(selectedPet && selectedPet.hideStudyTalentTabs)" @click="setInfoTab('talent')" class="h-9 px-4 rounded-t-xl text-sm font-black border border-sky-200" :class="selectedInfoTab === 'talent' ? 'bg-lime-400 text-sky-950' : 'bg-white text-sky-700'">天赋</button>
+              <button @click="setInfoTab('items')" class="h-9 px-4 rounded-t-xl text-sm font-black border border-sky-200" :class="selectedInfoTab === 'items' ? 'bg-lime-400 text-sky-950' : 'bg-white text-sky-700'">道具栏</button>
+              <button @click="setInfoTab('traits')" class="h-9 px-4 rounded-t-xl text-sm font-black border border-sky-200" :class="selectedInfoTab === 'traits' ? 'bg-lime-400 text-sky-950' : 'bg-white text-sky-700'">特性栏</button>
               <button @click="setInfoTab('race')" class="h-9 px-4 rounded-t-xl text-sm font-black border border-sky-200" :class="selectedInfoTab === 'race' ? 'bg-lime-400 text-sky-950' : 'bg-white text-sky-700'">种族值</button>
             </div>
             <div class="bag-info-scroll overflow-y-auto rounded-xl border border-sky-200 bg-white/85 p-3 scrollbar">
@@ -2654,6 +2882,33 @@
                   <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>特防</span><span>{{ selectedAbilityStats.spDef }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-violet-400" :style="{ width: Math.min(100, (selectedAbilityStats.spDef/abilityBarMax('spDef'))*100)+'%' }"></div></div></div>
                   <div class="rounded-lg bg-white border border-slate-200 px-2 py-2"><div class="flex justify-between mb-1"><span>速度</span><span>{{ selectedAbilityStats.speed }}</span></div><div class="h-2 rounded bg-slate-100 overflow-hidden"><div class="h-full bg-amber-400" :style="{ width: Math.min(100, (selectedAbilityStats.speed/abilityBarMax('speed'))*100)+'%' }"></div></div></div>
                   <div class="md:col-span-2 text-xs font-black text-indigo-700">总和：{{ selectedAbilityStats.total }}</div>
+                </div>
+              </template>
+              <template v-else-if="selectedInfoTab === 'items'">
+                <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
+                  <button v-for="item in petItemInventoryRows" :key="'bag_modal_pet_item_'+item.id" @click="useBagItemOnSelectedPet(item.id)" class="rounded-xl border border-sky-200 bg-sky-50 px-2 py-2 text-left min-h-[86px]">
+                    <div class="text-xs font-black text-sky-950 leading-4">{{ item.name }}</div>
+                    <div class="mt-2 text-[11px] font-black text-sky-700">{{ item.countLabel }}</div>
+                    <div class="mt-1 text-[10px] font-bold text-slate-500 leading-4 line-clamp-2">{{ item.desc }}</div>
+                  </button>
+                </div>
+              </template>
+              <template v-else-if="selectedInfoTab === 'traits'">
+                <div class="rounded-xl border border-sky-200 bg-white p-3 text-xs font-bold text-slate-700">
+                  <div class="text-sm font-black text-sky-950">当前特性</div>
+                  <div class="mt-1">{{ selectedPetFeatureText }}</div>
+                  <div class="mt-3 grid grid-cols-3 md:grid-cols-6 gap-2">
+                    <button v-for="seal in qixingSealRows" :key="'bag_modal_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`启星之印 Lv.${seal.level}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
+                      <img :src="qixingSealImageSrc" @error="withFallback" class="qixing-seal-grid-img mx-auto">
+                    </button>
+                  </div>
+                  <div class="mt-3 flex flex-wrap items-center gap-2">
+                    <span>启星碎片 × {{ getItemCount('qixing_fragment') }}</span>
+                    <span v-if="selectedQixingSeal && selectedQixingSealLevel < 4">升下一级需要 × {{ selectedQixingSealNextCost }}</span>
+                    <button v-if="selectedQixingSeal && !selectedQixingSealEquippedOnSelectedPet" @click="equipPetItemToSelectedPet('qixing_seal')" :disabled="!canEquipSelectedQixingSeal" class="h-8 px-3 rounded-lg bg-slate-900 text-white font-black disabled:opacity-50">装配</button>
+                    <button v-if="selectedQixingSealEquippedOnSelectedPet" @click="unequipPetItem(petId(selectedPet))" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
+                    <button @click="upgradeQixingSeal" :disabled="!selectedQixingSeal || selectedQixingSealLevel>=4" class="h-8 px-3 rounded-lg bg-amber-400 text-slate-950 font-black disabled:opacity-50">升级</button>
+                  </div>
                 </div>
               </template>
               <template v-else-if="selectedInfoTab === 'talent' || selectedInfoTab === 'study' || selectedInfoTab === 'race'">
@@ -2904,7 +3159,7 @@
       </div>
       <div v-else class="grid grid-cols-2 gap-2">
         <button
-          v-for="old in selectedPet.equippedSkills"
+          v-for="old in selectedPetEquippedSkills"
           :key="'repl_modal_'+old"
           @click="confirmReplaceSkill(old)"
           class="h-9 rounded-lg bg-amber-50 border border-amber-300 text-[11px] font-black text-amber-800 truncate px-2"
@@ -2922,13 +3177,9 @@
         <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
           <button @click="shopTab='shop'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='shop' ? 'bg-emerald-600 text-white' : 'text-slate-600'">亚比商店</button>
           <button @click="shopTab='eggs'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='eggs' ? 'bg-violet-600 text-white' : 'text-slate-600'">亚比蛋购买</button>
-          <button @click="shopTab='items'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='items' ? 'bg-indigo-600 text-white' : 'text-slate-600'">亚比道具</button>
         </div>
         <button @click="closeShopPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
-      <select v-model="shopTargetPetId" class="w-full h-9 rounded-lg border border-slate-300 bg-white px-2 text-sm font-bold text-slate-700 mb-3">
-        <option v-for="u in shopTargetOptions" :key="'shop_pet_'+u.id" :value="u.id">{{ u.name }} Lv.{{ u.level }}</option>
-      </select>
       <div v-if="shopTab==='shop'" class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
         <div v-for="it in shopItems" :key="'shop_item_'+it.id" class="rounded-2xl border border-emerald-100 bg-emerald-50 p-3 flex items-center justify-between gap-3">
           <div>
@@ -2964,15 +3215,6 @@
           </div>
         </div>
       </div>
-      <div v-else class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
-        <div v-for="it in itemInventoryRows" :key="'bag_item_'+it.id" class="rounded-2xl border border-indigo-100 bg-indigo-50 p-3 flex items-center justify-between gap-3">
-          <div>
-            <div class="text-sm font-black text-indigo-900">{{ it.name }} {{ it.countLabel }}</div>
-            <div class="text-[11px] font-bold text-indigo-700">{{ it.desc }}</div>
-          </div>
-          <button @click="useShopItem(it.id)" :disabled="it.count <= 0" class="h-9 px-4 rounded-xl bg-indigo-600 text-white text-sm font-black disabled:opacity-45">使用</button>
-        </div>
-      </div>
     </div>
   </div>
   </div>
@@ -2986,7 +3228,7 @@
         </div>
         <button @click="closeBadgePanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
-      <div v-if="equippedBadge" class="mb-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 flex items-center justify-between gap-3">
+      <div v-if="equippedBadge" class="mb-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 flex items-center justify-between gap-3" :class="equippedBadge.special === 'weeklyHonor' ? 'badge-honor-blackgold' : ''">
         <div>
           <div class="text-xs font-black text-amber-500">当前佩戴</div>
           <div class="text-base font-black text-amber-900">{{ equippedBadge.name }}</div>
@@ -3002,7 +3244,7 @@
           :key="'badge_'+badge.id"
           @click="equipBadge(badge.id)"
           class="rounded-2xl border p-3 text-left transition hover:-translate-y-0.5"
-          :class="state.equippedBadgeId===badge.id ? 'border-yellow-400 bg-yellow-50 shadow-lg' : 'border-slate-200 bg-white hover:bg-slate-50'"
+          :class="badge.special === 'weeklyHonor' ? 'badge-honor-blackgold' : (state.equippedBadgeId===badge.id ? 'border-yellow-400 bg-yellow-50 shadow-lg' : 'border-slate-200 bg-white hover:bg-slate-50')"
         >
           <div class="text-base font-black text-slate-900">{{ badge.name }}</div>
           <div class="text-[11px] font-bold text-slate-500 mt-1">{{ badge.description || (badge.guardianName + ' 已挑战成功 ' + badge.currentCount + ' 次') }}</div>
@@ -3135,6 +3377,139 @@
       </div>
     </div>
   </template>
+
+  <div v-if="showWeeklyBossPanel && weeklyBossEntry" class="fixed inset-0 z-40 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeWeeklyBossPanel">
+    <div class="weekly-boss-modal w-full max-w-5xl rounded-3xl border border-yellow-200/60 p-3 md:p-4 shadow-2xl max-h-[92vh] overflow-y-auto app-modal" @click.stop>
+      <div class="flex items-center justify-between mb-3 text-white">
+        <div>
+          <div class="text-[11px] font-black text-yellow-200">当周BOSS</div>
+          <h3 class="text-xl font-black leading-6">{{ weeklyBossEntry.name }}</h3>
+        </div>
+        <button @click="closeWeeklyBossPanel" class="h-9 px-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm font-black">关闭</button>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 challenge-detail-grid">
+        <div class="weekly-boss-stage rounded-2xl border border-yellow-200/30 bg-slate-50/95 p-3 text-center challenge-detail-left">
+          <img :src="weeklyBossEntry.image" @error="withFallback" class="object-contain mx-auto weekly-boss-pet">
+          <div class="mt-2 text-sm font-black text-slate-900">{{ weeklyBossEntry.name }}</div>
+          <button @click="openWeeklyBossDetail" class="mt-2 h-8 px-3 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-black">查看详情</button>
+        </div>
+        <div class="rounded-2xl border border-yellow-200/40 bg-white/95 p-3 md:p-4 space-y-3">
+          <div class="rounded-xl border border-yellow-200 bg-yellow-50 p-3 text-xs font-bold text-yellow-900 leading-5">
+            {{ weeklyBossChallengeText }}
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+            <div class="flex items-center gap-2 text-xs font-black text-rose-700">
+              <span class="w-20 shrink-0">克制目标</span>
+              <span v-for="el in weeklyBossElementGroups.strong" :key="'weekly_strong_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+              <span v-if="weeklyBossElementGroups.strong.length===0" class="text-[11px] font-bold text-slate-400">无</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs font-black text-sky-700">
+              <span class="w-20 shrink-0">对目标微弱</span>
+              <span v-for="el in weeklyBossElementGroups.weak" :key="'weekly_weak_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+              <span v-if="weeklyBossElementGroups.weak.length===0" class="text-[11px] font-bold text-slate-400">无</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs font-black text-slate-700">
+              <span class="w-20 shrink-0">对目标无效</span>
+              <span v-for="el in weeklyBossElementGroups.immune" :key="'weekly_immune_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+              <span v-if="weeklyBossElementGroups.immune.length===0" class="text-[11px] font-bold text-slate-400">无</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div v-if="weeklyBossCleared" class="col-span-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-black text-emerald-800">
+              挑战成功，本周不能继续挑战。
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div class="text-[10px] font-black text-slate-500">今日剩余次数</div>
+              <div class="text-2xl font-black text-slate-900">{{ weeklyBossAttemptsLeft }}/5</div>
+            </div>
+            <div class="rounded-xl border border-amber-200 bg-amber-50 p-3">
+              <div class="text-[10px] font-black text-amber-600">BOSS携带道具</div>
+              <div class="mt-1 flex items-center gap-2">
+                <img :src="qixingSealImageSrc" @error="withFallback" class="weekly-boss-seal-img">
+                <div>
+                  <div class="pet-item-seal px-3 py-1 text-xs font-black">启星之印 Lv.{{ weeklyBossConfigQixingSealLevel }}</div>
+                  <div class="mt-1 text-[10px] font-bold text-amber-700">当周BOSS装配</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button @click="startWeeklyBossChallenge" :disabled="bagPets.length===0 || weeklyBossAttemptsLeft<=0 || weeklyBossCleared" class="w-full h-11 rounded-xl bg-yellow-400 text-slate-950 font-black shadow-lg disabled:opacity-50">{{ weeklyBossCleared ? '挑战成功' : '进入挑战' }}</button>
+          <div class="flex items-center gap-3 pt-1">
+            <button @click.stop="openBagPanel" class="time-env-tool-btn" title="亚比背包" aria-label="亚比背包">
+              <svg viewBox="0 0 24 24" class="fill-none stroke-current stroke-[1.9]" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8.5 6.5V5.8A3.5 3.5 0 0 1 12 2.3a3.5 3.5 0 0 1 3.5 3.5v.7"/>
+                <path d="M6.2 7.1h11.6c1.08 0 1.98.82 2.08 1.9l.85 9.1A2.35 2.35 0 0 1 18.4 20.7H5.6a2.35 2.35 0 0 1-2.33-2.6L4.12 9c.1-1.08 1-1.9 2.08-1.9Z"/>
+                <path d="M7.25 10.8h9.5"/>
+                <path d="M8.1 14.2h7.8v4.1H8.1z"/>
+              </svg>
+            </button>
+            <button @click.stop="openWarehousePanel" class="time-env-tool-btn" title="亚比仓库" aria-label="亚比仓库">
+              <svg viewBox="0 0 24 24" class="fill-none stroke-current stroke-[1.9]" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3.4 10.2 12 4l8.6 6.2"/>
+                <path d="M5.2 9.2v10.5h13.6V9.2"/>
+                <path d="M8 13h8"/>
+                <path d="M8 16.3h8"/>
+                <path d="M8 19.7V11.2h8v8.5"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showQixingGachaPanel" class="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeQixingGachaPanel">
+    <div class="qixing-gacha-modal w-full max-w-5xl rounded-3xl border border-cyan-200/35 p-3 md:p-5 shadow-2xl max-h-[92vh] overflow-y-auto app-modal text-white" @click.stop>
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <div class="text-[11px] font-black text-cyan-200">神宠之匙抽取</div>
+          <h3 class="text-2xl font-black leading-7">启星转盘</h3>
+        </div>
+        <button @click="closeQixingGachaPanel" class="h-9 px-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm font-black">关闭</button>
+      </div>
+      <div class="qixing-gacha-layout grid grid-cols-1 lg:grid-cols-[1.05fr_.95fr] gap-3">
+        <div class="rounded-2xl border border-cyan-200/25 bg-slate-950/45 p-3 md:p-4">
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+            <div
+              v-for="row in qixingGachaPoolRows"
+              :key="'qixing_pool_'+row.key"
+              class="qixing-prize-card rounded-xl p-3 min-h-[92px]"
+              :class="{ 'is-disabled': row.disabled }"
+            >
+              <div class="flex items-start justify-between gap-2">
+                <div class="text-sm font-black text-cyan-50 leading-5">{{ row.label }}</div>
+                <div v-if="row.disabled" class="rounded-full bg-slate-700 px-2 py-0.5 text-[10px] font-black text-slate-300">已获取</div>
+              </div>
+              <div class="mt-2 text-xs font-black text-cyan-200">概率 {{ row.probability }}%</div>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-cyan-200/25 bg-white/10 p-3 md:p-4 space-y-3">
+          <div class="grid grid-cols-2 gap-2">
+            <div class="rounded-xl border border-cyan-200/25 bg-slate-950/35 p-3">
+              <div class="text-[10px] font-black text-cyan-200">神宠之匙</div>
+              <div class="text-2xl font-black">{{ getItemCount('divine_pet_key') }}</div>
+            </div>
+            <div class="rounded-xl border border-sky-200/35 bg-slate-950/35 p-3">
+              <div class="text-[10px] font-black text-sky-200">寒冰公主保底</div>
+              <div class="text-2xl font-black">{{ qixingGachaIcePrincessPity }}/150</div>
+            </div>
+            <div class="rounded-xl border border-amber-200/35 bg-slate-950/35 p-3 col-span-2">
+              <div class="text-[10px] font-black text-amber-200">上古星龙保底</div>
+              <div class="text-2xl font-black">{{ qixingGachaAncientStarDragonPity }}/500</div>
+            </div>
+          </div>
+          <div class="rounded-xl border border-cyan-200/20 bg-slate-950/35 p-3 text-xs font-bold text-cyan-50 leading-5">
+            寒冰公主、帝皇圣龙、冰晶凤凰、擎战、上古星龙亚比蛋均限制通过启星转盘获取一次，已获取后不会重复掉落。若已拥有帝皇圣龙、冰晶凤凰或擎战，抽中对应亚比蛋会自动替换为启星之印。
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button @click="drawQixingGacha(1)" :disabled="qixingGachaDrawing || getItemCount('divine_pet_key')<1" class="h-11 rounded-xl bg-cyan-400 text-slate-950 font-black disabled:opacity-50">单抽</button>
+            <button @click="drawQixingGacha(10)" :disabled="qixingGachaDrawing || getItemCount('divine_pet_key')<10" class="h-11 rounded-xl bg-amber-300 text-slate-950 font-black disabled:opacity-50">十连</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div v-if="showTimeTunnelPanel" class="fixed inset-0 z-40 time-tunnel-bg text-white overflow-hidden" @click="closeTimeTunnelPanel">
     <div class="absolute inset-0 bg-slate-950/15"></div>
@@ -3344,7 +3719,7 @@
           </div>
           <div class="flex flex-wrap gap-1 justify-end max-w-[55%]">
             <span v-for="b in battleTargetStatusBadges" :key="'tar_st_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
-            <span v-for="e in battleTargetTimedEffects" :key="'tar_fx_' + e.key" :title="`${e.desc}｜剩余${e.turns}回合`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
+            <span v-for="e in battleTargetTimedEffects" :key="'tar_fx_' + e.key" :title="`${e.desc}｜${e.durationLabel || ('剩余' + e.turns + '回合')}`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
           </div>
         </div>
         <div class="mt-2 h-3 rounded-full bg-slate-800/80 overflow-hidden battle-mobile-hp-short">
@@ -3485,7 +3860,7 @@
           </div>
           <div class="flex flex-wrap gap-1 justify-end max-w-[55%]">
             <span v-for="b in battleAttackerStatusBadges" :key="'atk_st_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
-            <span v-for="e in battleAttackerTimedEffects" :key="'atk_fx_' + e.key" :title="`${e.desc}｜剩余${e.turns}回合`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
+            <span v-for="e in battleAttackerTimedEffects" :key="'atk_fx_' + e.key" :title="`${e.desc}｜${e.durationLabel || ('剩余' + e.turns + '回合')}`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
           </div>
         </div>
         <div class="mt-2 h-3 rounded-full bg-slate-800/80 overflow-hidden battle-mobile-hp-short">
@@ -3647,7 +4022,7 @@
   <div class="w-full max-w-2xl rounded-3xl border border-indigo-300/40 bg-slate-900 p-4 shadow-2xl shadow-indigo-900/40 relative overflow-hidden app-modal" @click.stop>
     <div class="absolute -top-10 -left-10 w-48 h-48 rounded-full bg-indigo-500/20 blur-2xl pointer-events-none"></div>
     <div class="absolute -bottom-10 -right-8 w-56 h-56 rounded-full bg-cyan-400/20 blur-2xl pointer-events-none"></div>
-    <div class="text-lg font-black text-indigo-200 mb-3 relative z-10">亚比进化</div>
+    <div class="text-lg font-black text-indigo-200 mb-3 relative z-10">{{ activeEvolution.title || '亚比进化' }}</div>
     <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
       <div class="rounded-2xl border border-slate-700 bg-slate-800/70 p-3 text-center relative z-10">
         <img :src="activeEvolution.beforeImage" @error="withFallback" class="w-28 h-28 object-contain mx-auto">
@@ -3658,6 +4033,9 @@
         <img :src="activeEvolution.afterImage" @error="withFallback" class="w-28 h-28 object-contain mx-auto evo-glow">
         <div class="mt-2 text-sm font-black text-cyan-200">{{ activeEvolution.afterName }}</div>
       </div>
+    </div>
+    <div v-if="activeEvolution.desc" class="mt-3 rounded-xl border border-cyan-300/25 bg-slate-950/35 px-3 py-2 text-xs font-bold text-cyan-100 relative z-10">
+      {{ activeEvolution.desc }}
     </div>
     <div class="mt-4 text-right relative z-20">
       <button type="button" @click.stop="closeEvolutionModal" class="h-9 px-4 rounded-xl bg-indigo-600 text-white text-sm font-black">确认</button>

@@ -53,10 +53,11 @@ const verifyPassword = (password, user) => {
 
 const userSaveDir = (userId) => path.join(SAVE_ROOT, String(userId));
 const userSaveFile = (userId) => path.join(userSaveDir(userId), "save.json");
-const TEST_USER_ID = "test-account-all-pets-1-1928";
-const LEGACY_TEST_USER_IDS = ["test-account-all-pets-1-796"];
+const TEST_USER_ID = "test-account-all-pets-1-1960";
+const LEGACY_TEST_USER_IDS = ["test-account-all-pets-1-1928", "test-account-all-pets-1-796"];
 const TEST_USERNAME = "test";
 const TEST_PASSWORD = "test123456";
+const TEST_MAX_DEX_ID = 1960;
 
 const publicUser = (user) => ({
   id: user.id,
@@ -82,6 +83,57 @@ const loadWindowDataScript = (fileName, globalName) => {
   return wrapped(sandbox.window);
 };
 
+const buildFinalFormDexRows = (dexRows, evolutionData) => {
+  const rows = Array.isArray(dexRows) ? dexRows : [];
+  const rowByDexId = new Map(rows.map((row) => [Number(row && row.dexId) || 0, row]));
+  const finalByDexId = new Map();
+  (Array.isArray(evolutionData && evolutionData.chains) ? evolutionData.chains : []).forEach((chain) => {
+    const members = (Array.isArray(chain && chain.members) ? chain.members : [])
+      .map((member) => Number(member && member.race_id) || 0)
+      .filter((dexId) => dexId >= 1 && dexId <= TEST_MAX_DEX_ID && rowByDexId.has(dexId));
+    if (members.length <= 0) return;
+    const rootDexId = members[0];
+    const finalDexId = members[members.length - 1];
+    members.forEach((dexId) => {
+      finalByDexId.set(dexId, {
+        rootDexId,
+        finalDexId,
+        stageIndex: members.length - 1
+      });
+    });
+  });
+  const seen = new Set();
+  const resolveFinalInfo = (info) => {
+    let current = info;
+    const visited = new Set();
+    while (current && current.finalDexId && !visited.has(current.finalDexId)) {
+      visited.add(current.finalDexId);
+      const next = finalByDexId.get(current.finalDexId);
+      if (!next || next.finalDexId === current.finalDexId) break;
+      current = next;
+    }
+    return current || info;
+  };
+  return rows
+    .filter((row) => Number(row && row.dexId) >= 1 && Number(row && row.dexId) <= TEST_MAX_DEX_ID)
+    .map((row) => finalByDexId.get(Number(row.dexId)) || {
+      rootDexId: Number(row.dexId),
+      finalDexId: Number(row.dexId),
+      stageIndex: 0
+    })
+    .map(resolveFinalInfo)
+    .filter((info) => {
+      if (!info.finalDexId || seen.has(info.finalDexId)) return false;
+      seen.add(info.finalDexId);
+      return rowByDexId.has(info.finalDexId);
+    })
+    .map((info) => ({
+      row: rowByDexId.get(info.finalDexId),
+      rootDexId: info.rootDexId,
+      stageIndex: info.stageIndex
+    }));
+};
+
 const createTestSaveState = () => {
   const dexRows = loadWindowDataScript("aola-dex-1-100.js", "AOLA_DEX_1_100");
   const speciesByDex = loadWindowDataScript("aola-species-data.js", "AOLA_SPECIES_DATA_BY_DEX") || {};
@@ -91,37 +143,10 @@ const createTestSaveState = () => {
   const clean = (s) => String(s || "").replace(/[\u200b\u00a0]/g, "").trim();
   const now = Date.now();
   const openedDexRows = (Array.isArray(dexRows) ? dexRows : [])
-    .filter((d) => Number(d && d.dexId) >= 1 && Number(d && d.dexId) <= 1928);
-  const openedDexIds = new Set(openedDexRows.map((d) => Number(d.dexId)));
-  const chainRootByDex = new Map();
-  const chainOrderByDex = new Map();
-  (Array.isArray(evolutionData.chains) ? evolutionData.chains : []).forEach((chain) => {
-    const members = Array.isArray(chain && chain.members) ? chain.members : [];
-    const openedMembers = members
-      .map((m, index) => ({ dexId: Number(m && m.race_id) || 0, index }))
-      .filter((m) => openedDexIds.has(m.dexId));
-    if (openedMembers.length === 0) return;
-    const root = Number(chain && chain.chain_anchor_id) || openedMembers[0].dexId;
-    openedMembers.forEach((m) => {
-      chainRootByDex.set(m.dexId, root);
-      chainOrderByDex.set(m.dexId, m.index);
-    });
-  });
-  const representativeDexByRoot = new Map();
-  openedDexRows.forEach((d) => {
-    const dexId = Number(d.dexId);
-    const root = chainRootByDex.get(dexId) || dexId;
-    const current = representativeDexByRoot.get(root);
-    const currentOrder = chainOrderByDex.has(current) ? chainOrderByDex.get(current) : current;
-    const nextOrder = chainOrderByDex.has(dexId) ? chainOrderByDex.get(dexId) : dexId;
-    if (!current || nextOrder > currentOrder || (nextOrder === currentOrder && dexId > current)) {
-      representativeDexByRoot.set(root, dexId);
-    }
-  });
-  const representativeDexIds = new Set(representativeDexByRoot.values());
-  const activePets = openedDexRows
-    .filter((d) => representativeDexIds.has(Number(d.dexId)))
-    .map((d, idx) => {
+    .filter((d) => Number(d && d.dexId) >= 1 && Number(d && d.dexId) <= TEST_MAX_DEX_ID);
+  const finalFormRows = buildFinalFormDexRows(openedDexRows, evolutionData);
+  const activePets = finalFormRows
+    .map(({ row: d, rootDexId, stageIndex }, idx) => {
       const dexId = Number(d.dexId);
       const species = speciesByDex[String(dexId)] || {};
       const equippedSkills = (Array.isArray(species.skills) ? species.skills : [])
@@ -131,10 +156,10 @@ const createTestSaveState = () => {
         .map((s) => clean(s && s.name))
         .filter(Boolean)
         .reverse();
-      return {
+      const pet = {
         id: `test_pet_${String(dexId).padStart(4, "0")}`,
         dexId,
-        baseDexId: dexId,
+        baseDexId: rootDexId || dexId,
         speciesName: clean(d.name) || clean(species.name) || `亚比${dexId}`,
         element: clean(species.element) || clean(d.element) || "未知系",
         subElement: clean(species.subElement || d.subElement),
@@ -146,6 +171,11 @@ const createTestSaveState = () => {
         equippedSkills,
         createdAt: now + idx
       };
+      if (Number(stageIndex) > 0) {
+        pet.fixedStageIndex = Number(stageIndex);
+        pet.keepEquippedSkillsAboveLevel = true;
+      }
+      return pet;
     });
   const bagPetIds = activePets.slice(0, 6).map((p) => p.id);
   while (bagPetIds.length < 6) bagPetIds.push("");
@@ -159,13 +189,74 @@ const createTestSaveState = () => {
     challengeFormIndex: 0,
     selectedAttackerId: bagPetIds[0] || "",
     selectedPetId: activePets[0] ? activePets[0].id : "",
-    items: { level_40_fruit: 1 },
+    items: { level_40_fruit: 1, divine_pet_key: 10000 },
     hCoins: 100000,
     guardianWinCounts: {},
     equippedBadgeId: "",
     targetLevel: 10,
     battleLog: [],
     showDexPanel: false
+  };
+};
+
+const normalizeTestSavePayload = (payload) => {
+  const seed = createTestSaveState();
+  const save = payload && typeof payload.save === "object" && !Array.isArray(payload.save) ? payload.save : null;
+  if (!save) return seed;
+  if (!seed.items || typeof seed.items !== "object") seed.items = {};
+  seed.items.divine_pet_key = 10000;
+  if (!save.items || typeof save.items !== "object") save.items = {};
+  save.items.divine_pet_key = 10000;
+  const activePets = Array.isArray(save.activePets) ? save.activePets : [];
+  const seedPetIds = new Set(seed.activePets.map((pet) => pet.id));
+  const activePetIds = new Set(activePets.map((pet) => String(pet && pet.id || "")));
+  const looksLikeOldFullFormSeed = activePets.length >= TEST_MAX_DEX_ID - 10;
+  const looksLikeTestSeedPets = activePets.length > 0 && activePets.every((pet) => /^test_pet_\d{4}$/.test(String(pet && pet.id || "")));
+  const seedPetSetChanged = looksLikeTestSeedPets
+    && (activePets.length !== seed.activePets.length || seed.activePets.some((pet) => !activePetIds.has(pet.id)));
+  if (!looksLikeOldFullFormSeed && !seedPetSetChanged) return save;
+  const savedPetById = new Map(activePets.map((pet) => [String(pet && pet.id || ""), pet]));
+  const mergedPets = seed.activePets.map((pet) => ({
+    ...pet,
+    ...(savedPetById.get(pet.id) || {}),
+    dexId: pet.dexId,
+    baseDexId: pet.baseDexId,
+    speciesName: pet.speciesName,
+    element: pet.element,
+    subElement: pet.subElement,
+    fixedStageIndex: pet.fixedStageIndex,
+    keepEquippedSkillsAboveLevel: pet.keepEquippedSkillsAboveLevel
+  }));
+  const bagPetIds = Array.isArray(save.bagPetIds)
+    ? save.bagPetIds.filter((id) => seedPetIds.has(String(id || ""))).slice(0, 6)
+    : [];
+  seed.bagPetIds.forEach((id) => {
+    if (bagPetIds.length < 6 && id && !bagPetIds.includes(id)) bagPetIds.push(id);
+  });
+  while (bagPetIds.length < 6) bagPetIds.push("");
+  const selectedPetId = seedPetIds.has(String(save.selectedPetId || "")) ? save.selectedPetId : (bagPetIds.find(Boolean) || seed.selectedPetId);
+  return {
+    ...seed,
+    ...save,
+    activatedDexIds: seed.activatedDexIds,
+    activePets: mergedPets,
+    bagPetIds,
+    selectedAttackerId: bagPetIds[0] || "",
+    selectedPetId
+  };
+};
+
+const normalizeSaveForUser = (user, payload) => {
+  const save = payload && typeof payload.save === "object" && !Array.isArray(payload.save) ? payload.save : null;
+  if (!user || user.id !== TEST_USER_ID || !save) return payload;
+  const normalizedSave = normalizeTestSavePayload(payload);
+  if (normalizedSave === save) return payload;
+  return {
+    ...(payload && typeof payload === "object" ? payload : {}),
+    userId: user.id,
+    username: user.username,
+    savedAt: new Date().toISOString(),
+    save: normalizedSave
   };
 };
 
@@ -184,12 +275,30 @@ const ensureTestAccount = () => {
   }
   saveUsersDb(db);
   const currentSaveFile = userSaveFile(user.id);
-  if (fs.existsSync(currentSaveFile)) return;
+  if (fs.existsSync(currentSaveFile)) {
+    const current = readJsonFile(currentSaveFile, null);
+    const normalizedSave = normalizeTestSavePayload(current);
+    if (normalizedSave !== (current && current.save)) {
+      writeJsonFile(currentSaveFile, {
+        userId: user.id,
+        username: user.username,
+        savedAt: new Date().toISOString(),
+        save: normalizedSave
+      });
+    }
+    return;
+  }
   const legacySaveFile = LEGACY_TEST_USER_IDS.map((id) => userSaveFile(id)).find((file) => fs.existsSync(file));
   if (legacySaveFile) {
     const legacy = readJsonFile(legacySaveFile, null);
     if (legacy && typeof legacy === "object") {
-      writeJsonFile(currentSaveFile, { ...legacy, userId: user.id, username: user.username });
+      writeJsonFile(currentSaveFile, {
+        ...legacy,
+        userId: user.id,
+        username: user.username,
+        savedAt: new Date().toISOString(),
+        save: normalizeTestSavePayload(legacy)
+      });
       return;
     }
   }
@@ -216,7 +325,11 @@ const parseCookies = (req) => {
 const currentUser = (req) => {
   const auth = String(req.headers.authorization || "");
   const bearer = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7).trim() : "";
-  const token = parseCookies(req).aola_session || bearer || String(req.headers["x-aola-session"] || "");
+  let queryToken = "";
+  try {
+    queryToken = String(new URL(req.url, `http://${req.headers.host || "localhost"}`).searchParams.get("token") || "");
+  } catch {}
+  const token = parseCookies(req).aola_session || bearer || String(req.headers["x-aola-session"] || "") || queryToken;
   const session = sessions.get(token);
   if (!session || Date.now() > session.expiresAt) {
     if (token) sessions.delete(token);
@@ -346,10 +459,15 @@ const handleApi = async (req, res) => {
     if (req.method === "GET" && req.url === "/api/save") {
       const user = requireUser(req, res);
       if (!user) return;
-      const save = readJsonFile(userSaveFile(user.id), null);
+      let save = readJsonFile(userSaveFile(user.id), null);
+      const normalized = normalizeSaveForUser(user, save);
+      if (normalized !== save) {
+        save = normalized;
+        writeJsonFile(userSaveFile(user.id), save);
+      }
       return sendJson(res, 200, { ok: true, save, user: publicUser(user) });
     }
-    if (req.method === "POST" && req.url === "/api/save") {
+    if (req.method === "POST" && new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname === "/api/save") {
       const user = requireUser(req, res);
       if (!user) return;
       const body = await readBody(req);

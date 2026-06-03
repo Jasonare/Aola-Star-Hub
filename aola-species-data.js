@@ -427428,6 +427428,428 @@
       "speed": 95,
       "total": 655
     }
+  },
+  "2386": {
+      "dexId": 2386,
+      "name": "星",
+      "element": "上古系",
+      "subElement": "",
+      "elements": [
+          "上古系"
+      ],
+      "sourceUrl": "http://aola.100bt.com/tujian/2386.html",
+      "forms": [
+          {
+              "name": "星",
+              "img": "./pet-img/pet2386_1_1_cropped.png"
+          }
+      ],
+      "skills": [
+          {
+              "name": "烈焰",
+              "level": 0,
+              "power": 80,
+              "pp": 25,
+              "accuracy": 0,
+              "type": "火系/特殊攻击",
+              "desc": "有10%概率令对方烧伤",
+              "skillId": 27005,
+              "skillKey": "烈焰#火系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "牵引",
+              "level": 0,
+              "power": 80,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "30%概率降低对方速度1级",
+              "skillId": 33008,
+              "skillKey": "牵引#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "日芒",
+              "level": 5,
+              "power": 120,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "20%概率令对方停止行动",
+              "skillId": 33009,
+              "skillKey": "日芒#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "灼烧令",
+              "level": 10,
+              "power": 120,
+              "pp": 15,
+              "accuracy": 0,
+              "type": "火系/特殊攻击",
+              "desc": "命中后有10%概率提升特攻1级",
+              "skillId": 27006,
+              "skillKey": "灼烧令#火系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "灵之净化",
+              "level": 15,
+              "power": 80,
+              "pp": 2,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "先发；清除对方单体提升的属性能力等级",
+              "skillId": 16268,
+              "skillKey": "灵之净化#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "焰火盛",
+              "level": 20,
+              "power": 160,
+              "pp": 15,
+              "accuracy": 0,
+              "type": "火系/特殊攻击",
+              "desc": "命中后50%概率令对方烧伤",
+              "skillId": 27007,
+              "skillKey": "焰火盛#火系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "索魂连击",
+              "level": 25,
+              "power": 100,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "连续攻击对方5回合，每回合威力加倍",
+              "skillId": 33010,
+              "skillKey": "索魂连击#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "超上古血脉",
+              "level": 30,
+              "power": -1,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/属性攻击",
+              "desc": "提升自己全属性1级，30%概率下回合停止行动",
+              "skillId": 33012,
+              "skillKey": "超上古血脉#上古系",
+              "attackTypeCode": 2,
+              "attackTypeLabel": "属性攻击"
+          },
+          {
+              "name": "转乾坤",
+              "level": 35,
+              "power": -1,
+              "pp": 5,
+              "accuracy": 0,
+              "type": "上古系/属性攻击",
+              "desc": "每回合吸取对方伤害能力5%，持续5回合",
+              "skillId": 33013,
+              "skillKey": "转乾坤#上古系",
+              "attackTypeCode": 2,
+              "attackTypeLabel": "属性攻击"
+          },
+          {
+              "name": "超夺魂",
+              "level": 40,
+              "power": 200,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "75%概率削弱对方特防1级",
+              "skillId": 33011,
+              "skillKey": "超夺魂#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "星神之域",
+              "level": 45,
+              "power": -1,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/属性攻击",
+              "desc": "先发，提升全属性1级，4回合内45%概率免疫上古系以外技能",
+              "skillId": 33001,
+              "skillKey": "星神之域#上古系",
+              "attackTypeCode": 2,
+              "attackTypeLabel": "属性攻击"
+          },
+          {
+              "name": "致命龙影",
+              "level": 50,
+              "power": 200,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "先发，吸取对方最大体力值10%和5%伤害抗性，且对方使用攻击技能则再吸取5%伤害抗性，持续3回合，可叠加使用，最多叠加3层",
+              "skillId": 33002,
+              "skillKey": "致命龙影#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "古炎无双",
+              "level": 55,
+              "power": 300,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "火系/特殊攻击",
+              "desc": "出手时未受伤害则保护属性4回合",
+              "skillId": 27011,
+              "skillKey": "古炎无双#火系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "元魂斩杀",
+              "level": 60,
+              "power": 400,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "必中，提升特攻1级；目标体力大于800则造成额外200点伤害",
+              "skillId": 33003,
+              "skillKey": "元魂斩杀#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          }
+      ],
+      "raceStats": {
+          "id": 2386,
+          "name": "星",
+          "hp": 121,
+          "atk": 55,
+          "def": 100,
+          "spAtk": 175,
+          "spDef": 95,
+          "speed": 155,
+          "total": 701
+      }
+  },
+  "2387": {
+      "dexId": 2387,
+      "name": "上古星龙",
+      "element": "上古系",
+      "subElement": "",
+      "elements": [
+          "上古系"
+      ],
+      "sourceUrl": "http://aola.100bt.com/tujian/2387.html",
+      "forms": [
+          {
+              "name": "上古星龙",
+              "img": "./pet-img/pet2387_1_1_cropped.png"
+          }
+      ],
+      "skills": [
+          {
+              "name": "烈焰",
+              "level": 0,
+              "power": 80,
+              "pp": 25,
+              "accuracy": 0,
+              "type": "火系/特殊攻击",
+              "desc": "有10%概率令对方烧伤",
+              "skillId": 27005,
+              "skillKey": "烈焰#火系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "牵引",
+              "level": 0,
+              "power": 80,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "30%概率降低对方速度1级",
+              "skillId": 33008,
+              "skillKey": "牵引#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "日芒",
+              "level": 5,
+              "power": 120,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "20%概率令对方停止行动",
+              "skillId": 33009,
+              "skillKey": "日芒#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "灼烧令",
+              "level": 10,
+              "power": 120,
+              "pp": 15,
+              "accuracy": 0,
+              "type": "火系/特殊攻击",
+              "desc": "命中后有10%概率提升特攻1级",
+              "skillId": 27006,
+              "skillKey": "灼烧令#火系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "灵之净化",
+              "level": 15,
+              "power": 80,
+              "pp": 2,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "先发；清除对方单体提升的属性能力等级",
+              "skillId": 16268,
+              "skillKey": "灵之净化#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "焰火盛",
+              "level": 20,
+              "power": 160,
+              "pp": 15,
+              "accuracy": 0,
+              "type": "火系/特殊攻击",
+              "desc": "命中后50%概率令对方烧伤",
+              "skillId": 27007,
+              "skillKey": "焰火盛#火系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "索魂连击",
+              "level": 25,
+              "power": 100,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "连续攻击对方5回合，每回合威力加倍",
+              "skillId": 33010,
+              "skillKey": "索魂连击#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "超上古血脉",
+              "level": 30,
+              "power": -1,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/属性攻击",
+              "desc": "提升自己全属性1级，30%概率下回合停止行动",
+              "skillId": 33012,
+              "skillKey": "超上古血脉#上古系",
+              "attackTypeCode": 2,
+              "attackTypeLabel": "属性攻击"
+          },
+          {
+              "name": "转乾坤",
+              "level": 35,
+              "power": -1,
+              "pp": 5,
+              "accuracy": 0,
+              "type": "上古系/属性攻击",
+              "desc": "每回合吸取对方伤害能力5%，持续5回合",
+              "skillId": 33013,
+              "skillKey": "转乾坤#上古系",
+              "attackTypeCode": 2,
+              "attackTypeLabel": "属性攻击"
+          },
+          {
+              "name": "超夺魂",
+              "level": 40,
+              "power": 200,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "75%概率削弱对方特防1级",
+              "skillId": 33011,
+              "skillKey": "超夺魂#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "星神之域",
+              "level": 45,
+              "power": -1,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/属性攻击",
+              "desc": "先发，提升全属性1级，4回合内45%概率免疫上古系以外技能",
+              "skillId": 33001,
+              "skillKey": "星神之域#上古系",
+              "attackTypeCode": 2,
+              "attackTypeLabel": "属性攻击"
+          },
+          {
+              "name": "致命龙影",
+              "level": 50,
+              "power": 200,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "先发，吸取对方最大体力值10%和5%伤害抗性，且对方使用攻击技能则再吸取5%伤害抗性，持续3回合，可叠加使用，最多叠加3层",
+              "skillId": 33002,
+              "skillKey": "致命龙影#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "古炎无双",
+              "level": 55,
+              "power": 300,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "火系/特殊攻击",
+              "desc": "出手时未受伤害则保护属性4回合",
+              "skillId": 27011,
+              "skillKey": "古炎无双#火系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          },
+          {
+              "name": "元魂斩杀",
+              "level": 60,
+              "power": 400,
+              "pp": 10,
+              "accuracy": 0,
+              "type": "上古系/特殊攻击",
+              "desc": "必中，提升特攻1级；目标体力大于800则造成额外200点伤害",
+              "skillId": 33003,
+              "skillKey": "元魂斩杀#上古系",
+              "attackTypeCode": 1,
+              "attackTypeLabel": "特殊攻击"
+          }
+      ],
+      "raceStats": {
+          "id": 2387,
+          "name": "上古星龙",
+          "hp": 121,
+          "atk": 55,
+          "def": 100,
+          "spAtk": 175,
+          "spDef": 95,
+          "speed": 155,
+          "total": 701
+      }
   }
 };
 })();

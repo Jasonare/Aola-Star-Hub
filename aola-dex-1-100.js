@@ -21328,5 +21328,23 @@ window.AOLA_DEX_1_100 = [
     "element": "冰?",
     "subElement": "",
     "sourceUrl": "http://aola.100bt.com/tujian/2370.html"
+  },
+  {
+      "dexId": 2386,
+      "petId": 2386,
+      "name": "星",
+      "image": "./pet-img/pet2386_1_1_cropped.png",
+      "element": "上古系",
+      "subElement": "",
+      "sourceUrl": "http://aola.100bt.com/tujian/2386.html"
+  },
+  {
+      "dexId": 2387,
+      "petId": 2387,
+      "name": "上古星龙",
+      "image": "./pet-img/pet2387_1_1_cropped.png",
+      "element": "上古系",
+      "subElement": "",
+      "sourceUrl": "http://aola.100bt.com/tujian/2387.html"
   }
 ];
