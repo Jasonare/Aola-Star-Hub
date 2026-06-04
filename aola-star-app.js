@@ -83,7 +83,7 @@ const EXTRA_GUARDIAN_NAMES = [
   "烈焰鸟", "合金猛将", "利刺大黄蜂", "雷纳瑞", "魂斗鱼", "浮云尊者", "神武月", "影刃", "年兽", "麦斗司令",
   "山脉之魂", "星光角斗士", "时间之神", "天使莱特", "战无炎", "极速威锋", "满月巨灵", "天之巨灵", "黑夜童心", "远古灵龟",
   "暴雪山神", "赤影飞狐", "赤魔导士", "天女若希", "神罗麦提", "超T兔", "猪猪超人", "翡冷翠", "鬼王", "岩波斗魂者",
-  "友人契约书", "多古拉伯爵", "伊泽", "迦娜", "蓝羽灵者", "剑圣太白", "猎空", "奥弗", "赫提"
+  "友人契约书", "多古拉伯爵", "伊泽", "迦娜", "蓝羽灵者", "剑圣太白", "猎空", "奥弗", "赫提", "狂战暗影兽", "亚历山大"
 ];
 const EXTRA_GUARDIAN_ALIAS = {
   "浮云尊者兄弟": "浮云尊者",
@@ -108,7 +108,8 @@ const BOSS_NAMES = [
   "圣光修罗", "噬月武神", "苍炎战神", "阿波罗", "九尾冰狐", "金银尊者", "雷钢侠", "炼狱狮王", "菲尔", "可兰",
   "雷霆青龙", "惊涛玄武", "炎王", "阿尔萨斯", "帝卡", "冥焰夜王", "斗罗明王", "光暗弑神", "龙刃",
   "君焰狼王", "魂战", "炽燎天", "擎霸空", "冰晶凤凰", "擎战", "帝王奇灵", "真·苍炎战神", "真·噬月武神",
-  "真·烈焰凤凰", "龙·炎王", "真·赤色梦魇", "圣王麒麟", "圣·天伊", "冰罗皇", "奥天"
+  "真·烈焰凤凰", "龙·炎王", "真·赤色梦魇", "圣王麒麟", "圣·天伊", "冰罗皇", "奥天",
+  "圣羽凌风", "噬星白虎", "夜羽银风", "飓焰朱雀", "断空翼皇"
 ];
 const BOSS_DEX_ENTRIES = [
   { dexId: 177, name: "骰子大王" }, { dexId: 215, name: "青龙灵兽" }, { dexId: 290, name: "七星神龙" }, { dexId: 305, name: "龙族大法师" },
@@ -138,7 +139,9 @@ const BOSS_DEX_ENTRIES = [
   { dexId: 1528, name: "疾影侠" }, { dexId: 1530, name: "啸天侠" }, { dexId: 1501, name: "太阳星诺" }, { dexId: 1503, name: "月亮星诺" },
   { dexId: 1181, name: "焚浪" }, { dexId: 1274, name: "岩战" }, { dexId: 1910, name: "魂战" }, { dexId: 1648, name: "菲尔" },
   { dexId: 1649, name: "可兰" }, { dexId: 1234, name: "拉诺斯" }, { dexId: 1282, name: "施瓦辛格" }, { dexId: 1336, name: "波塞冬" },
-  { dexId: 1938, name: "冰晶凤凰" }, { dexId: 1950, name: "擎战" }
+  { dexId: 1938, name: "冰晶凤凰" }, { dexId: 1950, name: "擎战" },
+  { dexId: 1962, name: "圣羽凌风" }, { dexId: 1963, name: "噬星白虎" }, { dexId: 1972, name: "夜羽银风" },
+  { dexId: 1975, name: "飓焰朱雀" }, { dexId: 1985, name: "断空翼皇" }
 ];
 const BOSS_DEX_ID_TO_NAME = new Map(BOSS_DEX_ENTRIES.map((entry) => [entry.dexId, entry.name]));
 const CHALLENGE_ROAD_COVER_SRC = "./boss-level/first.png";
@@ -162,7 +165,8 @@ const CHALLENGE_ROAD_TIER3_GUARDIAN_NAMES = EXTRA_GUARDIAN_NAMES
     Math.max(0, EXTRA_GUARDIAN_NAMES.indexOf("雷纳瑞")),
     EXTRA_GUARDIAN_NAMES.indexOf("赫提") >= 0 ? EXTRA_GUARDIAN_NAMES.indexOf("赫提") + 1 : EXTRA_GUARDIAN_NAMES.length
   )
-  .filter((name) => !BOSS_CHALLENGE_REQUIRED_GUARDIAN_NAMES.includes(name));
+  .filter((name) => !BOSS_CHALLENGE_REQUIRED_GUARDIAN_NAMES.includes(name))
+  .concat(["狂战暗影兽", "亚历山大"]);
 const CHALLENGE_ROAD_TIERS = [
   {
     key: "tier_1",
@@ -206,7 +210,8 @@ const CHALLENGE_ROAD_TIERS = [
       "幻极", "波塞冬", "赤翼魔龙王", "魔洛", "暗影凯撒", "黑炎龙", "霜炎法神", "朱雀", "念", "苍穹圣龙",
       "圣光修罗", "噬月武神", "苍炎战神", "帝皇龙", "阿波罗", "九尾冰狐", "金银尊者", "雷刚侠", "炼狱狮王", "阿尔法",
       "菲尔", "可兰", "雷霆青龙", "惊涛玄武", "炎王", "阿尔萨斯", "帝卡", "冥焰夜王", "斗罗明王", "光暗弑神",
-      "龙刃", "君焰狼王", "魂战", "炽燎天", "擎霸空", "冰晶凤凰", "擎战", "帝王奇灵"
+      "龙刃", "君焰狼王", "魂战", "炽燎天", "擎霸空", "冰晶凤凰", "擎战", "帝王奇灵",
+      "圣羽凌风", "噬星白虎", "夜羽银风", "飓焰朱雀", "断空翼皇"
     ]
   },
   {
@@ -254,9 +259,9 @@ const QIXING_GACHA_POOL = [
   { key: "ancient_star_dragon_egg", type: "egg", dexId: QIXING_ANCIENT_STAR_DRAGON_DEX.dexId, label: "上古星龙亚比蛋", amount: 1, probability: 0.1, limitedKey: "ancient_star_dragon" }
 ];
 const WEEKLY_BOSS_CONFIG = {
-  key: "emperor_holy_dragon",
-  dexId: 1953,
-  name: "帝皇圣龙",
+  key: "source_1977",
+  dexId: 1977,
+  name: "源",
   level: 100,
   hpRaceMultiplier: 15,
   statBoostRatio: 0.6,
@@ -267,8 +272,8 @@ const WEEKLY_BOSS_CONFIG = {
   fixedHp: 15000,
   damageReductionRatio: 0,
   qixingSealLevel: 4,
-  honorBadgeId: "weekly_boss_emperor_holy_dragon_honor",
-  honorBadgeName: "帝皇圣龙启星荣耀徽章"
+  honorBadgeId: "weekly_boss_source_1977_honor",
+  honorBadgeName: "源启星荣耀徽章"
 };
 const EXCLUDED_BOSS_DEX_IDS = new Set([1808, 1898]);
 const BOSS_FIXED_SKILL_BY_TURN = {
@@ -300,6 +305,8 @@ const BOSS_LOW_HP_FORBIDDEN_SKILLS = {
 const BOSS_WEIGHTED_PREFERRED_SKILL = {
   1927: { skillName: "真·血印", weightMultiplier: 12 }
 };
+const LEGACY_BOSS_DEX_IDS = new Set([1953]);
+const LEGACY_BOSS_NAMES = new Set(["帝皇圣龙"]);
 const EXCLUDED_GUARDIAN_NAMES = ["魔灯鬼王"];
 const EXCLUDED_BOSS_NAMES = ["冰山修罗", "神照修罗王", "黯天凯撒皇"];
 const SHOP_EGG_NAMES = [
@@ -420,7 +427,12 @@ const canPersistPetDexId = (dexId) => {
   const id = Number(dexId) || 0;
   return (id > 0 && id <= MAX_OPEN_CHALLENGE_DEX_ID) || EXTRA_PERSIST_DEX_IDS.has(id);
 };
-const NO_EGG_ACTION_DEX_IDS = new Set([116,117,119,330,331,359,419,420,464,465,716,717,791,792,808,809,888,889,1087,1088,1089,1090,1929,1930]);
+const NO_EGG_ACTION_DEX_IDS = new Set([
+  116,117,118,119,210,213,216,217,218,219,222,223,224,225,227,237,239,240,241,242,243,244,245,246,247,248,250,251,252,
+  269,270,272,301,304,306,307,308,318,319,321,322,324,325,326,327,329,330,331,332,333,334,340,359,360,361,369,399,400,
+  401,402,403,404,405,415,419,420,446,447,448,461,462,464,465,466,523,527,609,716,717,735,791,792,808,809,869,888,889,
+  892,893,998,999,1000,1001,1087,1088,1089,1090,1283,1310,1617,1835,1836,1885,1886,1929,1930,1979
+]);
 const canObtainEggByActionDexId = (dexId) => {
   const id = Number(dexId) || 0;
   if (EXTRA_PERSIST_DEX_IDS.has(id)) return true;
@@ -430,6 +442,7 @@ const canDropEggByActionDexId = (dexId) => {
   const id = Number(dexId) || 0;
   return id > 0 && id <= MAX_OPEN_CHALLENGE_DEX_ID && !NO_EGG_ACTION_DEX_IDS.has(id);
 };
+const isNoEggActionDexId = (dexId) => NO_EGG_ACTION_DEX_IDS.has(Number(dexId) || 0);
 const BATTLE_BGM_SRC = "./BGM/小k橘子 - 战斗 (2015).ogg";
 const HATCH_MS = 5 * 60 * 1000;
 const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='24' fill='%23f1f5f9'/%3E%3Ccircle cx='60' cy='48' r='22' fill='%2394a3b8' opacity='0.35'/%3E%3Crect x='24' y='78' width='72' height='14' rx='7' fill='%2394a3b8' opacity='0.35'/%3E%3C/svg%3E";
@@ -616,6 +629,10 @@ const isBossEntry = (entry) => {
   if (EXCLUDED_BOSS_DEX_IDS.has(Number(entry.dexId) || 0)) return false;
   if (isBossDexId(entry.dexId)) return true;
   return isBossName(entry.name);
+};
+const isLegacyBossEntry = (entry) => {
+  if (!entry) return false;
+  return LEGACY_BOSS_DEX_IDS.has(Number(entry.dexId) || 0) || LEGACY_BOSS_NAMES.has(normalize(entry.name));
 };
 const isWeeklyBossEntry = (entry) => {
   if (!entry) return false;
@@ -1441,6 +1458,7 @@ const getBattleAbilityStat = (scene, side, key, options = {}) => {
   }
   return val;
 };
+const getBattleActionSpeed = (scene, side) => getBattleAbilityStat(scene, side, "speed");
 const hasStageGuard = (scene, side, delta) => {
   const state = getSideState(scene, side);
   return (state.timedEffects || []).some((e) => {
@@ -7328,6 +7346,13 @@ createApp({
       const s = clamp(Number(stage) || 0, 0, count - 1);
       return Number(chainIds[s]) || rootDexId;
     };
+    const shouldRecycleNoActionOwnedDex = (dexId) => {
+      const id = Number(dexId) || 0;
+      if (!id || EXTRA_PERSIST_DEX_IDS.has(id)) return false;
+      const rootDexId = chainRootByDex.get(id) || id;
+      const chainIds = chainDexIdsByRoot.get(rootDexId) || [id];
+      return [id, rootDexId, ...chainIds].some((n) => isNoEggActionDexId(n));
+    };
 
     const stageIndexByLevelAndCount = (level, formCount, evoLevels = null) => {
       const lv = clamp(Number(level) || 1, 1, 100);
@@ -7470,7 +7495,7 @@ createApp({
         guardianWinCounts: {},
         bossFirstWinRewardV1: null,
         bossDifficultyFirstWinRewards: {},
-        weeklyBossAttempts: { date: "", used: 0 },
+        weeklyBossAttempts: { bossKey: WEEKLY_BOSS_CONFIG.key, date: "", used: 0 },
         weeklyBossHonorRewards: {},
         qixingSeals: [],
         qixingGacha: { pity: 0, pityByKey: { ice_princess: 0, ancient_star_dragon: 0 }, limitedEggs: {} },
@@ -7535,7 +7560,7 @@ createApp({
         };
         if (fixedStageIndex !== null) sanitizedPet.fixedStageIndex = fixedStageIndex;
         return sanitizedPet;
-      }).filter((pet) => pet && canPersistPetDexId(pet.dexId)) : [];
+      }).filter((pet) => pet && canPersistPetDexId(pet.dexId) && !shouldRecycleNoActionOwnedDex(pet.dexId)) : [];
 
       const eggs = Array.isArray(loaded.eggs) ? loaded.eggs.map((e) => {
         const nameInSave = normalize(e.speciesName);
@@ -7550,7 +7575,7 @@ createApp({
           startAt: Number(e.startAt) || Date.now(),
           hatchAt: Number(e.hatchAt) || (Date.now() + HATCH_MS)
         };
-      }).filter(Boolean) : [];
+      }).filter((egg) => egg && !shouldRecycleNoActionOwnedDex(egg.dexId)) : [];
 
       const activated = new Set(Array.isArray(loaded.activatedDexIds) ? loaded.activatedDexIds.map((n) => Number(n)).filter(Boolean) : []);
       const defeated = new Set(Array.isArray(loaded.defeatedDexIds) ? loaded.defeatedDexIds.map((n) => Number(n)).filter((n) => n > 0) : []);
@@ -7614,7 +7639,7 @@ createApp({
       return {
         activatedDexIds: Array.from(activated),
         defeatedDexIds: Array.from(defeated),
-        obtainedEggDexIds: Array.isArray(loaded.obtainedEggDexIds) ? loaded.obtainedEggDexIds.map((n) => Number(n)).filter((n) => n > 0 && canObtainEggByActionDexId(n)) : [],
+        obtainedEggDexIds: Array.isArray(loaded.obtainedEggDexIds) ? loaded.obtainedEggDexIds.map((n) => Number(n)).filter((n) => n > 0 && canObtainEggByActionDexId(n) && !shouldRecycleNoActionOwnedDex(n)) : [],
         activePets,
         bagPetIds,
         eggs,
@@ -7657,7 +7682,10 @@ createApp({
         })(),
         weeklyBossAttempts: (() => {
           const source = loaded.weeklyBossAttempts && typeof loaded.weeklyBossAttempts === "object" ? loaded.weeklyBossAttempts : {};
+          const bossKey = normalize(source.bossKey);
+          if (bossKey !== WEEKLY_BOSS_CONFIG.key) return { bossKey: WEEKLY_BOSS_CONFIG.key, date: "", used: 0 };
           return {
+            bossKey: WEEKLY_BOSS_CONFIG.key,
             date: normalize(source.date),
             used: Math.max(0, Math.floor(Number(source.used) || 0))
           };
@@ -9547,7 +9575,7 @@ createApp({
     });
     const weeklyBossAttemptsUsed = computed(() => {
       const row = state.value.weeklyBossAttempts && typeof state.value.weeklyBossAttempts === "object" ? state.value.weeklyBossAttempts : {};
-      return normalize(row.date) === localDateKey() ? Math.max(0, Math.floor(Number(row.used) || 0)) : 0;
+      return normalize(row.bossKey) === WEEKLY_BOSS_CONFIG.key && normalize(row.date) === localDateKey() ? Math.max(0, Math.floor(Number(row.used) || 0)) : 0;
     });
     const weeklyBossAttemptsLeft = computed(() => Math.max(0, WEEKLY_BOSS_CONFIG.dailyAttempts - weeklyBossAttemptsUsed.value));
     const weeklyBossCleared = computed(() => {
@@ -9606,6 +9634,7 @@ createApp({
     const challengeLockMessage = (entry) => {
       if (!entry) return "该亚比暂不可挑战。";
       if (isWeeklyBossEntry(entry)) return "该亚比为当周BOSS，请从【当周BOSS】入口挑战。";
+      if (isLegacyBossEntry(entry)) return "该亚比为绝版BOSS，不能通过挑战图鉴获取。";
       if (isBossEntry(entry)) return "该亚比为BOSS，请从【挑战之路】入口挑战。";
       if (isGuardianName(entry.name)) return "该亚比为守护者，请从【挑战之路】入口挑战。";
       if (isShopEggEntry(entry)) return "该亚比蛋仅可从【亚比商店】购买，不能通过图鉴挑战获取。";
@@ -9613,7 +9642,7 @@ createApp({
     };
     const canChallengeFromDex = (entry) => {
       if (!entry) return false;
-      return !isWeeklyBossEntry(entry) && !isGuardianName(entry.name) && !isBossEntry(entry) && !isShopEggEntry(entry);
+      return !isWeeklyBossEntry(entry) && !isLegacyBossEntry(entry) && !isGuardianName(entry.name) && !isBossEntry(entry) && !isShopEggEntry(entry);
     };
     const canStartChallengeByDex = (entry) => {
       if (!entry) return false;
@@ -10223,7 +10252,7 @@ createApp({
     const loadPetActionLayout = async () => {
       try {
         let data = null;
-        const url = `${PET_ACTION_LAYOUT_URL}?v=20260601_qixing_dragon_layout`;
+        const url = `${PET_ACTION_LAYOUT_URL}?v=20260605_pet_1961_1985_layout`;
         if (isAndroidWebView) {
           data = JSON.parse(await loadLocalAssetText(url));
         } else {
@@ -11981,7 +12010,6 @@ createApp({
       finishBattleTurnVisuals(turnEnd);
       return true;
     };
-    const getBattleActionSpeed = (scene, side) => getBattleAbilityStat(scene, side, "speed");
     const compareBattleActions = (scene, a, b) => {
       const pa = a && a.skill ? getSkillActionPriority(a.skill) : 0;
       const pb = b && b.skill ? getSkillActionPriority(b.skill) : 0;
@@ -13267,6 +13295,7 @@ createApp({
     };
 
     const dexStatus = (entry) => {
+      if (isLegacyBossEntry(entry)) return "绝版BOSS";
       if (isGuardianName(entry.name)) return "守护者";
       if (isBossEntry(entry)) return "BOSS";
       if (isShopEggEntry(entry)) return "商店蛋";
@@ -13275,6 +13304,7 @@ createApp({
     };
     const statusClass = (entry) => {
       const s = dexStatus(entry);
+      if (s === "绝版BOSS") return "bg-slate-200 text-slate-700";
       if (s === "守护者") return "bg-amber-100 text-amber-700";
       if (s === "BOSS") return "bg-rose-100 text-rose-700";
       if (s === "商店蛋") return "bg-violet-100 text-violet-700";
@@ -14468,8 +14498,8 @@ createApp({
       if (weeklyBossCleared.value) return showToast("当周BOSS已挑战成功，不能继续挑战。");
       if (weeklyBossAttemptsLeft.value <= 0) return showToast("今日当周BOSS挑战次数已用完。");
       const today = localDateKey();
-      if (!state.value.weeklyBossAttempts || typeof state.value.weeklyBossAttempts !== "object" || normalize(state.value.weeklyBossAttempts.date) !== today) {
-        state.value.weeklyBossAttempts = { date: today, used: 0 };
+      if (!state.value.weeklyBossAttempts || typeof state.value.weeklyBossAttempts !== "object" || normalize(state.value.weeklyBossAttempts.bossKey) !== WEEKLY_BOSS_CONFIG.key || normalize(state.value.weeklyBossAttempts.date) !== today) {
+        state.value.weeklyBossAttempts = { bossKey: WEEKLY_BOSS_CONFIG.key, date: today, used: 0 };
       }
       state.value.weeklyBossAttempts.used = Math.min(WEEKLY_BOSS_CONFIG.dailyAttempts, Math.max(0, Math.floor(Number(state.value.weeklyBossAttempts.used) || 0)) + 1);
       closeWeeklyBossPanel();

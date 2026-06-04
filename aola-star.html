@@ -1265,6 +1265,19 @@
     .app-panel-modal .h-\[180px\] {
       height: calc(180 * var(--ui-px)) !important;
     }
+    .challenge-road-cover-track {
+      height: 100%;
+      min-height: 0;
+    }
+    .challenge-road-tier-card {
+      flex: 0 0 auto;
+      height: 100%;
+      width: auto;
+      aspect-ratio: 1345 / 3116;
+    }
+    .challenge-road-tier-cover {
+      object-fit: cover;
+    }
     .app-modal .max-h-\[220px\] {
       max-height: min(34vh, calc(220 * var(--ui-px))) !important;
     }
@@ -2722,10 +2735,18 @@
     }
     .battle-target-info-main {
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
       gap: calc(7 * var(--ui-px));
       min-width: 0;
+    }
+    .battle-target-card-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: calc(8 * var(--ui-px));
+      min-width: 0;
+      overflow: visible;
     }
     .battle-target-element-stack {
       display: flex;
@@ -3784,6 +3805,54 @@
     .battle-mobile-root .battle-mobile-log {
       top: clamp(calc(620 * var(--ui-px)), 79vh, calc(830 * var(--ui-px))) !important;
     }
+    .battle-mobile-root .battle-mobile-target {
+      align-items: center !important;
+    }
+    .battle-mobile-root .battle-mobile-target-card {
+      width: clamp(calc(130 * var(--ui-px)), 13.5vw, calc(215 * var(--ui-px))) !important;
+      max-width: clamp(calc(130 * var(--ui-px)), 13.5vw, calc(215 * var(--ui-px))) !important;
+      min-width: 0 !important;
+      align-self: center !important;
+      margin-top: calc(4 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-target-card-row {
+      order: 2 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: calc(8 * var(--ui-px)) !important;
+      width: auto !important;
+      max-width: none !important;
+      align-self: center !important;
+      margin-top: calc(4 * var(--ui-px)) !important;
+      overflow: visible !important;
+    }
+    .battle-mobile-root .battle-target-card-row .battle-mobile-target-card {
+      order: initial !important;
+      flex: 0 0 auto !important;
+      align-self: auto !important;
+      margin-top: 0 !important;
+    }
+    .battle-mobile-root .battle-target-card-row .battle-target-element-stack {
+      flex: 0 0 auto !important;
+      margin: 0 !important;
+    }
+    .battle-mobile-root .battle-target-info-main {
+      grid-template-columns: minmax(0, 1fr) auto !important;
+    }
+    .battle-mobile-root .battle-target-status {
+      left: 50% !important;
+      top: calc(100% + calc(6 * var(--ui-px))) !important;
+      right: auto !important;
+      bottom: auto !important;
+      width: min(calc(100% + calc(76 * var(--ui-px))), calc(260 * var(--ui-px))) !important;
+      min-height: 0 !important;
+      transform: translateX(-50%) !important;
+      justify-content: center !important;
+    }
+    .battle-mobile-root .battle-mobile-target > .battle-mobile-ability {
+      display: none !important;
+    }
   </style>
 </head>
 <body class="text-slate-800 min-h-screen">
@@ -4251,7 +4320,7 @@
             <span class="element-icon" :style="petElementIconStyle(entry.element, 15)" :title="entry.element || ''"></span>
             <span v-if="entry.subElement" class="element-icon" :style="petElementIconStyle(entry.subElement, 15)" :title="entry.subElement || ''"></span>
             <span v-if="hasDefeatedDex(entry.dexId)" class="rounded bg-emerald-500 px-1.5 py-0.5 text-[9px] font-black text-white" :class="canChallengeFromDex(entry) ? 'ml-auto' : ''">WIN</span>
-            <span v-if="!canChallengeFromDex(entry)" class="ml-auto text-[10px] font-black" :class="dexStatus(entry)==='BOSS' ? 'text-rose-700' : (dexStatus(entry)==='商店蛋' ? 'text-violet-700' : 'text-amber-700')">{{ dexStatus(entry) }}</span>
+            <span v-if="!canChallengeFromDex(entry)" class="ml-auto text-[10px] font-black" :class="dexStatus(entry)==='BOSS' ? 'text-rose-700' : (dexStatus(entry)==='绝版BOSS' ? 'text-slate-700' : (dexStatus(entry)==='商店蛋' ? 'text-violet-700' : 'text-amber-700'))">{{ dexStatus(entry) }}</span>
           </div>
           <div class="dex-card-image-wrap">
             <img :src="entry.image" @error="withFallback" class="dex-card-image w-20 h-20 object-contain mx-auto">
@@ -4918,18 +4987,18 @@
         <button @click="closeChallengeRoadPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
       <div class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-3 scrollbar">
-        <div class="flex h-full min-h-[620px] items-stretch gap-4 pr-2">
+        <div class="challenge-road-cover-track flex items-stretch gap-4 pr-2">
           <button
             v-for="tier in challengeRoadTiers"
             :key="'challenge_road_tier_' + tier.key"
             @click="selectChallengeRoadTier(tier.tierIndex)"
-            class="relative shrink-0 h-full aspect-[1345/3116] overflow-hidden rounded-2xl border text-left transition"
+            class="challenge-road-tier-card relative overflow-hidden rounded-2xl border text-left transition"
             :class="[
               selectedChallengeRoadTierIndex === tier.tierIndex ? 'border-sky-400 shadow-lg shadow-sky-100' : 'border-slate-200',
               tier.unlocked ? 'bg-slate-900 hover:border-sky-300' : 'bg-slate-800 opacity-70'
             ]"
           >
-            <img :src="tier.cover" @error="withFallback" class="absolute inset-0 w-full h-full object-contain opacity-95">
+            <img :src="tier.cover" @error="withFallback" class="challenge-road-tier-cover absolute inset-0 w-full h-full opacity-95">
             <div class="absolute inset-0 bg-gradient-to-r from-slate-950/88 via-slate-900/62 to-slate-900/12"></div>
             <div class="relative z-10 h-full p-5 flex flex-col justify-between text-white">
               <div class="flex items-start justify-between gap-3">
@@ -5435,27 +5504,28 @@
     <div v-if="battleScene.fxSkillText" class="hidden absolute top-6 right-6 z-30 rounded-2xl border border-cyan-300/60 bg-cyan-400/25 px-3 py-1 text-[11px] font-black text-cyan-100 whitespace-nowrap shadow-[0_8px_24px_rgba(34,211,238,0.25)] battle-skill-float">{{ battleScene.fxSkillText }}</div>
 
     <div class="absolute left-3 right-3 md:left-8 md:right-auto top-3 md:top-8 w-auto md:w-[22%] md:min-w-[280px] battle-mobile-wrap battle-mobile-target">
-      <div class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3 battle-mobile-target-card">
-        <div class="battle-target-info-main">
-          <div class="battle-target-element-stack">
-            <span class="element-icon" :style="petElementIconStyle(battleScene.targetElement || '普通系', 28)" :title="battleScene.targetElement || '普通系'"></span>
-            <span v-if="battleScene.targetSubElement" class="element-icon" :style="petElementIconStyle(battleScene.targetSubElement, 28)" :title="battleScene.targetSubElement"></span>
-          </div>
-          <div class="battle-target-info-body">
-            <div class="battle-target-name-row">
-              <div class="battle-target-name truncate">{{ battleScene.targetName }}</div>
-              <div class="battle-target-level shrink-0">Lv.{{ battleScene.targetLevel }}</div>
-            </div>
-            <div class="battle-target-hp-track">
-              <div class="battle-target-hp-fill transition-all duration-300" :style="{ width: hpPercent(battleScene.uiTargetHp, battleScene.uiTargetMaxHp) + '%' }"></div>
-            </div>
-          </div>
-          <div class="battle-target-status">
-            <span v-for="b in battleTargetStatusBadges" :key="'tar_st_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
-            <span v-for="e in battleTargetTimedEffects" :key="'tar_fx_' + e.key" :title="`${e.desc}｜${e.durationLabel || ('剩余' + e.turns + '回合')}`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
-          </div>
+      <div class="battle-target-card-row">
+        <div class="battle-target-element-stack">
+          <span class="element-icon" :style="petElementIconStyle(battleScene.targetElement || '普通系', 28)" :title="battleScene.targetElement || '普通系'"></span>
+          <span v-if="battleScene.targetSubElement" class="element-icon" :style="petElementIconStyle(battleScene.targetSubElement, 28)" :title="battleScene.targetSubElement"></span>
         </div>
-        <div class="mt-2 overflow-x-auto">
+        <div class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3 battle-mobile-target-card">
+          <div class="battle-target-info-main">
+            <div class="battle-target-info-body">
+              <div class="battle-target-name-row">
+                <div class="battle-target-name truncate">{{ battleScene.targetName }}</div>
+                <div class="battle-target-level shrink-0">Lv.{{ battleScene.targetLevel }}</div>
+              </div>
+              <div class="battle-target-hp-track">
+                <div class="battle-target-hp-fill transition-all duration-300" :style="{ width: hpPercent(battleScene.uiTargetHp, battleScene.uiTargetMaxHp) + '%' }"></div>
+              </div>
+            </div>
+            <div class="battle-target-status">
+              <span v-for="b in battleTargetStatusBadges" :key="'tar_st_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
+              <span v-for="e in battleTargetTimedEffects" :key="'tar_fx_' + e.key" :title="`${e.desc}｜${e.durationLabel || ('剩余' + e.turns + '回合')}`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
+            </div>
+          </div>
+          <div class="mt-2 overflow-x-auto">
           <div class="battle-mobile-stat-side battle-stage-line inline-flex items-center gap-1 text-[10px] font-black whitespace-nowrap">
             <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) < 0 ? 'stat-neg' : 'stat-zero')">攻击{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0 }}</span>
             <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0) < 0 ? 'stat-neg' : 'stat-zero')">特攻{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.spAtk) || 0 }}</span>
@@ -5467,6 +5537,7 @@
             <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.critStage) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.critStage) || 0) < 0 ? 'stat-neg' : 'stat-zero')">暴击{{ (battleScene.targetState && battleScene.targetState.critStage) || 0 }}</span>
           </div>
         </div>
+      </div>
       </div>
         <div class="mt-2 flex items-end justify-end gap-1 battle-mobile-target-sprite">
           <div
@@ -5809,7 +5880,7 @@
 
 <script>
 (function () {
-  var assetVersion = "20260520_pet_anim_layout_v2";
+  var assetVersion = "20260605_battle_action_speed_fix";
   var queue = [
     "./aola-dex-1-100.js",
     "./aola-species-data.js",
