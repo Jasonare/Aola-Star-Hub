@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -309,7 +309,7 @@
       height: calc(54 * var(--ui-px)) !important;
       border-radius: calc(15 * var(--ui-px)) !important;
       border: calc(1 * var(--ui-px)) solid rgba(165, 243, 252, 0.38);
-      font-size: calc(18 * var(--ui-px)) !important;
+      font-size: calc(27 * var(--ui-px)) !important;
       line-height: 1;
       box-shadow: inset 0 calc(1 * var(--ui-px)) 0 rgba(255, 255, 255, 0.25), 0 calc(10 * var(--ui-px)) calc(22 * var(--ui-px)) rgba(2, 6, 23, 0.32);
     }
@@ -340,6 +340,45 @@
       background: linear-gradient(180deg, #fde68a, #22d3ee 52%, #0891b2);
       color: #082f49;
       box-shadow: 0 0 calc(20 * var(--ui-px)) rgba(34, 211, 238, 0.62), inset 0 calc(1 * var(--ui-px)) 0 rgba(255, 255, 255, 0.56);
+    }
+    .battle-speed-floating {
+      position: absolute;
+      left: calc(38 * var(--ui-px));
+      top: calc(34 * var(--ui-px));
+      z-index: 84;
+      width: min(calc(414 * var(--ui-px)), calc(44vw - calc(24 * var(--ui-px))));
+      pointer-events: auto;
+    }
+    .battle-speed-floating .battle-speed-panel {
+      min-height: 0;
+      height: auto;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: calc(10 * var(--ui-px));
+      padding: calc(8 * var(--ui-px)) calc(10 * var(--ui-px));
+      border-radius: calc(12 * var(--ui-px));
+      background:
+        linear-gradient(135deg, rgba(8, 47, 73, 0.7), rgba(15, 23, 42, 0.56)),
+        radial-gradient(circle at 16% 0%, rgba(34, 211, 238, 0.24), transparent 38%);
+    }
+    .battle-speed-floating .battle-speed-title {
+      flex-direction: row;
+      font-size: calc(13 * var(--ui-px));
+    }
+    .battle-speed-floating .battle-speed-orb {
+      width: calc(12 * var(--ui-px));
+      height: calc(12 * var(--ui-px));
+    }
+    .battle-speed-floating .battle-speed-options {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      width: calc(204 * var(--ui-px));
+      gap: calc(6 * var(--ui-px));
+    }
+    .battle-speed-floating .battle-speed-option {
+      height: calc(34 * var(--ui-px));
+      border-radius: calc(10 * var(--ui-px));
+      font-size: calc(14 * var(--ui-px));
     }
     @keyframes battleSpeedPulse {
       0%, 100% { opacity: 0.72; transform: scale(0.9); }
@@ -1011,6 +1050,21 @@
       position: relative;
       z-index: 1;
     }
+    .guardian-badge-thumb,
+    .guardian-badge-img {
+      display: block;
+      flex: 0 0 auto;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 10px rgba(15,23,42,.18));
+    }
+    .guardian-badge-thumb {
+      width: 34px;
+      height: 34px;
+    }
+    .guardian-badge-img {
+      width: 76px;
+      height: 76px;
+    }
     .weekly-boss-modal {
       background:
         radial-gradient(circle at 22% 20%, rgba(250,204,21,.24), transparent 30%),
@@ -1153,6 +1207,35 @@
       border: 1px solid rgba(125,211,252,.3);
       background: rgba(15,23,42,.58);
       color: #bae6fd;
+    }
+    .double-reward-marquee {
+      position: relative;
+      overflow: hidden;
+      height: 34px;
+      border-radius: 14px;
+      border: 1px solid rgba(251, 191, 36, .55);
+      background: linear-gradient(90deg, #0f172a, #1e3a8a 34%, #075985 68%, #0f172a);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.12), 0 8px 22px rgba(15,23,42,.14);
+    }
+    .double-reward-marquee-track {
+      position: absolute;
+      inset-block: 0;
+      display: flex;
+      align-items: center;
+      min-width: 100%;
+      white-space: nowrap;
+      animation: doubleRewardMarquee 13s linear infinite;
+    }
+    .double-reward-marquee-text {
+      padding-inline: 40px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #fef3c7;
+      text-shadow: 0 2px 8px rgba(0,0,0,.45);
+    }
+    @keyframes doubleRewardMarquee {
+      from { transform: translateX(100%); }
+      to { transform: translateX(-100%); }
     }
     .app-modal {
       width: min(92vw, calc(960 * var(--ui-px))) !important;
@@ -1366,7 +1449,7 @@
         padding-left: calc(14 * var(--ui-px)) !important;
         padding-right: calc(14 * var(--ui-px)) !important;
         border-radius: calc(15 * var(--ui-px)) !important;
-        font-size: calc(18 * var(--ui-px)) !important;
+        font-size: calc(27 * var(--ui-px)) !important;
       }
       .battle-command-layout .battle-skill-row {
         height: auto !important;
@@ -1462,7 +1545,7 @@
       }
       .battle-command-btn {
         height: calc(38 * var(--ui-px)) !important;
-        font-size: calc(13 * var(--ui-px)) !important;
+        font-size: calc(19.5 * var(--ui-px)) !important;
         padding-left: calc(6 * var(--ui-px)) !important;
         padding-right: calc(6 * var(--ui-px)) !important;
       }
@@ -1476,6 +1559,24 @@
       .battle-speed-option {
         height: calc(42 * var(--ui-px));
         font-size: calc(14 * var(--ui-px));
+      }
+      .battle-speed-floating {
+        left: calc(10 * var(--ui-px));
+        top: calc(10 * var(--ui-px));
+        width: min(calc(318 * var(--ui-px)), calc(50vw - calc(16 * var(--ui-px))));
+      }
+      .battle-speed-floating .battle-speed-panel {
+        padding: calc(6 * var(--ui-px)) calc(8 * var(--ui-px));
+      }
+      .battle-speed-floating .battle-speed-title {
+        font-size: calc(11 * var(--ui-px));
+      }
+      .battle-speed-floating .battle-speed-options {
+        width: calc(156 * var(--ui-px));
+      }
+      .battle-speed-floating .battle-speed-option {
+        height: calc(28 * var(--ui-px));
+        font-size: calc(12 * var(--ui-px));
       }
       .battle-mobile-log {
         grid-column: 1 / 2;
@@ -2116,7 +2217,7 @@
       padding-left: calc(6 * var(--ui-px)) !important;
       padding-right: calc(6 * var(--ui-px)) !important;
       border-radius: calc(13 * var(--ui-px)) !important;
-      font-size: calc(13 * var(--ui-px)) !important;
+      font-size: calc(19.5 * var(--ui-px)) !important;
       white-space: nowrap !important;
     }
     html.android-webview.android-landscape .battle-command-layout .battle-skill-row {
@@ -2169,6 +2270,1519 @@
     html.android-webview.android-landscape .battle-speed-option {
       height: calc(36 * var(--ui-px)) !important;
       font-size: calc(12 * var(--ui-px)) !important;
+    }
+
+    .battle-mobile-root {
+      --battle-ref-panel-w: clamp(calc(230 * var(--ui-px)), 24vw, calc(360 * var(--ui-px)));
+      --battle-ref-gap: calc(8 * var(--ui-px));
+    }
+    .battle-mobile-root .battle-mobile-target {
+      width: clamp(calc(250 * var(--ui-px)), 29vw, calc(430 * var(--ui-px))) !important;
+      min-width: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+    }
+    .battle-mobile-root .battle-mobile-target-card {
+      width: min(100%, calc(390 * var(--ui-px))) !important;
+      border-radius: calc(10 * var(--ui-px)) !important;
+      background: linear-gradient(180deg, rgba(11, 65, 111, .86), rgba(8, 35, 70, .76)) !important;
+      border-color: rgba(174, 222, 255, .46) !important;
+      box-shadow: inset 0 calc(1 * var(--ui-px)) 0 rgba(255,255,255,.26), 0 calc(10 * var(--ui-px)) calc(24 * var(--ui-px)) rgba(0,0,0,.28);
+    }
+    .battle-mobile-root .battle-mobile-target-sprite {
+      width: 100% !important;
+      max-width: 100% !important;
+      justify-content: flex-end !important;
+    }
+    .battle-mobile-root .battle-mobile-ability {
+      display: block !important;
+      width: min(100%, calc(390 * var(--ui-px))) !important;
+      margin-top: calc(6 * var(--ui-px)) !important;
+      border-radius: calc(10 * var(--ui-px)) !important;
+      background: linear-gradient(180deg, rgba(13, 76, 123, .82), rgba(9, 38, 77, .74)) !important;
+      border-color: rgba(174, 222, 255, .38) !important;
+      box-shadow: inset 0 calc(1 * var(--ui-px)) 0 rgba(255,255,255,.18), 0 calc(8 * var(--ui-px)) calc(18 * var(--ui-px)) rgba(0,0,0,.22);
+    }
+    .battle-mobile-root .battle-mobile-ability .space-y-1 {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: calc(3 * var(--ui-px)) calc(8 * var(--ui-px)) !important;
+      line-height: 1.15 !important;
+    }
+    .battle-mobile-root .battle-mobile-attacker {
+      right: calc(20 * var(--ui-px)) !important;
+      left: auto !important;
+      top: clamp(calc(26 * var(--ui-px)), 5vh, calc(56 * var(--ui-px))) !important;
+      width: var(--battle-ref-panel-w) !important;
+      max-width: var(--battle-ref-panel-w) !important;
+      min-width: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: var(--battle-ref-gap) !important;
+    }
+    .battle-mobile-root .battle-mobile-hpbox {
+      order: 1 !important;
+      position: relative !important;
+      inset: auto !important;
+      width: var(--battle-ref-panel-w) !important;
+      max-width: var(--battle-ref-panel-w) !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding: calc(7 * var(--ui-px)) calc(8 * var(--ui-px)) !important;
+      border-radius: calc(8 * var(--ui-px)) !important;
+      background: linear-gradient(180deg, rgba(20, 95, 148, .92), rgba(8, 43, 86, .88)) !important;
+      border-color: rgba(178, 225, 255, .62) !important;
+      box-shadow: inset 0 calc(1 * var(--ui-px)) 0 rgba(255,255,255,.35), 0 calc(10 * var(--ui-px)) calc(22 * var(--ui-px)) rgba(0,0,0,.28);
+      overflow: visible !important;
+      z-index: 8 !important;
+    }
+    .battle-player-hp-topline {
+      display: grid;
+      grid-template-columns: calc(54 * var(--ui-px)) minmax(0, 1fr) auto;
+      align-items: center;
+      gap: calc(7 * var(--ui-px));
+      min-width: 0;
+    }
+    .battle-player-portrait {
+      width: calc(54 * var(--ui-px));
+      height: calc(54 * var(--ui-px));
+      border-radius: 999px;
+      background: radial-gradient(circle at 50% 42%, rgba(255,255,255,.95), rgba(136, 207, 255, .72) 44%, rgba(7, 48, 95, .88) 74%);
+      border: calc(2 * var(--ui-px)) solid rgba(230, 246, 255, .9);
+      box-shadow: inset 0 calc(2 * var(--ui-px)) calc(7 * var(--ui-px)) rgba(255,255,255,.55), 0 calc(5 * var(--ui-px)) calc(12 * var(--ui-px)) rgba(0,0,0,.26);
+      overflow: hidden;
+      transform: translateX(calc(-8 * var(--ui-px)));
+      flex: none;
+    }
+    .battle-player-portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center 34%;
+      transform: scale(1.8);
+      image-rendering: auto;
+    }
+    .battle-player-hp-main {
+      min-width: 0;
+      display: grid;
+      gap: calc(2 * var(--ui-px));
+    }
+    .battle-player-name-row {
+      min-width: 0;
+      display: flex;
+      align-items: baseline;
+      gap: calc(5 * var(--ui-px));
+      color: #f8fbff;
+      text-shadow: 0 calc(2 * var(--ui-px)) calc(5 * var(--ui-px)) rgba(0,0,0,.55);
+    }
+    .battle-player-name {
+      font-size: clamp(calc(14 * var(--ui-px)), 1.36vw, calc(21 * var(--ui-px))) !important;
+      font-weight: 900;
+      line-height: 1.05;
+    }
+    .battle-player-level,
+    .battle-player-element {
+      color: #d9f4ff;
+      font-size: clamp(calc(9 * var(--ui-px)), .82vw, calc(13 * var(--ui-px))) !important;
+      font-weight: 900;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+    .battle-player-hp-track {
+      position: relative;
+      height: calc(16 * var(--ui-px));
+      border-radius: calc(5 * var(--ui-px));
+      overflow: hidden;
+      background: linear-gradient(180deg, #413118, #7b3e13);
+      border: calc(1 * var(--ui-px)) solid rgba(255, 244, 183, .78);
+      box-shadow: inset 0 calc(1 * var(--ui-px)) calc(3 * var(--ui-px)) rgba(0,0,0,.42);
+    }
+    .battle-player-hp-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ffe876 0%, #ffb02e 48%, #f36f16 100%);
+      box-shadow: inset 0 calc(1 * var(--ui-px)) 0 rgba(255,255,255,.66);
+    }
+    .battle-player-hp-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff8d2;
+      font-size: clamp(calc(8 * var(--ui-px)), .72vw, calc(11 * var(--ui-px))) !important;
+      font-weight: 900;
+      line-height: 1;
+      text-shadow: 0 calc(1 * var(--ui-px)) calc(3 * var(--ui-px)) rgba(78, 31, 0, .9);
+      pointer-events: none;
+    }
+    .battle-player-status {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: calc(2 * var(--ui-px));
+      max-width: calc(48 * var(--ui-px));
+    }
+    .battle-mobile-root .battle-mobile-hpbox > .mt-2 {
+      margin-top: calc(5 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-command-layout {
+      order: 2 !important;
+      width: var(--battle-ref-panel-w) !important;
+      max-width: var(--battle-ref-panel-w) !important;
+      min-width: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: var(--battle-ref-gap) !important;
+      margin: 0 !important;
+    }
+    .battle-mobile-root .battle-mobile-skillpanel {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+    }
+    .battle-mobile-root .battle-mobile-speed {
+      display: none !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel {
+      padding: 0 !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel .battle-mobile-btns {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      gap: calc(6 * var(--ui-px)) !important;
+      margin: 0 !important;
+    }
+    .battle-mobile-root .battle-command-btn {
+      aspect-ratio: 1 / 1 !important;
+      height: auto !important;
+      min-height: 0 !important;
+      width: 100% !important;
+      padding: 0 !important;
+      border-radius: 999px !important;
+      border: calc(2 * var(--ui-px)) solid rgba(234, 243, 255, .78) !important;
+      background: radial-gradient(circle at 32% 24%, #f7fafc 0 18%, #5d6870 19% 100%) !important;
+      color: #fff5cf !important;
+      font-size: clamp(calc(15 * var(--ui-px)), 1.5vw, calc(22.5 * var(--ui-px))) !important;
+      font-weight: 900 !important;
+      text-shadow: 0 calc(2 * var(--ui-px)) calc(3 * var(--ui-px)) rgba(97, 29, 0, .86);
+      box-shadow: inset 0 calc(2 * var(--ui-px)) calc(5 * var(--ui-px)) rgba(255,255,255,.5), 0 calc(5 * var(--ui-px)) calc(12 * var(--ui-px)) rgba(0,0,0,.32) !important;
+      white-space: nowrap !important;
+    }
+    .battle-mobile-root .battle-command-skill-list {
+      width: 100% !important;
+      min-height: 0 !important;
+      padding: calc(7 * var(--ui-px)) !important;
+      border-radius: calc(8 * var(--ui-px)) !important;
+      border-color: rgba(166, 224, 255, .46) !important;
+      background: linear-gradient(180deg, rgba(20, 90, 143, .9), rgba(8, 44, 82, .88)) !important;
+      box-shadow: inset 0 calc(1 * var(--ui-px)) 0 rgba(255,255,255,.26), 0 calc(8 * var(--ui-px)) calc(18 * var(--ui-px)) rgba(0,0,0,.24) !important;
+    }
+    .battle-mobile-root .battle-command-skill-list > .text-xs {
+      height: calc(18 * var(--ui-px));
+      margin-bottom: calc(5 * var(--ui-px)) !important;
+      color: #dff7ff !important;
+      font-size: clamp(calc(10 * var(--ui-px)), .86vw, calc(13 * var(--ui-px))) !important;
+      line-height: calc(18 * var(--ui-px)) !important;
+      text-shadow: 0 calc(1 * var(--ui-px)) calc(3 * var(--ui-px)) rgba(0,0,0,.55);
+    }
+    .battle-mobile-root .battle-command-skill-list .space-y-2 {
+      display: grid !important;
+      gap: calc(5 * var(--ui-px)) !important;
+      max-height: none !important;
+    }
+    .battle-mobile-root .battle-command-skill-list .space-y-2 > :not([hidden]) ~ :not([hidden]) {
+      margin-top: 0 !important;
+    }
+    .battle-mobile-root .battle-skill-row {
+      display: grid !important;
+      grid-template-columns: calc(34 * var(--ui-px)) minmax(0, 1fr) !important;
+      grid-template-rows: 1fr 1fr !important;
+      align-items: center !important;
+      column-gap: calc(6 * var(--ui-px)) !important;
+      row-gap: 0 !important;
+      min-height: clamp(calc(42 * var(--ui-px)), 6.2vh, calc(60 * var(--ui-px))) !important;
+      padding: calc(4 * var(--ui-px)) calc(6 * var(--ui-px)) !important;
+      border-radius: calc(7 * var(--ui-px)) !important;
+      border: calc(1 * var(--ui-px)) solid rgba(232, 255, 191, .48) !important;
+      background: linear-gradient(180deg, #3f8e35 0%, #1d6a2d 48%, #0e4f24 100%) !important;
+      color: #fff !important;
+      box-shadow: inset 0 calc(1 * var(--ui-px)) 0 rgba(255,255,255,.42), inset 0 calc(-2 * var(--ui-px)) calc(4 * var(--ui-px)) rgba(5, 39, 20, .55), 0 calc(4 * var(--ui-px)) calc(9 * var(--ui-px)) rgba(0,0,0,.22) !important;
+      overflow: hidden !important;
+    }
+    .battle-mobile-root .battle-skill-element-badge {
+      grid-column: 1;
+      grid-row: 1 / 3;
+      width: calc(34 * var(--ui-px));
+      height: calc(34 * var(--ui-px));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+    .battle-mobile-root .battle-skill-element-badge .element-icon {
+      width: calc(30 * var(--ui-px)) !important;
+      height: calc(30 * var(--ui-px)) !important;
+      min-width: calc(30 * var(--ui-px)) !important;
+      background-size: contain !important;
+      background-repeat: no-repeat !important;
+      background-position: center !important;
+      filter: drop-shadow(0 calc(2 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(0,0,0,.45));
+      transform: none !important;
+    }
+    .battle-mobile-root .battle-skill-name {
+      color: #ff2626;
+      font-size: clamp(calc(11 * var(--ui-px)), 1.02vw, calc(16 * var(--ui-px))) !important;
+      font-weight: 900;
+      line-height: 1.05;
+      text-shadow: calc(1 * var(--ui-px)) calc(1 * var(--ui-px)) 0 #fff2aa, 0 calc(2 * var(--ui-px)) calc(3 * var(--ui-px)) rgba(0,0,0,.52);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .battle-mobile-root .battle-skill-name {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .battle-mobile-root .battle-skill-power,
+    .battle-mobile-root .battle-skill-pp {
+      color: #fbffcf;
+      font-size: clamp(calc(9 * var(--ui-px)), .78vw, calc(12 * var(--ui-px))) !important;
+      font-weight: 900;
+      line-height: 1.05;
+      text-shadow: 0 calc(1 * var(--ui-px)) calc(3 * var(--ui-px)) rgba(0,0,0,.65);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .battle-mobile-root .battle-skill-power {
+      grid-column: 2;
+      grid-row: 2;
+    }
+    .battle-mobile-root .battle-skill-pp {
+      grid-column: 2;
+      grid-row: 2;
+      justify-self: end;
+    }
+    .battle-mobile-root .battle-mobile-log {
+      left: auto !important;
+      right: calc(20 * var(--ui-px)) !important;
+      bottom: calc(18 * var(--ui-px)) !important;
+      width: var(--battle-ref-panel-w) !important;
+      max-width: var(--battle-ref-panel-w) !important;
+      min-width: 0 !important;
+      padding: calc(7 * var(--ui-px)) !important;
+      border-radius: calc(8 * var(--ui-px)) !important;
+      border-color: rgba(166, 224, 255, .46) !important;
+      background: linear-gradient(180deg, rgba(19, 83, 132, .88), rgba(7, 39, 74, .88)) !important;
+      box-shadow: inset 0 calc(1 * var(--ui-px)) 0 rgba(255,255,255,.22), 0 calc(8 * var(--ui-px)) calc(18 * var(--ui-px)) rgba(0,0,0,.24) !important;
+      z-index: 7 !important;
+    }
+    .battle-mobile-root .battle-log-toggle {
+      height: calc(24 * var(--ui-px)) !important;
+      border-radius: calc(6 * var(--ui-px)) !important;
+      padding: 0 calc(7 * var(--ui-px)) !important;
+      background: linear-gradient(180deg, rgba(61, 130, 175, .92), rgba(19, 70, 119, .9)) !important;
+      color: #e3f8ff !important;
+      font-size: clamp(calc(9 * var(--ui-px)), .82vw, calc(12 * var(--ui-px))) !important;
+      line-height: 1 !important;
+    }
+    .battle-mobile-root .battle-log-body {
+      max-height: clamp(calc(70 * var(--ui-px)), 16vh, calc(150 * var(--ui-px))) !important;
+    }
+    .battle-mobile-root .battle-mobile-attacker-main {
+      order: 3 !important;
+      position: fixed !important;
+      right: calc(var(--battle-ref-panel-w) + 7vw) !important;
+      bottom: clamp(calc(26 * var(--ui-px)), 5vh, calc(70 * var(--ui-px))) !important;
+      width: clamp(calc(150 * var(--ui-px)), 19vw, calc(300 * var(--ui-px))) !important;
+      z-index: 5 !important;
+      pointer-events: none;
+    }
+    .battle-mobile-root .battle-mobile-attacker-visual {
+      width: 100% !important;
+      height: clamp(calc(170 * var(--ui-px)), 32vh, calc(300 * var(--ui-px))) !important;
+      justify-content: center !important;
+    }
+    @media (max-width: 900px) {
+      .battle-mobile-root {
+        --battle-ref-panel-w: clamp(calc(178 * var(--ui-px)), 36vw, calc(245 * var(--ui-px)));
+        display: block !important;
+        padding: calc(8 * var(--ui-px)) !important;
+      }
+      .battle-mobile-root .battle-mobile-target {
+        position: absolute !important;
+        left: calc(10 * var(--ui-px)) !important;
+        top: calc(10 * var(--ui-px)) !important;
+        width: 38vw !important;
+        max-width: 38vw !important;
+      }
+      .battle-mobile-root .battle-mobile-target-card,
+      .battle-mobile-root .battle-mobile-ability {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .battle-mobile-root .battle-mobile-ability .space-y-1 {
+        grid-template-columns: 1fr !important;
+      }
+      .battle-mobile-root .battle-mobile-attacker {
+        position: absolute !important;
+        right: calc(8 * var(--ui-px)) !important;
+        top: calc(8 * var(--ui-px)) !important;
+        width: var(--battle-ref-panel-w) !important;
+        max-width: var(--battle-ref-panel-w) !important;
+      }
+      .battle-player-hp-topline {
+        grid-template-columns: calc(42 * var(--ui-px)) minmax(0, 1fr);
+      }
+      .battle-player-portrait {
+        width: calc(42 * var(--ui-px));
+        height: calc(42 * var(--ui-px));
+        transform: translateX(calc(-5 * var(--ui-px)));
+      }
+      .battle-player-status {
+        display: none;
+      }
+      .battle-mobile-root .battle-command-actions-panel .battle-mobile-btns {
+        gap: calc(4 * var(--ui-px)) !important;
+      }
+      .battle-mobile-root .battle-skill-row {
+        grid-template-columns: calc(28 * var(--ui-px)) minmax(calc(46 * var(--ui-px)), .78fr) minmax(0, 1.2fr) !important;
+        min-height: clamp(calc(36 * var(--ui-px)), 8.4vh, calc(49 * var(--ui-px))) !important;
+        column-gap: calc(4 * var(--ui-px)) !important;
+        padding: calc(3 * var(--ui-px)) calc(5 * var(--ui-px)) !important;
+      }
+      .battle-mobile-root .battle-skill-element-badge,
+      .battle-mobile-root .battle-skill-element-badge .element-icon {
+        width: calc(26 * var(--ui-px)) !important;
+        height: calc(26 * var(--ui-px)) !important;
+        min-width: calc(26 * var(--ui-px)) !important;
+      }
+      .battle-mobile-root .battle-mobile-log {
+        right: calc(8 * var(--ui-px)) !important;
+        bottom: calc(8 * var(--ui-px)) !important;
+        width: var(--battle-ref-panel-w) !important;
+        max-width: var(--battle-ref-panel-w) !important;
+      }
+      .battle-mobile-root .battle-mobile-attacker-main {
+        right: calc(var(--battle-ref-panel-w) + 3vw) !important;
+        bottom: calc(8 * var(--ui-px)) !important;
+        width: 20vw !important;
+      }
+    }
+
+    .battle-mobile-root {
+      --battle-old-wheel: clamp(calc(148 * var(--ui-px)), 15.8vw, calc(230 * var(--ui-px)));
+      --battle-old-panel: clamp(calc(190 * var(--ui-px)), 22vw, calc(315 * var(--ui-px)));
+      --battle-old-hp: clamp(calc(280 * var(--ui-px)), 34vw, calc(560 * var(--ui-px)));
+      --battle-old-avatar: clamp(calc(58 * var(--ui-px)), 6.5vw, calc(108 * var(--ui-px)));
+      --battle-old-gap: calc(8 * var(--ui-px));
+    }
+    .battle-mobile-root .battle-mobile-target {
+      left: clamp(calc(22 * var(--ui-px)), 6.5vw, calc(130 * var(--ui-px))) !important;
+      top: clamp(calc(95 * var(--ui-px)), 21vh, calc(210 * var(--ui-px))) !important;
+      width: clamp(calc(300 * var(--ui-px)), 31vw, calc(520 * var(--ui-px))) !important;
+      max-width: 40vw !important;
+      gap: calc(5 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-mobile-target-sprite {
+      order: 1 !important;
+      height: clamp(calc(230 * var(--ui-px)), 36vh, calc(430 * var(--ui-px))) !important;
+      margin: 0 !important;
+      align-items: flex-end !important;
+      justify-content: center !important;
+      z-index: 2 !important;
+    }
+    .battle-mobile-root .battle-mobile-target-sprite .battle-mobile-sprite {
+      height: 100% !important;
+      justify-content: center !important;
+    }
+    .battle-mobile-root .battle-target-pet-img {
+      --battle-pet-size: clamp(23vw, 34vmin, 36vw);
+    }
+    .battle-mobile-root .battle-mobile-target-card {
+      order: 2 !important;
+      width: clamp(calc(260 * var(--ui-px)), 27vw, calc(430 * var(--ui-px))) !important;
+      max-width: 100% !important;
+      margin-top: calc(-10 * var(--ui-px)) !important;
+      padding: calc(6 * var(--ui-px)) calc(8 * var(--ui-px)) !important;
+      border-radius: calc(6 * var(--ui-px)) !important;
+      background: linear-gradient(180deg, rgba(4, 21, 61, .88), rgba(2, 10, 32, .82)) !important;
+      border: calc(2 * var(--ui-px)) solid rgba(109, 191, 255, .72) !important;
+      box-shadow: inset 0 calc(1 * var(--ui-px)) 0 rgba(255,255,255,.28), 0 calc(8 * var(--ui-px)) calc(18 * var(--ui-px)) rgba(0,0,0,.34) !important;
+    }
+    .battle-target-info-main {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: calc(7 * var(--ui-px));
+      min-width: 0;
+    }
+    .battle-target-element-stack {
+      display: flex;
+      align-items: center;
+      gap: calc(3 * var(--ui-px));
+      min-width: 0;
+    }
+    .battle-target-element-stack .element-icon {
+      width: calc(22 * var(--ui-px)) !important;
+      height: calc(22 * var(--ui-px)) !important;
+      min-width: calc(22 * var(--ui-px)) !important;
+      filter: drop-shadow(0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(0,0,0,.5));
+    }
+    .battle-target-name-row {
+      display: flex;
+      align-items: baseline;
+      gap: calc(6 * var(--ui-px));
+      min-width: 0;
+    }
+    .battle-target-name,
+    .battle-target-level {
+      color: #ffffff;
+      font-size: clamp(calc(12 * var(--ui-px)), 1.1vw, calc(18 * var(--ui-px))) !important;
+      font-weight: 900;
+      line-height: 1.05;
+      text-shadow: 0 calc(2 * var(--ui-px)) calc(4 * var(--ui-px)) rgba(0,0,0,.85);
+    }
+    .battle-target-hp-track {
+      height: calc(12 * var(--ui-px));
+      margin-top: calc(3 * var(--ui-px));
+      border-radius: calc(7 * var(--ui-px));
+      overflow: hidden;
+      background: linear-gradient(180deg, #27090c, #4b1014);
+      border: calc(1 * var(--ui-px)) solid rgba(255, 210, 210, .7);
+      box-shadow: inset 0 calc(1 * var(--ui-px)) calc(3 * var(--ui-px)) rgba(0,0,0,.55);
+    }
+    .battle-target-hp-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ff433b, #dd0f20 68%, #9b0614);
+      box-shadow: inset 0 calc(1 * var(--ui-px)) 0 rgba(255,255,255,.48);
+    }
+    .battle-target-status {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: calc(2 * var(--ui-px));
+      max-width: calc(100 * var(--ui-px));
+    }
+    .battle-mobile-root .battle-mobile-target-card > .mt-2 {
+      margin-top: calc(5 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-mobile-ability {
+      order: 3 !important;
+      width: clamp(calc(210 * var(--ui-px)), 24vw, calc(390 * var(--ui-px))) !important;
+      margin-top: calc(3 * var(--ui-px)) !important;
+      padding: calc(7 * var(--ui-px)) calc(9 * var(--ui-px)) !important;
+      border-radius: calc(6 * var(--ui-px)) !important;
+      background: linear-gradient(180deg, rgba(5, 63, 105, .72), rgba(3, 24, 57, .68)) !important;
+      border: calc(1 * var(--ui-px)) solid rgba(110, 205, 255, .46) !important;
+    }
+    .battle-mobile-root .battle-mobile-attacker {
+      top: calc(18 * var(--ui-px)) !important;
+      right: calc(16 * var(--ui-px)) !important;
+      width: calc(var(--battle-old-hp) + var(--battle-old-avatar) + var(--battle-old-wheel) + calc(16 * var(--ui-px))) !important;
+      max-width: calc(100vw - calc(32 * var(--ui-px))) !important;
+      height: calc(100vh - calc(28 * var(--ui-px))) !important;
+      gap: 0 !important;
+      pointer-events: none;
+    }
+    .battle-mobile-root .battle-mobile-hpbox {
+      position: absolute !important;
+      top: 0 !important;
+      right: calc(var(--battle-old-wheel) + var(--battle-old-avatar) - calc(12 * var(--ui-px))) !important;
+      width: var(--battle-old-hp) !important;
+      max-width: var(--battle-old-hp) !important;
+      min-height: calc(64 * var(--ui-px)) !important;
+      padding: calc(8 * var(--ui-px)) calc(18 * var(--ui-px)) calc(7 * var(--ui-px)) calc(12 * var(--ui-px)) !important;
+      border-radius: calc(7 * var(--ui-px)) !important;
+      background:
+        linear-gradient(180deg, rgba(232, 249, 255, .86), rgba(97, 178, 223, .72) 12%, rgba(13, 76, 139, .92) 34%, rgba(3, 31, 87, .9) 100%) !important;
+      border: calc(2 * var(--ui-px)) solid rgba(224, 250, 255, .9) !important;
+      box-shadow: inset 0 calc(2 * var(--ui-px)) calc(5 * var(--ui-px)) rgba(255,255,255,.58), 0 calc(8 * var(--ui-px)) calc(16 * var(--ui-px)) rgba(0,0,0,.3) !important;
+      pointer-events: auto;
+    }
+    .battle-mobile-root .battle-player-hp-topline {
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      gap: calc(6 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-player-portrait {
+      position: absolute !important;
+      top: calc(3 * var(--ui-px)) !important;
+      right: calc(-1 * var(--battle-old-avatar) + calc(8 * var(--ui-px))) !important;
+      width: var(--battle-old-avatar) !important;
+      height: var(--battle-old-avatar) !important;
+      transform: none !important;
+      z-index: 12 !important;
+      border-radius: 999px !important;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(255,255,255,.98), rgba(255, 237, 101, .76) 28%, rgba(44, 145, 218, .9) 56%, rgba(6, 32, 85, .94) 78%) !important;
+      border: calc(3 * var(--ui-px)) solid rgba(220, 245, 255, .98) !important;
+      box-shadow: inset 0 calc(2 * var(--ui-px)) calc(8 * var(--ui-px)) rgba(255,255,255,.68), 0 calc(4 * var(--ui-px)) calc(11 * var(--ui-px)) rgba(0,0,0,.38) !important;
+    }
+    .battle-mobile-root .battle-player-portrait img {
+      transform: scale(1.95) !important;
+      object-position: center 30% !important;
+    }
+    .battle-mobile-root .battle-player-name {
+      font-size: clamp(calc(13 * var(--ui-px)), 1.16vw, calc(19 * var(--ui-px))) !important;
+    }
+    .battle-mobile-root .battle-player-level,
+    .battle-mobile-root .battle-player-element {
+      font-size: clamp(calc(8 * var(--ui-px)), .68vw, calc(11 * var(--ui-px))) !important;
+    }
+    .battle-mobile-root .battle-player-hp-track {
+      height: calc(17 * var(--ui-px)) !important;
+      border-radius: calc(4 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-mobile-hpbox > .mt-2 {
+      margin-top: calc(5 * var(--ui-px)) !important;
+      overflow: hidden !important;
+    }
+    .battle-mobile-root .battle-mobile-hpbox .battle-stage-line {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      gap: calc(3 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-mobile-hpbox .battle-stage-line > span {
+      font-size: clamp(calc(7 * var(--ui-px)), .62vw, calc(10 * var(--ui-px))) !important;
+      padding: calc(2 * var(--ui-px)) calc(4 * var(--ui-px)) !important;
+      border-radius: calc(3 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-command-layout {
+      position: absolute !important;
+      top: calc(4 * var(--ui-px)) !important;
+      right: 0 !important;
+      width: var(--battle-old-wheel) !important;
+      max-width: var(--battle-old-wheel) !important;
+      height: auto !important;
+      pointer-events: auto;
+    }
+    .battle-mobile-root .battle-mobile-actions {
+      width: var(--battle-old-wheel) !important;
+      height: var(--battle-old-wheel) !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel {
+      position: relative !important;
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: calc(14 * var(--ui-px)) !important;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(245, 253, 255, .94) 0 21%, rgba(103, 189, 232, .86) 22% 42%, rgba(215, 245, 255, .86) 43% 49%, rgba(52, 142, 205, .72) 50% 100%) !important;
+      border: calc(2 * var(--ui-px)) solid rgba(229, 251, 255, .92) !important;
+      box-shadow: inset 0 calc(2 * var(--ui-px)) calc(7 * var(--ui-px)) rgba(255,255,255,.7), 0 calc(8 * var(--ui-px)) calc(16 * var(--ui-px)) rgba(0,0,0,.35) !important;
+      overflow: hidden;
+    }
+    .battle-mobile-root .battle-command-actions-panel::before,
+    .battle-mobile-root .battle-command-actions-panel::after {
+      content: "";
+      position: absolute;
+      inset: 9%;
+      pointer-events: none;
+      opacity: .78;
+    }
+    .battle-mobile-root .battle-command-actions-panel::before {
+      border-left: calc(1 * var(--ui-px)) solid rgba(8, 72, 137, .52);
+      border-right: calc(1 * var(--ui-px)) solid rgba(8, 72, 137, .52);
+      left: 38%;
+      right: 38%;
+    }
+    .battle-mobile-root .battle-command-actions-panel::after {
+      border-top: calc(1 * var(--ui-px)) solid rgba(8, 72, 137, .52);
+      border-bottom: calc(1 * var(--ui-px)) solid rgba(8, 72, 137, .52);
+      top: 38%;
+      bottom: 38%;
+    }
+    .battle-mobile-root .battle-command-actions-panel .battle-mobile-btns {
+      position: absolute;
+      inset: 0;
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      grid-template-rows: repeat(3, 1fr) !important;
+      gap: 0 !important;
+      padding: calc(5 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-command-btn {
+      width: 92% !important;
+      height: 92% !important;
+      align-self: center;
+      justify-self: center;
+      aspect-ratio: 1 / 1 !important;
+      border-radius: 999px !important;
+      border: calc(2 * var(--ui-px)) solid rgba(241, 250, 255, .96) !important;
+      background:
+        radial-gradient(circle at 32% 24%, #f7fafc 0 18%, #5d6870 19% 100%) !important;
+      color: #fff4dc !important;
+      font-size: clamp(calc(15 * var(--ui-px)), 1.575vw, calc(25.5 * var(--ui-px))) !important;
+      text-shadow: calc(1 * var(--ui-px)) calc(1 * var(--ui-px)) 0 #7f1711, 0 calc(2 * var(--ui-px)) calc(3 * var(--ui-px)) rgba(0,0,0,.8) !important;
+      box-shadow: inset 0 calc(2 * var(--ui-px)) calc(6 * var(--ui-px)) rgba(255,255,255,.68), 0 calc(3 * var(--ui-px)) calc(7 * var(--ui-px)) rgba(0,0,0,.3) !important;
+      z-index: 2;
+    }
+    .battle-mobile-root .battle-command-skill {
+      grid-column: 2;
+      grid-row: 2;
+      width: 104% !important;
+      height: 104% !important;
+      font-size: clamp(calc(18 * var(--ui-px)), 1.92vw, calc(30 * var(--ui-px))) !important;
+      z-index: 3;
+    }
+    .battle-mobile-root .battle-command-item { grid-column: 1; grid-row: 1; }
+    .battle-mobile-root .battle-command-capture { grid-column: 3; grid-row: 1; }
+    .battle-mobile-root .battle-command-switch { grid-column: 1; grid-row: 3; }
+    .battle-mobile-root .battle-command-retreat { grid-column: 3; grid-row: 3; }
+    .battle-mobile-root .battle-mobile-skills {
+      position: absolute !important;
+      top: calc(var(--battle-old-wheel) + calc(14 * var(--ui-px))) !important;
+      right: 0 !important;
+      width: var(--battle-old-panel) !important;
+      max-width: var(--battle-old-panel) !important;
+    }
+    .battle-mobile-root .battle-command-skill-list {
+      border-radius: calc(6 * var(--ui-px)) !important;
+      padding: calc(6 * var(--ui-px)) !important;
+      background: linear-gradient(180deg, rgba(226, 243, 255, .92) 0 calc(18 * var(--ui-px)), rgba(9, 48, 95, .9) calc(18 * var(--ui-px)), rgba(4, 27, 68, .88) 100%) !important;
+      border: calc(2 * var(--ui-px)) solid rgba(221, 250, 255, .88) !important;
+    }
+    .battle-mobile-root .battle-skill-row {
+      min-height: clamp(calc(46 * var(--ui-px)), 7vh, calc(66 * var(--ui-px))) !important;
+      border-radius: calc(5 * var(--ui-px)) !important;
+      border-color: rgba(216, 255, 164, .72) !important;
+      background: linear-gradient(180deg, #46a736, #197328 52%, #0b4a1d 100%) !important;
+    }
+    .battle-mobile-root .battle-mobile-log {
+      right: calc(16 * var(--ui-px)) !important;
+      bottom: calc(14 * var(--ui-px)) !important;
+      width: var(--battle-old-panel) !important;
+      max-width: var(--battle-old-panel) !important;
+      padding: calc(6 * var(--ui-px)) !important;
+      border-radius: calc(6 * var(--ui-px)) calc(6 * var(--ui-px)) 0 0 !important;
+      background: linear-gradient(180deg, rgba(20, 99, 165, .94), rgba(6, 52, 120, .94)) !important;
+      border: calc(2 * var(--ui-px)) solid rgba(191, 238, 255, .76) !important;
+      transform-origin: bottom center;
+      transition: max-height .18s ease, transform .18s ease, opacity .18s ease;
+      pointer-events: auto;
+    }
+    .battle-mobile-root .battle-mobile-log-collapsed {
+      max-height: calc(34 * var(--ui-px)) !important;
+      transform: translateY(calc(100% - calc(34 * var(--ui-px)))) !important;
+      opacity: .95;
+    }
+    .battle-mobile-root .battle-log-body {
+      max-height: clamp(calc(92 * var(--ui-px)), 18vh, calc(210 * var(--ui-px))) !important;
+      color: #e7fbff;
+    }
+    .battle-mobile-root .battle-log-body > div {
+      font-size: clamp(calc(9 * var(--ui-px)), .76vw, calc(12 * var(--ui-px))) !important;
+      color: #e7fbff !important;
+      text-shadow: 0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(0,0,0,.7);
+    }
+    .battle-mobile-root .battle-mobile-attacker-main {
+      right: clamp(calc(260 * var(--ui-px)), 29vw, calc(520 * var(--ui-px))) !important;
+      bottom: clamp(calc(46 * var(--ui-px)), 6vh, calc(92 * var(--ui-px))) !important;
+      width: clamp(calc(190 * var(--ui-px)), 22vw, calc(360 * var(--ui-px))) !important;
+    }
+    .battle-mobile-root .battle-attacker-pet-img {
+      --battle-pet-size: clamp(18vw, 28vmin, 28vw);
+    }
+    @media (max-width: 900px) {
+      .battle-mobile-root {
+        --battle-old-wheel: clamp(calc(110 * var(--ui-px)), 23vw, calc(150 * var(--ui-px)));
+        --battle-old-panel: clamp(calc(160 * var(--ui-px)), 34vw, calc(230 * var(--ui-px)));
+        --battle-old-hp: clamp(calc(190 * var(--ui-px)), 40vw, calc(290 * var(--ui-px)));
+        --battle-old-avatar: clamp(calc(44 * var(--ui-px)), 9vw, calc(68 * var(--ui-px)));
+      }
+      .battle-mobile-root .battle-mobile-target {
+        left: calc(10 * var(--ui-px)) !important;
+        top: clamp(calc(66 * var(--ui-px)), 16vh, calc(130 * var(--ui-px))) !important;
+        width: 39vw !important;
+        max-width: 39vw !important;
+      }
+      .battle-mobile-root .battle-mobile-target-sprite {
+        height: clamp(calc(160 * var(--ui-px)), 30vh, calc(250 * var(--ui-px))) !important;
+      }
+      .battle-mobile-root .battle-mobile-target-card,
+      .battle-mobile-root .battle-mobile-ability {
+        width: 100% !important;
+      }
+      .battle-mobile-root .battle-mobile-attacker {
+        right: calc(8 * var(--ui-px)) !important;
+        top: calc(8 * var(--ui-px)) !important;
+        width: calc(var(--battle-old-hp) + var(--battle-old-avatar) + var(--battle-old-wheel) + calc(8 * var(--ui-px))) !important;
+        max-width: calc(100vw - calc(16 * var(--ui-px))) !important;
+      }
+      .battle-mobile-root .battle-mobile-hpbox {
+        right: calc(var(--battle-old-wheel) + var(--battle-old-avatar) - calc(8 * var(--ui-px))) !important;
+      }
+      .battle-mobile-root .battle-player-status {
+        display: none !important;
+      }
+      .battle-mobile-root .battle-mobile-skills,
+      .battle-mobile-root .battle-mobile-log {
+        width: var(--battle-old-panel) !important;
+        max-width: var(--battle-old-panel) !important;
+      }
+      .battle-mobile-root .battle-mobile-attacker-main {
+        right: clamp(calc(168 * var(--ui-px)), 36vw, calc(260 * var(--ui-px))) !important;
+        bottom: calc(8 * var(--ui-px)) !important;
+        width: 20vw !important;
+      }
+    }
+
+    .battle-mobile-root {
+      --battle-old-panel: clamp(calc(210 * var(--ui-px)), 24vw, calc(335 * var(--ui-px)));
+      --battle-old-wheel: var(--battle-old-panel);
+      --battle-old-hp: clamp(calc(290 * var(--ui-px)), 34vw, calc(560 * var(--ui-px)));
+      --battle-old-avatar: clamp(calc(62 * var(--ui-px)), 6.4vw, calc(104 * var(--ui-px)));
+    }
+    .battle-mobile-root .battle-mobile-attacker {
+      width: calc(var(--battle-old-hp) + var(--battle-old-avatar) + var(--battle-old-panel) + calc(20 * var(--ui-px))) !important;
+      overflow: visible !important;
+    }
+    .battle-mobile-root .battle-mobile-attacker::before {
+      content: "";
+      position: absolute;
+      top: calc(-6 * var(--ui-px));
+      right: calc(-6 * var(--ui-px));
+      width: calc(var(--battle-old-panel) + var(--battle-old-avatar) + calc(14 * var(--ui-px)));
+      height: calc(var(--battle-old-panel) + clamp(calc(260 * var(--ui-px)), 38vh, calc(430 * var(--ui-px))));
+      border-radius: calc(10 * var(--ui-px));
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(185, 222, 239, .88) 8%, rgba(111, 176, 211, .8) 28%, rgba(227, 244, 250, .9) 29%, rgba(21, 88, 150, .74) 42%, rgba(7, 47, 108, .74) 100%);
+      border: calc(2 * var(--ui-px)) solid rgba(235, 250, 255, .9);
+      box-shadow: inset 0 calc(2 * var(--ui-px)) calc(10 * var(--ui-px)) rgba(255,255,255,.72), inset 0 calc(-2 * var(--ui-px)) calc(10 * var(--ui-px)) rgba(4,34,83,.42), 0 calc(10 * var(--ui-px)) calc(22 * var(--ui-px)) rgba(0,0,0,.32);
+      opacity: .94;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .battle-mobile-root .battle-mobile-hpbox,
+    .battle-mobile-root .battle-command-layout,
+    .battle-mobile-root .battle-mobile-skills,
+    .battle-mobile-root .battle-player-portrait {
+      z-index: 2 !important;
+    }
+    .battle-mobile-root .battle-mobile-hpbox {
+      right: calc(var(--battle-old-panel) + var(--battle-old-avatar) - calc(10 * var(--ui-px))) !important;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.96), rgba(172, 216, 236, .9) 12%, rgba(23, 91, 151, .94) 36%, rgba(5, 38, 92, .94) 100%) !important;
+      border-color: rgba(244, 253, 255, .96) !important;
+      box-shadow: inset 0 calc(2 * var(--ui-px)) calc(7 * var(--ui-px)) rgba(255,255,255,.78), 0 calc(6 * var(--ui-px)) calc(12 * var(--ui-px)) rgba(0,0,0,.24) !important;
+    }
+    .battle-mobile-root .battle-player-hp-main {
+      gap: calc(3 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-player-elements {
+      display: flex;
+      align-items: center;
+      gap: calc(4 * var(--ui-px));
+      min-height: calc(18 * var(--ui-px));
+      padding-left: calc(2 * var(--ui-px));
+    }
+    .battle-mobile-root .battle-player-elements .element-icon {
+      width: calc(18 * var(--ui-px)) !important;
+      height: calc(18 * var(--ui-px)) !important;
+      min-width: calc(18 * var(--ui-px)) !important;
+      filter: drop-shadow(0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(0,0,0,.55));
+    }
+    .battle-mobile-root .battle-player-element {
+      display: none !important;
+    }
+    .battle-mobile-root .battle-player-portrait {
+      right: calc(-1 * var(--battle-old-avatar) + calc(7 * var(--ui-px))) !important;
+    }
+    .battle-mobile-root .battle-command-layout {
+      width: var(--battle-old-panel) !important;
+      max-width: var(--battle-old-panel) !important;
+    }
+    .battle-mobile-root .battle-mobile-actions {
+      width: var(--battle-old-panel) !important;
+      height: clamp(calc(145 * var(--ui-px)), 17vw, calc(230 * var(--ui-px))) !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel {
+      border-radius: calc(9 * var(--ui-px)) !important;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,.98) 0 18%, rgba(176, 223, 241, .94) 19% 34%, rgba(73, 160, 213, .8) 35% 55%, rgba(226, 244, 251, .88) 56% 61%, rgba(105, 177, 217, .72) 62% 100%) !important;
+      border-color: rgba(246, 253, 255, .98) !important;
+      box-shadow: inset 0 calc(2 * var(--ui-px)) calc(9 * var(--ui-px)) rgba(255,255,255,.82), inset 0 calc(-2 * var(--ui-px)) calc(8 * var(--ui-px)) rgba(6, 57, 112, .36), 0 calc(4 * var(--ui-px)) calc(10 * var(--ui-px)) rgba(0,0,0,.24) !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel .battle-mobile-btns {
+      padding: calc(8 * var(--ui-px)) calc(10 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-mobile-skills {
+      top: calc(clamp(calc(145 * var(--ui-px)), 17vw, calc(230 * var(--ui-px))) + calc(8 * var(--ui-px))) !important;
+      width: var(--battle-old-panel) !important;
+      max-width: var(--battle-old-panel) !important;
+    }
+    .battle-mobile-root .battle-command-skill-list {
+      background:
+        linear-gradient(180deg, rgba(252,254,255,.96) 0 calc(21 * var(--ui-px)), rgba(177, 215, 233, .92) calc(21 * var(--ui-px)) calc(27 * var(--ui-px)), rgba(18, 77, 139, .9) calc(27 * var(--ui-px)), rgba(3, 33, 83, .9) 100%) !important;
+      border-color: rgba(247, 253, 255, .98) !important;
+      box-shadow: inset 0 calc(2 * var(--ui-px)) calc(8 * var(--ui-px)) rgba(255,255,255,.68), 0 calc(4 * var(--ui-px)) calc(10 * var(--ui-px)) rgba(0,0,0,.24) !important;
+    }
+    .battle-mobile-root .battle-command-skill-list > .text-xs {
+      color: #1e4866 !important;
+      text-shadow: 0 calc(1 * var(--ui-px)) 0 rgba(255,255,255,.86) !important;
+    }
+    .battle-mobile-root .battle-mobile-log {
+      top: clamp(calc(560 * var(--ui-px)), 73vh, calc(760 * var(--ui-px))) !important;
+      bottom: auto !important;
+      right: calc(16 * var(--ui-px)) !important;
+      width: var(--battle-old-panel) !important;
+      max-width: var(--battle-old-panel) !important;
+      border-radius: calc(6 * var(--ui-px)) !important;
+      transform-origin: top center !important;
+      transform: none !important;
+      transition: max-height .18s ease, opacity .18s ease !important;
+    }
+    .battle-mobile-root .battle-mobile-log-collapsed {
+      max-height: calc(34 * var(--ui-px)) !important;
+      transform: none !important;
+      overflow: hidden !important;
+    }
+    .battle-mobile-root .battle-log-body {
+      transform-origin: top center !important;
+    }
+    @media (max-width: 900px) {
+      .battle-mobile-root {
+        --battle-old-panel: clamp(calc(160 * var(--ui-px)), 34vw, calc(230 * var(--ui-px)));
+        --battle-old-wheel: var(--battle-old-panel);
+        --battle-old-hp: clamp(calc(190 * var(--ui-px)), 40vw, calc(290 * var(--ui-px)));
+        --battle-old-avatar: clamp(calc(44 * var(--ui-px)), 9vw, calc(68 * var(--ui-px)));
+      }
+      .battle-mobile-root .battle-mobile-attacker {
+        width: calc(var(--battle-old-hp) + var(--battle-old-avatar) + var(--battle-old-panel) + calc(8 * var(--ui-px))) !important;
+      }
+      .battle-mobile-root .battle-mobile-attacker::before {
+        width: calc(var(--battle-old-panel) + var(--battle-old-avatar) + calc(10 * var(--ui-px)));
+      }
+      .battle-mobile-root .battle-mobile-hpbox {
+        right: calc(var(--battle-old-panel) + var(--battle-old-avatar) - calc(8 * var(--ui-px))) !important;
+      }
+      .battle-mobile-root .battle-mobile-log {
+        top: auto !important;
+        bottom: calc(8 * var(--ui-px)) !important;
+      }
+    }
+    .battle-mobile-root .battle-player-elements {
+      margin-top: calc(4 * var(--ui-px)) !important;
+      padding-left: calc(4 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-mobile-actions {
+      width: var(--battle-old-panel) !important;
+      height: var(--battle-old-panel) !important;
+      aspect-ratio: 1 / 1 !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel {
+      border-radius: calc(10 * var(--ui-px)) !important;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,.98) 0 18%, rgba(180, 226, 245, .95) 19% 34%, rgba(71, 160, 214, .84) 35% 55%, rgba(230, 247, 253, .9) 56% 61%, rgba(97, 173, 218, .76) 62% 100%) !important;
+      border: calc(2 * var(--ui-px)) solid rgba(248, 253, 255, .98) !important;
+      box-shadow: inset 0 calc(2 * var(--ui-px)) calc(9 * var(--ui-px)) rgba(255,255,255,.84), inset 0 calc(-2 * var(--ui-px)) calc(8 * var(--ui-px)) rgba(6, 57, 112, .38), 0 calc(4 * var(--ui-px)) calc(10 * var(--ui-px)) rgba(0,0,0,.25) !important;
+    }
+    .battle-mobile-root .battle-command-btn {
+      width: 90% !important;
+      height: 90% !important;
+      aspect-ratio: 1 / 1 !important;
+      min-width: 0 !important;
+      min-height: 0 !important;
+      border-radius: 999px !important;
+    }
+    .battle-mobile-root .battle-command-skill {
+      width: 108% !important;
+      height: 108% !important;
+    }
+    .battle-mobile-root .battle-mobile-skills {
+      top: calc(var(--battle-old-panel) + calc(8 * var(--ui-px))) !important;
+    }
+    .battle-mobile-root .battle-command-skill-list {
+      padding: calc(7 * var(--ui-px)) !important;
+      background:
+        linear-gradient(180deg, rgba(252,254,255,.97) 0 calc(12 * var(--ui-px)), rgba(178, 218, 238, .94) calc(12 * var(--ui-px)) calc(18 * var(--ui-px)), rgba(19, 80, 141, .91) calc(18 * var(--ui-px)), rgba(3, 32, 82, .9) 100%) !important;
+      border: calc(2 * var(--ui-px)) solid rgba(247, 253, 255, .98) !important;
+      box-shadow: inset 0 calc(2 * var(--ui-px)) calc(8 * var(--ui-px)) rgba(255,255,255,.7), 0 calc(4 * var(--ui-px)) calc(10 * var(--ui-px)) rgba(0,0,0,.24) !important;
+    }
+    .battle-mobile-root .battle-skill-row {
+      grid-template-columns: calc(34 * var(--ui-px)) minmax(0, 1fr) !important;
+    }
+    .battle-mobile-root {
+      --battle-old-panel: clamp(calc(188 * var(--ui-px)), 21vw, calc(300 * var(--ui-px))) !important;
+      --battle-old-wheel: var(--battle-old-panel) !important;
+      --battle-old-hp: clamp(calc(320 * var(--ui-px)), 31vw, calc(438 * var(--ui-px))) !important;
+      --battle-fight-ui-skill-panel: url("./fight-ui/shapes/70.png");
+      --battle-fight-ui-menu-background: url("./fight-ui/sprites/DefineSprite_77_mmo.fight.ui.res.control.MenuBackground/1.png");
+      --battle-fight-ui-skill-btn: url("./fight-ui/sprites/DefineSprite_334_fightui_fla.SkillButtonBackground_31/1.png");
+      --battle-fight-ui-skill-row: url("./fight-ui/sprites/DefineSprite_306/1.png");
+      --battle-fight-ui-skill-row-hover: url("./fight-ui/sprites/DefineSprite_306/2.png");
+      --battle-fight-ui-hpbar-right: url("./fight-ui/sprites/DefineSprite_273_fightui_fla.HP_1v1_Background_70/1.png");
+      --battle-fight-ui-hp-fill: url("./fight-ui/sprites/DefineSprite_299/1.png");
+      --battle-fight-ui-avatar-frame: url("./fight-ui/sprites/DefineSprite_65/1.png");
+    }
+    .battle-mobile-root .battle-mobile-attacker::before {
+      display: none !important;
+    }
+    .battle-mobile-root .battle-mobile-attacker {
+      width: calc(var(--battle-old-hp) + var(--battle-old-avatar) + var(--battle-old-panel) + calc(10 * var(--ui-px))) !important;
+    }
+    .battle-mobile-root .battle-mobile-hpbox {
+      overflow: visible !important;
+      right: calc(var(--battle-old-panel) + var(--battle-old-avatar) - calc(8 * var(--ui-px))) !important;
+      width: var(--battle-old-hp) !important;
+      max-width: var(--battle-old-hp) !important;
+      min-width: var(--battle-old-hp) !important;
+      height: clamp(calc(54 * var(--ui-px)), 5.25vw, calc(74 * var(--ui-px))) !important;
+      min-height: clamp(calc(54 * var(--ui-px)), 5.25vw, calc(74 * var(--ui-px))) !important;
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+    }
+    .battle-mobile-root .battle-mobile-hpbox::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: var(--battle-fight-ui-hpbar-right) center / 100% 100% no-repeat;
+      transform: scaleX(-1);
+    }
+    .battle-mobile-root .battle-player-hp-topline {
+      display: block !important;
+      position: absolute !important;
+      inset: 0 !important;
+      z-index: 2 !important;
+    }
+    .battle-mobile-root .battle-player-hp-main {
+      width: 100% !important;
+      position: absolute !important;
+      inset: 0 !important;
+      padding-top: 0 !important;
+      gap: calc(3 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-player-name-row {
+      align-items: center !important;
+      gap: calc(5 * var(--ui-px)) !important;
+      position: absolute !important;
+      right: 3.2%;
+      top: 12%;
+      height: 28% !important;
+      width: 27% !important;
+      max-width: none !important;
+      padding-left: 0 !important;
+      z-index: 3 !important;
+      justify-content: flex-end !important;
+      text-align: right !important;
+    }
+    .battle-mobile-root .battle-player-name {
+      font-size: clamp(calc(13.5 * var(--ui-px)), 1.23vw, calc(18 * var(--ui-px))) !important;
+      color: #fff !important;
+      line-height: 1 !important;
+      font-weight: 900 !important;
+      -webkit-text-stroke: calc(.35 * var(--ui-px)) rgba(0, 50, 104, .9);
+      paint-order: stroke fill;
+      text-shadow: 0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(0,0,0,.65) !important;
+      text-align: right !important;
+    }
+    .battle-mobile-root .battle-player-level {
+      position: absolute !important;
+      right: 3%;
+      top: 168%;
+      font-size: clamp(calc(11 * var(--ui-px)), 1vw, calc(15 * var(--ui-px))) !important;
+      color: #fff !important;
+      line-height: 1 !important;
+      z-index: 3 !important;
+      font-weight: 900 !important;
+      -webkit-text-stroke: calc(.45 * var(--ui-px)) rgba(0, 49, 101, .92);
+      paint-order: stroke fill;
+      text-shadow: 0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(0,0,0,.7) !important;
+    }
+    .battle-mobile-root .battle-player-hp-track {
+      position: absolute !important;
+      left: 1.5%;
+      top: 7.2%;
+      height: 30% !important;
+      margin: 0 !important;
+      width: 68.5% !important;
+      border-radius: 999px !important;
+      overflow: visible !important;
+      background: transparent !important;
+      border: calc(2 * var(--ui-px)) solid rgba(237, 252, 255, .95) !important;
+      box-shadow:
+        inset 0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(255,255,255,.9),
+        inset 0 calc(-2 * var(--ui-px)) calc(3 * var(--ui-px)) rgba(10, 72, 144, .48) !important;
+      clip-path: none !important;
+    }
+    .battle-mobile-root .battle-player-hp-track::before {
+      display: none !important;
+      content: none !important;
+    }
+    .battle-mobile-root .battle-player-hp-fill {
+      position: relative !important;
+      left: 0 !important;
+      top: 0 !important;
+      height: 100% !important;
+      background:
+        linear-gradient(180deg, #ffeaa0 0 18%, #ffb735 20% 58%, #f27f12 60% 100%) !important;
+      box-shadow:
+        inset 0 calc(1 * var(--ui-px)) 0 rgba(255,255,255,.74),
+        inset 0 calc(-1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(161, 73, 0, .45) !important;
+      border-radius: 999px !important;
+      clip-path: none !important;
+      z-index: 1 !important;
+    }
+    .battle-mobile-root .battle-player-hp-text {
+      justify-content: center !important;
+      padding-right: 0 !important;
+      color: #ffffff !important;
+      font-size: clamp(calc(15 * var(--ui-px)), 1.33vw, calc(21 * var(--ui-px))) !important;
+      font-weight: 900 !important;
+      -webkit-text-stroke: calc(.55 * var(--ui-px)) rgba(99, 31, 13, .9);
+      paint-order: stroke fill;
+      text-shadow: 0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(0,0,0,.85) !important;
+      z-index: 2 !important;
+    }
+    .battle-mobile-root .battle-player-status,
+    .battle-mobile-root .battle-mobile-hpbox > .mt-2 {
+      display: none !important;
+    }
+    .battle-mobile-root .battle-player-portrait {
+      top: calc(-8 * var(--ui-px)) !important;
+      right: calc(-1 * var(--battle-old-avatar) + calc(-9 * var(--ui-px))) !important;
+      width: calc(var(--battle-old-avatar) + calc(20 * var(--ui-px))) !important;
+      height: calc(var(--battle-old-avatar) + calc(20 * var(--ui-px))) !important;
+      padding: calc(11 * var(--ui-px)) !important;
+      border: 0 !important;
+      border-radius: 999px !important;
+      background: var(--battle-fight-ui-avatar-frame) center / 100% 100% no-repeat !important;
+      box-shadow: 0 calc(3 * var(--ui-px)) calc(7 * var(--ui-px)) rgba(0,0,0,.38) !important;
+      overflow: hidden !important;
+    }
+    .battle-mobile-root .battle-player-portrait img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      object-position: center 0 !important;
+      transform: scaleX(-1) scale(2.2) translate(calc(-4 * var(--ui-px)), calc(-20 * var(--ui-px))) !important;
+      transform-origin: 50% 0 !important;
+    }
+    .battle-mobile-root .battle-player-elements {
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      margin-top: 0 !important;
+      padding-left: 0 !important;
+      z-index: 14 !important;
+      gap: 0 !important;
+      filter: drop-shadow(0 calc(2 * var(--ui-px)) calc(4 * var(--ui-px)) rgba(0,0,0,.5));
+      pointer-events: none !important;
+    }
+    .battle-mobile-root .battle-player-elements .element-icon {
+      position: absolute !important;
+      top: 68% !important;
+      width: calc(var(--battle-old-hp) * .055) !important;
+      height: calc(var(--battle-old-hp) * .055) !important;
+      min-width: calc(var(--battle-old-hp) * .055) !important;
+      transform: translate(-50%, -50%) !important;
+      background-size: contain !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+    }
+    .battle-mobile-root .battle-player-elements .battle-player-primary-element {
+      left: 69.5% !important;
+    }
+    .battle-mobile-root .battle-player-elements .battle-player-sub-element {
+      left: 76.8% !important;
+      right: auto !important;
+    }
+    .battle-mobile-root .battle-target-element-stack {
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: calc(4 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-target-element-stack .element-icon {
+      width: calc(44 * var(--ui-px)) !important;
+      height: calc(44 * var(--ui-px)) !important;
+      min-width: calc(44 * var(--ui-px)) !important;
+      background-size: contain !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+      transform: none !important;
+    }
+    .battle-mobile-root .battle-mobile-target-card > .mt-2 {
+      display: none !important;
+    }
+    .battle-mobile-root .battle-mobile-target-card {
+      position: relative !important;
+      overflow: visible !important;
+    }
+    .battle-mobile-root .battle-mobile-hpbox {
+      position: absolute !important;
+      top: 0 !important;
+      right: calc(var(--battle-old-panel) + var(--battle-old-avatar) - calc(8 * var(--ui-px))) !important;
+      overflow: visible !important;
+    }
+    .battle-mobile-root .battle-target-info-main {
+      position: relative !important;
+      overflow: visible !important;
+    }
+    .battle-mobile-root .battle-player-status,
+    .battle-mobile-root .battle-target-status {
+      position: absolute !important;
+      display: flex !important;
+      flex-wrap: wrap !important;
+      align-content: flex-start !important;
+      align-items: flex-start !important;
+      justify-content: flex-start !important;
+      gap: calc(4 * var(--ui-px)) !important;
+      max-width: none !important;
+      min-width: 0 !important;
+      padding: calc(2 * var(--ui-px)) !important;
+      border: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      z-index: 45 !important;
+      pointer-events: auto !important;
+    }
+    .battle-mobile-root .battle-player-status {
+      left: 2.3% !important;
+      top: 62% !important;
+      width: 64% !important;
+      min-height: clamp(calc(44 * var(--ui-px)), 8vh, calc(74 * var(--ui-px))) !important;
+    }
+    .battle-mobile-root .battle-target-status {
+      left: 0 !important;
+      top: auto !important;
+      bottom: calc(100% + calc(6 * var(--ui-px))) !important;
+      width: 88% !important;
+      min-height: clamp(calc(42 * var(--ui-px)), 7vh, calc(70 * var(--ui-px))) !important;
+    }
+    .battle-mobile-root .battle-player-status > span,
+    .battle-mobile-root .battle-target-status > span {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-height: calc(18 * var(--ui-px)) !important;
+      padding: calc(2 * var(--ui-px)) calc(6 * var(--ui-px)) !important;
+      border: calc(1 * var(--ui-px)) solid rgba(255,255,255,.55) !important;
+      border-radius: calc(5 * var(--ui-px)) !important;
+      font-size: clamp(calc(10 * var(--ui-px)), .78vw, calc(12 * var(--ui-px))) !important;
+      line-height: 1 !important;
+      text-shadow: 0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(0,0,0,.72) !important;
+      box-shadow: 0 calc(2 * var(--ui-px)) calc(5 * var(--ui-px)) rgba(0,0,0,.28) !important;
+      white-space: nowrap !important;
+    }
+    .battle-mobile-root .battle-stage-hover-zone {
+      pointer-events: auto !important;
+      cursor: pointer;
+    }
+    .battle-mobile-root .battle-stage-popover {
+      position: absolute;
+      right: 2%;
+      top: 2%;
+      z-index: 220;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: calc(4 * var(--ui-px));
+      min-width: calc(72 * var(--ui-px));
+      opacity: 0;
+      transform: translate(calc(6 * var(--ui-px)), calc(-6 * var(--ui-px)));
+      pointer-events: none;
+      transition: opacity .12s ease, transform .12s ease;
+    }
+    .battle-mobile-root .battle-stage-hover-zone.battle-stage-visible .battle-stage-popover,
+    .battle-mobile-root .battle-stage-hover-zone.battle-stage-pinned .battle-stage-popover {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+    .battle-mobile-root .battle-stage-popover-row {
+      display: block;
+      min-width: calc(64 * var(--ui-px));
+      padding: calc(3 * var(--ui-px)) calc(6 * var(--ui-px));
+      border: calc(1 * var(--ui-px)) solid rgba(226, 243, 255, .72);
+      border-radius: calc(5 * var(--ui-px));
+      color: #fff;
+      font-size: clamp(calc(10 * var(--ui-px)), .86vw, calc(13 * var(--ui-px)));
+      font-weight: 900;
+      line-height: 1;
+      text-align: left;
+      white-space: nowrap;
+      text-shadow: 0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(0,0,0,.72);
+      box-shadow: 0 calc(2 * var(--ui-px)) calc(5 * var(--ui-px)) rgba(0,0,0,.24);
+    }
+    .battle-mobile-root .battle-stage-popover-row.stage-up {
+      background: rgba(225, 58, 58, .88);
+      border-color: rgba(255, 202, 202, .9);
+    }
+    .battle-mobile-root .battle-stage-popover-row.stage-down {
+      background: rgba(18, 144, 86, .9);
+      border-color: rgba(177, 255, 218, .86);
+    }
+    .battle-mobile-root .battle-stage-popover-row.stage-zero {
+      background: rgba(15, 53, 92, .86);
+      border-color: rgba(170, 217, 255, .78);
+    }
+    .battle-mobile-root .battle-mobile-actions {
+      width: calc(var(--battle-old-wheel) * 1.02) !important;
+      height: calc(var(--battle-old-wheel) * 1.02) !important;
+      aspect-ratio: 1 / 1 !important;
+      position: relative !important;
+      overflow: visible !important;
+    }
+    .battle-mobile-root .battle-mobile-actions::before,
+    .battle-mobile-root .battle-mobile-actions::after {
+      display: none !important;
+      content: none !important;
+    }
+    .battle-mobile-root .battle-command-layout {
+      width: calc(var(--battle-old-panel) * 1.02) !important;
+      max-width: calc(var(--battle-old-panel) * 1.02) !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel {
+      position: relative !important;
+      width: 100% !important;
+      height: 100% !important;
+      padding: 0 !important;
+      border: 0 !important;
+      border-radius: 999px !important;
+      background: var(--battle-fight-ui-menu-background) center bottom / 100% auto no-repeat !important;
+      box-shadow: 0 calc(5 * var(--ui-px)) calc(12 * var(--ui-px)) rgba(0,0,0,.3) !important;
+      overflow: visible !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel::before,
+    .battle-mobile-root .battle-command-actions-panel::after {
+      display: block !important;
+      content: "" !important;
+      position: absolute !important;
+      pointer-events: none !important;
+      z-index: 1 !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel::before {
+      display: none !important;
+      content: none !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel::after {
+      display: none !important;
+      content: none !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel .battle-mobile-btns::before,
+    .battle-mobile-root .battle-command-actions-panel .battle-mobile-btns::after {
+      content: "" !important;
+      position: absolute !important;
+      pointer-events: none !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel .battle-mobile-btns::before {
+      display: none !important;
+      content: none !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel .battle-mobile-btns::after {
+      display: none !important;
+      content: none !important;
+    }
+    .battle-mobile-root .battle-command-actions-panel .battle-mobile-btns {
+      position: absolute !important;
+      inset: 0 !important;
+      display: block !important;
+      padding: 0 !important;
+      background: transparent !important;
+      z-index: 3 !important;
+    }
+    .battle-mobile-root .battle-command-btn {
+      position: absolute !important;
+      width: 27.5% !important;
+      height: auto !important;
+      aspect-ratio: 1 / 1 !important;
+      min-width: 0 !important;
+      min-height: 0 !important;
+      padding: 0 !important;
+      border: calc(2 * var(--ui-px)) solid rgba(226, 236, 242, .98) !important;
+      border-radius: 999px !important;
+      background:
+        radial-gradient(circle at 32% 24%, #f7fafc 0 18%, #5d6870 19% 100%) !important;
+      color: #fff6df !important;
+      font-family: "Arial Black", "Trebuchet MS", "Microsoft YaHei", sans-serif !important;
+      font-size: clamp(calc(18 * var(--ui-px)), 1.59vw, calc(25.5 * var(--ui-px))) !important;
+      font-style: italic !important;
+      font-weight: 950 !important;
+      line-height: 1 !important;
+      -webkit-text-stroke: calc(.72 * var(--ui-px)) #6a5539;
+      paint-order: stroke fill;
+      text-shadow:
+        calc(1 * var(--ui-px)) calc(1 * var(--ui-px)) 0 rgba(255,255,255,.95),
+        calc(2 * var(--ui-px)) calc(2 * var(--ui-px)) 0 rgba(82, 63, 40, .74),
+        0 calc(2 * var(--ui-px)) calc(3 * var(--ui-px)) rgba(58, 46, 32, .75) !important;
+      box-shadow:
+        inset calc(4 * var(--ui-px)) calc(6 * var(--ui-px)) calc(8 * var(--ui-px)) rgba(255,255,255,.55),
+        inset calc(-5 * var(--ui-px)) calc(-7 * var(--ui-px)) calc(9 * var(--ui-px)) rgba(31,37,43,.52),
+        0 calc(3 * var(--ui-px)) calc(6 * var(--ui-px)) rgba(0,0,0,.34) !important;
+      transition: filter .12s ease, font-size .12s ease !important;
+      transform-origin: 50% 50% !important;
+      z-index: 6 !important;
+    }
+    .battle-mobile-root .battle-command-skill {
+      left: 33% !important;
+      top: 32% !important;
+      width: 34% !important;
+      height: auto !important;
+      aspect-ratio: 1 / 1 !important;
+      font-size: clamp(calc(24 * var(--ui-px)), 2.145vw, calc(34.5 * var(--ui-px))) !important;
+      background:
+        radial-gradient(circle at 32% 24%, #f7fafc 0 18%, #5d6870 19% 100%) !important;
+      z-index: 7 !important;
+    }
+    .battle-mobile-root .battle-command-item,
+    .battle-mobile-root .battle-command-capture,
+    .battle-mobile-root .battle-command-switch,
+    .battle-mobile-root .battle-command-retreat {
+      align-self: center !important;
+      justify-self: center !important;
+    }
+    .battle-mobile-root .battle-command-item {
+      left: 5.2% !important;
+      top: 13.3% !important;
+    }
+    .battle-mobile-root .battle-command-capture {
+      right: 5.2% !important;
+      top: 13.3% !important;
+    }
+    .battle-mobile-root .battle-command-switch {
+      left: 4.7% !important;
+      bottom: 9% !important;
+    }
+    .battle-mobile-root .battle-command-retreat {
+      right: 4.7% !important;
+      bottom: 7% !important;
+    }
+    .battle-mobile-root .battle-mobile-skills {
+      top: calc(var(--battle-old-wheel) * 1.02 + calc(10 * var(--ui-px))) !important;
+      width: var(--battle-old-panel) !important;
+      max-width: var(--battle-old-panel) !important;
+    }
+    .battle-mobile-root .battle-mobile-skills::before {
+      display: none !important;
+      content: none !important;
+    }
+    .battle-mobile-root .battle-command-skill-list {
+      min-height: clamp(calc(300 * var(--ui-px)), 30vw, calc(410 * var(--ui-px))) !important;
+      padding: calc(24 * var(--ui-px)) calc(10 * var(--ui-px)) calc(18 * var(--ui-px)) !important;
+      border-radius: 0 !important;
+      border: 0 !important;
+      background:
+        var(--battle-fight-ui-skill-panel) center / 100% 100% no-repeat !important;
+      box-shadow: none !important;
+    }
+    .battle-mobile-root .battle-command-skill-list .space-y-2 {
+      gap: calc(8 * var(--ui-px)) !important;
+    }
+    .battle-mobile-root .battle-skill-row {
+      position: relative;
+      display: block !important;
+      height: clamp(calc(64 * var(--ui-px)), calc(var(--battle-old-panel) * .346), calc(88 * var(--ui-px))) !important;
+      min-height: clamp(calc(64 * var(--ui-px)), calc(var(--battle-old-panel) * .346), calc(88 * var(--ui-px))) !important;
+      padding: 0 !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      background: var(--battle-fight-ui-skill-row) center / 100% 100% no-repeat !important;
+      box-shadow: none !important;
+      color: #fff !important;
+      overflow: hidden !important;
+      transition: filter .12s ease !important;
+    }
+    .battle-mobile-root .battle-skill-element-badge {
+      position: absolute !important;
+      left: 3.6%;
+      top: 9%;
+      width: 23%;
+      height: 47%;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 3;
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      pointer-events: none;
+    }
+    .battle-mobile-root .battle-skill-element-badge .element-icon {
+      width: calc(32 * var(--ui-px)) !important;
+      height: calc(32 * var(--ui-px)) !important;
+      min-width: calc(32 * var(--ui-px)) !important;
+      background-size: contain !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+      filter: drop-shadow(0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(0,0,0,.5));
+      transform: none !important;
+    }
+    .battle-mobile-root .battle-skill-name,
+    .battle-mobile-root .battle-skill-power,
+    .battle-mobile-root .battle-skill-pp {
+      position: absolute !important;
+      z-index: 2;
+      margin: 0 !important;
+      font-weight: 900 !important;
+      line-height: 1 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      font-family: inherit;
+    }
+    .battle-mobile-root .battle-skill-name {
+      left: 36%;
+      right: 5%;
+      top: 15%;
+      color: #ffffff !important;
+      font-size: clamp(calc(14 * var(--ui-px)), 1.18vw, calc(18 * var(--ui-px))) !important;
+      text-align: right;
+      text-shadow: calc(1 * var(--ui-px)) calc(1 * var(--ui-px)) 0 #146640, 0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(0,0,0,.72) !important;
+    }
+    .battle-mobile-root .battle-skill-power,
+    .battle-mobile-root .battle-skill-pp {
+      bottom: 8%;
+      color: #8dff59 !important;
+      font-size: clamp(calc(16 * var(--ui-px)), 1.376vw, calc(20.8 * var(--ui-px))) !important;
+      text-shadow: calc(1 * var(--ui-px)) calc(1 * var(--ui-px)) 0 rgba(0, 55, 55, .88), 0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(0,0,0,.7) !important;
+    }
+    .battle-mobile-root .battle-skill-power {
+      left: 5%;
+      width: 45%;
+      text-align: center;
+    }
+    .battle-mobile-root .battle-skill-pp {
+      right: 5%;
+      width: 45%;
+      text-align: center;
+    }
+    .battle-mobile-root .battle-command-btn:hover {
+      filter: brightness(1.08);
+    }
+    .battle-mobile-root .battle-command-btn:hover,
+    .battle-mobile-root .battle-command-btn:hover * {
+      transform: scale(1.03) !important;
+    }
+    .battle-mobile-root .battle-command-skill:hover {
+      transform: scale(1.04) !important;
+    }
+    .battle-mobile-root .battle-skill-row:hover:not(:disabled) {
+      background: var(--battle-fight-ui-skill-row-hover) center / 100% 100% no-repeat !important;
+      filter: brightness(1.04);
+    }
+    .battle-mobile-root .battle-skill-row:disabled {
+      background: var(--battle-fight-ui-skill-row) center / 100% 100% no-repeat !important;
+      filter: grayscale(1) brightness(.55);
+      color: #e5e7eb !important;
+      opacity: 1 !important;
+    }
+    .battle-mobile-root .battle-mobile-log {
+      top: clamp(calc(620 * var(--ui-px)), 79vh, calc(830 * var(--ui-px))) !important;
     }
   </style>
 </head>
@@ -2239,7 +3853,10 @@
       </div>
       <div class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-2 text-left min-w-[130px] md:min-w-[180px]" :class="equippedBadge && equippedBadge.special === 'weeklyHonor' ? 'badge-honor-blackgold' : ''">
         <div class="text-[10px] font-black text-amber-500">当前佩戴徽章</div>
-        <div class="text-sm font-black text-amber-900 truncate">{{ equippedBadge ? equippedBadge.name : '未佩戴徽章' }}</div>
+        <div class="mt-1 flex items-center gap-2 min-w-0">
+          <img v-if="equippedBadge && equippedBadge.imageSrc" class="guardian-badge-thumb" :src="equippedBadge.imageSrc" :alt="equippedBadge.name" @error="withFallback" />
+          <div class="text-sm font-black text-amber-900 truncate">{{ equippedBadge ? equippedBadge.name : '未佩戴徽章' }}</div>
+        </div>
       </div>
       <div class="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 min-w-[320px] lg:min-w-[420px]">
         <template v-if="authUser">
@@ -2273,6 +3890,11 @@
         </template>
       </div>
     </div>
+    <div v-if="isDoubleRewardTime" class="double-reward-marquee mt-3" aria-live="polite">
+      <div class="double-reward-marquee-track">
+        <span class="double-reward-marquee-text">{{ doubleRewardNotice }}</span>
+      </div>
+    </div>
     <div class="home-action-grid mt-3 flex items-center gap-2">
       <button
         @click="openDexPanel"
@@ -2293,16 +3915,10 @@
         亚比商店
       </button>
       <button
-        @click="openGuardianPanel"
+        @click="openChallengeRoadPanel"
         class="h-9 px-4 rounded-xl text-sm font-black bg-amber-50 border border-amber-300 text-amber-700"
       >
-        守护者挑战
-      </button>
-      <button
-        @click="openBossPanel"
-        class="h-9 px-4 rounded-xl text-sm font-black bg-rose-50 border border-rose-300 text-rose-700"
-      >
-        BOSS挑战
+        挑战之路
       </button>
       <button
         @click="openWeeklyBossPanel"
@@ -2456,12 +4072,26 @@
                 </div>
               </template>
               <template v-else-if="selectedInfoTab === 'items'">
-                <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
-                  <button v-for="item in petItemInventoryRows" :key="'bag_pet_item_'+item.id" @click="useBagItemOnSelectedPet(item.id)" class="rounded-xl border border-sky-200 bg-sky-50 px-2 py-2 text-left min-h-[86px]">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                  <div v-for="item in petItemInventoryRows" :key="'bag_pet_item_'+item.id" class="rounded-xl border border-sky-200 bg-sky-50 px-2 py-2 text-left min-h-[86px]">
                     <div class="text-xs font-black text-sky-950 leading-4">{{ item.name }}</div>
                     <div class="mt-2 text-[11px] font-black text-sky-700">{{ item.countLabel }}</div>
                     <div class="mt-1 text-[10px] font-bold text-slate-500 leading-4 line-clamp-2">{{ item.desc }}</div>
-                  </button>
+                    <div v-if="item.supportsUseQuantity" class="mt-2 flex items-center gap-1">
+                      <input
+                        type="number"
+                        inputmode="numeric"
+                        min="1"
+                        :max="Math.max(1, item.count)"
+                        :value="item.useQuantity"
+                        @click.stop
+                        @input="setItemUseQuantity(item.id, $event.target.value)"
+                        class="min-w-0 flex-1 h-8 rounded-lg border border-sky-200 bg-white px-2 text-xs font-black text-sky-900"
+                      >
+                      <button @click.stop="useBagItemOnSelectedPet(item.id, item.useQuantity)" :disabled="item.count <= 0" class="h-8 px-2 rounded-lg bg-sky-600 text-white text-xs font-black disabled:opacity-40">使用</button>
+                    </div>
+                    <button v-else @click="useBagItemOnSelectedPet(item.id)" :disabled="item.count <= 0" class="mt-2 h-8 w-full rounded-lg bg-sky-600 text-white text-xs font-black disabled:opacity-40">使用</button>
+                  </div>
                 </div>
               </template>
               <template v-else-if="selectedInfoTab === 'traits'">
@@ -2612,7 +4242,7 @@
         <button @click="closeDexPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
       <div class="rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2 text-[11px] font-black text-indigo-700 mb-3">
-        图鉴提示：只有击败某亚比的最终形态，才会获得该亚比蛋。守护者请从【守护者挑战】入口挑战，BOSS请从【BOSS挑战】入口挑战，商店蛋亚比只能从【亚比商店】购买。
+        图鉴提示：只有击败某亚比的最终形态，才会获得该亚比蛋。守护者和BOSS请从【挑战之路】入口挑战，商店蛋亚比只能从【亚比商店】购买。
       </div>
       <div class="grid grid-cols-6 gap-1 md:gap-2 flex-1 overflow-y-auto pr-1 scrollbar">
         <button v-for="entry in filteredDex" :key="'dex_'+entry.dexId" @click="canChallengeFromDex(entry) ? (selectDex(entry.dexId), closeDexPanel()) : null" class="dex-card rounded-xl border bg-white p-1.5 md:p-2 text-left min-h-[164px]" :class="canChallengeFromDex(entry) ? 'border-slate-200 hover:border-indigo-300' : 'border-amber-300 bg-amber-50 cursor-not-allowed'">
@@ -2885,12 +4515,26 @@
                 </div>
               </template>
               <template v-else-if="selectedInfoTab === 'items'">
-                <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
-                  <button v-for="item in petItemInventoryRows" :key="'bag_modal_pet_item_'+item.id" @click="useBagItemOnSelectedPet(item.id)" class="rounded-xl border border-sky-200 bg-sky-50 px-2 py-2 text-left min-h-[86px]">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                  <div v-for="item in petItemInventoryRows" :key="'bag_modal_pet_item_'+item.id" class="rounded-xl border border-sky-200 bg-sky-50 px-2 py-2 text-left min-h-[86px]">
                     <div class="text-xs font-black text-sky-950 leading-4">{{ item.name }}</div>
                     <div class="mt-2 text-[11px] font-black text-sky-700">{{ item.countLabel }}</div>
                     <div class="mt-1 text-[10px] font-bold text-slate-500 leading-4 line-clamp-2">{{ item.desc }}</div>
-                  </button>
+                    <div v-if="item.supportsUseQuantity" class="mt-2 flex items-center gap-1">
+                      <input
+                        type="number"
+                        inputmode="numeric"
+                        min="1"
+                        :max="Math.max(1, item.count)"
+                        :value="item.useQuantity"
+                        @click.stop
+                        @input="setItemUseQuantity(item.id, $event.target.value)"
+                        class="min-w-0 flex-1 h-8 rounded-lg border border-sky-200 bg-white px-2 text-xs font-black text-sky-900"
+                      >
+                      <button @click.stop="useBagItemOnSelectedPet(item.id, item.useQuantity)" :disabled="item.count <= 0" class="h-8 px-2 rounded-lg bg-sky-600 text-white text-xs font-black disabled:opacity-40">使用</button>
+                    </div>
+                    <button v-else @click="useBagItemOnSelectedPet(item.id)" :disabled="item.count <= 0" class="mt-2 h-8 w-full rounded-lg bg-sky-600 text-white text-xs font-black disabled:opacity-40">使用</button>
+                  </div>
                 </div>
               </template>
               <template v-else-if="selectedInfoTab === 'traits'">
@@ -3224,14 +4868,17 @@
       <div class="flex items-center justify-between mb-3">
         <div>
           <h3 class="text-lg font-black text-slate-900">徽章</h3>
-          <p class="text-xs font-bold text-slate-500">守护者挑战可激活成长徽章，本版本首次 BOSS 胜利可获得对应 BOSS 勋章。</p>
+          <p class="text-xs font-bold text-slate-500">挑战之路可激活守护者成长徽章，本版本首次 BOSS 胜利可获得对应 BOSS 勋章。</p>
         </div>
         <button @click="closeBadgePanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
       <div v-if="equippedBadge" class="mb-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 flex items-center justify-between gap-3" :class="equippedBadge.special === 'weeklyHonor' ? 'badge-honor-blackgold' : ''">
-        <div>
-          <div class="text-xs font-black text-amber-500">当前佩戴</div>
-          <div class="text-base font-black text-amber-900">{{ equippedBadge.name }}</div>
+        <div class="flex items-center gap-3 min-w-0">
+          <img v-if="equippedBadge.imageSrc" class="guardian-badge-img !w-14 !h-14" :src="equippedBadge.imageSrc" :alt="equippedBadge.name" @error="withFallback" />
+          <div class="min-w-0">
+            <div class="text-xs font-black text-amber-500">当前佩戴</div>
+            <div class="text-base font-black text-amber-900 truncate">{{ equippedBadge.name }}</div>
+          </div>
         </div>
         <button @click="unequipBadge" class="h-9 px-4 rounded-xl bg-white border border-amber-200 text-amber-700 text-sm font-black">卸下</button>
       </div>
@@ -3246,30 +4893,110 @@
           class="rounded-2xl border p-3 text-left transition hover:-translate-y-0.5"
           :class="badge.special === 'weeklyHonor' ? 'badge-honor-blackgold' : (state.equippedBadgeId===badge.id ? 'border-yellow-400 bg-yellow-50 shadow-lg' : 'border-slate-200 bg-white hover:bg-slate-50')"
         >
-          <div class="text-base font-black text-slate-900">{{ badge.name }}</div>
-          <div class="text-[11px] font-bold text-slate-500 mt-1">{{ badge.description || (badge.guardianName + ' 已挑战成功 ' + badge.currentCount + ' 次') }}</div>
-          <div class="mt-2 inline-flex h-6 items-center rounded-full bg-slate-900 px-3 text-[11px] font-black text-white">
-            {{ state.equippedBadgeId===badge.id ? '佩戴中' : '点击佩戴' }}
+          <div class="flex items-center gap-3 min-w-0">
+            <img v-if="badge.imageSrc" class="guardian-badge-img" :src="badge.imageSrc" :alt="badge.name" @error="withFallback" />
+            <div class="min-w-0 flex-1">
+              <div class="text-base font-black text-slate-900 truncate">{{ badge.name }}</div>
+              <div class="text-[11px] font-bold text-slate-500 mt-1">{{ badge.description || (badge.guardianName + ' 已挑战成功 ' + badge.currentCount + ' 次') }}</div>
+              <div class="mt-2 inline-flex h-6 items-center rounded-full bg-slate-900 px-3 text-[11px] font-black text-white">
+                {{ state.equippedBadgeId===badge.id ? '佩戴中' : '点击佩戴' }}
+              </div>
+            </div>
           </div>
         </button>
       </div>
     </div>
   </div>
 
-  <div v-show="showGuardianPanel" style="display:none" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeGuardianPanel">
-    <div class="w-full max-w-6xl h-[90vh] md:h-[760px] rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl flex flex-col app-panel-modal" @click.stop>
+  <div v-show="showChallengeRoadPanel" style="display:none" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeChallengeRoadPanel">
+    <div class="w-full max-w-7xl h-[92vh] md:h-[800px] rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl flex flex-col app-panel-modal" @click.stop>
       <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-black text-slate-900">守护者挑战</h3>
-        <button @click="closeGuardianPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+        <div>
+          <h3 class="text-lg font-black text-slate-900">挑战之路</h3>
+          <p class="text-xs font-bold text-slate-500">通关上一梯度后开启下一梯度，进度按已拥有亚比或亚比蛋统计。</p>
+        </div>
+        <button @click="closeChallengeRoadPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 flex-1 min-h-0 overflow-y-auto pr-1 scrollbar content-start">
-        <button v-for="entry in guardianDexEntries" :key="'guardian_'+entry.dexId" @click="openGuardianChallengePanel(entry.dexId)" class="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-left hover:border-amber-400 min-h-[136px]">
-          <img :src="entry.image" @error="withFallback" class="w-16 h-16 object-contain mx-auto">
-          <div class="text-sm font-black text-amber-900 text-center mt-1">{{ entry.name }}</div>
-        </button>
+      <div class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-3 scrollbar">
+        <div class="flex h-full min-h-[620px] items-stretch gap-4 pr-2">
+          <button
+            v-for="tier in challengeRoadTiers"
+            :key="'challenge_road_tier_' + tier.key"
+            @click="selectChallengeRoadTier(tier.tierIndex)"
+            class="relative shrink-0 h-full aspect-[1345/3116] overflow-hidden rounded-2xl border text-left transition"
+            :class="[
+              selectedChallengeRoadTierIndex === tier.tierIndex ? 'border-sky-400 shadow-lg shadow-sky-100' : 'border-slate-200',
+              tier.unlocked ? 'bg-slate-900 hover:border-sky-300' : 'bg-slate-800 opacity-70'
+            ]"
+          >
+            <img :src="tier.cover" @error="withFallback" class="absolute inset-0 w-full h-full object-contain opacity-95">
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/88 via-slate-900/62 to-slate-900/12"></div>
+            <div class="relative z-10 h-full p-5 flex flex-col justify-between text-white">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="text-2xl font-black leading-8">{{ tier.title }}</div>
+                  <div class="text-sm font-bold text-sky-100 mt-1">{{ tier.subtitle }}</div>
+                </div>
+                <span class="rounded-full px-2.5 py-1 text-[11px] font-black" :class="tier.unlocked ? (tier.completed ? 'bg-emerald-400 text-emerald-950' : 'bg-white/90 text-slate-900') : 'bg-slate-950/70 text-slate-200'">
+                  {{ tier.unlocked ? (tier.completed ? '已通关' : '挑战中') : '未开启' }}
+                </span>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm font-black">
+                  <span>进度</span>
+                  <span>{{ tier.current }}/{{ tier.total }}</span>
+                </div>
+                <div class="mt-2 h-4 rounded-full bg-slate-950/60 border border-white/20 overflow-hidden">
+                  <div class="h-full rounded-full bg-gradient-to-r from-cyan-300 to-emerald-300 transition-all" :style="{ width: tier.percent + '%' }"></div>
+                </div>
+                <div v-if="!tier.unlocked" class="mt-2 text-[11px] font-black text-slate-200">{{ tier.lockText }}</div>
+              </div>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   </div>
+
+  <template v-if="showChallengeRoadTierPanel">
+    <div v-if="selectedChallengeRoadTier" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeChallengeRoadTierPanel">
+      <div class="w-full max-w-6xl h-[86vh] rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl flex flex-col app-panel-modal" @click.stop>
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <div>
+            <div class="text-lg font-black text-slate-900">{{ selectedChallengeRoadTier.title }}</div>
+            <div class="text-xs font-bold text-slate-500">{{ selectedChallengeRoadTier.current }}/{{ selectedChallengeRoadTier.total }} 已通关</div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="hidden sm:block w-40 h-2 rounded-full bg-slate-200 overflow-hidden">
+              <div class="h-full bg-emerald-500" :style="{ width: selectedChallengeRoadTier.percent + '%' }"></div>
+            </div>
+            <button @click="closeChallengeRoadTierPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">返回</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-3 flex-1 min-h-0 overflow-y-auto pr-1 scrollbar content-start">
+          <button
+            v-for="item in selectedChallengeRoadTier.items"
+            :key="'challenge_road_item_' + selectedChallengeRoadTier.key + '_' + item.kind + '_' + item.order"
+            @click="openChallengeRoadEntry(item)"
+            class="rounded-2xl border p-3 text-left min-h-[138px] transition"
+            :class="[
+              item.completed ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-white hover:border-sky-300',
+              item.missing ? 'opacity-60 cursor-not-allowed' : ''
+            ]"
+          >
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <span class="text-[10px] font-black rounded bg-slate-100 px-1.5 py-0.5 text-slate-600">{{ item.kind === 'guardian' ? '守护者' : 'BOSS' }}</span>
+              <span v-if="item.completed" class="text-[10px] font-black rounded bg-emerald-500 px-1.5 py-0.5 text-white">已通关</span>
+            </div>
+            <img v-if="!item.missing" :src="item.image" @error="withFallback" class="w-16 h-16 object-contain mx-auto">
+            <div v-else class="w-16 h-16 mx-auto rounded-xl bg-slate-200 flex items-center justify-center text-xs font-black text-slate-500">?</div>
+            <div class="text-sm font-black text-slate-900 text-center mt-1 truncate">{{ item.name }}</div>
+            <div v-if="item.missing" class="mt-1 text-[11px] font-bold text-rose-500 text-center">数据缺失</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
 
   <template v-if="showGuardianChallengePanel">
     <div v-if="selectedGuardianEntry" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeGuardianChallengePanel">
@@ -3311,21 +5038,6 @@
       </div>
     </div>
   </template>
-
-  <div v-show="showBossPanel" style="display:none" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBossPanel">
-    <div class="w-full max-w-6xl h-[90vh] md:h-[760px] rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl flex flex-col app-panel-modal" @click.stop>
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-black text-slate-900">BOSS挑战</h3>
-        <button @click="closeBossPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 flex-1 min-h-0 overflow-y-auto pr-1 scrollbar content-start">
-        <button v-for="entry in bossDexEntries" :key="'boss_'+entry.dexId" @click="openBossChallengePanel(entry.dexId)" class="rounded-2xl border border-rose-200 bg-rose-50 p-3 text-left hover:border-rose-400 min-h-[136px]">
-          <img :src="entry.image" @error="withFallback" class="w-16 h-16 object-contain mx-auto">
-          <div class="text-sm font-black text-rose-900 text-center mt-1">{{ entry.name }}</div>
-        </button>
-      </div>
-    </div>
-  </div>
 
   <template v-if="showBossChallengePanel">
     <div v-if="selectedBossEntry" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBossChallengePanel">
@@ -3705,6 +5417,18 @@
   <div class="relative w-full h-full overflow-hidden bg-slate-950 battle-mobile-root" @click.stop>
     <div class="battle-bg-layer" :style="{ backgroundImage: `url(${battleBackground.src})` }"></div>
     <div class="battle-bg-shade"></div>
+    <div class="battle-speed-floating">
+      <div class="battle-speed-panel">
+        <div class="battle-speed-title">
+          <span class="battle-speed-orb"></span>
+          <span>倍速栏</span>
+          <span>{{ battleSpeedLabel }}</span>
+        </div>
+        <div class="battle-speed-options">
+          <button v-for="n in [1,2,3,4]" :key="'battle_speed_float_'+n" @click.stop="applyBattleSpeed(n)" :class="['battle-speed-option', battleSpeed === n ? 'active' : '']">x{{ n }}</button>
+        </div>
+      </div>
+    </div>
     <div v-if="battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'fullscreen'" :key="'skill_fx_fullscreen_' + battleScene.skillEffectFx.seq" class="battle-skill-effect-fullscreen" :style="battleSkillEffectStyle('fullscreen')">
       <img :src="battleScene.skillEffectFx.src" alt="">
     </div>
@@ -3712,20 +5436,25 @@
 
     <div class="absolute left-3 right-3 md:left-8 md:right-auto top-3 md:top-8 w-auto md:w-[22%] md:min-w-[280px] battle-mobile-wrap battle-mobile-target">
       <div class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3 battle-mobile-target-card">
-        <div class="flex items-start justify-between gap-2">
-          <div class="flex items-center gap-1 min-w-0">
-            <div class="text-white text-xl font-black truncate battle-mobile-compact-title">{{ battleScene.targetName }}</div>
-            <div class="text-cyan-100 font-black battle-mobile-compact-level shrink-0">Lv.{{ battleScene.targetLevel }}</div>
+        <div class="battle-target-info-main">
+          <div class="battle-target-element-stack">
+            <span class="element-icon" :style="petElementIconStyle(battleScene.targetElement || '普通系', 28)" :title="battleScene.targetElement || '普通系'"></span>
+            <span v-if="battleScene.targetSubElement" class="element-icon" :style="petElementIconStyle(battleScene.targetSubElement, 28)" :title="battleScene.targetSubElement"></span>
           </div>
-          <div class="flex flex-wrap gap-1 justify-end max-w-[55%]">
+          <div class="battle-target-info-body">
+            <div class="battle-target-name-row">
+              <div class="battle-target-name truncate">{{ battleScene.targetName }}</div>
+              <div class="battle-target-level shrink-0">Lv.{{ battleScene.targetLevel }}</div>
+            </div>
+            <div class="battle-target-hp-track">
+              <div class="battle-target-hp-fill transition-all duration-300" :style="{ width: hpPercent(battleScene.uiTargetHp, battleScene.uiTargetMaxHp) + '%' }"></div>
+            </div>
+          </div>
+          <div class="battle-target-status">
             <span v-for="b in battleTargetStatusBadges" :key="'tar_st_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
             <span v-for="e in battleTargetTimedEffects" :key="'tar_fx_' + e.key" :title="`${e.desc}｜${e.durationLabel || ('剩余' + e.turns + '回合')}`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
           </div>
         </div>
-        <div class="mt-2 h-3 rounded-full bg-slate-800/80 overflow-hidden battle-mobile-hp-short">
-          <div class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" :style="{ width: hpPercent(battleScene.uiTargetHp, battleScene.uiTargetMaxHp) + '%' }"></div>
-        </div>
-        <div class="mt-1 text-xs font-black text-cyan-100">HP {{ battleScene.uiTargetHp }}/{{ battleScene.uiTargetMaxHp }}</div>
         <div class="mt-2 overflow-x-auto">
           <div class="battle-mobile-stat-side battle-stage-line inline-flex items-center gap-1 text-[10px] font-black whitespace-nowrap">
             <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0) < 0 ? 'stat-neg' : 'stat-zero')">攻击{{ (battleScene.targetState && battleScene.targetState.stages && battleScene.targetState.stages.atk) || 0 }}</span>
@@ -3740,7 +5469,20 @@
         </div>
       </div>
         <div class="mt-2 flex items-end justify-end gap-1 battle-mobile-target-sprite">
-          <div :class="['relative h-[260px] flex items-end justify-end battle-mobile-sprite w-full', battleScene.fxTargetShake && !battleScene.fxTargetDefeated ? 'battle-shake-right' : '']">
+          <div
+            :class="['relative h-[260px] flex items-end justify-end battle-mobile-sprite w-full battle-stage-hover-zone', battleScene.fxTargetShake && !battleScene.fxTargetDefeated ? 'battle-shake-right' : '', isBattleStageVisibleSide('target') ? 'battle-stage-visible' : '', battleStagePinnedSide === 'target' ? 'battle-stage-pinned' : '']"
+            @mouseenter="showBattleStageSide('target')"
+            @click.stop="toggleBattleStagePinnedSide('target')"
+            @mouseleave="clearBattleStagePinnedSide('target')"
+          >
+            <div class="battle-stage-popover">
+              <span
+                v-for="row in battleTargetStageText"
+                :key="'target_stage_float_' + row.key"
+                class="battle-stage-popover-row"
+                :class="row.value > 0 ? 'stage-up' : (row.value < 0 ? 'stage-down' : 'stage-zero')"
+              >{{ row.text }}</span>
+            </div>
             <div v-if="battleScene.fxTargetSkillText" class="absolute top-[18%] left-[calc(50%+72px)] text-sm font-black whitespace-nowrap battle-skill-float">{{ battleScene.fxTargetSkillText }}</div>
             <div :class="['battle-pet-visual-anchor', battleScene.fxTargetDefeated ? 'battle-defeated-exit' : '']">
               <img :src="battleScene.targetImage" :style="battlePetImageStyle('target')" @error="(event) => withBattlePetFallback(event, 'target')" class="battle-pet-img battle-target-pet-img drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
@@ -3783,11 +5525,12 @@
         <div class="battle-mobile-skillpanel battle-mobile-actions">
           <div class="battle-command-actions-panel">
             <div class="flex items-center gap-2 mb-2 battle-mobile-btns">
-              <button @click="openBattleSkillPanel" :disabled="battleScene.ended || battleScene.isActing" class="battle-command-btn bg-cyan-600 text-white font-black disabled:opacity-45">技能</button>
-              <button @click="openBattleItemPanel" :disabled="battleScene.ended || battleScene.isActing" class="battle-command-btn bg-emerald-600 text-white font-black disabled:opacity-45">道具</button>
-              <button @click="openSwitchPanel('manual')" :disabled="battleSceneAvailablePets.length === 0 || battleScene.ended || battleScene.isActing" class="battle-command-btn bg-indigo-600 text-white font-black disabled:opacity-45">换宠</button>
-              <button v-if="autoBattleRun" @click="stopAutoBattle" class="battle-command-btn bg-amber-600 text-white font-black">停止自动</button>
-              <button v-else @click="closeBattleScene" class="battle-command-btn bg-slate-700/95 text-slate-100 font-black hover:bg-slate-600">撤退</button>
+              <button @click="openBattleItemPanel" :disabled="battleScene.ended || battleScene.isActing" class="battle-command-btn battle-command-item bg-emerald-600 text-white font-black disabled:opacity-45">道具</button>
+              <button @click="openBattleItemPanel" :disabled="battleScene.ended || battleScene.isActing" class="battle-command-btn battle-command-capture bg-sky-600 text-white font-black disabled:opacity-45">捕捉</button>
+              <button @click="openBattleSkillPanel" :disabled="battleScene.ended || battleScene.isActing" class="battle-command-btn battle-command-skill bg-cyan-600 text-white font-black disabled:opacity-45">技能</button>
+              <button @click="openSwitchPanel('manual')" :disabled="battleSceneAvailablePets.length === 0 || battleScene.ended || battleScene.isActing" class="battle-command-btn battle-command-switch bg-indigo-600 text-white font-black disabled:opacity-45">换宠</button>
+              <button v-if="autoBattleRun" @click="stopAutoBattle" class="battle-command-btn battle-command-retreat bg-amber-600 text-white font-black">停止</button>
+              <button v-else @click="closeBattleScene" class="battle-command-btn battle-command-retreat bg-slate-700/95 text-slate-100 font-black hover:bg-slate-600">撤退</button>
             </div>
           </div>
         </div>
@@ -3805,7 +5548,6 @@
         </div>
         <div class="battle-mobile-skillpanel battle-mobile-skills">
           <div class="rounded-2xl border border-cyan-200/20 bg-slate-900/35 p-3 battle-command-skill-list">
-            <div class="text-xs font-black text-cyan-100 mb-2">{{ battleActionTab === 'items' ? '道具列表' : '技能列表' }}</div>
             <div v-if="battleActionTab === 'items'" class="space-y-2 max-h-[220px] overflow-y-auto pr-1 scrollbar">
               <button
                 v-for="it in itemInventoryRows.filter(x => (x.id.startsWith('pp_bean_') || x.id.startsWith('hp_candy_') || x.id === 'purify_potion'))"
@@ -3838,13 +5580,12 @@
                 :class="(battleSceneSkills && battleSceneSkills[idx]) ? 'border-cyan-300/35 bg-cyan-500/15 text-cyan-100 disabled:opacity-40' : 'border-slate-500/40 bg-slate-700/30 text-slate-400 cursor-not-allowed'"
               >
                 <template v-if="battleSceneSkills && battleSceneSkills[idx]">
-                  <div class="flex items-center gap-1 min-w-0">
-                    <span class="element-icon shrink-0" :style="petElementTransparentIconStyle(skillTypeMeta(safeSkillType(battleSceneSkills[idx])).label, 14)" :title="skillTypeMeta(safeSkillType(battleSceneSkills[idx])).label"></span>
-                    <span class="truncate">{{ safeSkillName(battleSceneSkills[idx]) }}</span>
+                  <div class="battle-skill-element-badge">
+                    <span class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(battleSceneSkills[idx])).label, 32)" :title="skillTypeMeta(safeSkillType(battleSceneSkills[idx])).label"></span>
                   </div>
-                  <div class="mt-0.5 text-[10px] font-black text-cyan-200 truncate">
-                    威力 {{ safeSkillPower(battleSceneSkills[idx]) }} | {{ skillTypeMeta(safeSkillType(battleSceneSkills[idx])).label }} | {{ skillAttackTypeLabel(battleSceneSkills[idx]) }} | PP {{ safeSkillPP(battleSceneSkills[idx]) }}
-                  </div>
+                  <div class="battle-skill-name">{{ safeSkillName(battleSceneSkills[idx]) }}</div>
+                  <div class="battle-skill-power">威力：{{ safeSkillPower(battleSceneSkills[idx]) }}</div>
+                  <div class="battle-skill-pp">PP：{{ safeSkillPP(battleSceneSkills[idx]) }}/{{ safeSkillPPMax(battleSceneSkills[idx]) }}</div>
                 </template>
                 <template v-else>空白技能</template>
               </button>
@@ -3853,20 +5594,29 @@
         </div>
       </div>
       <div class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3 battle-mobile-attacker-card battle-mobile-hpbox">
-        <div class="flex items-start justify-between gap-2">
-          <div class="flex items-center gap-1 min-w-0">
-            <div class="text-white text-xl font-black truncate battle-mobile-compact-title">{{ battleScene.attackerName }}</div>
-            <div class="text-cyan-100 font-black battle-mobile-compact-level shrink-0">Lv.{{ battleScene.attackerLevel }}</div>
+        <div class="battle-player-hp-topline">
+          <div class="battle-player-portrait">
+            <img :src="battleScene.attackerStaticImage || battleScene.attackerImage" @error="(event) => withBattlePetFallback(event, 'attacker')" alt="">
           </div>
-          <div class="flex flex-wrap gap-1 justify-end max-w-[55%]">
+          <div class="battle-player-hp-main">
+            <div class="battle-player-name-row">
+              <div class="battle-player-name truncate">{{ battleScene.attackerName }}</div>
+              <div class="battle-player-level shrink-0">Lv.{{ battleScene.attackerLevel }}</div>
+            </div>
+            <div class="battle-player-hp-track">
+              <div class="battle-player-hp-fill transition-all duration-300" :style="{ width: hpPercent(battleScene.uiAttackerHp, battleScene.uiAttackerMaxHp) + '%' }"></div>
+              <div class="battle-player-hp-text">HP：{{ battleScene.uiAttackerHp }}/{{ battleScene.uiAttackerMaxHp }}</div>
+            </div>
+          </div>
+          <div class="battle-player-status">
             <span v-for="b in battleAttackerStatusBadges" :key="'atk_st_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
             <span v-for="e in battleAttackerTimedEffects" :key="'atk_fx_' + e.key" :title="`${e.desc}｜${e.durationLabel || ('剩余' + e.turns + '回合')}`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
           </div>
         </div>
-        <div class="mt-2 h-3 rounded-full bg-slate-800/80 overflow-hidden battle-mobile-hp-short">
-          <div class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" :style="{ width: hpPercent(battleScene.uiAttackerHp, battleScene.uiAttackerMaxHp) + '%' }"></div>
+        <div class="battle-player-elements">
+          <span class="element-icon battle-player-primary-element" :style="petElementIconStyle(battleScene.attackerElement || '普通系', 48)" :title="battleScene.attackerElement || '普通系'"></span>
+          <span v-if="battleScene.attackerSubElement" class="element-icon battle-player-sub-element" :style="petElementIconStyle(battleScene.attackerSubElement, 48)" :title="battleScene.attackerSubElement"></span>
         </div>
-        <div class="mt-1 text-xs font-black text-cyan-100">HP {{ battleScene.uiAttackerHp }}/{{ battleScene.uiAttackerMaxHp }}</div>
         <div class="mt-2 overflow-x-auto">
           <div class="battle-mobile-stat-side battle-stage-line inline-flex items-center gap-1 text-[10px] font-black whitespace-nowrap">
             <span class="px-1.5 py-0.5 rounded" :class="((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) > 0 ? 'stat-pos' : (((battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0) < 0 ? 'stat-neg' : 'stat-zero')">攻击{{ (battleScene.attackerState && battleScene.attackerState.stages && battleScene.attackerState.stages.atk) || 0 }}</span>
@@ -3881,7 +5631,20 @@
         </div>
       </div>
       <div class="battle-mobile-attacker-main">
-      <div :class="['relative h-[300px] flex items-end justify-start battle-mobile-sprite battle-mobile-attacker-visual', battleScene.fxAttackerShake && !battleScene.fxAttackerDefeated ? 'battle-shake-left' : '']">
+      <div
+        :class="['relative h-[300px] flex items-end justify-start battle-mobile-sprite battle-mobile-attacker-visual battle-stage-hover-zone', battleScene.fxAttackerShake && !battleScene.fxAttackerDefeated ? 'battle-shake-left' : '', isBattleStageVisibleSide('attacker') ? 'battle-stage-visible' : '', battleStagePinnedSide === 'attacker' ? 'battle-stage-pinned' : '']"
+        @mouseenter="showBattleStageSide('attacker')"
+        @click.stop="toggleBattleStagePinnedSide('attacker')"
+        @mouseleave="clearBattleStagePinnedSide('attacker')"
+      >
+        <div class="battle-stage-popover">
+          <span
+            v-for="row in battleAttackerStageText"
+            :key="'attacker_stage_float_' + row.key"
+            class="battle-stage-popover-row"
+            :class="row.value > 0 ? 'stage-up' : (row.value < 0 ? 'stage-down' : 'stage-zero')"
+          >{{ row.text }}</span>
+        </div>
         <div :class="['battle-pet-visual-anchor', battleScene.fxAttackerDefeated ? 'battle-defeated-exit' : '']">
           <img :src="battleScene.attackerImage" :style="battlePetImageStyle('attacker')" @error="(event) => withBattlePetFallback(event, 'attacker')" class="battle-pet-img battle-attacker-pet-img drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
           <img v-if="battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'attacker'" :key="'skill_fx_attacker_' + battleScene.skillEffectFx.seq" :src="battleScene.skillEffectFx.src" class="battle-skill-effect-gif" :style="battleSkillEffectStyle('attacker')" alt="">
@@ -3919,7 +5682,7 @@
         <div :class="['text-base font-black', battleScene.win ? 'text-emerald-300' : 'text-rose-300']">{{ battleScene.win ? '挑战胜利' : '挑战失败' }}</div>
         <div class="text-xs font-bold text-slate-200 mt-1">{{ battleScene.summary }}</div>
         <div class="text-xs font-bold text-slate-300 mt-1">获得经验：{{ battleScene.expGain }}</div>
-        <div v-if="battleScene.expMultiplier > 1" class="text-xs font-black text-emerald-200 mt-1">双倍经验器生效：经验 ×{{ battleScene.expMultiplier }}</div>
+        <div v-if="battleScene.expMultiplier > 1" class="text-xs font-black text-emerald-200 mt-1">经验倍率：×{{ battleScene.expMultiplier }}</div>
         <div v-if="battleScene.autoBattleMeta" class="text-xs font-black text-indigo-200 mt-1">自动战斗：已完成 {{ battleScene.autoBattleMeta.completed }}/10，剩余 {{ itemInventoryRows.find(x => x.id === 'auto_battle_device')?.count || 0 }} 次</div>
         <div v-if="battleScene.unlockText" class="text-xs font-black text-cyan-200 mt-1">{{ battleScene.unlockText }}</div>
       </div>
@@ -3996,7 +5759,8 @@
         获得 H币 +{{ battleResult.hCoinGain }}
       </div>
       <div v-if="battleResult.expMultiplier > 1" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-black text-emerald-800">
-        双倍经验器生效：本场经验 ×{{ battleResult.expMultiplier }}
+        经验倍率：本场经验 ×{{ battleResult.expMultiplier }}
+        <span v-if="battleResult.rewardEventActive">（活动可与双倍经验器叠加）</span>
       </div>
       <div v-if="battleResult.autoBattleText" class="rounded-2xl border border-indigo-200 bg-indigo-50 p-3 text-sm font-black text-indigo-800">
         {{ battleResult.autoBattleText }}

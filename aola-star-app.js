@@ -1,4 +1,3 @@
-﻿
 if (!window.Vue) {
   const app = document.getElementById("app");
   if (app) {
@@ -66,7 +65,7 @@ const RELEASE_NOTES_V040 = {
     "修复秒杀技能对守护者/BOSS无法造成伤害值的问题，只免疫秒杀效果；",
     "害怕状态持续回合调整为1回合；",
     "BOSS列表新增：冰晶凤凰、擎战；",
-    "亚比图鉴编号开放至1960；",
+    "亚比图鉴编号开放至1985；",
     "调整BOSS的挑战难度，统一BOSS血量，新增BOSS统一减伤机制；",
     "新增每周BOSS挑战和每周BOSS专属徽章；",
     "亚比道具迁移至背包使用，亚比背包新增特性栏；",
@@ -81,14 +80,15 @@ const SAVE_FILE_PREFIX = "aola_battle_save_";
 const STARTER_DEX_IDS = [1, 4, 7];
 const BASE_GUARDIAN_NAMES = ["冰拳艾司", "沙麒麟", "金刚库巴", "木面侠", "火花龙"];
 const EXTRA_GUARDIAN_NAMES = [
-  "烈焰鸟", "合金猛将", "利刺大黄蜂", "雷纳瑞", "魂斗鱼", "浮云尊者", "神武月", "影刃", "年兽", "麦斗元帅",
+  "烈焰鸟", "合金猛将", "利刺大黄蜂", "雷纳瑞", "魂斗鱼", "浮云尊者", "神武月", "影刃", "年兽", "麦斗司令",
   "山脉之魂", "星光角斗士", "时间之神", "天使莱特", "战无炎", "极速威锋", "满月巨灵", "天之巨灵", "黑夜童心", "远古灵龟",
   "暴雪山神", "赤影飞狐", "赤魔导士", "天女若希", "神罗麦提", "超T兔", "猪猪超人", "翡冷翠", "鬼王", "岩波斗魂者",
   "友人契约书", "多古拉伯爵", "伊泽", "迦娜", "蓝羽灵者", "剑圣太白", "猎空", "奥弗", "赫提"
 ];
 const EXTRA_GUARDIAN_ALIAS = {
   "浮云尊者兄弟": "浮云尊者",
-  "终极麦斗猪": "麦斗元帅",
+  "终极麦斗猪": "麦斗司令",
+  "麦斗元帅": "麦斗司令",
   "天使菜特": "天使莱特"
 };
 const GUARDIAN_NAMES = Array.from(new Set([...BASE_GUARDIAN_NAMES, ...EXTRA_GUARDIAN_NAMES]));
@@ -97,37 +97,127 @@ const BOSS_CHALLENGE_REQUIRED_GUARDIAN_NAMES = [
   "合金猛将", "神武月", "利刺大黄蜂", "战无炎", "时间之神",
   "影刃", "烈焰鸟", "天使莱特", "山脉之魂", "星光角斗士"
 ];
-const BOSS_CHALLENGE_LOCKED_MESSAGE = "你需要击败前15只守护者亚比，才能开放BOSS挑战哦";
+const BOSS_CHALLENGE_LOCKED_MESSAGE = "请先通关挑战之路第一梯度，才能开放后续挑战。";
 const BOSS_NAMES = [
   "骰子大王", "龙族大法师", "七星神龙", "青龙灵兽", "玄武灵兽", "白虎灵兽", "朱雀灵兽", "念", "凯撒", "修罗",
   "奇灵王", "音爵卡卡", "烈焰凤凰", "魔焰吉拉", "古渊露龙", "终结兔", "飞天独角兽", "熊猫大侠", "帝皇龙",
-  "霜炎法神", "赤翼魔龙王", "苍穹圣龙", "尤莱亚", "张飞", "曹操", "诸葛亮", "赵云", "吕布", "阿尔法"
+  "霜炎法神", "赤翼魔龙王", "苍穹圣龙", "尤莱亚", "张飞", "曹操", "诸葛亮", "赵云", "吕布", "阿尔法",
+  "白羽公主", "极冰海牙", "焚浪", "鲁曼", "拉诺斯", "纳兹", "岩战", "施瓦辛格", "塞娅", "幻冥",
+  "金刚虎王", "千年瑞兽", "震天金刚", "太阳星诺", "月亮星诺", "疾影侠", "啸天侠", "炼狱战狮", "巨角剑龙",
+  "天怒", "天煞", "雷霆", "万钧", "星皇", "幻极", "波塞冬", "魔洛", "暗影凯撒", "黑炎龙",
+  "圣光修罗", "噬月武神", "苍炎战神", "阿波罗", "九尾冰狐", "金银尊者", "雷钢侠", "炼狱狮王", "菲尔", "可兰",
+  "雷霆青龙", "惊涛玄武", "炎王", "阿尔萨斯", "帝卡", "冥焰夜王", "斗罗明王", "光暗弑神", "龙刃",
+  "君焰狼王", "魂战", "炽燎天", "擎霸空", "冰晶凤凰", "擎战", "帝王奇灵", "真·苍炎战神", "真·噬月武神",
+  "真·烈焰凤凰", "龙·炎王", "真·赤色梦魇", "圣王麒麟", "圣·天伊", "冰罗皇", "奥天"
 ];
 const BOSS_DEX_ENTRIES = [
+  { dexId: 177, name: "骰子大王" }, { dexId: 215, name: "青龙灵兽" }, { dexId: 290, name: "七星神龙" }, { dexId: 305, name: "龙族大法师" },
+  { dexId: 383, name: "音爵卡卡" }, { dexId: 388, name: "玄武灵兽" }, { dexId: 500, name: "终结兔" }, { dexId: 501, name: "魔焰吉拉" },
+  { dexId: 502, name: "古渊露龙" }, { dexId: 506, name: "烈焰凤凰" }, { dexId: 604, name: "念" }, { dexId: 624, name: "白虎灵兽" },
+  { dexId: 653, name: "飞天独角兽" }, { dexId: 725, name: "熊猫大侠" }, { dexId: 728, name: "凯撒" }, { dexId: 731, name: "修罗" },
+  { dexId: 741, name: "朱雀灵兽" }, { dexId: 775, name: "帝皇龙" }, { dexId: 794, name: "奇灵王" },
   { dexId: 1767, name: "霜炎法神" }, { dexId: 1350, name: "赤翼魔龙王" }, { dexId: 1479, name: "苍穹圣龙" }, { dexId: 249, name: "尤莱亚" },
   { dexId: 955, name: "张飞" },
   { dexId: 1605, name: "曹操" }, { dexId: 976, name: "诸葛亮" }, { dexId: 931, name: "赵云" }, { dexId: 1108, name: "吕布" }, { dexId: 1590, name: "阿尔法" },
   { dexId: 1792, name: "天怒" }, { dexId: 1794, name: "天煞" }, { dexId: 1808, name: "瞳灵" }, { dexId: 1823, name: "星皇" },
   { dexId: 1830, name: "雷霆" }, { dexId: 1832, name: "万钧" }, { dexId: 1845, name: "光暗弑神" }, { dexId: 1716, name: "奥天" },
   { dexId: 1749, name: "雷霆青龙" }, { dexId: 1752, name: "惊涛玄武" }, { dexId: 1861, name: "龙刃" }, { dexId: 1754, name: "炎王" },
-  { dexId: 1777, name: "帝卡" }, { dexId: 1825, name: "斗罗明王" }, { dexId: 1873, name: "冰罗皇" }, { dexId: 1896, name: "圣天伊" },
+  { dexId: 1777, name: "帝卡" }, { dexId: 1825, name: "斗罗明王" }, { dexId: 1873, name: "冰罗皇" }, { dexId: 1896, name: "圣·天伊" },
   { dexId: 1362, name: "阿波罗" }, { dexId: 1869, name: "圣王麒麟" }, { dexId: 1414, name: "九尾冰狐" }, { dexId: 1450, name: "千年瑞兽" },
   { dexId: 1496, name: "震天金刚" }, { dexId: 1514, name: "战魂猛犸" }, { dexId: 1619, name: "巨角剑龙" }, { dexId: 891, name: "刀锋" },
   { dexId: 901, name: "星宇侠" }, { dexId: 1118, name: "幻影" }, { dexId: 1426, name: "黑炎龙" }, { dexId: 1756, name: "阿尔萨斯" },
-  { dexId: 1911, name: "炽燎天" }, { dexId: 1912, name: "擎霸天" }, { dexId: 1898, name: "擎空" }, { dexId: 946, name: "紫渊" },
+  { dexId: 1911, name: "炽燎天" }, { dexId: 1912, name: "擎霸空" }, { dexId: 1898, name: "擎空" }, { dexId: 946, name: "紫渊" },
   { dexId: 973, name: "红魔" }, { dexId: 1086, name: "绿焰" }, { dexId: 1124, name: "夜王狄米特" }, { dexId: 1170, name: "夜兰" },
-  { dexId: 1232, name: "鲁曼" }, { dexId: 1250, name: "纳兹" }, { dexId: 1291, name: "塞娅" }, { dexId: 1347, name: "魔洛" },
+  { dexId: 1232, name: "鲁曼" }, { dexId: 1250, name: "纳兹" }, { dexId: 1291, name: "塞娅" }, { dexId: 1347, name: "魔洛" }, { dexId: 1706, name: "暗影凯撒" },
   { dexId: 1122, name: "狼王迪洛斯" }, { dexId: 1309, name: "幻冥" }, { dexId: 1328, name: "幻极" }, { dexId: 1134, name: "白羽公主" },
   { dexId: 1159, name: "极冰海牙" }, { dexId: 1380, name: "金刚虎王" }, { dexId: 1423, name: "噬月武神" }, { dexId: 1451, name: "金银尊者" },
-  { dexId: 1461, name: "苍炎战神" }, { dexId: 1538, name: "炼狱战狮" }, { dexId: 1539, name: "炼狱狮王" }, { dexId: 1806, name: "冥焰夜王" },
-  { dexId: 1905, name: "君焰狼王" }, { dexId: 1925, name: "龙炎王" }, { dexId: 1926, name: "帝王奇灵" }, { dexId: 1915, name: "真苍炎战神" },
-  { dexId: 1916, name: "真噬月武神" }, { dexId: 1917, name: "真烈焰凤凰" }, { dexId: 1927, name: "真赤色梦魇" }, { dexId: 1526, name: "雷钢侠" },
+  { dexId: 1461, name: "苍炎战神" }, { dexId: 1538, name: "炼狱战狮" }, { dexId: 1539, name: "炼狱狮王" }, { dexId: 1639, name: "圣光修罗" },
+  { dexId: 1806, name: "冥焰夜王" },
+  { dexId: 1905, name: "君焰狼王" }, { dexId: 1925, name: "龙·炎王" }, { dexId: 1926, name: "帝王奇灵" }, { dexId: 1915, name: "真·苍炎战神" },
+  { dexId: 1916, name: "真·噬月武神" }, { dexId: 1917, name: "真·烈焰凤凰" }, { dexId: 1927, name: "真·赤色梦魇" }, { dexId: 1526, name: "雷钢侠" },
   { dexId: 1528, name: "疾影侠" }, { dexId: 1530, name: "啸天侠" }, { dexId: 1501, name: "太阳星诺" }, { dexId: 1503, name: "月亮星诺" },
   { dexId: 1181, name: "焚浪" }, { dexId: 1274, name: "岩战" }, { dexId: 1910, name: "魂战" }, { dexId: 1648, name: "菲尔" },
   { dexId: 1649, name: "可兰" }, { dexId: 1234, name: "拉诺斯" }, { dexId: 1282, name: "施瓦辛格" }, { dexId: 1336, name: "波塞冬" },
   { dexId: 1938, name: "冰晶凤凰" }, { dexId: 1950, name: "擎战" }
 ];
 const BOSS_DEX_ID_TO_NAME = new Map(BOSS_DEX_ENTRIES.map((entry) => [entry.dexId, entry.name]));
+const CHALLENGE_ROAD_COVER_SRC = "./boss-level/first.png";
+const CHALLENGE_ROAD_NAME_ALIAS = {
+  "青龙": "青龙灵兽",
+  "玄武": "玄武灵兽",
+  "朱雀": "朱雀灵兽",
+  "塞妊": "塞娅",
+  "雷刚侠": "雷钢侠",
+  "擎霸天": "擎霸空",
+  "真苍炎": "真·苍炎战神",
+  "真苍炎战神": "真·苍炎战神",
+  "真噬月武神": "真·噬月武神",
+  "真烈焰凤凰": "真·烈焰凤凰",
+  "龙炎王": "龙·炎王",
+  "圣天伊": "圣·天伊",
+  "真赤色梦魇": "真·赤色梦魇"
+};
+const CHALLENGE_ROAD_TIER3_GUARDIAN_NAMES = EXTRA_GUARDIAN_NAMES
+  .slice(
+    Math.max(0, EXTRA_GUARDIAN_NAMES.indexOf("雷纳瑞")),
+    EXTRA_GUARDIAN_NAMES.indexOf("赫提") >= 0 ? EXTRA_GUARDIAN_NAMES.indexOf("赫提") + 1 : EXTRA_GUARDIAN_NAMES.length
+  )
+  .filter((name) => !BOSS_CHALLENGE_REQUIRED_GUARDIAN_NAMES.includes(name));
+const CHALLENGE_ROAD_TIERS = [
+  {
+    key: "tier_1",
+    title: "第一梯度",
+    subtitle: "前15个守护者",
+    cover: CHALLENGE_ROAD_COVER_SRC,
+    guardianNames: BOSS_CHALLENGE_REQUIRED_GUARDIAN_NAMES.slice(),
+    bossNames: []
+  },
+  {
+    key: "tier_2",
+    title: "第二梯度",
+    subtitle: "初阶BOSS挑战",
+    cover: CHALLENGE_ROAD_COVER_SRC,
+    guardianNames: [],
+    bossNames: [
+      "骰子大王", "青龙", "七星神龙", "龙族大法师", "音爵卡卡", "玄武", "终结兔", "魔焰吉拉", "古渊露龙", "烈焰凤凰",
+      "白虎灵兽", "飞天独角兽", "熊猫大侠", "修罗", "凯撒", "尤莱亚", "奇灵王", "刀锋", "星宇侠", "赵云",
+      "诸葛亮", "吕布", "幻影", "狼王迪洛斯", "夜王狄米特", "夜兰", "绿焰", "紫渊", "红魔"
+    ]
+  },
+  {
+    key: "tier_3",
+    title: "第三梯度",
+    subtitle: "进阶守护者与BOSS",
+    cover: CHALLENGE_ROAD_COVER_SRC,
+    guardianNames: CHALLENGE_ROAD_TIER3_GUARDIAN_NAMES,
+    bossNames: [
+      "白羽公主", "极冰海牙", "焚浪", "鲁曼", "拉诺斯", "纳兹", "岩战", "施瓦辛格", "塞妊", "幻冥",
+      "金刚虎王", "千年瑞兽", "震天金刚", "太阳星诺", "月亮星诺", "疾影侠", "啸天侠", "炼狱战狮", "曹操", "巨角剑龙",
+      "天怒", "天煞", "雷霆", "万钧", "星皇", "张飞"
+    ]
+  },
+  {
+    key: "tier_4",
+    title: "第四梯度",
+    subtitle: "高阶BOSS挑战",
+    cover: CHALLENGE_ROAD_COVER_SRC,
+    guardianNames: [],
+    bossNames: [
+      "幻极", "波塞冬", "赤翼魔龙王", "魔洛", "暗影凯撒", "黑炎龙", "霜炎法神", "朱雀", "念", "苍穹圣龙",
+      "圣光修罗", "噬月武神", "苍炎战神", "帝皇龙", "阿波罗", "九尾冰狐", "金银尊者", "雷刚侠", "炼狱狮王", "阿尔法",
+      "菲尔", "可兰", "雷霆青龙", "惊涛玄武", "炎王", "阿尔萨斯", "帝卡", "冥焰夜王", "斗罗明王", "光暗弑神",
+      "龙刃", "君焰狼王", "魂战", "炽燎天", "擎霸空", "冰晶凤凰", "擎战", "帝王奇灵"
+    ]
+  },
+  {
+    key: "tier_5",
+    title: "第五梯度",
+    subtitle: "终阶BOSS挑战",
+    cover: CHALLENGE_ROAD_COVER_SRC,
+    guardianNames: [],
+    bossNames: ["真苍炎", "真噬月武神", "真烈焰凤凰", "龙炎王", "真赤色梦魇", "圣王麒麟", "圣天伊", "冰罗皇", "奥天"]
+  }
+];
 const QIXING_SEAL_ITEM_ID = "qixing_seal";
 const QIXING_FRAGMENT_ITEM_ID = "qixing_fragment";
 const QIXING_SEAL_MAX_LEVEL = 4;
@@ -324,7 +414,7 @@ const DEFAULT_BATTLE_BG_SRC = "./aola-battle-background-default.png";
 const STAR_DOMAIN_BATTLE_BG_SRC = "./star_domain.png";
 const GUARDIAN_LEVELS = [30, 40, 50, 60, 70, 80, 90, 100];
 const EXTRA_GUARDIAN_LEVELS = [100];
-const MAX_OPEN_CHALLENGE_DEX_ID = 1960;
+const MAX_OPEN_CHALLENGE_DEX_ID = 1985;
 const EXTRA_PERSIST_DEX_IDS = new Set([QIXING_ANCIENT_STAR_DRAGON_DEX.rootDexId, QIXING_ANCIENT_STAR_DRAGON_DEX.dexId]);
 const canPersistPetDexId = (dexId) => {
   const id = Number(dexId) || 0;
@@ -389,7 +479,7 @@ const GAMEPLAY_GUIDE_LINES = [
   "H币可以在亚比商店购买各种功能的道具，你可以按照你的需求购买。",
   "进入学习力战场，你可以通过击败守卫获取对应的学习力值，学习力可以提升亚比的综合能力！",
   "进入时空隧道，你可以开始时空之旅，每过5层可以获得丰厚的奖励！",
-  "如果你想挑战更强大的亚比，可以前往守护者挑战和BOSS挑战，在那里有强大的亚比等着你，如果你能击败他们，就可以获得他们的亚比蛋和专属徽章！",
+  "如果你想挑战更强大的亚比，可以前往挑战之路，在那里有强大的亚比等着你，如果你能击败他们，就可以获得他们的亚比蛋和专属徽章！",
   "现在你应该了解如何游玩Hub了，那么现在，就开始你的Hub之旅吧！"
 ];
 const sceneBattleSpeedFactor = (scene) => 1 / clampBattleSpeed(scene && scene.battleSpeed);
@@ -766,6 +856,10 @@ const safeSkillName = (skill) => String((skill && skill.name) || "");
 const safeSkillType = (skill) => String((skill && skill.type) || "");
 const safeSkillPower = (skill) => (skill && Number.isFinite(Number(skill.power)) ? Number(skill.power) : 0);
 const safeSkillPP = (skill) => (skill && Number.isFinite(Number(skill.pp)) ? Number(skill.pp) : 0);
+const safeSkillPPMax = (skill) => {
+  const max = Number(skill && (skill.maxPp ?? skill.maxPP ?? skill.ppMax ?? skill.pp));
+  return Number.isFinite(max) ? max : 0;
+};
 const safeSkillAccuracy = (skill) => {
   const n = skill && Number.isFinite(Number(skill.accuracy)) ? Number(skill.accuracy) : 100;
   return n < 0 ? 100 : n;
@@ -943,6 +1037,10 @@ const normalizeStudy = (raw, protectKey = "") => {
     out[protectedKey] -= cut;
   }
   return out;
+};
+const studyTotal = (study) => {
+  const s = normalizeStudy(study);
+  return STAT_KEYS.reduce((sum, key) => sum + (Number(s[key]) || 0), 0);
 };
 const calcAbilityStat = (base, talent, study, level, nature = 1) => {
   const b = safeNonNegInt(base);
@@ -1144,13 +1242,21 @@ const normalizeBattleState = (state) => {
     data: e && typeof e.data === "object" ? { ...e.data } : {}
   })) : [];
   out.onDamagedEffects = Array.isArray(s.onDamagedEffects) ? s.onDamagedEffects.map((e) => ({
+    kind: normalize(e && e.kind) || "stage",
     turns: Math.max(1, Math.floor(Number(e && e.turns) || 1)),
     chance: clamp(Number(e && e.chance) || 0, 0, 1),
+    label: normalize(e && e.label),
+    status: normalize(e && e.status),
+    statusTurns: Math.max(1, Math.floor(Number(e && e.statusTurns) || Number(e && e.turns) || 1)),
     allStatsDelta: clamp(Math.floor(Number(e && e.allStatsDelta) || 0), -6, 6),
     keys: Array.isArray(e && e.keys) ? e.keys.filter((k) => typeof k === "string") : [],
     delta: clamp(Math.floor(Number(e && e.delta) || 0), -6, 6),
     applyTo: normalize(e && e.applyTo) === "self" ? "self" : "attacker",
-    trigger: normalize(e && e.trigger) === "attacked" ? "attacked" : "damaged"
+    trigger: normalize(e && e.trigger) === "attacked" ? "attacked" : "damaged",
+    triggerOncePerTurn: Boolean(e && e.triggerOncePerTurn),
+    persistUntilTrigger: Boolean(e && e.persistUntilTrigger),
+    consumeOnTrigger: Boolean(e && e.consumeOnTrigger),
+    lastTriggeredTurn: Math.max(0, Math.floor(Number(e && e.lastTriggeredTurn) || 0))
   })) : [];
   return out;
 };
@@ -1313,12 +1419,14 @@ const getSideState = (scene, side) => {
   if (!scene.targetState || typeof scene.targetState !== "object") scene.targetState = createBattleState();
   return scene.targetState;
 };
-const getBattleAbilityStat = (scene, side, key) => {
+const getBattleAbilityStat = (scene, side, key, options = {}) => {
   const ability = side === "attacker" ? scene.attackerAbility : scene.targetAbility;
   const state = getSideState(scene, side);
   const base = Math.max(1, Number(ability && ability[key]) || 1);
   const boost = state.baseBoost && typeof state.baseBoost === "object" ? Math.max(0, Number(state.baseBoost[key]) || 0) : 0;
-  const m = stageMultiplier(state.stages[key] || 0);
+  const rawStage = Number(state.stages[key]) || 0;
+  const effectiveStage = options && options.ignorePositiveStage ? Math.min(0, rawStage) : rawStage;
+  const m = stageMultiplier(effectiveStage);
   let val = Math.max(1, Math.floor((base + boost) * m));
   (state.timedEffects || []).forEach((e) => {
     if (normalize(e && e.kind) !== "abilityStatFactor") return;
@@ -1753,6 +1861,7 @@ const addOnDamagedEffect = (scene, side, effect) => {
     turns: Math.max(1, Math.floor(Number(effect && effect.turns) || 1)),
     chance: clamp(Number(effect && effect.chance) || 0, 0, 1),
     kind: normalize(effect && effect.kind) || "stage",
+    label: normalize(effect && effect.label),
     status: normalize(effect && effect.status),
     statusTurns: Math.max(1, Math.floor(Number(effect && effect.statusTurns) || Number(effect && effect.turns) || 1)),
     allStatsDelta: clamp(Math.floor(Number(effect && effect.allStatsDelta) || 0), -6, 6),
@@ -1761,13 +1870,15 @@ const addOnDamagedEffect = (scene, side, effect) => {
     applyTo: normalize(effect && effect.applyTo) === "self" ? "self" : "attacker",
     trigger: normalize(effect && effect.trigger) === "attacked" ? "attacked" : "damaged",
     triggerOncePerTurn: Boolean(effect && effect.triggerOncePerTurn),
+    persistUntilTrigger: Boolean(effect && effect.persistUntilTrigger),
+    consumeOnTrigger: Boolean(effect && effect.consumeOnTrigger),
     lastTriggeredTurn: 0
   });
 };
 const cleanupExpiredEffects = (state) => {
   if (!state) return;
   state.timedEffects = (state.timedEffects || []).filter((e) => Number(e.turns) > 0);
-  state.onDamagedEffects = (state.onDamagedEffects || []).filter((e) => Number(e.turns) > 0);
+  state.onDamagedEffects = (state.onDamagedEffects || []).filter((e) => e && (e.persistUntilTrigger || Number(e.turns) > 0));
 };
 const cleanupTeamTimedEffects = (scene) => {
   if (!scene || !Array.isArray(scene.teamTimedEffects)) return;
@@ -2104,18 +2215,21 @@ const timedEffectBadgeMeta = (e) => {
 };
 const onDamagedBadgeMeta = (e) => {
   const turns = Math.max(0, Number(e && e.turns) || 0);
-  if (turns <= 0) return null;
+  if (turns <= 0 && !(e && e.persistUntilTrigger)) return null;
   const trigger = normalize(e && e.trigger) === "attacked" ? "受击后" : "受伤后";
   const applyTo = normalize(e && e.applyTo) === "self" ? "自身" : "攻击方";
   const delta = Number(e && e.delta) || Number(e && e.allStatsDelta) || 0;
   const keys = Array.isArray(e && e.keys) ? e.keys : [];
   const what = keys.length > 0 ? keys.map((k) => battleStatLabel(k)).join("、") : "全属性";
   const act = delta >= 0 ? "提升" : "降低";
+  const label = normalize(e && e.label) || "受击反制";
+  const durationText = e && e.persistUntilTrigger ? (trigger === "受击后" ? "受到攻击前有效" : "受到伤害前有效") : `剩余${turns}回合`;
   return {
     key: `od_${trigger}_${applyTo}_${what}_${delta}`,
-    label: "受击反制",
+    label,
     turns,
-    desc: `${trigger}使${applyTo}${act}${Math.abs(delta)}级：${what}，剩余${turns}回合`,
+    durationLabel: e && e.persistUntilTrigger ? (trigger === "受击后" ? "受击前有效" : "受伤前有效") : undefined,
+    desc: `${trigger}使${applyTo}${act}${Math.abs(delta)}级：${what}，${durationText}`,
     tone: delta >= 0 ? "buff" : "debuff"
   };
 };
@@ -2123,7 +2237,7 @@ const buildTimedEffectBadges = (scene, side) => {
   const sideState = getSideState(scene, side);
   const own = sideState.timedEffects || [];
   const global = Array.isArray(scene && scene.globalTimedEffects) ? scene.globalTimedEffects : [];
-  const fxBadges = own.concat(global).map((e) => timedEffectBadgeMeta(e)).filter((x) => x.turns > 0);
+  const fxBadges = own.concat(global).map((e) => timedEffectBadgeMeta(e)).filter((x) => x && x.turns > 0);
   if (side === "target") {
     const challengeRatio = clamp(Number(scene && scene.targetChallengeDamageReductionRatio) || 0, 0, 0.95);
     if (challengeRatio > 0) {
@@ -2179,7 +2293,10 @@ const tickSideEffects = (scene, side) => {
       pushBattleLog(scene, `${side === "attacker" ? scene.attackerName : scene.targetName}的暴击等级恢复至${state.critStage}级。`);
     }
   });
-  (state.onDamagedEffects || []).forEach((e) => { e.turns = Math.max(0, Number(e.turns) - 1); });
+  (state.onDamagedEffects || []).forEach((e) => {
+    if (e && e.persistUntilTrigger) return;
+    e.turns = Math.max(0, Number(e.turns) - 1);
+  });
   cleanupExpiredEffects(state);
 };
 const getDamageReductionFactor = (scene, side, atkKind = "all") => {
@@ -2419,15 +2536,18 @@ const getDamagePowerTransferFactor = (scene, side) => {
   });
   return clamp(1 + delta, 0.05, 3);
 };
+const wasBattleSideDamagedThisTurn = (scene, side) => {
+  const turnNo = Math.max(1, Math.floor(Number(scene && scene.turnCount) || 1));
+  const damagedTurnKey = side === "target" ? "targetDamagedTurn" : "attackerDamagedTurn";
+  return Math.max(0, Math.floor(Number(scene && scene[damagedTurnKey]) || 0)) === turnNo;
+};
 const getUnharmedPowerMultiplier = (scene, side, skill) => {
   const effects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "unharmedPowerMultiplier");
   if (effects.length <= 0) return 1;
-  const turnNo = Math.max(1, Math.floor(Number(scene && scene.turnCount) || 1));
-  const attackedTurnKey = side === "target" ? "targetAttackedTurn" : "attackerAttackedTurn";
-  const wasAttacked = Math.max(0, Math.floor(Number(scene && scene[attackedTurnKey]) || 0)) === turnNo;
+  const wasDamaged = wasBattleSideDamagedThisTurn(scene, side);
   let factor = 1;
   effects.forEach((e) => {
-    if (!wasAttacked) factor *= Math.max(1, Number(e.factor) || 2);
+    if (!wasDamaged) factor *= Math.max(1, Number(e.factor) || 2);
   });
   return factor;
 };
@@ -2617,11 +2737,22 @@ const getSkillIgnoreDefenseRatio = (skill, atkKind) => {
   const effects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "ignoreDefense");
   let ratio = 0;
   effects.forEach((e) => {
+    if (normalize(e && e.mode) === "positiveStage") return;
     const kind = normalize(e.attackKind) || "all";
     if (kind !== "all" && kind !== normalize(atkKind)) return;
+    if (Number.isFinite(Number(e.chance)) && Math.random() > clamp(Number(e.chance), 0, 1)) return;
     ratio = Math.max(ratio, clamp(Number(e.ratio) || 1, 0, 1));
   });
   return ratio;
+};
+const shouldIgnorePositiveDefenseStage = (skill, atkKind) => {
+  const effects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "ignoreDefense" && normalize(e && e.mode) === "positiveStage");
+  return effects.some((e) => {
+    const kind = normalize(e.attackKind) || "all";
+    if (kind !== "all" && kind !== normalize(atkKind)) return false;
+    const chance = Number.isFinite(Number(e.chance)) ? Number(e.chance) : 1;
+    return Math.random() <= clamp(chance, 0, 1);
+  });
 };
 const hasSkillEffectKind = (skill, kind) => parseSkillEffects(skill).some((e) => normalize(e && e.kind) === normalize(kind));
 const averageSkillEffectPower = (skill, scene = null, actorSide = "attacker", targetSide = "target") => {
@@ -2723,14 +2854,17 @@ const calcBattleDirectDamage = ({
 }) => {
   const actorElement = actorSide === "attacker" ? scene.attackerElement : scene.targetElement;
   const isNoEdgeBlade = normalize(skill && skill.name) === "无锋巨刃";
+  const ignorePositiveDefenseStage = shouldIgnorePositiveDefenseStage(skill, atkKind);
   const atkStat = atkKind === "special"
     ? getBattleAbilityStat(scene, actorSide, "spAtk")
     : getBattleAbilityStat(scene, actorSide, "atk");
   const defStat = isNoEdgeBlade
     ? 1
-    : (atkKind === "special"
-      ? getBattleAbilityStat(scene, defenderSide, "spDef")
-      : getBattleAbilityStat(scene, defenderSide, "def"));
+    : (ignorePositiveDefenseStage
+      ? getBattleAbilityStat(scene, defenderSide, atkKind === "special" ? "spDef" : "def", { ignorePositiveStage: true })
+      : (atkKind === "special"
+        ? getBattleAbilityStat(scene, defenderSide, "spDef")
+        : getBattleAbilityStat(scene, defenderSide, "def")));
   const ignoreDefenseRatio = getSkillIgnoreDefenseRatio(skill, atkKind);
   const effectiveDefStat = ignoreDefenseRatio > 0 ? Math.max(1, Math.floor(defStat * (1 - ignoreDefenseRatio))) : defStat;
   const stab = normalize(actorElement) === normalize(skillElement) ? 1.5 : 1;
@@ -4102,16 +4236,32 @@ const parseSkillEffectsFromDesc = (skill) => {
     const keys = stageTextToKeys(stat);
     if (keys.length > 0) add({ kind: "onDamagedStage", target: "self", applyTo, keys, delta, turns: onDamagedTurns, chance: 1, trigger: "damaged" });
   }
-      if (name === "迷光镜") {
+  if (name === "迷光镜") {
+    for (let i = effects.length - 1; i >= 0; i -= 1) {
+      const fx = effects[i];
+      if (
+        normalize(fx && fx.kind) === "onDamagedStage" &&
+        normalize(fx && fx.applyTo) === "attacker" &&
+        Number(fx && fx.delta) === -3 &&
+        Array.isArray(fx && fx.keys) &&
+        fx.keys.includes("atk") &&
+        fx.keys.includes("spAtk")
+      ) {
+        effects.splice(i, 1);
+      }
+    }
     add({
       kind: "onDamagedStage",
       target: "self",
       applyTo: "attacker",
       keys: ["atk", "spAtk"],
       delta: -3,
-      turns: onDamagedTurns,
+      turns: 1,
       chance: 1,
-      trigger: "damaged"
+      trigger: "attacked",
+      persistUntilTrigger: true,
+      consumeOnTrigger: true,
+      label: "迷光镜"
     });
   }
   if (name === "角斗") {
@@ -4384,6 +4534,17 @@ const correctedKnownSkillEffects = (skill, effects = []) => {
       { kind: "bonusFixedDamage", target: "opponent", amount: 400, chance: 1, requireHit: true, targetHpAbove: 800, splitDamageDisplay: true }
     ];
   }
+  if (skillId === 8236 || name === "糖衣穿甲弹") {
+    return [
+      { kind: "ignoreDefense", target: "opponent", attackKind: "physical", mode: "positiveStage", chance: 0.5, requireHit: false }
+    ];
+  }
+  if (skillId === 12209 || name === "奇光异彩") {
+    return [
+      { kind: "stage", target: "self", keys: ["def", "spDef"], delta: 1, chance: 1, requireHit: false },
+      { kind: "timedHeal", target: "self", ratio: 0.1, turns: 10 }
+    ];
+  }
   if (name === "古炎无双") {
     return [
       { kind: "unharmedStageGuard", target: "self", selfMode: "debuff", opponentMode: "all", turns: 4 }
@@ -4590,16 +4751,14 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
     }
     if (e.kind === "unharmedBranch") {
       const side = sideByTarget(e.target || "self");
-      const turnNo = Math.max(1, Math.floor(Number(scene && scene.turnCount) || 1));
-      const attackedTurnKey = side === "target" ? "targetAttackedTurn" : "attackerAttackedTurn";
-      const wasAttacked = Math.max(0, Math.floor(Number(scene && scene[attackedTurnKey]) || 0)) === turnNo;
-      const branch = wasAttacked ? (e.ifDamaged || null) : (e.ifUnharmed || null);
+      const wasDamaged = wasBattleSideDamagedThisTurn(scene, side);
+      const branch = wasDamaged ? (e.ifDamaged || null) : (e.ifUnharmed || null);
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       if (!branch) return;
       if (normalize(branch.kind) === "stage") {
         const changed = applyStageDelta(scene, side, branch.keys || [], Number(branch.delta) || 0);
         if (changed.length > 0) {
-          logs.push(`${who}${wasAttacked ? "本回合已受到伤害" : "本回合未受到伤害"}，额外提升${Math.abs(Number(branch.delta) || 0)}级：${changed.map((k) => battleStatLabel(k)).join("、")}`);
+          logs.push(`${who}${wasDamaged ? "本回合已受到伤害" : "本回合未受到伤害"}，额外提升${Math.abs(Number(branch.delta) || 0)}级：${changed.map((k) => battleStatLabel(k)).join("、")}`);
         }
         return;
       }
@@ -5520,9 +5679,9 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
     }
     if (e.kind === "unharmedStageGuard") {
       const turnNo = Math.max(1, Math.floor(Number(scene && scene.turnCount) || 1));
-      const attackedTurnKey = actor === "target" ? "targetAttackedTurn" : "attackerAttackedTurn";
-      const wasAttacked = Math.max(0, Math.floor(Number(scene && scene[attackedTurnKey]) || 0)) === turnNo;
-      if (wasAttacked) {
+      const damagedTurnKey = actor === "target" ? "targetDamagedTurn" : "attackerDamagedTurn";
+      const wasDamaged = Math.max(0, Math.floor(Number(scene && scene[damagedTurnKey]) || 0)) === turnNo;
+      if (wasDamaged) {
         logs.push(`${actorName}本回合已受到伤害，${skill.name}的保护效果未触发。`);
         return;
       }
@@ -5820,11 +5979,15 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
         delta: Number(e.delta) || 0,
         applyTo: normalize(e.applyTo) === "self" ? "self" : "attacker",
         trigger: normalize(e.trigger) === "attacked" ? "attacked" : "damaged",
-        triggerOncePerTurn: Boolean(e.triggerOncePerTurn)
+        triggerOncePerTurn: Boolean(e.triggerOncePerTurn),
+        persistUntilTrigger: Boolean(e.persistUntilTrigger),
+        consumeOnTrigger: Boolean(e.consumeOnTrigger),
+        label: normalize(e.label)
       });
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       const applyToWho = normalize(e.applyTo) === "self" ? "自身" : "攻击方";
-      logs.push(`${who}获得受击触发效果，受击时使${applyToWho}${(Number(e.delta) || 0) >= 0 ? "提升" : "降低"}能力，持续${e.turns}回合`);
+      const durationText = e.persistUntilTrigger ? (normalize(e.trigger) === "attacked" ? "直到受到攻击后触发" : "直到受到伤害后触发") : `持续${e.turns}回合`;
+      logs.push(`${who}获得${normalize(e.label) || "受击触发效果"}，受击时使${applyToWho}${(Number(e.delta) || 0) >= 0 ? "提升" : "降低"}能力，${durationText}`);
       return;
     }
     if (e.kind === "delayedStage") {
@@ -6004,15 +6167,26 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
   return logs;
 };
 const runOnDamagedEffects = (scene, damagedSide, attackerSide, options = {}) => {
-  if (scene && normalize(options && options.reason) === "attacked") {
+  const reason = normalize(options && options.reason) || "damaged";
+  if (scene && reason === "attacked") {
     const turnNo = Math.max(1, Math.floor(Number(scene.turnCount) || 1));
     if (damagedSide === "target") scene.targetAttackedTurn = turnNo;
     else scene.attackerAttackedTurn = turnNo;
   }
+  if (scene && reason === "damaged") {
+    const turnNo = Math.max(1, Math.floor(Number(scene.turnCount) || 1));
+    if (damagedSide === "target") scene.targetDamagedTurn = turnNo;
+    else scene.attackerDamagedTurn = turnNo;
+  }
   const state = getSideState(scene, damagedSide);
   const effects = Array.isArray(state.onDamagedEffects) ? state.onDamagedEffects : [];
-  const reason = normalize(options && options.reason) || "damaged";
-  effects.forEach((e) => {
+  const consumeTriggeredEffect = (effect) => {
+    if (!effect || !effect.consumeOnTrigger) return;
+    effect.turns = 0;
+    const idx = effects.indexOf(effect);
+    if (idx >= 0) effects.splice(idx, 1);
+  };
+  effects.slice().forEach((e) => {
     const trigger = normalize(e && e.trigger) || "damaged";
     if (trigger === "attacked" && reason !== "attacked") return;
     if (trigger === "damaged" && reason !== "damaged") return;
@@ -6035,6 +6209,7 @@ const runOnDamagedEffects = (scene, damagedSide, attackerSide, options = {}) => 
       const owner = damagedSide === "attacker" ? scene.attackerName : scene.targetName;
       const victim = appliedSide === "attacker" ? scene.attackerName : scene.targetName;
       pushBattleLog(scene, `${owner}触发反制效果，${victim}陷入${statusLabel(status)}${targetState.statuses[status]}回合`);
+      consumeTriggeredEffect(e);
       return;
     }
     let changed = [];
@@ -6048,12 +6223,18 @@ const runOnDamagedEffects = (scene, damagedSide, attackerSide, options = {}) => 
     } else {
       return;
     }
-    if (changed.length === 0) return;
+    if (changed.length === 0) {
+      consumeTriggeredEffect(e);
+      return;
+    }
     const owner = damagedSide === "attacker" ? scene.attackerName : scene.targetName;
     const victim = appliedSide === "attacker" ? scene.attackerName : scene.targetName;
     const d = Array.isArray(e.keys) && e.keys.length > 0 ? Number(e.delta) : Number(e.allStatsDelta);
-    pushBattleLog(scene, `${owner}触发反制效果，${victim}${d < 0 ? "下降" : "提升"}${Math.abs(d)}级：${changed.map((k) => battleStatLabel(k)).join("、")}`);
+    const label = normalize(e && e.label) || "反制效果";
+    pushBattleLog(scene, `${owner}触发${label}，${victim}${d < 0 ? "下降" : "提升"}${Math.abs(d)}级：${changed.map((k) => battleStatLabel(k)).join("、")}`);
+    consumeTriggeredEffect(e);
   });
+  cleanupExpiredEffects(state);
 };
 const beforeActionCheck = (scene, side) => {
   const state = getSideState(scene, side);
@@ -7449,9 +7630,9 @@ createApp({
           const source = loaded.guardianWinCounts && typeof loaded.guardianWinCounts === "object" ? loaded.guardianWinCounts : {};
           const out = {};
           Object.keys(source).forEach((name) => {
-            const key = normalize(name);
+            const key = resolveGuardianName(name);
             const count = Math.max(0, Math.floor(Number(source[name]) || 0));
-            if (key && count > 0) out[key] = count;
+            if (key && count > 0) out[key] = Math.max(0, Math.floor(Number(out[key]) || 0)) + count;
           });
           return out;
         })(),
@@ -7687,6 +7868,13 @@ createApp({
     const warehouseElementFilter = ref("全部系别");
     const warehouseSortMode = ref("created");
     const nowTs = ref(Date.now());
+    const isDoubleRewardTimeAt = (ts = Date.now()) => {
+      const d = new Date(ts);
+      const hour = d.getHours();
+      return hour >= 20 && hour < 22;
+    };
+    const isDoubleRewardTime = computed(() => isDoubleRewardTimeAt(nowTs.value));
+    const doubleRewardNotice = "20:00—22:00开放双倍h币和双倍经验，可以和双倍经验器叠加！";
     const viewportSize = ref({
       width: typeof window === "undefined" ? 1700 : Math.max(1, Number(window.innerWidth) || 1700),
       height: typeof window === "undefined" ? 765 : Math.max(1, Number(window.innerHeight) || 765)
@@ -7697,8 +7885,13 @@ createApp({
     const activeEvolution = ref(null);
     const battleScene = ref(null);
     const battleLogCollapsed = ref(false);
-    const showGuardianPanel = ref(false);
-    const showBossPanel = ref(false);
+    const battleStageHoverSide = ref("");
+    const battleStagePinnedSide = ref("");
+    const showChallengeRoadPanel = ref(false);
+    const showGuardianPanel = showChallengeRoadPanel;
+    const showBossPanel = showChallengeRoadPanel;
+    const selectedChallengeRoadTierIndex = ref(0);
+    const showChallengeRoadTierPanel = ref(false);
     const showWeeklyBossPanel = ref(false);
     const showQixingGachaPanel = ref(false);
     const showStudyPanel = ref(false);
@@ -7741,6 +7934,7 @@ createApp({
     const detailPreviewPet = ref(null);
     const shopTargetPetId = ref("");
     const shopBuyQuantities = ref({});
+    const itemUseQuantities = ref({});
     const qixingGachaDrawing = ref(false);
     const autoBattleRun = ref(null);
     const releaseNotes = RELEASE_NOTES_V040;
@@ -8072,6 +8266,17 @@ createApp({
       { count: 10, suffix: "的克星", tone: "rose" },
       { count: 100, suffix: "的噩梦", tone: "violet" }
     ];
+    const guardianBadgeImageNameAlias = {
+      "魂斗鱼": "魂多鱼",
+      "多古拉伯爵": "德古拉伯爵",
+      "麦斗司令": "麦斗元帅"
+    };
+    const guardianBadgeImageSrc = (guardianName) => {
+      const name = normalize(guardianName);
+      if (!name) return "";
+      const fileName = guardianBadgeImageNameAlias[name] || name;
+      return `./hub 守护者联盟勋章/${fileName}.png`;
+    };
     const badgeIdOf = (guardianName, threshold) => `guardian_${normalize(guardianName)}_${threshold}`;
     const bossBadgeIdOf = (bossName) => `boss_${normalize(bossName)}_first_v1`;
     const bossDifficultyRewardKey = (bossName, difficultyKey) => `${normalize(bossName)}::${normalize(difficultyKey)}`;
@@ -8084,6 +8289,7 @@ createApp({
         const count = Math.max(0, Math.floor(Number(counts[name]) || 0));
         guardianBadgeThresholds.forEach((rule) => {
           if (count >= rule.count) {
+            const imageSrc = rule.count === 1 ? guardianBadgeImageSrc(name) : "";
             rows.push({
               id: badgeIdOf(name, rule.count),
               name: `${name}${rule.suffix}`,
@@ -8091,6 +8297,7 @@ createApp({
               count: rule.count,
               currentCount: count,
               tone: rule.tone,
+              imageSrc,
               description: `${name} 已挑战成功 ${count} 次`
             });
           }
@@ -8144,29 +8351,13 @@ createApp({
     });
     const equippedBadge = computed(() => ownedBadges.value.find((b) => b.id === state.value.equippedBadgeId) || null);
     const recordGuardianBadgeWin = (guardianName) => {
-      const name = normalize(guardianName);
+      const name = resolveGuardianName(guardianName);
       if (!name) return;
       if (!state.value.guardianWinCounts || typeof state.value.guardianWinCounts !== "object") state.value.guardianWinCounts = {};
       state.value.guardianWinCounts[name] = Math.max(0, Math.floor(Number(state.value.guardianWinCounts[name]) || 0)) + 1;
       const count = state.value.guardianWinCounts[name];
       const unlocked = guardianBadgeThresholds.filter((rule) => count === rule.count);
       unlocked.forEach((rule) => showToast(`激活徽章：${name}${rule.suffix}`));
-    };
-    const hasBossChallengePrerequisite = () => {
-      return BOSS_CHALLENGE_REQUIRED_GUARDIAN_NAMES.every((name) => {
-        const entry = dexByName.get(resolveGuardianName(name));
-        const targetDexId = Number(entry && entry.dexId) || 0;
-        if (!targetDexId) return false;
-        const targetRoot = chainRootByDex.get(targetDexId) || targetDexId;
-        const hasPet = (Array.isArray(state.value.activePets) ? state.value.activePets : []).some((p) => {
-          const petDexId = Number(p && p.dexId) || 0;
-          const petBaseDexId = Number(p && p.baseDexId) || 0;
-          const petRoot = chainRootByDex.get(petDexId) || chainRootByDex.get(petBaseDexId) || petBaseDexId || petDexId;
-          return petDexId === targetDexId || petBaseDexId === targetDexId || petRoot === targetRoot;
-        });
-        if (hasPet) return true;
-        return (Array.isArray(state.value.eggs) ? state.value.eggs : []).some((e) => Number(e && e.dexId) === targetDexId);
-      });
     };
     const grantBossFirstWinRewardV1 = (defeatedBossName, difficultyKey = "normal") => {
       const bossName = normalize(defeatedBossName);
@@ -8183,7 +8374,6 @@ createApp({
       const rewardText = reward.items.map((item) => `${item.label} x${item.count}`).join("、");
       pushBattleLog(battleScene.value, `首次通过${difficultyLabel}难度 BOSS 挑战，额外获得 ${medalName}${rewardText ? `、${rewardText}` : ""}。`);
       queueRewardFlyToasts([
-        "获取2000H币！",
         `获取${medalName}！`,
         ...reward.items.map((item) => `获取${item.label}×${item.count}！`)
       ]);
@@ -8296,6 +8486,8 @@ createApp({
       .map((it) => ({
         ...it,
         count: getItemCount(it.id),
+        useQuantity: itemUseQuantity(it.id),
+        supportsUseQuantity: isStudyFruitItem(it.id),
         countLabel: it.id === "double_exp_device" || it.id === "auto_battle_device" ? `${getItemCount(it.id)} 次` : `× ${getItemCount(it.id)}`,
         equipped: safeActivePets.value.filter((pet) => normalize(pet && pet.equippedItemId) === normalize(it.id)).length
       })));
@@ -8324,6 +8516,85 @@ createApp({
       });
       return owned;
     };
+    const resolveChallengeRoadName = (name) => CHALLENGE_ROAD_NAME_ALIAS[normalize(name)] || normalize(name);
+    const findChallengeRoadDexEntry = (name) => {
+      const resolved = resolveChallengeRoadName(name);
+      if (!resolved) return null;
+      return dexEntries.find((d) => normalize(d.name) === resolved)
+        || dexEntries.find((d) => normalize(d.name).replace(/[·・]/g, "") === resolved.replace(/[·・]/g, ""))
+        || dexEntries.find((d) => resolved.length >= 2 && normalize(d.name).includes(resolved))
+        || null;
+    };
+    const buildChallengeRoadItem = (tierIndex, kind, name, order) => {
+      const entry = findChallengeRoadDexEntry(name);
+      if (!entry) return {
+        tierIndex,
+        kind,
+        order,
+        sourceName: name,
+        name: resolveChallengeRoadName(name) || normalize(name),
+        missing: true,
+        completed: false
+      };
+      return {
+        ...entry,
+        tierIndex,
+        kind,
+        order,
+        sourceName: name,
+        completed: hasObtainedEggDex(entry.dexId),
+        missing: false
+      };
+    };
+    const challengeRoadTiers = computed(() => {
+      const rows = [];
+      CHALLENGE_ROAD_TIERS.forEach((tier, tierIndex) => {
+        const guardianNames = Array.isArray(tier.guardianNames) ? tier.guardianNames : [];
+        const bossNames = Array.isArray(tier.bossNames) ? tier.bossNames : [];
+        const items = []
+          .concat(guardianNames.map((name, idx) => buildChallengeRoadItem(tierIndex, "guardian", name, idx)))
+          .concat(bossNames.map((name, idx) => buildChallengeRoadItem(tierIndex, "boss", name, guardianNames.length + idx)));
+        const total = items.length;
+        const current = items.filter((item) => item.completed).length;
+        const previous = rows[tierIndex - 1] || null;
+        rows.push({
+          ...tier,
+          tierIndex,
+          items,
+          total,
+          current,
+          percent: total > 0 ? Math.round((current / total) * 100) : 0,
+          unlocked: tierIndex === 0 || Boolean(previous && previous.completed),
+          completed: total > 0 && current >= total,
+          lockText: previous ? `通关${previous.title}后开启` : ""
+        });
+      });
+      return rows;
+    });
+    const challengeRoadEntryByDexId = (dexId) => {
+      const id = Number(dexId) || 0;
+      if (!id) return null;
+      for (const tier of challengeRoadTiers.value) {
+        const found = (tier.items || []).find((item) => Number(item && item.dexId) === id);
+        if (found) return { item: found, tier };
+      }
+      return null;
+    };
+    const isChallengeRoadEntryUnlocked = (entry) => {
+      const row = challengeRoadEntryByDexId(entry && entry.dexId);
+      return !row || Boolean(row.tier && row.tier.unlocked);
+    };
+    const challengeRoadLockMessage = (entry) => {
+      const row = challengeRoadEntryByDexId(entry && entry.dexId);
+      if (!row || !row.tier || row.tier.unlocked) return "";
+      return row.tier.lockText || "请先通关上一梯度。";
+    };
+    const selectedChallengeRoadTier = computed(() => {
+      const rows = challengeRoadTiers.value;
+      if (!rows.length) return null;
+      const index = clamp(Math.floor(Number(selectedChallengeRoadTierIndex.value) || 0), 0, rows.length - 1);
+      return rows[index] || rows[0] || null;
+    });
     const markObtainedEggDex = (dexId) => {
       const id = Number(dexId) || 0;
       if (!id) return;
@@ -8375,6 +8646,16 @@ createApp({
     const shopItemTotalPrice = (item) => {
       if (!item) return 0;
       return Math.max(0, Math.floor(Number(item.price) || 0)) * shopBuyQuantity(item.id);
+    };
+    const isStudyFruitItem = (itemId) => Boolean(STUDY_FRUIT_KEY_BY_ITEM_ID[normalize(String(itemId || ""))]);
+    const itemUseQuantity = (itemId) => {
+      const id = normalize(String(itemId || ""));
+      return clamp(Math.floor(Number(itemUseQuantities.value[id]) || 1), 1, 999);
+    };
+    const setItemUseQuantity = (itemId, value) => {
+      const id = normalize(String(itemId || ""));
+      if (!id) return;
+      itemUseQuantities.value[id] = clamp(Math.floor(Number(value) || 1), 1, 999);
     };
 
     const showToast = (message) => {
@@ -9325,8 +9606,8 @@ createApp({
     const challengeLockMessage = (entry) => {
       if (!entry) return "该亚比暂不可挑战。";
       if (isWeeklyBossEntry(entry)) return "该亚比为当周BOSS，请从【当周BOSS】入口挑战。";
-      if (isBossEntry(entry)) return "该亚比为BOSS，请从【BOSS挑战】入口挑战。";
-      if (isGuardianName(entry.name)) return "该亚比为守护者，请从【守护者挑战】入口挑战。";
+      if (isBossEntry(entry)) return "该亚比为BOSS，请从【挑战之路】入口挑战。";
+      if (isGuardianName(entry.name)) return "该亚比为守护者，请从【挑战之路】入口挑战。";
       if (isShopEggEntry(entry)) return "该亚比蛋仅可从【亚比商店】购买，不能通过图鉴挑战获取。";
       return "该亚比暂不可挑战。";
     };
@@ -9721,7 +10002,7 @@ createApp({
         height: `${safeSize}px`,
         backgroundImage: `url(${icon})`,
         backgroundRepeat: "no-repeat",
-        backgroundSize: `${safeSize}px ${safeSize}px`,
+        backgroundSize: "contain",
         backgroundPosition: "center"
       };
     };
@@ -9735,7 +10016,7 @@ createApp({
         height: `${safeSize}px`,
         backgroundImage: `url(${icon})`,
         backgroundRepeat: "no-repeat",
-        backgroundSize: `${safeSize}px ${safeSize}px`,
+        backgroundSize: "contain",
         backgroundPosition: "center",
         backgroundColor: "transparent"
       };
@@ -10262,9 +10543,6 @@ createApp({
       const frameW = Math.max(1, Number(meta.action && meta.action.w) || 1);
       const renderW = Math.max(1, parseFloat(rightAlignedStyle.renderW) || 1);
       const scale = renderW / frameW;
-      const bodyLeft = Math.max(0, Number(meta.actionBox[0]) || 0);
-      const bodyRight = Math.min(frameW, Number(meta.actionBox[2]) || frameW);
-      const bodyW = Math.max(1, bodyRight - bodyLeft);
       const stableBattleOffsetY = (baseStyle) => {
         if (!baseStyle || !baseStyle.renderW) return rightAlignedStyle.offsetY || "0px";
         const idle = meta.idle;
@@ -10283,19 +10561,6 @@ createApp({
           offsetY: stableBattleOffsetY(rightAlignedStyle)
         };
       }
-      const vw = Math.max(1, Number(viewportSize.value && viewportSize.value.width) || 1700);
-      const vh = Math.max(1, Number(viewportSize.value && viewportSize.value.height) || 765);
-      const safeLeft = vw <= 900 ? 8 * getBattleUiPx(vw, vh) : 16 * getBattleUiPx(vw, vh);
-      const maxBodyW = Math.max(1, getBattleTargetSpriteRightX(vw, vh) - safeLeft);
-      const scaledBodyW = bodyW * scale;
-      if (scaledBodyW > maxBodyW) {
-        const cappedTargetBodyH = Math.max(1, Number(targetBodyH) || 1) * (maxBodyW / scaledBodyW);
-        const cappedStyle = alignTargetRightEdge(getPetAnimLayoutStyle(id, sideCode, stateCode, cappedTargetBodyH, "bottom"));
-        return {
-          ...cappedStyle,
-          offsetY: stableBattleOffsetY(cappedStyle)
-        };
-      }
       return {
         ...rightAlignedStyle,
         offsetY: stableBattleOffsetY(rightAlignedStyle)
@@ -10309,7 +10574,7 @@ createApp({
       const stateCode = getPetBattleStateCode(scene, safeSide);
       const vw = Math.max(1, Number(viewportSize.value && viewportSize.value.width) || 1700);
       const vh = Math.max(1, Number(viewportSize.value && viewportSize.value.height) || 765);
-      const targetBodyH = clamp(Math.min(vw * 0.252, vh * 0.252), vw * 0.14, vw * 0.266);
+      const targetBodyH = clamp(Math.min(vw * 0.252, vh * 0.252), vw * 0.14, vw * 0.266) * 1.5;
       const style = getBattlePetAnimLayoutStyle(dexId, sideCode, stateCode, targetBodyH);
       if (!style.renderW) return {};
       return {
@@ -11090,7 +11355,10 @@ createApp({
         target.hp = fixedTargetMaxHp;
         target.maxHp = fixedTargetMaxHp;
       }
-      const expMultiplier = mode !== "study" && consumeItemCount("double_exp_device", 1) ? 2 : 1;
+      const deviceExpMultiplier = mode !== "study" && consumeItemCount("double_exp_device", 1) ? 2 : 1;
+      const rewardEventActive = mode !== "study" && Boolean(isDoubleRewardTime.value);
+      const rewardEventMultiplier = rewardEventActive ? 2 : 1;
+      const expMultiplier = deviceExpMultiplier * rewardEventMultiplier;
       battleLogCollapsed.value = false;
       battleScene.value = {
         open: true,
@@ -11102,6 +11370,9 @@ createApp({
         studyMeta: mode === "study" ? (guardianMeta || null) : null,
         timeTunnelMeta: timeTunnelMeta || null,
         autoBattleMeta: autoBattleMeta || null,
+        deviceExpMultiplier,
+        rewardEventActive,
+        rewardEventMultiplier,
         expMultiplier,
         team,
         currentAttackerId: team[0].id,
@@ -11211,7 +11482,8 @@ createApp({
       resetBattleAnimIdle(battleScene.value);
       const startLog = mode === "guardian" ? "守护者挑战开始。按速度和技能优先度决定先手。" : (mode === "boss" ? "BOSS挑战开始。按速度和技能优先度决定先手。" : (mode === "timeTunnel" ? `时空隧道第${timeTunnelMeta && timeTunnelMeta.floor ? timeTunnelMeta.floor : 1}层开始。击败本层全部亚比才能开启下一层。` : (mode === "study" ? `${guardianMeta && guardianMeta.label ? guardianMeta.label : ""}学习力战场开始。按速度和技能优先度决定先手。` : "对战开始。按速度和技能优先度决定先手。")));
       pushBattleLog(battleScene.value, startLog);
-      if (expMultiplier > 1) pushBattleLog(battleScene.value, `双倍经验器生效，本场胜利经验变为 ${expMultiplier} 倍。`);
+      if (deviceExpMultiplier > 1) pushBattleLog(battleScene.value, "双倍经验器生效，本场胜利经验翻倍。");
+      if (rewardEventActive) pushBattleLog(battleScene.value, "20:00—22:00双倍奖励生效，本场胜利经验与H币翻倍，可与双倍经验器叠加。");
       if (autoBattleMeta) pushBattleLog(battleScene.value, `自动战斗仪生效，本轮剩余自动挑战 ${Math.max(0, Number(autoBattleMeta.remainingAfterStart) || 0)} 次。`);
       if (mode === "timeTunnel" && timeTunnelMeta && timeTunnelMeta.environmentElement) {
         pushBattleLog(battleScene.value, `${timeTunnelMeta.environmentName || "时空环境"}展开，${timeTunnelMeta.environmentElement}亚比全属性数值提升10%。`);
@@ -11573,7 +11845,7 @@ createApp({
       }
       if (scene && scene.mode === "boss" && Math.max(1, Number(scene.turnCount) || 1) === 1) {
         const bossName = resolveBossName(scene.targetName);
-        const fixedName = bossName === "骰子大王" ? "骰子炸弹" : (bossName === "龙族大法师" ? "风神附体" : "");
+        const fixedName = bossName === "骰子大王" ? "骰子炸弹" : "";
         const fixed = fixedName ? findUsableSkillByName(fixedName) : null;
         if (fixed) return fixed;
       }
@@ -11877,7 +12149,7 @@ createApp({
       const rolledPowerMultiplier = rollSkillChancePowerMultiplier(skill);
       if (rolledPowerMultiplier > 1) pushBattleLog(scene, `${actorName}的${skill.name}触发${rolledPowerMultiplier}倍伤害。`);
       const unharmedPowerMultiplier = getUnharmedPowerMultiplier(scene, actorSide, skill);
-      if (unharmedPowerMultiplier > 1) pushBattleLog(scene, `${actorName}本回合未受到攻击，${skill.name}威力翻倍。`);
+      if (unharmedPowerMultiplier > 1) pushBattleLog(scene, `${actorName}本回合未受到伤害，${skill.name}威力翻倍。`);
       const statusPowerMultiplier = getStatusPowerMultiplier(scene, actorSide, targetSide, skill);
       if (statusPowerMultiplier > 1) pushBattleLog(scene, `${targetName}处于异常状态，${skill.name}威力提升至${statusPowerMultiplier}倍。`);
       const powerFactor = getElementPowerFactor(scene, actorSide, skillElement) * getDamageBoostFactor(scene, actorSide) * getDamagePowerTransferFactor(scene, actorSide) * rolledPowerMultiplier * unharmedPowerMultiplier * statusPowerMultiplier;
@@ -12362,7 +12634,7 @@ createApp({
         scheduleBattleSkillEffectVisual(scene, actorSide, targetSide, skill, atkKind, actionStateKey, actionSeq, showComboFailVisual);
         pushBattleLog(scene, `${actorName} 使用 ${skill.name}，但${compareElementLabel(elementFactor)}，未造成有效伤害。`);
       }
-      if (skillEffectDidApply && damage <= 0) {
+      if (skillEffectDidApply && damage <= 0 && (atkKind === "physical" || atkKind === "special") && hasUsablePower) {
         runOnDamagedEffects(scene, targetSide, actorSide, { reason: "attacked" });
       }
       const hasOnlyInvalidHits = comboHitList.length > 0 && comboHitList.every((x) => normalize(x) === "无效" || normalize(x) === "MISS");
@@ -12500,7 +12772,7 @@ createApp({
       if (!pet) return { added: 0, current: 0, full: false, pet: null };
       const study = normalizeStudy(pet.study, key);
       const before = clamp(Number(study[key]) || 0, 0, 255);
-      const total = STAT_KEYS.reduce((sum, k) => sum + (Number(study[k]) || 0), 0);
+      const total = studyTotal(study);
       study[key] = clamp(before + Math.min(10, Math.max(0, 510 - total)), 0, 255);
       pet.study = normalizeStudy(study, key);
       const after = clamp(Number(pet.study[key]) || 0, 0, 255);
@@ -12557,6 +12829,9 @@ createApp({
       let unlockText = "";
       let expDistribution = [];
       if (win) {
+        const rewardEventActive = Boolean(scene.rewardEventActive) || (scene.mode !== "study" && isDoubleRewardTimeAt(Date.now()));
+        const rewardEventMultiplier = rewardEventActive ? Math.max(1, Math.floor(Number(scene.rewardEventMultiplier) || 2)) : 1;
+        const expMultiplier = Math.max(1, Math.floor(Number(scene.expMultiplier) || 1));
         if (scene.mode === "study") {
           const reward = grantStudyReward(scene);
           unlockText = reward.added > 0
@@ -12571,7 +12846,7 @@ createApp({
             return;
           }
         } else {
-          expGain = calcWinExp(scene.targetLevel) * Math.max(1, Math.floor(Number(scene.expMultiplier) || 1));
+          expGain = calcWinExp(scene.targetLevel) * expMultiplier;
           const receivers = bagPets.value.filter((p) => p && p.id);
           if (receivers.length > 0) {
             const avg = Math.floor(expGain / receivers.length);
@@ -12581,9 +12856,10 @@ createApp({
               expDistribution.push(row);
             });
             pushBattleLog(scene, `获得总经验 ${expGain}，由背包 ${receivers.length} 只亚比平均共享。`);
-            if (Math.max(1, Math.floor(Number(scene.expMultiplier) || 1)) > 1) pushBattleLog(scene, "双倍经验器已结算，本场经验翻倍。");
+            if (expMultiplier > 1) pushBattleLog(scene, `经验倍率已结算，本场经验 ×${expMultiplier}。`);
           } else if (activePet) {
             expDistribution.push(grantExp(activePet, expGain));
+            if (expMultiplier > 1) pushBattleLog(scene, `经验倍率已结算，本场经验 ×${expMultiplier}。`);
           }
         }
         if (scene.mode === "timeTunnel") {
@@ -12597,20 +12873,22 @@ createApp({
             if (!Array.isArray(state.value.timeTunnelRewardClaimedFloors)) state.value.timeTunnelRewardClaimedFloors = [];
             if (!state.value.timeTunnelRewardClaimedFloors.includes(floor)) {
               state.value.timeTunnelRewardClaimedFloors.push(floor);
-              if (Math.max(0, Math.floor(Number(rewardCfg.hCoins) || 0)) > 0) {
-                state.value.hCoins = Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) + Math.max(0, Math.floor(Number(rewardCfg.hCoins) || 0));
+              const baseStageHCoins = Math.max(0, Math.floor(Number(rewardCfg.hCoins) || 0));
+              const stageHCoins = baseStageHCoins * rewardEventMultiplier;
+              if (stageHCoins > 0) {
+                state.value.hCoins = Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) + stageHCoins;
               }
               (Array.isArray(rewardCfg.items) ? rewardCfg.items : []).forEach((item) => {
                 addItemCount(item.id, item.count);
               });
               const rewardTexts = [
                 ...((Array.isArray(rewardCfg.items) ? rewardCfg.items : []).map((item) => `${item.label} x${item.count}`)),
-                ...(Math.max(0, Math.floor(Number(rewardCfg.hCoins) || 0)) > 0 ? [`${Math.max(0, Math.floor(Number(rewardCfg.hCoins) || 0))}H币`] : [])
+                ...(stageHCoins > 0 ? [`${stageHCoins}H币${rewardEventActive ? "（双倍奖励）" : ""}`] : [])
               ];
               pushBattleLog(scene, `阶段奖励已发放：${rewardTexts.join("、")}。`);
               queueRewardFlyToasts([
                 ...((Array.isArray(rewardCfg.items) ? rewardCfg.items : []).map((item) => `获取${item.label}×${item.count}！`)),
-                ...(Math.max(0, Math.floor(Number(rewardCfg.hCoins) || 0)) > 0 ? [`获取${Math.max(0, Math.floor(Number(rewardCfg.hCoins) || 0))}H币！`] : [])
+                ...(stageHCoins > 0 ? [`获取${stageHCoins}H币！`] : [])
               ]);
             } else {
               pushBattleLog(scene, `第${floor}层阶段奖励已领取过，本次不重复发放。`);
@@ -12700,12 +12978,11 @@ createApp({
             claimedAt: Date.now()
           };
           pushBattleLog(scene, `获得 ${WEEKLY_BOSS_CONFIG.itemName}×1 和 ${WEEKLY_BOSS_CONFIG.honorBadgeName}。`);
-          queueRewardFlyToasts([
+          scene._weeklyBossRewardFlyBase = [
             ...(canDropEgg && !alreadyHadEgg ? [`获取${WEEKLY_BOSS_CONFIG.name}亚比蛋！`] : []),
-            `获取${WEEKLY_BOSS_CONFIG.rewardHCoins}H币！`,
             `获取${WEEKLY_BOSS_CONFIG.itemName}×1！`,
             `获取${WEEKLY_BOSS_CONFIG.honorBadgeName}！`
-          ]);
+          ];
         } else {
           hCoinGain = Math.max(0, Math.floor(Number(scene.targetLevel) || 0) * 2);
           const targetChain = getChainStageInfoByDexId(target.dexId, target.name);
@@ -12737,8 +13014,17 @@ createApp({
           }
         }
         if (hCoinGain > 0) {
+          const baseHCoinGain = hCoinGain;
+          hCoinGain = baseHCoinGain * rewardEventMultiplier;
           state.value.hCoins = Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) + hCoinGain;
-          pushBattleLog(scene, `获得 ${hCoinGain} H币。`);
+          pushBattleLog(scene, rewardEventMultiplier > 1 ? `双倍H币生效：${baseHCoinGain} -> ${hCoinGain} H币。` : `获得 ${hCoinGain} H币。`);
+          if (Array.isArray(scene._weeklyBossRewardFlyBase)) {
+            queueRewardFlyToasts([
+              ...scene._weeklyBossRewardFlyBase,
+              `获取${hCoinGain}H币！`
+            ]);
+            scene._weeklyBossRewardFlyBase = null;
+          }
         }
       }
       scene.ended = true;
@@ -12756,6 +13042,9 @@ createApp({
         summary: scene.summary,
         expDistribution,
         expMultiplier: Math.max(1, Math.floor(Number(scene.expMultiplier) || 1)),
+        deviceExpMultiplier: Math.max(1, Math.floor(Number(scene.deviceExpMultiplier) || 1)),
+        rewardEventActive: Boolean(scene.rewardEventActive),
+        rewardEventMultiplier: Math.max(1, Math.floor(Number(scene.rewardEventMultiplier) || 1)),
         autoBattleText: scene.autoBattleMeta ? `自动战斗：本轮已完成 ${Math.max(0, Math.floor(Number(scene.autoBattleMeta.completed) || 0))}/10，剩余次数 ${getItemCount("auto_battle_device")}` : ""
       };
       if (scene.autoBattleMeta) {
@@ -12916,6 +13205,8 @@ createApp({
       }
       battleScene.value = null;
       battleLogCollapsed.value = false;
+      battleStageHoverSide.value = "";
+      battleStagePinnedSide.value = "";
       stopBattleBgm();
       showSwitchPanel.value = false;
       switchPanelMode.value = "manual";
@@ -12923,6 +13214,28 @@ createApp({
     };
     const toggleBattleLogCollapsed = () => {
       battleLogCollapsed.value = !battleLogCollapsed.value;
+    };
+    const showBattleStageSide = (side) => {
+      battleStageHoverSide.value = side === "attacker" ? "attacker" : "target";
+    };
+    const toggleBattleStagePinnedSide = (side) => {
+      const safeSide = side === "attacker" ? "attacker" : "target";
+      if (battleStagePinnedSide.value === safeSide) {
+        battleStagePinnedSide.value = "";
+        battleStageHoverSide.value = "";
+        return;
+      }
+      battleStageHoverSide.value = safeSide;
+      battleStagePinnedSide.value = safeSide;
+    };
+    const clearBattleStagePinnedSide = (side = "") => {
+      const safeSide = side === "attacker" ? "attacker" : (side === "target" ? "target" : "");
+      if (!safeSide || battleStageHoverSide.value === safeSide) battleStageHoverSide.value = "";
+      if (!safeSide || battleStagePinnedSide.value === safeSide) battleStagePinnedSide.value = "";
+    };
+    const isBattleStageVisibleSide = (side) => {
+      const safeSide = side === "attacker" ? "attacker" : "target";
+      return battleStageHoverSide.value === safeSide || battleStagePinnedSide.value === safeSide;
     };
     const openBattleItemPanel = () => {
       const scene = battleScene.value;
@@ -13340,11 +13653,11 @@ createApp({
       selectedQixingSealId.value = seal.id;
       showToast(`${petDisplayName(pet)} 已装配启星之印 Lv.${seal.level}。`);
     };
-    const useBagItemOnSelectedPet = (itemId) => {
+    const useBagItemOnSelectedPet = (itemId, amount = 1) => {
       const pet = selectedPet.value;
       if (!pet) return showToast("请先选择背包亚比。");
       shopTargetPetId.value = pet.id;
-      return useShopItem(itemId);
+      return useShopItem(itemId, amount);
     };
     const upgradeQixingSeal = () => {
       const seal = selectedQixingSeal.value;
@@ -13370,7 +13683,7 @@ createApp({
       tryOpenNextEvolution();
       showToast(`当前启星之印已升级至 Lv.${nextLevel}。`);
     };
-    const useShopItem = (itemId) => {
+    const useShopItem = (itemId, amount = 1) => {
       const id = normalize(String(itemId || ""));
       if (!id) return;
       if (getItemCount(id) <= 0) return showToast("该道具数量不足。");
@@ -13453,19 +13766,18 @@ createApp({
       }
       const studyFruitKey = STUDY_FRUIT_KEY_BY_ITEM_ID[id];
       if (studyFruitKey) {
-        const study = normalizeStudy(pet.study, studyFruitKey);
+        const study = normalizeStudy(pet.study);
         const before = clamp(Number(study[studyFruitKey]) || 0, 0, 255);
         if (before >= 255) return showToast(`${petDisplayName(pet)} 的${battleStatLabel(studyFruitKey)}学习力已满。`);
-        const itemCount = getItemCount(id);
-        const maxUse = Math.max(0, 255 - before);
-        const usable = Math.min(itemCount, maxUse);
-        if (usable <= 0) return showToast(`${petDisplayName(pet)} 的${battleStatLabel(studyFruitKey)}学习力已满。`);
-        const input = window.prompt(`请输入使用数量（1-${usable}）`, String(usable));
-        if (input === null) return;
-        const amount = clamp(Math.floor(Number(input) || 0), 1, usable);
-        study[studyFruitKey] = clamp(before + amount, 0, 255);
+        const total = studyTotal(study);
+        if (total >= 510) return showToast(`${petDisplayName(pet)} 的学习力总和已满。`);
+        const requested = clamp(Math.floor(Number(amount) || 1), 1, 999);
+        const useCount = Math.min(requested, getItemCount(id), 255 - before, 510 - total);
+        if (useCount <= 0) return showToast(`${petDisplayName(pet)} 的${battleStatLabel(studyFruitKey)}学习力已满。`);
+        study[studyFruitKey] = clamp(before + useCount, 0, 255);
         pet.study = normalizeStudy(study, studyFruitKey);
-        addItemCount(id, -amount);
+        addItemCount(id, -useCount);
+        setItemUseQuantity(id, 1);
         showToast(`${petDisplayName(pet)} 的${battleStatLabel(studyFruitKey)}学习力 +${Math.max(0, pet.study[studyFruitKey] - before)}。`);
         return;
       }
@@ -13887,10 +14199,28 @@ createApp({
     const stopAutoBattle = () => {
       stopAutoBattleRun("自动战斗已手动停止，剩余次数已保留。");
     };
-    const openGuardianPanel = () => { showGuardianPanel.value = true; };
-    const closeGuardianPanel = () => { showGuardianPanel.value = false; };
-    const openBossPanel = () => { showBossPanel.value = true; };
-    const closeBossPanel = () => { showBossPanel.value = false; };
+    const openChallengeRoadPanel = () => {
+      const rows = challengeRoadTiers.value;
+      const firstOpen = rows.find((tier) => tier.unlocked && !tier.completed) || rows.find((tier) => tier.unlocked) || rows[0] || null;
+      selectedChallengeRoadTierIndex.value = firstOpen ? firstOpen.tierIndex : 0;
+      showChallengeRoadPanel.value = true;
+    };
+    const closeChallengeRoadPanel = () => {
+      showChallengeRoadPanel.value = false;
+      showChallengeRoadTierPanel.value = false;
+    };
+    const selectChallengeRoadTier = (tierIndex) => {
+      const tier = challengeRoadTiers.value.find((row) => row.tierIndex === Math.floor(Number(tierIndex) || 0));
+      if (!tier) return;
+      if (!tier.unlocked) return showToast(tier.lockText || "请先通关上一梯度。");
+      selectedChallengeRoadTierIndex.value = tier.tierIndex;
+      showChallengeRoadTierPanel.value = true;
+    };
+    const closeChallengeRoadTierPanel = () => { showChallengeRoadTierPanel.value = false; };
+    const openGuardianPanel = openChallengeRoadPanel;
+    const closeGuardianPanel = closeChallengeRoadPanel;
+    const openBossPanel = openChallengeRoadPanel;
+    const closeBossPanel = closeChallengeRoadPanel;
     const openTimeTunnelPanel = () => {
       timeTunnelSelectedFloor.value = Math.max(1, timeTunnelMaxClearedFloor.value || 1);
       showTimeTunnelPanel.value = true;
@@ -14030,6 +14360,7 @@ createApp({
       const entry = dexById.get(Number(dexId));
       if (!entry || !isGuardianName(entry.name)) return;
       if (!isDexIdInOpenChallengeRange(entry)) return showToast(openChallengeRangeMessage());
+      if (!isChallengeRoadEntryUnlocked(entry)) return showToast(challengeRoadLockMessage(entry));
       selectedGuardianDexId.value = entry.dexId;
       closeGuardianPanel();
       showGuardianChallengePanel.value = true;
@@ -14039,6 +14370,7 @@ createApp({
       const entry = dexById.get(Number(dexId));
       if (!entry || !isGuardianName(entry.name)) return showToast("该亚比不是守护者。");
       if (!isDexIdInOpenChallengeRange(entry)) return showToast(openChallengeRangeMessage());
+      if (!isChallengeRoadEntryUnlocked(entry)) return showToast(challengeRoadLockMessage(entry));
       if (bagPets.value.length === 0) return showToast("背包中没有可出战亚比。");
       closeGuardianChallengePanel();
       const extraGuardian = isExtraGuardianName(entry.name);
@@ -14074,7 +14406,7 @@ createApp({
       const entry = dexById.get(Number(dexId));
       if (!entry || !isBossEntry(entry)) return;
       if (!isDexIdInOpenChallengeRange(entry)) return showToast(openChallengeRangeMessage());
-      if (!hasBossChallengePrerequisite()) return showToast(BOSS_CHALLENGE_LOCKED_MESSAGE);
+      if (!isChallengeRoadEntryUnlocked(entry)) return showToast(challengeRoadLockMessage(entry) || BOSS_CHALLENGE_LOCKED_MESSAGE);
       selectedBossDexId.value = entry.dexId;
       if (!BOSS_DIFFICULTY_OPTIONS.some((x) => x.key === selectedBossDifficulty.value)) selectedBossDifficulty.value = "normal";
       closeBossPanel();
@@ -14085,7 +14417,7 @@ createApp({
       const requestedEntry = dexById.get(Number(dexId));
       if (!requestedEntry || !isBossEntry(requestedEntry)) return showToast("该亚比不是BOSS。");
       if (!isDexIdInOpenChallengeRange(requestedEntry)) return showToast(openChallengeRangeMessage());
-      if (!hasBossChallengePrerequisite()) return showToast(BOSS_CHALLENGE_LOCKED_MESSAGE);
+      if (!isChallengeRoadEntryUnlocked(requestedEntry)) return showToast(challengeRoadLockMessage(requestedEntry) || BOSS_CHALLENGE_LOCKED_MESSAGE);
       if (bagPets.value.length === 0) return showToast("背包中没有可出战亚比。");
       const difficulty = selectedBossDifficultyOption.value;
       const chainRule = BOSS_CHAIN_CHALLENGE_BY_FINAL_DEX_ID[Number(requestedEntry.dexId) || 0] || null;
@@ -14116,6 +14448,13 @@ createApp({
       const entry = selectedBossEntry.value;
       if (!entry) return showToast("请先选择BOSS。");
       startBossChallenge(entry.dexId);
+    };
+    const openChallengeRoadEntry = (item) => {
+      if (!item || item.missing || !Number(item.dexId)) return showToast("该挑战目标数据缺失。");
+      if (!isChallengeRoadEntryUnlocked(item)) return showToast(challengeRoadLockMessage(item));
+      if (item.kind === "guardian") return openGuardianChallengePanel(item.dexId);
+      if (item.kind === "boss") return openBossChallengePanel(item.dexId);
+      return showToast("该挑战目标暂不可挑战。");
     };
     const openWeeklyBossPanel = () => {
       if (!weeklyBossEntry.value) return showToast("当周BOSS数据暂不可用。");
@@ -14256,6 +14595,8 @@ createApp({
       warehouseElementFilter,
       warehouseSortMode,
       nowTs,
+      isDoubleRewardTime,
+      doubleRewardNotice,
       toast,
       releaseNotes,
       gameplayGuideLines,
@@ -14264,6 +14605,8 @@ createApp({
       activeEvolution,
       battleScene,
       battleLogCollapsed,
+      battleStageHoverSide,
+      battleStagePinnedSide,
       showSwitchPanel,
       showGlobalSettingsPanel,
       showReleaseNotesModal,
@@ -14382,6 +14725,7 @@ createApp({
       safeSkillType,
       safeSkillPower,
       safeSkillPP,
+      safeSkillPPMax,
       safeSkillAccuracy,
       skillBattleDesc,
       skillAttackTypeLabel,
@@ -14429,8 +14773,13 @@ createApp({
       closeEvolutionModal,
       closeReleaseNotesModal,
       toggleBattleLogCollapsed,
+      showBattleStageSide,
+      toggleBattleStagePinnedSide,
+      clearBattleStagePinnedSide,
+      isBattleStageVisibleSide,
       openGameplayGuideModal,
       closeGameplayGuideModal,
+      showChallengeRoadPanel,
       showGuardianPanel,
       showBossPanel,
       showWeeklyBossPanel,
@@ -14444,6 +14793,10 @@ createApp({
       showTargetPanel,
       showGuardianChallengePanel,
       showBossChallengePanel,
+      challengeRoadTiers,
+      selectedChallengeRoadTierIndex,
+      showChallengeRoadTierPanel,
+      selectedChallengeRoadTier,
       guardianDexEntries,
       bossDexEntries,
       weeklyBossEntry,
@@ -14472,6 +14825,11 @@ createApp({
       canChallengeFromDex,
       canStartChallengeByDex,
       selectedDexChallengeLocked,
+      openChallengeRoadPanel,
+      closeChallengeRoadPanel,
+      selectChallengeRoadTier,
+      closeChallengeRoadTierPanel,
+      openChallengeRoadEntry,
       openGuardianPanel,
       closeGuardianPanel,
       openBossPanel,
@@ -14531,6 +14889,9 @@ createApp({
       shopBuyQuantity,
       setShopBuyQuantity,
       shopItemTotalPrice,
+      itemUseQuantity,
+      setItemUseQuantity,
+      isStudyFruitItem,
       buyShopEgg,
       openShopEggDetail,
       getItemCount,

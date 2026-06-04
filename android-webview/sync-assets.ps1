@@ -40,6 +40,7 @@ $dirs = @(
   "vendor",
   "type",
   "type-transparent",
+  "fight-ui",
   "BGM",
   "time-tunnel-environments",
   "pet-action",
