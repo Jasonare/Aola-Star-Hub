@@ -13,6 +13,7 @@ New-Item -ItemType Directory -Path $dstRoot | Out-Null
 
 $copyFiles = @(
   "aola-star.html",
+  "sw.js",
   "aola-star-app.js",
   "aola-star-crash.js",
   "aola-dex-1-100.js",
@@ -23,9 +24,6 @@ $copyFiles = @(
   "pet-action-layout.json",
   "aola_pet_skill_extract.json",
   "aola_pet_skill_extract_skills.json",
-  "aola-battle-background-default.png",
-  "Aola-Star-Hub-bg.png",
-  "Aola-Star-Hub-icon.png",
   "属性克制.jpg"
 )
 
@@ -38,6 +36,7 @@ foreach ($f in $copyFiles) {
 
 $dirs = @(
   "vendor",
+  "ui",
   "type",
   "type-transparent",
   "fight-ui",

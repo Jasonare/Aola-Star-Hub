@@ -1,0 +1,23 @@
+[
+  {
+    "state_id": 1,
+    "status": "exported",
+    "gif": "C:\\工作娱乐\\Aola-Star-Hub\\pet-state\\statemovie1.gif",
+    "size": 871,
+    "source_gif": "C:\\工作娱乐\\Aola-Star-Hub\\pet-state\\_tmp_export_state_gifs\\statemovie1\\DefineSprite_11\\frames.gif"
+  },
+  {
+    "state_id": 2,
+    "status": "exported",
+    "gif": "C:\\工作娱乐\\Aola-Star-Hub\\pet-state\\statemovie2.gif",
+    "size": 1004,
+    "source_gif": "C:\\工作娱乐\\Aola-Star-Hub\\pet-state\\_tmp_export_state_gifs\\statemovie2\\DefineSprite_11\\frames.gif"
+  },
+  {
+    "state_id": 3,
+    "status": "exported",
+    "gif": "C:\\工作娱乐\\Aola-Star-Hub\\pet-state\\statemovie3.gif",
+    "size": 6621,
+    "source_gif": "C:\\工作娱乐\\Aola-Star-Hub\\pet-state\\_tmp_export_state_gifs\\statemovie3\\DefineSprite_11\\frames.gif"
+  }
+]

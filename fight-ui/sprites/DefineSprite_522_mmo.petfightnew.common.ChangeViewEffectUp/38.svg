@@ -1,0 +1,1283 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns:ffdec="https://www.free-decompiler.com/flash" xmlns:xlink="http://www.w3.org/1999/xlink" ffdec:objectType="frame" height="994.75px" width="994.7px" xmlns="http://www.w3.org/2000/svg">
+  <g transform="matrix(1.0, 0.0, 0.0, 1.0, 493.55, 622.65)">
+    <use ffdec:characterId="497" height="188.45" transform="matrix(2.2007, 0.0, 0.0, 2.2007, 4.4, -41.9)" width="157.75" xlink:href="#sprite0"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter1" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult9"/>
+      <feColorMatrix in="filterResult9" result="filterResult10" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult10" result="filterResult11" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult11" result="filterResult12" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult12" result="filterResult13" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult13" result="filterResult14" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult14" operator="over" result="filterResult15"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult15" result="filterResult16"/>
+      <feColorMatrix in="filterResult16" result="filterResult17" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult17" result="filterResult18" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult15" in2="filterResult18" operator="over" result="filterResult19"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter1)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.5368, 1.9625, -1.9625, 0.5368, -155.2, -183.6)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.3551, 1.2983, -1.2983, 0.3551, -156.2, -181.6)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter2" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult20"/>
+      <feColorMatrix in="filterResult20" result="filterResult21" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult21" result="filterResult22" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult22" result="filterResult23" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult23" result="filterResult24" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult24" result="filterResult25" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult25" operator="over" result="filterResult26"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult26" result="filterResult27"/>
+      <feColorMatrix in="filterResult27" result="filterResult28" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult28" result="filterResult29" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult26" in2="filterResult29" operator="over" result="filterResult30"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter2)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.5368, 1.9625, -1.9625, 0.5368, -116.7, -87.6)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.3551, 1.2983, -1.2983, 0.3551, -117.7, -85.6)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter3" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult31"/>
+      <feColorMatrix in="filterResult31" result="filterResult32" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult32" result="filterResult33" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult33" result="filterResult34" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult34" result="filterResult35" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult35" result="filterResult36" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult36" operator="over" result="filterResult37"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult37" result="filterResult38"/>
+      <feColorMatrix in="filterResult38" result="filterResult39" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult39" result="filterResult40" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult37" in2="filterResult40" operator="over" result="filterResult41"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter3)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.3582, 0.8298, -0.8298, 0.3582, -90.25, -67.85)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.237, 0.549, -0.549, 0.237, -90.55, -66.9)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter4" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult42"/>
+      <feColorMatrix in="filterResult42" result="filterResult43" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult43" result="filterResult44" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult44" result="filterResult45" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult45" result="filterResult46" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult46" result="filterResult47" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult47" operator="over" result="filterResult48"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult48" result="filterResult49"/>
+      <feColorMatrix in="filterResult49" result="filterResult50" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult50" result="filterResult51" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult48" in2="filterResult51" operator="over" result="filterResult52"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter4)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.3582, 0.8298, -0.8298, 0.3582, -67.35, -28.0)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.237, 0.549, -0.549, 0.237, -67.65, -27.05)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter5" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult53"/>
+      <feColorMatrix in="filterResult53" result="filterResult54" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult54" result="filterResult55" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult55" result="filterResult56" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult56" result="filterResult57" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult57" result="filterResult58" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult58" operator="over" result="filterResult59"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult59" result="filterResult60"/>
+      <feColorMatrix in="filterResult60" result="filterResult61" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult61" result="filterResult62" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult59" in2="filterResult62" operator="over" result="filterResult63"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter5)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.248, 1.6071, -1.6071, -0.248, -88.7, -217.65)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.164, 1.0631, -1.0631, -0.164, -90.05, -216.5)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter6" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult64"/>
+      <feColorMatrix in="filterResult64" result="filterResult65" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult65" result="filterResult66" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult66" result="filterResult67" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult67" result="filterResult68" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult68" result="filterResult69" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult69" operator="over" result="filterResult70"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult70" result="filterResult71"/>
+      <feColorMatrix in="filterResult71" result="filterResult72" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult72" result="filterResult73" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult70" in2="filterResult73" operator="over" result="filterResult74"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter6)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.248, 1.6071, -1.6071, -0.248, -91.95, -135.05)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.164, 1.0631, -1.0631, -0.164, -93.3, -133.9)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter7" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult75"/>
+      <feColorMatrix in="filterResult75" result="filterResult76" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult76" result="filterResult77" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult77" result="filterResult78" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult78" result="filterResult79" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult79" result="filterResult80" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult80" operator="over" result="filterResult81"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult81" result="filterResult82"/>
+      <feColorMatrix in="filterResult82" result="filterResult83" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult83" result="filterResult84" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult81" in2="filterResult84" operator="over" result="filterResult85"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter7)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.2958, 1.0812, -1.0812, 0.2958, -216.5, -260.4)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1957, 0.7153, -0.7153, 0.1957, -217.05, -259.3)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter8" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult86"/>
+      <feColorMatrix in="filterResult86" result="filterResult87" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult87" result="filterResult88" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult88" result="filterResult89" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult89" result="filterResult90" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult90" result="filterResult91" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult91" operator="over" result="filterResult92"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult92" result="filterResult93"/>
+      <feColorMatrix in="filterResult93" result="filterResult94" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult94" result="filterResult95" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult92" in2="filterResult95" operator="over" result="filterResult96"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter8)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.2958, 1.0812, -1.0812, 0.2958, -195.35, -207.6)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1957, 0.7153, -0.7153, 0.1957, -195.9, -206.5)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter9" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult97"/>
+      <feColorMatrix in="filterResult97" result="filterResult98" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult98" result="filterResult99" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult99" result="filterResult100" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult100" result="filterResult101" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult101" result="filterResult102" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult102" operator="over" result="filterResult103"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult103" result="filterResult104"/>
+      <feColorMatrix in="filterResult104" result="filterResult105" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult105" result="filterResult106" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult103" in2="filterResult106" operator="over" result="filterResult107"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter9)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.4819, 0.6799, -0.6799, -0.4819, -137.6, -123.6)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.3188, 0.4498, -0.4498, -0.3188, -138.5, -123.4)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter10" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult108"/>
+      <feColorMatrix in="filterResult108" result="filterResult109" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult109" result="filterResult110" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult110" result="filterResult111" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult111" result="filterResult112" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult112" result="filterResult113" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult113" operator="over" result="filterResult114"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult114" result="filterResult115"/>
+      <feColorMatrix in="filterResult115" result="filterResult116" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult116" result="filterResult117" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult114" in2="filterResult117" operator="over" result="filterResult118"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter10)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.4819, 0.6799, -0.6799, -0.4819, -158.0, -86.5)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.3188, 0.4498, -0.4498, -0.3188, -158.9, -86.3)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter11" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult119"/>
+      <feColorMatrix in="filterResult119" result="filterResult120" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult120" result="filterResult121" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult121" result="filterResult122" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult122" result="filterResult123" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult123" result="filterResult124" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult124" operator="over" result="filterResult125"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult125" result="filterResult126"/>
+      <feColorMatrix in="filterResult126" result="filterResult127" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult127" result="filterResult128" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult125" in2="filterResult128" operator="over" result="filterResult129"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter11)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.7139, -0.0944, 0.0944, 0.7139, -255.75, -96.6)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.4723, -0.0624, 0.0624, 0.4723, -255.1, -96.2)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter12" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult130"/>
+      <feColorMatrix in="filterResult130" result="filterResult131" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult131" result="filterResult132" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult132" result="filterResult133" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult133" result="filterResult134" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult134" result="filterResult135" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult135" operator="over" result="filterResult136"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult136" result="filterResult137"/>
+      <feColorMatrix in="filterResult137" result="filterResult138" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult138" result="filterResult139" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult136" in2="filterResult139" operator="over" result="filterResult140"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter12)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.7139, -0.0944, 0.0944, 0.7139, -220.25, -105.55)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.4723, -0.0624, 0.0624, 0.4723, -219.6, -105.15)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter13" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult141"/>
+      <feColorMatrix in="filterResult141" result="filterResult142" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult142" result="filterResult143" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult143" result="filterResult144" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult144" result="filterResult145" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult145" result="filterResult146" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult146" operator="over" result="filterResult147"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult147" result="filterResult148"/>
+      <feColorMatrix in="filterResult148" result="filterResult149" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult149" result="filterResult150" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult147" in2="filterResult150" operator="over" result="filterResult151"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter13)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.5368, 1.9625, -1.9625, 0.5368, -220.4, -204.35)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.3551, 1.2983, -1.2983, 0.3551, -221.4, -202.35)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter14" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult152"/>
+      <feColorMatrix in="filterResult152" result="filterResult153" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult153" result="filterResult154" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult154" result="filterResult155" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult155" result="filterResult156" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult156" result="filterResult157" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult157" operator="over" result="filterResult158"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult158" result="filterResult159"/>
+      <feColorMatrix in="filterResult159" result="filterResult160" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult160" result="filterResult161" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult158" in2="filterResult161" operator="over" result="filterResult162"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter14)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.5368, 1.9625, -1.9625, 0.5368, -181.9, -108.35)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.3551, 1.2983, -1.2983, 0.3551, -182.9, -106.35)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter15" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult163"/>
+      <feColorMatrix in="filterResult163" result="filterResult164" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult164" result="filterResult165" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult165" result="filterResult166" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult166" result="filterResult167" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult167" result="filterResult168" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult168" operator="over" result="filterResult169"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult169" result="filterResult170"/>
+      <feColorMatrix in="filterResult170" result="filterResult171" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult171" result="filterResult172" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult169" in2="filterResult172" operator="over" result="filterResult173"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter15)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.3582, 0.8298, -0.8298, 0.3582, -155.45, -88.55)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.237, 0.549, -0.549, 0.237, -155.75, -87.6)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter16" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult174"/>
+      <feColorMatrix in="filterResult174" result="filterResult175" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult175" result="filterResult176" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult176" result="filterResult177" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult177" result="filterResult178" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult178" result="filterResult179" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult179" operator="over" result="filterResult180"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult180" result="filterResult181"/>
+      <feColorMatrix in="filterResult181" result="filterResult182" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult182" result="filterResult183" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult180" in2="filterResult183" operator="over" result="filterResult184"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter16)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.3582, 0.8298, -0.8298, 0.3582, -132.55, -48.7)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.237, 0.549, -0.549, 0.237, -132.85, -47.75)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter17" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult185"/>
+      <feColorMatrix in="filterResult185" result="filterResult186" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult186" result="filterResult187" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult187" result="filterResult188" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult188" result="filterResult189" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult189" result="filterResult190" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult190" operator="over" result="filterResult191"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult191" result="filterResult192"/>
+      <feColorMatrix in="filterResult192" result="filterResult193" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult193" result="filterResult194" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult191" in2="filterResult194" operator="over" result="filterResult195"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter17)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.248, 1.6071, -1.6071, -0.248, -153.9, -238.4)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.164, 1.0631, -1.0631, -0.164, -155.25, -237.25)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter18" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult196"/>
+      <feColorMatrix in="filterResult196" result="filterResult197" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult197" result="filterResult198" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult198" result="filterResult199" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult199" result="filterResult200" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult200" result="filterResult201" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult201" operator="over" result="filterResult202"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult202" result="filterResult203"/>
+      <feColorMatrix in="filterResult203" result="filterResult204" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult204" result="filterResult205" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult202" in2="filterResult205" operator="over" result="filterResult206"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter18)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.248, 1.6071, -1.6071, -0.248, -157.15, -155.8)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.164, 1.0631, -1.0631, -0.164, -158.5, -154.65)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter19" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult207"/>
+      <feColorMatrix in="filterResult207" result="filterResult208" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult208" result="filterResult209" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult209" result="filterResult210" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult210" result="filterResult211" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult211" result="filterResult212" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult212" operator="over" result="filterResult213"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult213" result="filterResult214"/>
+      <feColorMatrix in="filterResult214" result="filterResult215" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult215" result="filterResult216" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult213" in2="filterResult216" operator="over" result="filterResult217"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter19)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.2924, 1.0689, -1.0689, 0.2924, -273.9, -294.05)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1934, 0.7071, -0.7071, 0.1934, -274.45, -292.95)" width="4.8" xlink:href="#shape5"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter20" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult218"/>
+      <feColorMatrix in="filterResult218" result="filterResult219" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult219" result="filterResult220" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult220" result="filterResult221" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult221" result="filterResult222" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult222" result="filterResult223" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult223" operator="over" result="filterResult224"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult224" result="filterResult225"/>
+      <feColorMatrix in="filterResult225" result="filterResult226" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult226" result="filterResult227" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult224" in2="filterResult227" operator="over" result="filterResult228"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter20)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.2924, 1.0689, -1.0689, 0.2924, -250.0, -235.65)" width="4.8" xlink:href="#sprite4"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1934, 0.7071, -0.7071, 0.1934, -250.55, -234.55)" width="4.8" xlink:href="#shape7"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter21" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult229"/>
+      <feColorMatrix in="filterResult229" result="filterResult230" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult230" result="filterResult231" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult231" result="filterResult232" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult232" result="filterResult233" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult233" result="filterResult234" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult234" operator="over" result="filterResult235"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult235" result="filterResult236"/>
+      <feColorMatrix in="filterResult236" result="filterResult237" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult237" result="filterResult238" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult235" in2="filterResult238" operator="over" result="filterResult239"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter21)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.5803, 1.9504, 1.9504, 0.5803, 157.45, -189.35)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.3839, 1.2903, 1.2903, 0.3839, 158.35, -187.35)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter22" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult240"/>
+      <feColorMatrix in="filterResult240" result="filterResult241" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult241" result="filterResult242" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult242" result="filterResult243" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult243" result="filterResult244" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult244" result="filterResult245" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult245" operator="over" result="filterResult246"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult246" result="filterResult247"/>
+      <feColorMatrix in="filterResult247" result="filterResult248" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult248" result="filterResult249" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult246" in2="filterResult249" operator="over" result="filterResult250"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter22)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.5803, 1.9504, 1.9504, 0.5803, 116.9, -94.3)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.3839, 1.2903, 1.2903, 0.3839, 117.8, -92.3)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter23" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult251"/>
+      <feColorMatrix in="filterResult251" result="filterResult252" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult252" result="filterResult253" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult253" result="filterResult254" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult254" result="filterResult255" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult255" result="filterResult256" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult256" operator="over" result="filterResult257"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult257" result="filterResult258"/>
+      <feColorMatrix in="filterResult258" result="filterResult259" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult259" result="filterResult260" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult257" in2="filterResult260" operator="over" result="filterResult261"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter23)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.3766, 0.8218, 0.8218, 0.3766, 89.9, -75.1)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2491, 0.5437, 0.5437, 0.2491, 90.2, -74.15)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter24" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult262"/>
+      <feColorMatrix in="filterResult262" result="filterResult263" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult263" result="filterResult264" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult264" result="filterResult265" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult265" result="filterResult266" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult266" result="filterResult267" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult267" operator="over" result="filterResult268"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult268" result="filterResult269"/>
+      <feColorMatrix in="filterResult269" result="filterResult270" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult270" result="filterResult271" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult268" in2="filterResult271" operator="over" result="filterResult272"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter24)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.3766, 0.8218, 0.8218, 0.3766, 66.15, -35.8)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2491, 0.5437, 0.5437, 0.2491, 66.45, -34.85)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter25" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult273"/>
+      <feColorMatrix in="filterResult273" result="filterResult274" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult274" result="filterResult275" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult275" result="filterResult276" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult276" result="filterResult277" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult277" result="filterResult278" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult278" operator="over" result="filterResult279"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult279" result="filterResult280"/>
+      <feColorMatrix in="filterResult280" result="filterResult281" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult281" result="filterResult282" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult279" in2="filterResult282" operator="over" result="filterResult283"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter25)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.2123, 1.6123, 1.6123, -0.2123, 91.6, -224.95)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1405, 1.0666, 1.0666, -0.1405, 92.95, -223.75)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter26" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult284"/>
+      <feColorMatrix in="filterResult284" result="filterResult285" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult285" result="filterResult286" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult286" result="filterResult287" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult287" result="filterResult288" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult288" result="filterResult289" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult289" operator="over" result="filterResult290"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult290" result="filterResult291"/>
+      <feColorMatrix in="filterResult291" result="filterResult292" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult292" result="filterResult293" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult290" in2="filterResult293" operator="over" result="filterResult294"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter26)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.2123, 1.6123, 1.6123, -0.2123, 93.05, -142.3)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1405, 1.0666, 1.0666, -0.1405, 94.4, -141.1)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter27" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult295"/>
+      <feColorMatrix in="filterResult295" result="filterResult296" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult296" result="filterResult297" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult297" result="filterResult298" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult298" result="filterResult299" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult299" result="filterResult300" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult300" operator="over" result="filterResult301"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult301" result="filterResult302"/>
+      <feColorMatrix in="filterResult302" result="filterResult303" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult303" result="filterResult304" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult301" in2="filterResult304" operator="over" result="filterResult305"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter27)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.3197, 1.0745, 1.0745, 0.3197, 220.4, -264.85)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2115, 0.7108, 0.7108, 0.2115, 220.95, -263.7)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter28" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult306"/>
+      <feColorMatrix in="filterResult306" result="filterResult307" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult307" result="filterResult308" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult308" result="filterResult309" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult309" result="filterResult310" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult310" result="filterResult311" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult311" operator="over" result="filterResult312"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult312" result="filterResult313"/>
+      <feColorMatrix in="filterResult313" result="filterResult314" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult314" result="filterResult315" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult312" in2="filterResult315" operator="over" result="filterResult316"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter28)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.3197, 1.0745, 1.0745, 0.3197, 198.0, -212.5)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2115, 0.7108, 0.7108, 0.2115, 198.55, -211.35)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter29" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult317"/>
+      <feColorMatrix in="filterResult317" result="filterResult318" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult318" result="filterResult319" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult319" result="filterResult320" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult320" result="filterResult321" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult321" result="filterResult322" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult322" operator="over" result="filterResult323"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult323" result="filterResult324"/>
+      <feColorMatrix in="filterResult324" result="filterResult325" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult325" result="filterResult326" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult323" in2="filterResult326" operator="over" result="filterResult327"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter29)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.4668, 0.6905, 0.6905, -0.4668, 138.5, -129.8)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.3088, 0.4568, 0.4568, -0.3088, 139.4, -129.6)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter30" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult328"/>
+      <feColorMatrix in="filterResult328" result="filterResult329" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult329" result="filterResult330" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult330" result="filterResult331" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult331" result="filterResult332" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult332" result="filterResult333" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult333" operator="over" result="filterResult334"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult334" result="filterResult335"/>
+      <feColorMatrix in="filterResult335" result="filterResult336" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult336" result="filterResult337" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult334" in2="filterResult337" operator="over" result="filterResult338"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter30)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.4668, 0.6905, 0.6905, -0.4668, 158.05, -92.2)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.3088, 0.4568, 0.4568, -0.3088, 158.95, -92.0)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter31" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult339"/>
+      <feColorMatrix in="filterResult339" result="filterResult340" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult340" result="filterResult341" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult341" result="filterResult342" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult342" result="filterResult343" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult343" result="filterResult344" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult344" operator="over" result="filterResult345"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult345" result="filterResult346"/>
+      <feColorMatrix in="filterResult346" result="filterResult347" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult347" result="filterResult348" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult345" in2="filterResult348" operator="over" result="filterResult349"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter31)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.7117, -0.1102, -0.1102, 0.7117, 256.05, -100.3)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.4708, -0.0729, -0.0729, 0.4708, 255.35, -99.9)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter32" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult350"/>
+      <feColorMatrix in="filterResult350" result="filterResult351" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult351" result="filterResult352" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult352" result="filterResult353" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult353" result="filterResult354" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult354" result="filterResult355" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult355" operator="over" result="filterResult356"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult356" result="filterResult357"/>
+      <feColorMatrix in="filterResult357" result="filterResult358" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult358" result="filterResult359" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult356" in2="filterResult359" operator="over" result="filterResult360"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter32)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.7117, -0.1102, -0.1102, 0.7117, 220.8, -109.95)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.4708, -0.0729, -0.0729, 0.4708, 220.1, -109.55)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter33" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult361"/>
+      <feColorMatrix in="filterResult361" result="filterResult362" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult362" result="filterResult363" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult363" result="filterResult364" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult364" result="filterResult365" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult365" result="filterResult366" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult366" operator="over" result="filterResult367"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult367" result="filterResult368"/>
+      <feColorMatrix in="filterResult368" result="filterResult369" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult369" result="filterResult370" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult367" in2="filterResult370" operator="over" result="filterResult371"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter33)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.5803, 1.9504, 1.9504, 0.5803, 223.1, -208.6)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.3839, 1.2903, 1.2903, 0.3839, 224.0, -206.6)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter34" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult372"/>
+      <feColorMatrix in="filterResult372" result="filterResult373" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult373" result="filterResult374" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult374" result="filterResult375" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult375" result="filterResult376" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult376" result="filterResult377" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult377" operator="over" result="filterResult378"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult378" result="filterResult379"/>
+      <feColorMatrix in="filterResult379" result="filterResult380" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult380" result="filterResult381" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult378" in2="filterResult381" operator="over" result="filterResult382"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter34)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.5803, 1.9504, 1.9504, 0.5803, 182.55, -113.55)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.3839, 1.2903, 1.2903, 0.3839, 183.45, -111.55)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter35" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult383"/>
+      <feColorMatrix in="filterResult383" result="filterResult384" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult384" result="filterResult385" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult385" result="filterResult386" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult386" result="filterResult387" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult387" result="filterResult388" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult388" operator="over" result="filterResult389"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult389" result="filterResult390"/>
+      <feColorMatrix in="filterResult390" result="filterResult391" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult391" result="filterResult392" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult389" in2="filterResult392" operator="over" result="filterResult393"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter35)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.3766, 0.8218, 0.8218, 0.3766, 155.6, -94.35)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2491, 0.5437, 0.5437, 0.2491, 155.9, -93.4)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter36" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult394"/>
+      <feColorMatrix in="filterResult394" result="filterResult395" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult395" result="filterResult396" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult396" result="filterResult397" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult397" result="filterResult398" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult398" result="filterResult399" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult399" operator="over" result="filterResult400"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult400" result="filterResult401"/>
+      <feColorMatrix in="filterResult401" result="filterResult402" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult402" result="filterResult403" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult400" in2="filterResult403" operator="over" result="filterResult404"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter36)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.3766, 0.8218, 0.8218, 0.3766, 131.85, -55.05)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2491, 0.5437, 0.5437, 0.2491, 132.15, -54.1)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter37" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult405"/>
+      <feColorMatrix in="filterResult405" result="filterResult406" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult406" result="filterResult407" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult407" result="filterResult408" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult408" result="filterResult409" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult409" result="filterResult410" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult410" operator="over" result="filterResult411"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult411" result="filterResult412"/>
+      <feColorMatrix in="filterResult412" result="filterResult413" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult413" result="filterResult414" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult411" in2="filterResult414" operator="over" result="filterResult415"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter37)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.2123, 1.6123, 1.6123, -0.2123, 157.3, -244.25)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1405, 1.0666, 1.0666, -0.1405, 158.65, -243.05)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter38" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult416"/>
+      <feColorMatrix in="filterResult416" result="filterResult417" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult417" result="filterResult418" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult418" result="filterResult419" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult419" result="filterResult420" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult420" result="filterResult421" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult421" operator="over" result="filterResult422"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult422" result="filterResult423"/>
+      <feColorMatrix in="filterResult423" result="filterResult424" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult424" result="filterResult425" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult422" in2="filterResult425" operator="over" result="filterResult426"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter38)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.2123, 1.6123, 1.6123, -0.2123, 158.75, -161.6)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1405, 1.0666, 1.0666, -0.1405, 160.1, -160.4)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter39" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult427"/>
+      <feColorMatrix in="filterResult427" result="filterResult428" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult428" result="filterResult429" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult429" result="filterResult430" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult430" result="filterResult431" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult431" result="filterResult432" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult432" operator="over" result="filterResult433"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult433" result="filterResult434"/>
+      <feColorMatrix in="filterResult434" result="filterResult435" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult435" result="filterResult436" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult433" in2="filterResult436" operator="over" result="filterResult437"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter39)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.316, 1.0623, 1.0623, 0.316, 278.65, -297.25)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2091, 0.7028, 0.7028, 0.2091, 279.15, -296.1)" width="4.8" xlink:href="#shape5"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter40" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult438"/>
+      <feColorMatrix in="filterResult438" result="filterResult439" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult439" result="filterResult440" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult440" result="filterResult441" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult441" result="filterResult442" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult442" result="filterResult443" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult443" operator="over" result="filterResult444"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult444" result="filterResult445"/>
+      <feColorMatrix in="filterResult445" result="filterResult446" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult446" result="filterResult447" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult444" in2="filterResult447" operator="over" result="filterResult448"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter40)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.316, 1.0623, 1.0623, 0.316, 253.45, -239.4)" width="4.8" xlink:href="#sprite4"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2091, 0.7028, 0.7028, 0.2091, 253.95, -238.25)" width="4.8" xlink:href="#shape7"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter41" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult449"/>
+      <feColorMatrix in="filterResult449" result="filterResult450" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult450" result="filterResult451" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult451" result="filterResult452" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult452" result="filterResult453" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult453" result="filterResult454" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult454" operator="over" result="filterResult455"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult455" result="filterResult456"/>
+      <feColorMatrix in="filterResult456" result="filterResult457" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult457" result="filterResult458" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult455" in2="filterResult458" operator="over" result="filterResult459"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter41)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.2864, 1.0468, -1.0468, 0.2864, -82.0, -120.6)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1894, 0.6925, -0.6925, 0.1894, -82.5, -119.55)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter42" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult460"/>
+      <feColorMatrix in="filterResult460" result="filterResult461" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult461" result="filterResult462" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult462" result="filterResult463" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult463" result="filterResult464" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult464" result="filterResult465" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult465" operator="over" result="filterResult466"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult466" result="filterResult467"/>
+      <feColorMatrix in="filterResult467" result="filterResult468" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult468" result="filterResult469" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult466" in2="filterResult469" operator="over" result="filterResult470"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter42)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.2864, 1.0468, -1.0468, 0.2864, -61.5, -69.45)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1894, 0.6925, -0.6925, 0.1894, -62.0, -68.4)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter43" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult471"/>
+      <feColorMatrix in="filterResult471" result="filterResult472" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult472" result="filterResult473" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult473" result="filterResult474" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult474" result="filterResult475" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult475" result="filterResult476" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult476" operator="over" result="filterResult477"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult477" result="filterResult478"/>
+      <feColorMatrix in="filterResult478" result="filterResult479" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult479" result="filterResult480" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult477" in2="filterResult480" operator="over" result="filterResult481"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter43)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.1911, 0.4427, -0.4427, 0.1911, -47.35, -58.85)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1264, 0.2928, -0.2928, 0.1264, -47.5, -58.35)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter44" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult482"/>
+      <feColorMatrix in="filterResult482" result="filterResult483" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult483" result="filterResult484" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult484" result="filterResult485" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult485" result="filterResult486" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult486" result="filterResult487" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult487" operator="over" result="filterResult488"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult488" result="filterResult489"/>
+      <feColorMatrix in="filterResult489" result="filterResult490" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult490" result="filterResult491" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult488" in2="filterResult491" operator="over" result="filterResult492"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter44)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.1911, 0.4427, -0.4427, 0.1911, -35.05, -37.6)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1264, 0.2928, -0.2928, 0.1264, -35.2, -37.1)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter45" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult493"/>
+      <feColorMatrix in="filterResult493" result="filterResult494" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult494" result="filterResult495" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult495" result="filterResult496" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult496" result="filterResult497" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult497" result="filterResult498" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult498" operator="over" result="filterResult499"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult499" result="filterResult500"/>
+      <feColorMatrix in="filterResult500" result="filterResult501" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult501" result="filterResult502" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult499" in2="filterResult502" operator="over" result="filterResult503"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter45)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.1323, 0.8572, -0.8572, -0.1323, -46.5, -138.85)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.0875, 0.5671, -0.5671, -0.0875, -47.2, -138.25)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter46" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult504"/>
+      <feColorMatrix in="filterResult504" result="filterResult505" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult505" result="filterResult506" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult506" result="filterResult507" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult507" result="filterResult508" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult508" result="filterResult509" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult509" operator="over" result="filterResult510"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult510" result="filterResult511"/>
+      <feColorMatrix in="filterResult511" result="filterResult512" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult512" result="filterResult513" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult510" in2="filterResult513" operator="over" result="filterResult514"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter46)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.1323, 0.8572, -0.8572, -0.1323, -48.25, -94.75)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.0875, 0.5671, -0.5671, -0.0875, -48.95, -94.15)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter47" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult515"/>
+      <feColorMatrix in="filterResult515" result="filterResult516" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult516" result="filterResult517" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult517" result="filterResult518" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult518" result="filterResult519" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult519" result="filterResult520" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult520" operator="over" result="filterResult521"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult521" result="filterResult522"/>
+      <feColorMatrix in="filterResult522" result="filterResult523" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult523" result="filterResult524" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult521" in2="filterResult524" operator="over" result="filterResult525"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter47)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.1578, 0.5767, -0.5767, 0.1578, -114.7, -161.6)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1044, 0.3815, -0.3815, 0.1044, -114.95, -161.0)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter48" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult526"/>
+      <feColorMatrix in="filterResult526" result="filterResult527" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult527" result="filterResult528" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult528" result="filterResult529" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult529" result="filterResult530" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult530" result="filterResult531" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult531" operator="over" result="filterResult532"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult532" result="filterResult533"/>
+      <feColorMatrix in="filterResult533" result="filterResult534" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult534" result="filterResult535" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult532" in2="filterResult535" operator="over" result="filterResult536"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter48)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.1578, 0.5767, -0.5767, 0.1578, -103.4, -133.45)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1044, 0.3815, -0.3815, 0.1044, -103.65, -132.85)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter49" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult537"/>
+      <feColorMatrix in="filterResult537" result="filterResult538" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult538" result="filterResult539" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult539" result="filterResult540" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult540" result="filterResult541" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult541" result="filterResult542" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult542" operator="over" result="filterResult543"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult543" result="filterResult544"/>
+      <feColorMatrix in="filterResult544" result="filterResult545" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult545" result="filterResult546" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult543" in2="filterResult546" operator="over" result="filterResult547"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter49)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.257, 0.3627, -0.3627, -0.257, -72.55, -88.65)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.17, 0.2399, -0.2399, -0.17, -73.0, -88.55)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter50" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult548"/>
+      <feColorMatrix in="filterResult548" result="filterResult549" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult549" result="filterResult550" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult550" result="filterResult551" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult551" result="filterResult552" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult552" result="filterResult553" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult553" operator="over" result="filterResult554"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult554" result="filterResult555"/>
+      <feColorMatrix in="filterResult555" result="filterResult556" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult556" result="filterResult557" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult554" in2="filterResult557" operator="over" result="filterResult558"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter50)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.257, 0.3627, -0.3627, -0.257, -83.5, -68.9)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.17, 0.2399, -0.2399, -0.17, -83.95, -68.8)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter51" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult559"/>
+      <feColorMatrix in="filterResult559" result="filterResult560" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult560" result="filterResult561" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult561" result="filterResult562" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult562" result="filterResult563" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult563" result="filterResult564" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult564" operator="over" result="filterResult565"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult565" result="filterResult566"/>
+      <feColorMatrix in="filterResult566" result="filterResult567" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult567" result="filterResult568" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult565" in2="filterResult568" operator="over" result="filterResult569"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter51)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.3808, -0.0504, 0.0504, 0.3808, -135.65, -74.4)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.2519, -0.0333, 0.0333, 0.2519, -135.3, -74.15)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter52" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult570"/>
+      <feColorMatrix in="filterResult570" result="filterResult571" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult571" result="filterResult572" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult572" result="filterResult573" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult573" result="filterResult574" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult574" result="filterResult575" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult575" operator="over" result="filterResult576"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult576" result="filterResult577"/>
+      <feColorMatrix in="filterResult577" result="filterResult578" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult578" result="filterResult579" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult576" in2="filterResult579" operator="over" result="filterResult580"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter52)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.3808, -0.0504, 0.0504, 0.3808, -116.7, -79.15)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.2519, -0.0333, 0.0333, 0.2519, -116.35, -78.9)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter53" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult581"/>
+      <feColorMatrix in="filterResult581" result="filterResult582" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult582" result="filterResult583" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult583" result="filterResult584" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult584" result="filterResult585" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult585" result="filterResult586" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult586" operator="over" result="filterResult587"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult587" result="filterResult588"/>
+      <feColorMatrix in="filterResult588" result="filterResult589" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult589" result="filterResult590" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult587" in2="filterResult590" operator="over" result="filterResult591"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter53)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.2864, 1.0468, -1.0468, 0.2864, -116.75, -131.7)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1894, 0.6925, -0.6925, 0.1894, -117.25, -130.65)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter54" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult592"/>
+      <feColorMatrix in="filterResult592" result="filterResult593" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult593" result="filterResult594" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult594" result="filterResult595" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult595" result="filterResult596" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult596" result="filterResult597" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult597" operator="over" result="filterResult598"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult598" result="filterResult599"/>
+      <feColorMatrix in="filterResult599" result="filterResult600" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult600" result="filterResult601" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult598" in2="filterResult601" operator="over" result="filterResult602"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter54)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.2864, 1.0468, -1.0468, 0.2864, -96.25, -80.55)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1894, 0.6925, -0.6925, 0.1894, -96.75, -79.5)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter55" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult603"/>
+      <feColorMatrix in="filterResult603" result="filterResult604" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult604" result="filterResult605" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult605" result="filterResult606" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult606" result="filterResult607" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult607" result="filterResult608" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult608" operator="over" result="filterResult609"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult609" result="filterResult610"/>
+      <feColorMatrix in="filterResult610" result="filterResult611" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult611" result="filterResult612" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult609" in2="filterResult612" operator="over" result="filterResult613"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter55)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.1911, 0.4427, -0.4427, 0.1911, -82.15, -69.95)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1264, 0.2928, -0.2928, 0.1264, -82.3, -69.45)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter56" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult614"/>
+      <feColorMatrix in="filterResult614" result="filterResult615" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult615" result="filterResult616" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult616" result="filterResult617" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult617" result="filterResult618" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult618" result="filterResult619" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult619" operator="over" result="filterResult620"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult620" result="filterResult621"/>
+      <feColorMatrix in="filterResult621" result="filterResult622" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult622" result="filterResult623" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult620" in2="filterResult623" operator="over" result="filterResult624"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter56)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.1911, 0.4427, -0.4427, 0.1911, -69.85, -48.7)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1264, 0.2928, -0.2928, 0.1264, -70.0, -48.2)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter57" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult625"/>
+      <feColorMatrix in="filterResult625" result="filterResult626" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult626" result="filterResult627" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult627" result="filterResult628" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult628" result="filterResult629" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult629" result="filterResult630" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult630" operator="over" result="filterResult631"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult631" result="filterResult632"/>
+      <feColorMatrix in="filterResult632" result="filterResult633" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult633" result="filterResult634" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult631" in2="filterResult634" operator="over" result="filterResult635"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter57)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.1323, 0.8572, -0.8572, -0.1323, -81.25, -149.9)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.0875, 0.5671, -0.5671, -0.0875, -81.95, -149.3)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter58" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult636"/>
+      <feColorMatrix in="filterResult636" result="filterResult637" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult637" result="filterResult638" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult638" result="filterResult639" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult639" result="filterResult640" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult640" result="filterResult641" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult641" operator="over" result="filterResult642"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult642" result="filterResult643"/>
+      <feColorMatrix in="filterResult643" result="filterResult644" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult644" result="filterResult645" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult642" in2="filterResult645" operator="over" result="filterResult646"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter58)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.1323, 0.8572, -0.8572, -0.1323, -83.0, -105.8)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.0875, 0.5671, -0.5671, -0.0875, -83.7, -105.2)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter59" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult647"/>
+      <feColorMatrix in="filterResult647" result="filterResult648" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult648" result="filterResult649" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult649" result="filterResult650" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult650" result="filterResult651" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult651" result="filterResult652" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult652" operator="over" result="filterResult653"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult653" result="filterResult654"/>
+      <feColorMatrix in="filterResult654" result="filterResult655" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult655" result="filterResult656" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult653" in2="filterResult656" operator="over" result="filterResult657"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter59)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.156, 0.5702, -0.5702, 0.156, -145.35, -179.55)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1032, 0.3772, -0.3772, 0.1032, -145.6, -179.0)" width="4.8" xlink:href="#shape5"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter60" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult658"/>
+      <feColorMatrix in="filterResult658" result="filterResult659" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult659" result="filterResult660" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult660" result="filterResult661" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult661" result="filterResult662" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult662" result="filterResult663" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult663" operator="over" result="filterResult664"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult664" result="filterResult665"/>
+      <feColorMatrix in="filterResult665" result="filterResult666" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult666" result="filterResult667" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult664" in2="filterResult667" operator="over" result="filterResult668"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter60)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.156, 0.5702, -0.5702, 0.156, -132.55, -148.45)" width="4.8" xlink:href="#sprite4"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1032, 0.3772, -0.3772, 0.1032, -132.8, -147.9)" width="4.8" xlink:href="#shape7"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter61" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult669"/>
+      <feColorMatrix in="filterResult669" result="filterResult670" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult670" result="filterResult671" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult671" result="filterResult672" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult672" result="filterResult673" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult673" result="filterResult674" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult674" operator="over" result="filterResult675"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult675" result="filterResult676"/>
+      <feColorMatrix in="filterResult676" result="filterResult677" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult677" result="filterResult678" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult675" in2="filterResult678" operator="over" result="filterResult679"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter61)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.3095, 1.0404, 1.0404, 0.3095, 84.85, -123.75)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2048, 0.6882, 0.6882, 0.2048, 85.35, -122.65)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter62" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult680"/>
+      <feColorMatrix in="filterResult680" result="filterResult681" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult681" result="filterResult682" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult682" result="filterResult683" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult683" result="filterResult684" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult684" result="filterResult685" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult685" operator="over" result="filterResult686"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult686" result="filterResult687"/>
+      <feColorMatrix in="filterResult687" result="filterResult688" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult688" result="filterResult689" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult686" in2="filterResult689" operator="over" result="filterResult690"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter62)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.3095, 1.0404, 1.0404, 0.3095, 63.25, -73.05)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2048, 0.6882, 0.6882, 0.2048, 63.75, -71.95)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter63" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult691"/>
+      <feColorMatrix in="filterResult691" result="filterResult692" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult692" result="filterResult693" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult693" result="filterResult694" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult694" result="filterResult695" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult695" result="filterResult696" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult696" operator="over" result="filterResult697"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult697" result="filterResult698"/>
+      <feColorMatrix in="filterResult698" result="filterResult699" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult699" result="filterResult700" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult697" in2="filterResult700" operator="over" result="filterResult701"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter63)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.2009, 0.4384, 0.4384, 0.2009, 48.8, -62.75)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.1329, 0.29, 0.29, 0.1329, 48.95, -62.25)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter64" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult702"/>
+      <feColorMatrix in="filterResult702" result="filterResult703" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult703" result="filterResult704" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult704" result="filterResult705" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult705" result="filterResult706" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult706" result="filterResult707" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult707" operator="over" result="filterResult708"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult708" result="filterResult709"/>
+      <feColorMatrix in="filterResult709" result="filterResult710" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult710" result="filterResult711" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult708" in2="filterResult711" operator="over" result="filterResult712"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter64)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.2009, 0.4384, 0.4384, 0.2009, 36.2, -41.85)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.1329, 0.29, 0.29, 0.1329, 36.35, -41.35)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter65" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult713"/>
+      <feColorMatrix in="filterResult713" result="filterResult714" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult714" result="filterResult715" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult715" result="filterResult716" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult716" result="filterResult717" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult717" result="filterResult718" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult718" operator="over" result="filterResult719"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult719" result="filterResult720"/>
+      <feColorMatrix in="filterResult720" result="filterResult721" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult721" result="filterResult722" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult719" in2="filterResult722" operator="over" result="filterResult723"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter65)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.1133, 0.86, 0.86, -0.1133, 49.75, -142.7)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.0749, 0.569, 0.569, -0.0749, 50.5, -142.1)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter66" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult724"/>
+      <feColorMatrix in="filterResult724" result="filterResult725" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult725" result="filterResult726" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult726" result="filterResult727" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult727" result="filterResult728" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult728" result="filterResult729" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult729" operator="over" result="filterResult730"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult730" result="filterResult731"/>
+      <feColorMatrix in="filterResult731" result="filterResult732" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult732" result="filterResult733" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult730" in2="filterResult733" operator="over" result="filterResult734"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter66)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.1133, 0.86, 0.86, -0.1133, 50.55, -98.6)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.0749, 0.569, 0.569, -0.0749, 51.3, -98.0)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter67" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult735"/>
+      <feColorMatrix in="filterResult735" result="filterResult736" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult736" result="filterResult737" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult737" result="filterResult738" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult738" result="filterResult739" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult739" result="filterResult740" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult740" operator="over" result="filterResult741"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult741" result="filterResult742"/>
+      <feColorMatrix in="filterResult742" result="filterResult743" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult743" result="filterResult744" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult741" in2="filterResult744" operator="over" result="filterResult745"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter67)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.1705, 0.5732, 0.5732, 0.1705, 118.5, -164.0)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.1128, 0.3792, 0.3792, 0.1128, 118.75, -163.45)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter68" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult746"/>
+      <feColorMatrix in="filterResult746" result="filterResult747" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult747" result="filterResult748" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult748" result="filterResult749" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult749" result="filterResult750" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult750" result="filterResult751" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult751" operator="over" result="filterResult752"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult752" result="filterResult753"/>
+      <feColorMatrix in="filterResult753" result="filterResult754" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult754" result="filterResult755" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult752" in2="filterResult755" operator="over" result="filterResult756"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter68)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.1705, 0.5732, 0.5732, 0.1705, 106.55, -136.15)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.1128, 0.3792, 0.3792, 0.1128, 106.8, -135.6)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter69" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult757"/>
+      <feColorMatrix in="filterResult757" result="filterResult758" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult758" result="filterResult759" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult759" result="filterResult760" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult760" result="filterResult761" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult761" result="filterResult762" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult762" operator="over" result="filterResult763"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult763" result="filterResult764"/>
+      <feColorMatrix in="filterResult764" result="filterResult765" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult765" result="filterResult766" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult763" in2="filterResult766" operator="over" result="filterResult767"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter69)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.249, 0.3683, 0.3683, -0.249, 74.75, -91.95)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1647, 0.2437, 0.2437, -0.1647, 75.2, -91.85)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter70" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult768"/>
+      <feColorMatrix in="filterResult768" result="filterResult769" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult769" result="filterResult770" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult770" result="filterResult771" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult771" result="filterResult772" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult772" result="filterResult773" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult773" operator="over" result="filterResult774"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult774" result="filterResult775"/>
+      <feColorMatrix in="filterResult775" result="filterResult776" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult776" result="filterResult777" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult774" in2="filterResult777" operator="over" result="filterResult778"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter70)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.249, 0.3683, 0.3683, -0.249, 85.25, -71.95)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.1647, 0.2437, 0.2437, -0.1647, 85.7, -71.85)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter71" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult779"/>
+      <feColorMatrix in="filterResult779" result="filterResult780" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult780" result="filterResult781" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult781" result="filterResult782" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult782" result="filterResult783" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult783" result="filterResult784" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult784" operator="over" result="filterResult785"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult785" result="filterResult786"/>
+      <feColorMatrix in="filterResult786" result="filterResult787" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult787" result="filterResult788" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult785" in2="filterResult788" operator="over" result="filterResult789"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter71)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.3797, -0.0588, -0.0588, 0.3797, 137.45, -76.25)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2512, -0.0389, -0.0389, 0.2512, 137.1, -76.0)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter72" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult790"/>
+      <feColorMatrix in="filterResult790" result="filterResult791" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult791" result="filterResult792" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult792" result="filterResult793" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult793" result="filterResult794" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult794" result="filterResult795" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult795" operator="over" result="filterResult796"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult796" result="filterResult797"/>
+      <feColorMatrix in="filterResult797" result="filterResult798" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult798" result="filterResult799" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult796" in2="filterResult799" operator="over" result="filterResult800"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter72)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.3797, -0.0588, -0.0588, 0.3797, 118.65, -81.4)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2512, -0.0389, -0.0389, 0.2512, 118.3, -81.15)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter73" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult801"/>
+      <feColorMatrix in="filterResult801" result="filterResult802" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult802" result="filterResult803" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult803" result="filterResult804" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult804" result="filterResult805" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult805" result="filterResult806" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult806" operator="over" result="filterResult807"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult807" result="filterResult808"/>
+      <feColorMatrix in="filterResult808" result="filterResult809" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult809" result="filterResult810" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult807" in2="filterResult810" operator="over" result="filterResult811"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter73)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.3095, 1.0404, 1.0404, 0.3095, 119.85, -134.0)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2048, 0.6882, 0.6882, 0.2048, 120.35, -132.9)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter74" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult812"/>
+      <feColorMatrix in="filterResult812" result="filterResult813" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult813" result="filterResult814" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult814" result="filterResult815" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult815" result="filterResult816" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult816" result="filterResult817" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult817" operator="over" result="filterResult818"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult818" result="filterResult819"/>
+      <feColorMatrix in="filterResult819" result="filterResult820" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult820" result="filterResult821" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult818" in2="filterResult821" operator="over" result="filterResult822"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter74)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.3095, 1.0404, 1.0404, 0.3095, 98.25, -83.3)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.2048, 0.6882, 0.6882, 0.2048, 98.75, -82.2)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter75" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult823"/>
+      <feColorMatrix in="filterResult823" result="filterResult824" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult824" result="filterResult825" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult825" result="filterResult826" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult826" result="filterResult827" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult827" result="filterResult828" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult828" operator="over" result="filterResult829"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult829" result="filterResult830"/>
+      <feColorMatrix in="filterResult830" result="filterResult831" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult831" result="filterResult832" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult829" in2="filterResult832" operator="over" result="filterResult833"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter75)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.2009, 0.4384, 0.4384, 0.2009, 83.85, -73.0)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.1329, 0.29, 0.29, 0.1329, 84.0, -72.5)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter76" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult834"/>
+      <feColorMatrix in="filterResult834" result="filterResult835" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult835" result="filterResult836" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult836" result="filterResult837" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult837" result="filterResult838" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult838" result="filterResult839" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult839" operator="over" result="filterResult840"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult840" result="filterResult841"/>
+      <feColorMatrix in="filterResult841" result="filterResult842" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult842" result="filterResult843" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult840" in2="filterResult843" operator="over" result="filterResult844"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter76)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.2009, 0.4384, 0.4384, 0.2009, 71.25, -52.1)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.1329, 0.29, 0.29, 0.1329, 71.4, -51.6)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter77" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult845"/>
+      <feColorMatrix in="filterResult845" result="filterResult846" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult846" result="filterResult847" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult847" result="filterResult848" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult848" result="filterResult849" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult849" result="filterResult850" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult850" operator="over" result="filterResult851"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult851" result="filterResult852"/>
+      <feColorMatrix in="filterResult852" result="filterResult853" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult853" result="filterResult854" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult851" in2="filterResult854" operator="over" result="filterResult855"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter77)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.1133, 0.86, 0.86, -0.1133, 84.75, -153.0)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.0749, 0.569, 0.569, -0.0749, 85.5, -152.4)" width="4.8" xlink:href="#shape2"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter78" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult856"/>
+      <feColorMatrix in="filterResult856" result="filterResult857" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult857" result="filterResult858" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult858" result="filterResult859" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult859" result="filterResult860" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult860" result="filterResult861" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult861" operator="over" result="filterResult862"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult862" result="filterResult863"/>
+      <feColorMatrix in="filterResult863" result="filterResult864" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult864" result="filterResult865" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult862" in2="filterResult865" operator="over" result="filterResult866"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter78)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(0.1133, 0.86, 0.86, -0.1133, 85.55, -108.9)" width="4.8" xlink:href="#sprite3"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(0.0749, 0.569, 0.569, -0.0749, 86.3, -108.3)" width="4.8" xlink:href="#shape4"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter79" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult867"/>
+      <feColorMatrix in="filterResult867" result="filterResult868" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult868" result="filterResult869" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult869" result="filterResult870" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult870" result="filterResult871" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult871" result="filterResult872" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult872" operator="over" result="filterResult873"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult873" result="filterResult874"/>
+      <feColorMatrix in="filterResult874" result="filterResult875" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult875" result="filterResult876" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult873" in2="filterResult876" operator="over" result="filterResult877"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter79)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.1686, 0.5667, 0.5667, 0.1686, 149.5, -181.2)" width="4.8" xlink:href="#sprite2"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.1115, 0.3749, 0.3749, 0.1115, 149.75, -180.65)" width="4.8" xlink:href="#shape5"/>
+    <filter color-interpolation-filters="sRGB" height="300%" id="filter80" width="300%" x="-100%" y="-100%">
+      <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult878"/>
+      <feColorMatrix in="filterResult878" result="filterResult879" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult879" result="filterResult880" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult880" result="filterResult881" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feGaussianBlur in="filterResult881" result="filterResult882" stdDeviation="1.118033988749895 1.118033988749895"/>
+      <feColorMatrix in="filterResult882" result="filterResult883" type="matrix" values="1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 3.0 0"/>
+      <feComposite in="SourceGraphic" in2="filterResult883" operator="over" result="filterResult884"/>
+      <feOffset dx="0.0" dy="0.0" in="filterResult884" result="filterResult885"/>
+      <feColorMatrix in="filterResult885" result="filterResult886" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.6,0 0 0 0 0.0,0 0 0 1.0 0"/>
+      <feGaussianBlur in="filterResult886" result="filterResult887" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+      <feComposite in="filterResult884" in2="filterResult887" operator="over" result="filterResult888"/>
+    </filter>
+    <use ffdec:characterId="521" filter="url(#filter80)" height="4.3" style="mix-blend-mode: lighten" transform="matrix(-0.1686, 0.5667, 0.5667, 0.1686, 136.1, -150.4)" width="4.8" xlink:href="#sprite4"/>
+    <use ffdec:characterId="520" height="4.3" transform="matrix(-0.1115, 0.3749, 0.3749, 0.1115, 136.35, -149.85)" width="4.8" xlink:href="#shape7"/>
+  </g>
+  <defs>
+    <g id="sprite0">
+      <filter color-interpolation-filters="sRGB" height="300%" id="filter0" width="300%" x="-100%" y="-100%">
+        <feOffset dx="0.0" dy="0.0" in="SourceGraphic" result="filterResult0"/>
+        <feColorMatrix in="filterResult0" result="filterResult1" type="matrix" values="0 0 0 0 1.0,0 0 0 0 1.0,0 0 0 0 0.0,0 0 0 1.0 0"/>
+        <feGaussianBlur in="filterResult1" result="filterResult2" stdDeviation="5.477225575051661 5.477225575051661"/>
+        <feComposite in="SourceGraphic" in2="filterResult2" operator="over" result="filterResult3"/>
+        <feOffset dx="0.0" dy="0.0" in="filterResult3" result="filterResult4"/>
+        <feColorMatrix in="filterResult4" result="filterResult5" type="matrix" values="0 0 0 0 1.0,0 0 0 0 0.4,0 0 0 0 0.0,0 0 0 1.0 0"/>
+        <feGaussianBlur in="filterResult5" result="filterResult6" stdDeviation="1.4142135623730951 1.4142135623730951"/>
+        <feComposite in="filterResult3" in2="filterResult6" operator="over" result="filterResult7"/>
+        <feColorMatrix in="filterResult7" result="filterResult8" type="matrix" values="1.4 0.0 0.0 0.0 0.08156862 0.0 1.4 0.0 0.0 0.08156862 0.0 0.0 1.4 0.0 0.08156862 0.0 0.0 0.0 1.0 0.0"/>
+      </filter>
+      <use ffdec:characterId="496" filter="url(#filter0)" height="130.0" style="mix-blend-mode: lighten" transform="matrix(1.45, 0.0, 0.0, 1.45, 1.45, 42.55)" width="108.85" xlink:href="#sprite1"/>
+    </g>
+    <g id="sprite1">
+      <use ffdec:characterId="495" height="130.0" transform="matrix(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)" width="108.85" xlink:href="#shape0"/>
+    </g>
+    <g id="shape0">
+      <path d="M-44.45 19.7 Q-41.8 16.0 -38.4 12.65 -22.45 -3.25 0.1 -3.25 22.65 -3.25 38.55 12.65 41.95 16.0 44.65 19.7" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.0" stroke-width="1.0"/>
+      <path d="M0.1 -0.9 Q-22.45 -0.9 -38.4 -16.85 -54.3 -32.85 -54.3 -55.4 -54.3 -77.95 -38.4 -93.9 -22.45 -109.8 0.1 -109.8 22.65 -109.8 38.55 -93.9 54.55 -77.95 54.55 -55.35 54.55 -32.85 38.55 -16.85 22.65 -0.9 0.1 -0.9" fill="url(#gradient0)" fill-rule="evenodd" stroke="none"/>
+      <path d="M38.55 -14.95 Q22.65 1.0 0.1 1.0 -22.45 1.0 -38.4 -14.95 -54.3 -30.9 -54.3 -53.5 -54.3 -76.05 -38.4 -92.0 -22.45 -107.9 0.1 -107.9 22.65 -107.9 38.55 -92.0 54.55 -76.05 54.55 -53.45 54.55 -30.9 38.55 -14.95" fill="url(#gradient1)" fill-rule="evenodd" stroke="none"/>
+      <path d="M-9.6 -76.8 Q-9.6 -70.85 -13.8 -66.6 -18.0 -62.35 -24.0 -62.35 -29.95 -62.35 -34.2 -66.6 -38.4 -70.85 -38.4 -76.8 -38.4 -82.8 -34.2 -87.0 -29.95 -91.2 -24.0 -91.2 -18.0 -91.2 -13.8 -87.0 -9.6 -82.8 -9.6 -76.8" fill="url(#gradient2)" fill-rule="evenodd" stroke="none"/>
+      <path d="M13.95 -5.6 Q11.5 -3.2 8.15 -3.2 4.75 -3.2 2.4 -5.6 0.05 -7.95 0.05 -11.35 0.05 -14.7 2.4 -17.1 4.75 -19.5 8.15 -19.5 11.5 -19.5 13.95 -17.1 16.3 -14.7 16.3 -11.3 16.3 -7.95 13.95 -5.6" fill="url(#gradient3)" fill-rule="evenodd" stroke="none"/>
+      <path d="M27.25 -7.75 Q17.3 -2.0 6.25 -4.95 -4.8 -7.95 -10.5 -17.85 -16.25 -27.85 -13.3 -38.85 -10.35 -49.9 -0.35 -55.65 9.55 -61.4 20.6 -58.45 31.7 -55.5 37.45 -45.5 43.15 -35.6 40.15 -24.55 37.2 -13.5 27.25 -7.75" fill="url(#gradient4)" fill-rule="evenodd" stroke="none"/>
+    </g>
+    <radialGradient cx="0" cy="0" gradientTransform="matrix(0.0669, 0.0, 0.0, 0.0669, 0.1, -55.35)" gradientUnits="userSpaceOnUse" id="gradient0" r="819.2" spreadMethod="pad">
+      <stop offset="0.0" stop-color="#ffffff" stop-opacity="0.0"/>
+      <stop offset="1.0" stop-color="#ffffff" stop-opacity="0.0"/>
+    </radialGradient>
+    <radialGradient cx="0" cy="0" gradientTransform="matrix(0.0728, 0.0, 0.0, 0.0728, 0.65, -47.05)" gradientUnits="userSpaceOnUse" id="gradient1" r="819.2" spreadMethod="pad">
+      <stop offset="0.7686274509803922" stop-color="#ffffff" stop-opacity="0.0"/>
+      <stop offset="1.0" stop-color="#ffffff" stop-opacity="0.0"/>
+    </radialGradient>
+    <linearGradient gradientTransform="matrix(0.0176, 0.0, 0.0, 0.0176, -24.0, -76.8)" gradientUnits="userSpaceOnUse" id="gradient2" spreadMethod="pad" x1="-819.2" x2="819.2">
+      <stop offset="0.0" stop-color="#ffffff" stop-opacity="0.0"/>
+      <stop offset="1.0" stop-color="#ffffff" stop-opacity="0.0"/>
+    </linearGradient>
+    <linearGradient gradientTransform="matrix(0.0099, 0.0, 0.0, 0.0099, 8.15, -11.3)" gradientUnits="userSpaceOnUse" id="gradient3" spreadMethod="pad" x1="-819.2" x2="819.2">
+      <stop offset="0.0" stop-color="#ffffff" stop-opacity="0.0"/>
+      <stop offset="1.0" stop-color="#ffffff" stop-opacity="0.0"/>
+    </linearGradient>
+    <linearGradient gradientTransform="matrix(-0.0169, -0.0292, 0.0293, -0.0169, 13.5, -31.65)" gradientUnits="userSpaceOnUse" id="gradient4" spreadMethod="pad" x1="-819.2" x2="819.2">
+      <stop offset="0.0" stop-color="#ffffff" stop-opacity="0.0"/>
+      <stop offset="1.0" stop-color="#ffffff" stop-opacity="0.0"/>
+    </linearGradient>
+    <g id="sprite2">
+      <use ffdec:characterId="520" height="4.3" transform="matrix(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)" width="4.8" xlink:href="#shape1"/>
+    </g>
+    <g id="shape1">
+      <path d="M4.8 0.85 L4.75 2.15 Q4.75 3.0 4.25 3.6 L3.15 4.2 2.0 4.3 Q1.45 4.25 0.75 3.5 L0.0 2.8 0.15 2.3 0.85 0.95 1.05 0.8 1.45 0.55 1.85 0.25 Q3.15 -0.35 4.25 0.45 L4.8 0.85" fill="#ffffff" fill-rule="evenodd" stroke="none"/>
+    </g>
+    <g id="shape2">
+      <path d="M4.8 0.85 L4.75 2.15 Q4.75 3.0 4.25 3.6 L3.15 4.2 2.0 4.3 Q1.45 4.25 0.75 3.5 L0.0 2.8 0.15 2.3 0.85 0.95 1.05 0.8 1.45 0.55 1.85 0.25 Q3.15 -0.35 4.25 0.45 L4.8 0.85" fill="#ffffff" fill-opacity="0.5529412" fill-rule="evenodd" stroke="none"/>
+    </g>
+    <g id="sprite3">
+      <use ffdec:characterId="520" height="4.3" transform="matrix(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)" width="4.8" xlink:href="#shape3"/>
+    </g>
+    <g id="shape3">
+      <path d="M4.8 0.85 L4.75 2.15 Q4.75 3.0 4.25 3.6 L3.15 4.2 2.0 4.3 Q1.45 4.25 0.75 3.5 L0.0 2.8 0.15 2.3 0.85 0.95 1.05 0.8 1.45 0.55 1.85 0.25 Q3.15 -0.35 4.25 0.45 L4.8 0.85" fill="#ffffff" fill-rule="evenodd" stroke="none"/>
+    </g>
+    <g id="shape4">
+      <path d="M4.8 0.85 L4.75 2.15 Q4.75 3.0 4.25 3.6 L3.15 4.2 2.0 4.3 Q1.45 4.25 0.75 3.5 L0.0 2.8 0.15 2.3 0.85 0.95 1.05 0.8 1.45 0.55 1.85 0.25 Q3.15 -0.35 4.25 0.45 L4.8 0.85" fill="#ffffff" fill-rule="evenodd" stroke="none"/>
+    </g>
+    <g id="shape5">
+      <path d="M4.8 0.85 L4.75 2.15 Q4.75 3.0 4.25 3.6 L3.15 4.2 2.0 4.3 Q1.45 4.25 0.75 3.5 L0.0 2.8 0.15 2.3 0.85 0.95 1.05 0.8 1.45 0.55 1.85 0.25 Q3.15 -0.35 4.25 0.45 L4.8 0.85" fill="#ffffff" fill-opacity="0.105882354" fill-rule="evenodd" stroke="none"/>
+    </g>
+    <g id="sprite4">
+      <use ffdec:characterId="520" height="4.3" transform="matrix(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)" width="4.8" xlink:href="#shape6"/>
+    </g>
+    <g id="shape6">
+      <path d="M4.8 0.85 L4.75 2.15 Q4.75 3.0 4.25 3.6 L3.15 4.2 2.0 4.3 Q1.45 4.25 0.75 3.5 L0.0 2.8 0.15 2.3 0.85 0.95 1.05 0.8 1.45 0.55 1.85 0.25 Q3.15 -0.35 4.25 0.45 L4.8 0.85" fill="#ffffff" fill-rule="evenodd" stroke="none"/>
+    </g>
+    <g id="shape7">
+      <path d="M4.8 0.85 L4.75 2.15 Q4.75 3.0 4.25 3.6 L3.15 4.2 2.0 4.3 Q1.45 4.25 0.75 3.5 L0.0 2.8 0.15 2.3 0.85 0.95 1.05 0.8 1.45 0.55 1.85 0.25 Q3.15 -0.35 4.25 0.45 L4.8 0.85" fill="#ffffff" fill-rule="evenodd" stroke="none"/>
+    </g>
+  </defs>
+</svg>

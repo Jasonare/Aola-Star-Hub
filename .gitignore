@@ -1,0 +1,21 @@
+node_modules/
+.chrome-profile/
+.idea/
+__pycache__/
+*.pyc
+*.log
+*.out.log
+
+# Local helper repositories and generated build/cache folders.
+__repo_aolarhapsody/
+android-webview/.gradle/
+android-webview/**/build/
+server/data/
+release/
+dist/
+
+# Large generated/source animation assets should not be added blindly.
+swf/
+pet-action/
+skill-effect/
+skill-effect-fullscreen/

@@ -1,0 +1,14 @@
+{
+  "total_swf": 100,
+  "processed": 3,
+  "counts": {
+    "exported": 3
+  },
+  "webp_files": 3,
+  "remaining": 97,
+  "elapsed_seconds": 29.87,
+  "swf_dir": "C:\\工作娱乐\\Aola-Star-Hub\\pet-state\\swf",
+  "out_dir": "C:\\工作娱乐\\Aola-Star-Hub\\pet-state",
+  "ffdec": "C:\\Program Files (x86)\\FFDec\\ffdec-cli.exe",
+  "ffmpeg": "C:\\FFmpeg\\ffmpeg-7.1.1-essentials_build\\bin\\ffmpeg.exe"
+}
