@@ -1,16 +1,70 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, desktopCapturer } = require("electron");
+const net = require("net");
 const path = require("path");
 
 let localServer = null;
 let isQuitting = false;
 
-const startLocalBackend = () => {
-  process.env.AOLA_DATA_DIR = path.join(app.getPath("userData"), "data");
-  const { startServer } = require("../server/index");
-  localServer = startServer(Number(process.env.PORT) || 3030);
+const DEFAULT_BACKEND_PORT = 3030;
+const MAX_PORT_ATTEMPTS = 50;
+
+const normalizePort = (value) => {
+  const port = Number(value) || DEFAULT_BACKEND_PORT;
+  return Number.isInteger(port) && port > 0 && port < 65536 ? port : DEFAULT_BACKEND_PORT;
 };
 
-const createWindow = () => {
+const isPortAvailable = (port) => new Promise((resolve) => {
+  const probe = net.createServer();
+  probe.once("error", () => resolve(false));
+  probe.once("listening", () => {
+    probe.close(() => resolve(true));
+  });
+  probe.listen(port);
+});
+
+const findAvailableBackendPort = async (preferredPort) => {
+  const startPort = normalizePort(preferredPort);
+  const endPort = Math.min(startPort + MAX_PORT_ATTEMPTS - 1, 65535);
+  for (let port = startPort; port <= endPort; port += 1) {
+    if (await isPortAvailable(port)) return port;
+  }
+  throw new Error(`No available local backend port in range ${startPort}-${endPort}.`);
+};
+
+const startLocalBackend = async () => {
+  process.env.AOLA_DATA_DIR = path.join(app.getPath("userData"), "data");
+  const port = await findAvailableBackendPort(process.env.PORT);
+  process.env.PORT = String(port);
+  const { startServer } = require("../server/index");
+  return new Promise((resolve, reject) => {
+    try {
+      localServer = startServer(port, () => resolve(port));
+      localServer.once("error", reject);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+const configureDisplayMediaCapture = (win) => {
+  const ses = win && win.webContents && win.webContents.session;
+  if (!ses || typeof ses.setDisplayMediaRequestHandler !== "function") return;
+  ses.setDisplayMediaRequestHandler(async (_request, callback) => {
+    try {
+      const sources = await desktopCapturer.getSources({
+        types: ["screen", "window"],
+        thumbnailSize: { width: 0, height: 0 }
+      });
+      const source = sources.find((item) => item && String(item.id || "").startsWith("screen:")) || sources[0];
+      callback(source ? { video: source } : {});
+    } catch (err) {
+      console.error("[display-media:capture-failed]", err);
+      callback({});
+    }
+  });
+};
+
+const createWindow = (backendPort) => {
   const win = new BrowserWindow({
     width: 1280,
     height: 820,
@@ -23,6 +77,7 @@ const createWindow = () => {
       preload: path.join(__dirname, "preload.js")
     }
   });
+  configureDisplayMediaCapture(win);
   win.__allowCloseAfterSave = false;
   win.on("close", (event) => {
     if (isQuitting || win.__allowCloseAfterSave || win.isDestroyed()) return;
@@ -53,12 +108,17 @@ const createWindow = () => {
   win.on("unresponsive", () => {
     console.error("[window:unresponsive]");
   });
-  win.loadURL(`http://localhost:${process.env.PORT || 3030}/aola-star.html`);
+  win.loadURL(`http://127.0.0.1:${backendPort}/aola-star.html`);
 };
 
-app.whenReady().then(() => {
-  startLocalBackend();
-  setTimeout(createWindow, 600);
+app.whenReady().then(async () => {
+  try {
+    const backendPort = await startLocalBackend();
+    createWindow(backendPort);
+  } catch (err) {
+    console.error("[main:backend-start-failed]", err);
+    app.quit();
+  }
 });
 
 app.on("window-all-closed", () => {

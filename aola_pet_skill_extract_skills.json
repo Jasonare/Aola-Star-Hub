@@ -3618,7 +3618,7 @@
     "new_cn_name": "闇月马戏团",
     "old_effect_desc": "",
     "new_effect_desc": "",
-    "client_desc": "全场具有马戏团特性的亚比伤害增加50％，速度增加1级",
+    "client_desc": "50%的概率削弱对方单体攻击和特攻各1级",
     "power": -1,
     "hit_rate": null,
     "all_pp": 10,

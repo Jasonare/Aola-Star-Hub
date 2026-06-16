@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const fs = require("fs");
 const http = require("http");
 const path = require("path");
+const zlib = require("zlib");
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const DATA_DIR = process.env.AOLA_DATA_DIR || path.join(__dirname, "data");
@@ -10,6 +11,12 @@ const USERS_FILE = path.join(DATA_DIR, "users.json");
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
 const PORT = Number(process.env.PORT) || 3030;
 const sessions = new Map();
+const STATIC_LONG_CACHE_SECONDS = 365 * 24 * 60 * 60;
+const STATIC_SHORT_CACHE_SECONDS = 60;
+const COMPRESSIBLE_EXTENSIONS = new Set([".html", ".js", ".css", ".json", ".svg", ".txt"]);
+const LONG_CACHE_EXTENSIONS = new Set([
+  ".js", ".css", ".json", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif", ".ogg", ".mp3", ".wav", ".ico"
+]);
 
 const ensureDir = (dir) => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -27,6 +34,24 @@ const readJsonFile = (file, fallback) => {
 const writeJsonFile = (file, data) => {
   ensureDir(path.dirname(file));
   fs.writeFileSync(file, JSON.stringify(data, null, 2), "utf8");
+};
+
+const weakEtag = (stat) => `W/"${stat.size.toString(16)}-${Math.floor(stat.mtimeMs).toString(16)}"`;
+
+const compressionForRequest = (req, ext) => {
+  if (!COMPRESSIBLE_EXTENSIONS.has(ext)) return null;
+  const accept = String(req.headers["accept-encoding"] || "");
+  if (/\bbr\b/.test(accept)) return { encoding: "br", stream: zlib.createBrotliCompress() };
+  if (/\bgzip\b/.test(accept)) return { encoding: "gzip", stream: zlib.createGzip({ level: 6 }) };
+  return null;
+};
+
+const cacheControlForStatic = (rel, ext) => {
+  const isHtml = ext === ".html";
+  const isServiceWorker = /(^|\/)sw\.js$/i.test(rel);
+  if (isHtml || isServiceWorker) return `no-cache, max-age=${STATIC_SHORT_CACHE_SECONDS}, must-revalidate`;
+  if (LONG_CACHE_EXTENSIONS.has(ext)) return `public, max-age=${STATIC_LONG_CACHE_SECONDS}, immutable`;
+  return "public, max-age=3600";
 };
 
 const usersDb = () => {
@@ -58,12 +83,25 @@ const LEGACY_TEST_USER_IDS = ["test-account-all-pets-1-1928", "test-account-all-
 const TEST_USERNAME = "test";
 const TEST_PASSWORD = "test123456";
 const TEST_MAX_DEX_ID = 1960;
+const HATCH_MS = 5 * 60 * 1000;
+const SHOP_REDEEM_CODE_ALHUB666 = "ALHUB666";
+const SHOP_REDEEM_CODE_ALHUB666_DEX_ID = 1782;
+const SHOP_REDEEM_CODE_ALHUB666_PET_NAME = "迷雾龙";
+const SHOP_REDEEM_CODE_ALHUB666_SOURCE = "redeem:ALHUB666";
+const SHOP_REDEEM_CODE_ALHUB666_BACKFILL_MIGRATION_KEY = "redeem_alhub666_mist_dragon_backfill_v1";
 
 const publicUser = (user) => ({
   id: user.id,
   username: user.username,
   saveDir: `server/data/saves/${user.id}`
 });
+
+const cleanText = (s) => String(s || "").replace(/[\u200b\u00a0]/g, "").trim();
+const createSaveUid = () => `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+const isAlhub666CurrentRewardRow = (row) => (
+  Number(row && row.dexId) === SHOP_REDEEM_CODE_ALHUB666_DEX_ID
+  && cleanText(row && row.source) === SHOP_REDEEM_CODE_ALHUB666_SOURCE
+);
 
 const authHeaders = (token) => ({
   "Set-Cookie": `aola_session=${encodeURIComponent(token)}; HttpOnly; SameSite=Lax; Path=/`,
@@ -227,14 +265,21 @@ const normalizeTestSavePayload = (payload) => {
     fixedStageIndex: pet.fixedStageIndex,
     keepEquippedSkillsAboveLevel: pet.keepEquippedSkillsAboveLevel
   }));
+  activePets.forEach((pet) => {
+    const id = String(pet && pet.id || "");
+    if (!id || seedPetIds.has(id)) return;
+    if (mergedPets.some((row) => String(row && row.id || "") === id)) return;
+    mergedPets.push(pet);
+  });
+  const validPetIds = new Set(mergedPets.map((pet) => String(pet && pet.id || "")).filter(Boolean));
   const bagPetIds = Array.isArray(save.bagPetIds)
-    ? save.bagPetIds.filter((id) => seedPetIds.has(String(id || ""))).slice(0, 6)
+    ? save.bagPetIds.filter((id) => validPetIds.has(String(id || ""))).slice(0, 6)
     : [];
   seed.bagPetIds.forEach((id) => {
     if (bagPetIds.length < 6 && id && !bagPetIds.includes(id)) bagPetIds.push(id);
   });
   while (bagPetIds.length < 6) bagPetIds.push("");
-  const selectedPetId = seedPetIds.has(String(save.selectedPetId || "")) ? save.selectedPetId : (bagPetIds.find(Boolean) || seed.selectedPetId);
+  const selectedPetId = validPetIds.has(String(save.selectedPetId || "")) ? save.selectedPetId : (bagPetIds.find(Boolean) || seed.selectedPetId);
   return {
     ...seed,
     ...save,
@@ -246,11 +291,50 @@ const normalizeTestSavePayload = (payload) => {
   };
 };
 
+const backfillAlhub666MistDragonEgg = (payload) => {
+  const save = payload && typeof payload.save === "object" && !Array.isArray(payload.save) ? payload.save : null;
+  if (!save) return payload;
+  const redeemedCodes = Array.isArray(save.redeemedCodes)
+    ? save.redeemedCodes.map((code) => cleanText(code).toUpperCase()).filter(Boolean)
+    : [];
+  if (!redeemedCodes.includes(SHOP_REDEEM_CODE_ALHUB666)) return payload;
+  const migrations = save.migrations && typeof save.migrations === "object" ? { ...save.migrations } : {};
+  if (migrations[SHOP_REDEEM_CODE_ALHUB666_BACKFILL_MIGRATION_KEY]) return payload;
+  const activePets = Array.isArray(save.activePets) ? save.activePets : [];
+  const eggs = Array.isArray(save.eggs) ? save.eggs.slice() : [];
+  if (!activePets.some(isAlhub666CurrentRewardRow) && !eggs.some(isAlhub666CurrentRewardRow)) {
+    const now = Date.now();
+    eggs.unshift({
+      id: createSaveUid(),
+      dexId: SHOP_REDEEM_CODE_ALHUB666_DEX_ID,
+      speciesName: SHOP_REDEEM_CODE_ALHUB666_PET_NAME,
+      source: SHOP_REDEEM_CODE_ALHUB666_SOURCE,
+      startAt: now,
+      hatchAt: now + HATCH_MS
+    });
+  }
+  migrations[SHOP_REDEEM_CODE_ALHUB666_BACKFILL_MIGRATION_KEY] = true;
+  return {
+    ...(payload && typeof payload === "object" ? payload : {}),
+    save: {
+      ...save,
+      redeemedCodes: Array.from(new Set(redeemedCodes)),
+      eggs,
+      migrations
+    }
+  };
+};
+
 const normalizeSaveForUser = (user, payload) => {
   const save = payload && typeof payload.save === "object" && !Array.isArray(payload.save) ? payload.save : null;
-  if (!user || user.id !== TEST_USER_ID || !save) return payload;
-  const normalizedSave = normalizeTestSavePayload(payload);
-  if (normalizedSave === save) return payload;
+  if (!save) return payload;
+  const backfilledPayload = backfillAlhub666MistDragonEgg(payload);
+  const backfilledSave = backfilledPayload && backfilledPayload.save && typeof backfilledPayload.save === "object" && !Array.isArray(backfilledPayload.save)
+    ? backfilledPayload.save
+    : save;
+  if (!user || user.id !== TEST_USER_ID) return backfilledPayload;
+  const normalizedSave = normalizeTestSavePayload(backfilledPayload);
+  if (normalizedSave === backfilledSave) return backfilledPayload;
   return {
     ...(payload && typeof payload === "object" ? payload : {}),
     userId: user.id,
@@ -393,16 +477,34 @@ const serveStatic = (req, res) => {
       ".jpg": "image/jpeg",
       ".jpeg": "image/jpeg",
       ".webp": "image/webp",
+      ".svg": "image/svg+xml; charset=utf-8",
       ".gif": "image/gif",
       ".ogg": "audio/ogg"
     };
-    res.writeHead(200, {
+    const etag = weakEtag(stat);
+    if (req.headers["if-none-match"] === etag) {
+      res.writeHead(304, {
+        "Cache-Control": cacheControlForStatic(rel, ext),
+        "ETag": etag
+      });
+      res.end();
+      return;
+    }
+    const compression = compressionForRequest(req, ext);
+    const headers = {
       "Content-Type": typeMap[ext] || "application/octet-stream",
-      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-      "Pragma": "no-cache",
-      "Expires": "0"
-    });
-    fs.createReadStream(full).pipe(res);
+      "Cache-Control": cacheControlForStatic(rel, ext),
+      "ETag": etag,
+      "Vary": "Accept-Encoding"
+    };
+    if (compression) headers["Content-Encoding"] = compression.encoding;
+    res.writeHead(200, headers);
+    const source = fs.createReadStream(full);
+    if (compression) {
+      source.pipe(compression.stream).pipe(res);
+    } else {
+      source.pipe(res);
+    }
   });
 };
 
@@ -481,8 +583,9 @@ const handleApi = async (req, res) => {
         savedAt: new Date().toISOString(),
         save: body.save
       };
-      writeJsonFile(userSaveFile(user.id), payload);
-      return sendJson(res, 200, { ok: true, savedAt: payload.savedAt, saveDir: `server/data/saves/${user.id}` });
+      const normalized = normalizeSaveForUser(user, payload);
+      writeJsonFile(userSaveFile(user.id), normalized);
+      return sendJson(res, 200, { ok: true, savedAt: normalized.savedAt, saveDir: `server/data/saves/${user.id}` });
     }
     sendJson(res, 404, { ok: false, message: "API不存在。" });
   } catch (err) {
@@ -512,9 +615,8 @@ const startServer = (port = PORT, callback = null) => {
   });
   server.on("error", (err) => {
     if (err && err.code === "EADDRINUSE") {
-      console.error(`端口 ${port} 已被占用。`);
-      console.error(`如果已打开桌面版，请直接访问 http://localhost:${port}/aola-star.html，或关闭桌面版后重新启动服务。`);
-      console.error("也可以使用其他端口启动，例如：$env:PORT=3031; npm run server");
+      console.error(`[server:port-in-use] Port ${port} is already in use.`);
+      console.error(`[server:port-in-use] Close the existing process or start another port, for example: $env:PORT=3031; npm run server`);
       return;
     }
     console.error(err);
