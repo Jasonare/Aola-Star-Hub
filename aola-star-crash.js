@@ -49,7 +49,7 @@
     showCrash("[Promise Rejection]\n" + msg);
   });
 
-  window.addEventListener("load", function () {
+  function runBootDiag() {
     try {
       var missing = [];
       for (var i = 0; i < REQUIRED_GLOBALS.length; i += 1) {
@@ -79,5 +79,26 @@
         showCrash(lines.join("\n"));
       }
     } catch (_) {}
+  }
+
+  function runBootDiagWhenReady() {
+    try {
+      var diag = window.__aolaScriptDiag || {};
+      if (diag.bootDone) {
+        runBootDiag();
+        return;
+      }
+      window.addEventListener("aola:bootdone", runBootDiag, { once: true });
+      setTimeout(function () {
+        var latest = window.__aolaScriptDiag || {};
+        if (!latest.bootDone) runBootDiag();
+      }, 12000);
+    } catch (_) {
+      setTimeout(runBootDiag, 12000);
+    }
+  }
+
+  window.addEventListener("load", function () {
+    setTimeout(runBootDiagWhenReady, 0);
   });
 })();

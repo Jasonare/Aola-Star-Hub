@@ -175,6 +175,7 @@
     }
     .home-action-btn {
       position: absolute;
+      z-index: 20;
       width: var(--w);
       left: var(--x);
       top: var(--y);
@@ -202,6 +203,7 @@
       -webkit-user-drag: none;
     }
     .home-action-gift { --x: 1.2%; --y: 83.4%; --w: 7.1%; }
+    .home-action-rank { --x: 25.6%; --y: 86.0%; --w: 8.0%; }
     .home-action-tunnel { --x: 34.0%; --y: 86.0%; --w: 8.4%; }
     .home-action-study { --x: 42.5%; --y: 85.5%; --w: 8.0%; }
     .home-action-badge { --x: 52.2%; --y: 87.4%; --w: 5.8%; }
@@ -271,9 +273,10 @@
         width: min(520px, calc(100vw - 32px));
       }
       .home-action-gift { --x: 2%; --y: 76%; --w: 18%; }
-      .home-action-tunnel { --x: 18%; --y: 82%; --w: 18%; }
-      .home-action-study { --x: 34%; --y: 82%; --w: 18%; }
-      .home-action-badge { --x: 51%; --y: 83%; --w: 14%; }
+      .home-action-rank { --x: 18%; --y: 82%; --w: 18%; }
+      .home-action-tunnel { --x: 34%; --y: 82%; --w: 18%; }
+      .home-action-study { --x: 50%; --y: 82%; --w: 18%; }
+      .home-action-badge { --x: 66%; --y: 83%; --w: 14%; }
       .home-action-egg { --x: 64%; --y: 83%; --w: 14%; }
       .home-action-warehouse { --x: 75%; --y: 83%; --w: 15%; }
       .home-action-dex { --x: 11%; --y: 62%; --w: 16%; }
@@ -1045,6 +1048,10 @@
     }
     .battle-prepare-target-float {
       animation: battlePrepareFloat 2.8s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    .battle-prepare-team-float {
+      animation: battlePrepareFloat 2.6s ease-in-out infinite;
       transform-origin: center bottom;
     }
     .battle-prepare-target-float > img {
@@ -5465,11 +5472,83 @@
       opacity: 1 !important;
       transform: translate(0, 0) !important;
     }
+    .game-resource-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 99998;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(14, 165, 233, .22), transparent 34%),
+        radial-gradient(circle at 76% 82%, rgba(34, 197, 94, .18), transparent 32%),
+        #020617;
+      color: #dff7ff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .game-resource-loader.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .24s ease;
+    }
+    .game-resource-loader-card {
+      width: min(420px, calc(100vw - 32px));
+      border: 1px solid rgba(125, 211, 252, .32);
+      border-radius: 18px;
+      background: rgba(15, 23, 42, .82);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .34);
+      padding: 22px 24px;
+    }
+    .game-resource-loader-title {
+      font-size: 22px;
+      font-weight: 950;
+      letter-spacing: 0;
+      color: #fff;
+    }
+    .game-resource-loader-text {
+      margin-top: 8px;
+      min-height: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(207, 250, 254, .78);
+    }
+    .game-resource-loader-track {
+      margin-top: 16px;
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, .96);
+      border: 1px solid rgba(125, 211, 252, .22);
+    }
+    .game-resource-loader-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #22d3ee, #a3e635);
+      transition: width .18s ease;
+    }
+    .game-resource-loader-percent {
+      margin-top: 10px;
+      text-align: right;
+      font-size: 12px;
+      font-weight: 950;
+      color: #a7f3d0;
+    }
 
   </style>
 </head>
 <body class="text-slate-800 min-h-screen">
-<script src="./aola-star-crash.js"></script>
+<script src="./aola-star-crash.js?v=20260617_bootdone_diag"></script>
+<div id="game-resource-loader" class="game-resource-loader" role="status" aria-live="polite">
+  <div class="game-resource-loader-card">
+    <div class="game-resource-loader-title">Aola Star Hub</div>
+    <div id="game-resource-loader-text" class="game-resource-loader-text">正在连接资源清单...</div>
+    <div class="game-resource-loader-track">
+      <div id="game-resource-loader-bar" class="game-resource-loader-bar"></div>
+    </div>
+    <div id="game-resource-loader-percent" class="game-resource-loader-percent">0%</div>
+  </div>
+</div>
 <div id="app" v-cloak>
   <input ref="guestImportInput" type="file" accept="application/json,.json" class="hidden" @change="importGuestLocalSave">
   <div v-if="!authReady" class="min-h-screen flex items-center justify-center bg-slate-950 text-cyan-100 font-black">
@@ -5489,10 +5568,10 @@
       <div class="space-y-3">
         <input v-model="authUsername" type="text" autocomplete="username" placeholder="用户名" class="login-input">
         <input v-model="authPassword" type="password" autocomplete="current-password" placeholder="密码" @keyup.enter="submitAuth" class="login-input">
-        <div class="login-captcha-box">
+        <div v-if="authMode === 'register' || !loginCaptchaVerified" class="login-captcha-box">
           <div>{{ loginCaptchaNotice }}</div>
         </div>
-        <input v-model="authCaptcha" type="text" autocomplete="off" placeholder="请输入验证码" @keyup.enter="submitAuth" class="login-input">
+        <input v-if="authMode === 'register' || !loginCaptchaVerified" v-model="authCaptcha" type="text" autocomplete="off" placeholder="请输入验证码" @keyup.enter="submitAuth" class="login-input">
       </div>
       <label class="mt-3 flex items-center gap-2 text-xs font-black text-cyan-100/85 select-none">
         <input v-model="rememberPassword" type="checkbox" class="w-4 h-4 accent-cyan-500">
@@ -5574,6 +5653,7 @@
     </div>
     <div class="home-action-grid">
       <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./ui/背景/赠礼.png" alt=""></button>
+      <button @click="openLeaderboardPanel" class="home-action-btn home-action-rank" title="排行榜" aria-label="排行榜"><img src="./ui/背景/排行榜.png" alt=""></button>
       <button @click="openTimeTunnelPanel" class="home-action-btn home-action-tunnel" title="时空隧道" aria-label="时空隧道"><img src="./ui/背景/时空隧道.png" alt=""></button>
       <button @click="openStudyPanel" class="home-action-btn home-action-study" title="学习力战场" aria-label="学习力战场"><img src="./ui/背景/学习力战场.png" alt=""></button>
       <button @click="openBadgePanel" class="home-action-btn home-action-badge" title="徽章" aria-label="徽章"><img src="./ui/背景/徽章.png" alt=""></button>
@@ -5970,6 +6050,56 @@
     </div>
   </div>
 
+  <div v-if="showLeaderboardPanel" class="fixed inset-0 z-[96] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" @click="closeLeaderboardPanel">
+    <div class="w-full max-w-3xl rounded-[24px] border border-white/15 bg-slate-950/95 p-4 shadow-2xl app-modal text-white" @click.stop>
+      <div class="flex items-center justify-between gap-3 mb-3">
+        <div>
+          <div class="text-lg font-black text-white">排行榜</div>
+          <div class="text-xs font-bold text-slate-400">每页显示 10 名玩家</div>
+        </div>
+        <button @click="closeLeaderboardPanel" class="h-8 w-8 rounded-full bg-white/10 text-white text-sm font-black">×</button>
+      </div>
+
+      <div class="mb-3 grid grid-cols-3 gap-2">
+        <button
+          v-for="tab in leaderboardTabs"
+          :key="'leaderboard_tab_'+tab.key"
+          @click="setLeaderboardMetric(tab.key)"
+          class="h-10 rounded-xl border text-sm font-black transition"
+          :class="leaderboardMetric === tab.key ? 'border-amber-300 bg-amber-400 text-slate-950' : 'border-white/10 bg-white/5 text-slate-200 hover:bg-white/10'"
+        >{{ tab.label }}</button>
+      </div>
+
+      <div class="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+        <div class="grid grid-cols-[70px_minmax(0,1fr)_120px] gap-2 border-b border-white/10 bg-white/10 px-3 py-2 text-xs font-black text-slate-300">
+          <div>名次</div>
+          <div>用户名</div>
+          <div class="text-right">{{ leaderboardCurrentLabel }}</div>
+        </div>
+        <div v-if="leaderboardLoading" class="px-3 py-10 text-center text-sm font-black text-slate-300">正在加载排行榜...</div>
+        <div v-else-if="leaderboardError" class="px-3 py-10 text-center text-sm font-black text-rose-200">{{ leaderboardError }}</div>
+        <div v-else-if="leaderboardRows.length === 0" class="px-3 py-10 text-center text-sm font-black text-slate-400">暂无排行数据</div>
+        <div v-else>
+          <div
+            v-for="row in leaderboardRows"
+            :key="'leaderboard_row_'+leaderboardMetric+'_'+row.rank+'_'+row.username"
+            class="grid grid-cols-[70px_minmax(0,1fr)_120px] gap-2 border-b border-white/5 px-3 py-2 text-sm font-bold last:border-b-0"
+          >
+            <div class="font-black text-amber-200">#{{ row.rank }}</div>
+            <div class="truncate text-white" :title="row.username">{{ row.username }}</div>
+            <div class="text-right font-black text-cyan-100">{{ formatLeaderboardValue(row) }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3 flex items-center justify-between gap-3">
+        <button @click="changeLeaderboardPage(-1)" :disabled="leaderboardLoading || leaderboardPage <= 1" class="h-9 px-4 rounded-xl bg-white/10 text-sm font-black text-white disabled:opacity-40">上一页</button>
+        <div class="text-xs font-black text-slate-300">第 {{ leaderboardPage }} / {{ leaderboardTotalPages }} 页</div>
+        <button @click="changeLeaderboardPage(1)" :disabled="leaderboardLoading || leaderboardPage >= leaderboardTotalPages" class="h-9 px-4 rounded-xl bg-white/10 text-sm font-black text-white disabled:opacity-40">下一页</button>
+      </div>
+    </div>
+  </div>
+
   <div v-if="battlePrepare && battlePrepare.open" class="battle-prepare-overlay fixed inset-0 z-[109] bg-slate-950/95 backdrop-blur-sm">
     <div class="battle-prepare-root relative w-full h-full overflow-hidden bg-slate-950">
       <div class="battle-bg-layer battle-prepare-layer" :style="{ backgroundImage: `url(${battleBackground.src})` }"></div>
@@ -6003,7 +6133,7 @@
                 </div>
                 <div class="battle-prepare-target-pet-anchor">
                   <div class="pet-anim-frame battle-prepare-pet-frame battle-prepare-target-float w-full h-full">
-                    <img :src="target.image" :style="battlePreparePetAnimImageStyle(target.dexId, 'mini')" @error="(event) => { const img = event && event.target; if (!img) return; if (img.dataset.animFallbackDone === '1') { withFallback(event); img.classList.add('pet-bob'); return; } img.dataset.animFallbackDone = '1'; img.src = target.staticImage || ''; img.classList.add('pet-bob'); }" class="battle-prepare-target-image pet-anim-img drop-shadow-[0_22px_26px_rgba(0,0,0,.55)]">
+                    <img :src="target.image" @error="withFallback" class="battle-prepare-target-image drop-shadow-[0_22px_26px_rgba(0,0,0,.55)]">
                   </div>
                 </div>
                 <div class="absolute inset-x-2 bottom-2 text-center text-sm font-black text-white truncate">{{ target.name }}</div>
@@ -6011,7 +6141,7 @@
             </div>
             <div v-else-if="battlePrepare.target" class="battle-prepare-target-pet-anchor single">
               <div class="pet-anim-frame battle-prepare-pet-frame battle-prepare-target-float w-full h-full">
-                <img :src="battlePrepare.target.image" :style="battlePreparePetAnimImageStyle(battlePrepare.target.dexId, 'single')" @error="(event) => { const img = event && event.target; if (!img) return; if (img.dataset.animFallbackDone === '1') { withFallback(event); img.classList.add('pet-bob'); return; } img.dataset.animFallbackDone = '1'; img.src = battlePrepare.target.staticImage || ''; img.classList.add('pet-bob'); }" class="battle-prepare-target-image pet-anim-img drop-shadow-[0_28px_36px_rgba(0,0,0,.55)]">
+                <img :src="battlePrepare.target.image" @error="withFallback" class="battle-prepare-target-image drop-shadow-[0_28px_36px_rgba(0,0,0,.55)]">
               </div>
             </div>
           </div>
@@ -6029,8 +6159,8 @@
                   </div>
                   <div class="absolute top-2 right-2 z-10 rounded-full bg-slate-950/70 px-2 py-0.5 text-[11px] font-black text-cyan-100">Lv.{{ slot.level }}</div>
                   <div class="battle-prepare-team-pet-anchor">
-                    <div class="pet-anim-frame battle-prepare-pet-frame w-full h-full">
-                      <img :src="slot.image" :style="battlePreparePetAnimImageStyle(slot.dexId, 'team')" @error="(event) => { const img = event && event.target; if (!img) return; if (img.dataset.animFallbackDone === '1') { withStaticPetFallback(event); img.classList.add('pet-bob'); return; } img.dataset.animFallbackDone = '1'; img.src = slot.staticImage || ''; img.classList.add('pet-bob'); }" :class="['battle-prepare-slot-img pet-anim-img drop-shadow-[0_14px_18px_rgba(0,0,0,.45)]', slot.animated ? '' : 'pet-bob']">
+                    <div class="battle-prepare-pet-frame battle-prepare-team-float w-full h-full">
+                      <img :src="slot.image" @error="withStaticPetFallback" class="battle-prepare-slot-img drop-shadow-[0_14px_18px_rgba(0,0,0,.45)]">
                     </div>
                   </div>
                   <div class="absolute inset-x-2 bottom-2 text-center text-xs md:text-sm font-black text-white truncate">{{ slot.name }}</div>
@@ -7624,18 +7754,52 @@
 
 <script>
 (function () {
-  var assetVersion = "20260616_login_captcha_hidden";
-  var queue = [
-    "./aola-dex-1-100.js",
-    "./aola-species-data.js",
-    "./aola-skill-data.js",
-    "./aola-skill-effects-hardcoded.js",
-    "./aola-evolution-chains.js",
-    "./vendor/vue.global.prod.js",
-    "./aola-star-app.js"
+  var assetVersion = "20260617_login_captcha_once";
+  var manifest = [
+    { src: "./aola-dex-1-100.js", label: "图鉴索引", critical: true },
+    { src: "./aola-species-data.js", label: "亚比资料", critical: true },
+    { src: "./aola-skill-data.js", label: "技能资料", critical: true },
+    { src: "./aola-skill-effects-hardcoded.js", label: "技能效果", critical: true },
+    { src: "./aola-evolution-chains.js", label: "进化链", critical: true },
+    { src: "./vendor/vue.global.prod.js", label: "界面引擎", critical: true },
+    { src: "./aola-star-app.js", label: "游戏启动器", critical: true, entry: true }
+  ];
+  var imageManifest = [
+    { src: "./ui/Aola-Star-Hub-bg.png", label: "登录背景", critical: true },
+    { src: "./ui/背景/hub-main.png", label: "主场景背景", critical: true },
+    { src: "./ui/背景/赠礼.png", label: "赠礼入口" },
+    { src: "./ui/背景/排行榜.png", label: "排行榜入口" },
+    { src: "./ui/背景/时空隧道.png", label: "时空隧道入口" },
+    { src: "./ui/背景/学习力战场.png", label: "学习力战场入口" },
+    { src: "./ui/背景/徽章.png", label: "徽章入口" },
+    { src: "./ui/背景/亚比蛋孵化.png", label: "亚比蛋孵化入口" },
+    { src: "./ui/背景/亚比仓库.png", label: "亚比仓库入口" },
+    { src: "./ui/背景/亚比图鉴.png", label: "亚比图鉴入口" },
+    { src: "./ui/背景/亚比背包.png", label: "亚比背包入口" },
+    { src: "./ui/背景/道具商城.png", label: "道具商城入口" },
+    { src: "./ui/背景/boss挑战.png", label: "BOSS挑战入口" },
+    { src: "./ui/背景/每周boss.png", label: "每周BOSS入口" },
+    { src: "./ui/背景/转盘.png", label: "启星转盘入口" },
+    { src: "./ui/aola-battle-background-default.png", label: "战斗背景" },
+    { src: "./ui/star_domain.png", label: "星神之域背景" },
+    { src: "./boss-level/1-first.png", label: "挑战之路第一梯度" },
+    { src: "./boss-level/2-second.png", label: "挑战之路第二梯度" },
+    { src: "./boss-level/3-third.png", label: "挑战之路第三梯度" },
+    { src: "./boss-level/4-forth.png", label: "挑战之路第四梯度" },
+    { src: "./boss-level/5-fifth.png", label: "挑战之路第五梯度" },
+    { src: "./小图标/已战胜（1）.png", label: "已战胜标记" },
+    { src: "./小图标/已战胜（2）.png", label: "已战胜小标记" },
+    { src: "./pet-img/pet1_1_1_cropped.png", label: "亚比兜底图" },
+    { src: "./pet-img/pet249_1_1_cropped.png", label: "背包常用亚比" },
+    { src: "./pet-img/pet296_1_1_cropped.png", label: "背包常用亚比" }
   ];
   var loaded = [];
   var failed = [];
+  window.__aolaScriptDiag = { loaded: loaded, failed: failed, bootDone: false };
+  var loader = document.getElementById("game-resource-loader");
+  var loaderText = document.getElementById("game-resource-loader-text");
+  var loaderBar = document.getElementById("game-resource-loader-bar");
+  var loaderPercent = document.getElementById("game-resource-loader-percent");
   function show(msg) {
     var tip = document.createElement("div");
     tip.style.position = "fixed";
@@ -7661,29 +7825,177 @@
       return rel + (rel.indexOf("?") >= 0 ? "&" : "?") + "v=" + assetVersion;
     }
   }
-  function loadNext(i) {
-    if (i >= queue.length) {
-      setTimeout(function () {
-        var app = document.getElementById("app");
-        var raw = app && (app.textContent || "").indexOf("{{") >= 0;
-        if (raw) {
-          show("[MOUNT CHECK] Vue app did not mount.\nloaded=" + loaded.join(" | ") + "\nfailed=" + failed.join(" | "));
-        }
-      }, 800);
-      return;
-    }
-    var rel = queue[i];
-    var s = document.createElement("script");
-    s.src = absUrl(rel);
-    s.onload = function () { loaded.push(rel); loadNext(i + 1); };
-    s.onerror = function () {
-      failed.push(rel);
-      show("[SCRIPT LOAD ERROR]\n" + rel + "\nloaded=" + loaded.join(" | "));
-      loadNext(i + 1);
-    };
-    document.body.appendChild(s);
+  function apiBaseUrl() {
+    var protocol = String(window.location && window.location.protocol || "");
+    if (protocol === "http:" || protocol === "https:") return "";
+    return "http://127.0.0.1:3030";
   }
-  loadNext(0);
+  function mergeImageManifest(images) {
+    var seen = {};
+    imageManifest.forEach(function (item) { seen[item.src] = true; });
+    (Array.isArray(images) ? images : []).forEach(function (src) {
+      var rel = String(src || "");
+      if (!rel || seen[rel]) return;
+      seen[rel] = true;
+      imageManifest.push({ src: rel, label: "挑战之路站台" });
+    });
+  }
+  function loadDynamicImageManifest() {
+    if (!window.fetch || !window.Promise) return Promise.resolve();
+    return fetch(apiBaseUrl() + "/api/preload-assets", { credentials: "include" })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) { if (data && data.ok) mergeImageManifest(data.images); })
+      .catch(function () {});
+  }
+  function preloadLeaderboards() {
+    if (!window.fetch || !window.Promise) return;
+    var metrics = ["battlePower", "activatedDexCount", "hCoins"];
+    window.__aolaPreloadedLeaderboards = window.__aolaPreloadedLeaderboards || {};
+    metrics.forEach(function (metric) {
+      fetch(apiBaseUrl() + "/api/leaderboard?metric=" + encodeURIComponent(metric) + "&page=1", { credentials: "include" })
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(function (data) {
+          if (data && data.ok) window.__aolaPreloadedLeaderboards[metric] = data;
+        })
+        .catch(function () {});
+    });
+  }
+  function updateProgress(done, total, label) {
+    var pct = total > 0 ? Math.round(done / total * 100) : 0;
+    if (loaderText) loaderText.textContent = label || "正在加载资源...";
+    if (loaderBar) loaderBar.style.width = pct + "%";
+    if (loaderPercent) loaderPercent.textContent = pct + "%";
+  }
+  function hideLoader() {
+    if (!loader) return;
+    loader.classList.add("is-hidden");
+    setTimeout(function () {
+      if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+    }, 280);
+  }
+  function loadScriptElement(item) {
+    return new Promise(function (resolve) {
+      var s = document.createElement("script");
+      s.src = absUrl(item.src);
+      s.onload = function () { loaded.push(item.src); resolve({ ok: true, item: item }); };
+      s.onerror = function () {
+        failed.push(item.src);
+        resolve({ ok: false, item: item });
+      };
+      document.body.appendChild(s);
+    });
+  }
+  function preloadImage(item) {
+    return new Promise(function (resolve) {
+      var img = new Image();
+      img.onload = function () { loaded.push(item.src); resolve({ ok: true, item: item }); };
+      img.onerror = function () {
+        if (item.critical) failed.push(item.src);
+        resolve({ ok: false, item: item });
+      };
+      img.src = absUrl(item.src);
+    });
+  }
+  function warmResource(item) {
+    if (!document.head || item.entry) return;
+    var link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "script";
+    link.href = absUrl(item.src);
+    document.head.appendChild(link);
+  }
+  function warmImage(item) {
+    if (!document.head) return;
+    var link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href = absUrl(item.src);
+    document.head.appendChild(link);
+  }
+  function mountCheck() {
+    window.__aolaScriptDiag = { loaded: loaded.slice(), failed: failed.slice(), bootDone: true };
+    try {
+      window.dispatchEvent(new CustomEvent("aola:bootdone"));
+    } catch (_) {}
+    hideLoader();
+    setTimeout(function () {
+      var app = document.getElementById("app");
+      var raw = app && (app.textContent || "").indexOf("{{") >= 0;
+      if (raw) {
+        show("[MOUNT CHECK] Vue app did not mount.\nloaded=" + loaded.join(" | ") + "\nfailed=" + failed.join(" | "));
+      }
+    }, 800);
+  }
+  function startParallelLoader() {
+    var done = 0;
+    var total = manifest.length + imageManifest.length;
+    updateProgress(0, total, "正在读取资源清单...");
+    manifest.forEach(warmResource);
+    imageManifest.forEach(warmImage);
+    var imageQueue = imageManifest.slice();
+    var imageWorkers = Math.min(8, imageQueue.length);
+    function pumpImage() {
+      var item = imageQueue.shift();
+      if (!item) return Promise.resolve();
+      updateProgress(done, total, "正在预载：" + item.label);
+      return preloadImage(item).then(function () {
+        done += 1;
+        updateProgress(done, total, "已预载：" + item.label);
+        return pumpImage();
+      });
+    }
+    for (var w = 0; w < imageWorkers; w += 1) pumpImage();
+    function next(i) {
+      if (i >= manifest.length) {
+        updateProgress(done, total, "启动完成，继续缓存图片...");
+        mountCheck();
+        return;
+      }
+      var item = manifest[i];
+      updateProgress(done, total, "正在加载：" + item.label);
+      loadScriptElement(item).then(function () {
+        done += 1;
+        updateProgress(done, total, "已加载：" + item.label);
+        if (item.critical && failed.indexOf(item.src) >= 0) {
+          show("[RESOURCE LOAD ERROR]\nfailed=" + failed.join(" | "));
+          return;
+        }
+        next(i + 1);
+      });
+    }
+    next(0);
+  }
+  function bootParallelLoader() {
+    updateProgress(0, manifest.length + imageManifest.length, "正在读取资源清单...");
+    preloadLeaderboards();
+    loadDynamicImageManifest().then(startParallelLoader);
+  }
+  function startFallbackLoader() {
+    var done = 0;
+    var total = manifest.length + imageManifest.length;
+    imageManifest.forEach(function (item) {
+      preloadImage(item).then(function () {
+        done += 1;
+        updateProgress(done, total, "已预载：" + item.label);
+      });
+    });
+    function next(i) {
+      if (i >= manifest.length) {
+        mountCheck();
+        return;
+      }
+      var item = manifest[i];
+      updateProgress(done, total, "正在加载：" + item.label);
+      loadScriptElement(item).then(function () {
+        done += 1;
+        updateProgress(done, total, "已加载：" + item.label);
+        next(i + 1);
+      });
+    }
+    next(0);
+  }
+  if (window.fetch && window.Promise) bootParallelLoader();
+  else startFallbackLoader();
 })();
 </script>
 </body>

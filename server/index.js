@@ -426,6 +426,127 @@ const sendJson = (res, status, data, headers = {}) => {
   res.end(JSON.stringify(data));
 };
 
+const staticCacheHeaders = (ext) => {
+  if (ext === ".html") {
+    return {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0"
+    };
+  }
+  if ([".js", ".css", ".json"].includes(ext)) {
+    return {
+      "Cache-Control": "no-cache"
+    };
+  }
+  if ([".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif", ".ogg"].includes(ext)) {
+    return {
+      "Cache-Control": "public, max-age=2592000"
+    };
+  }
+  return {
+    "Cache-Control": "no-cache"
+  };
+};
+
+const listPreloadImageAssets = () => {
+  const roots = ["地台boss"];
+  const imageExts = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg"]);
+  const out = [];
+  const walk = (dir) => {
+    let entries = [];
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    entries.forEach((entry) => {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) return walk(full);
+      if (!entry.isFile() || !imageExts.has(path.extname(entry.name).toLowerCase())) return;
+      const rel = path.relative(ROOT_DIR, full).split(path.sep).join("/");
+      out.push(`./${rel}`);
+    });
+  };
+  roots.forEach((root) => walk(path.join(ROOT_DIR, root)));
+  return Array.from(new Set(out)).sort((a, b) => a.localeCompare(b, "zh-Hans-CN"));
+};
+
+const safeNonNegInt = (value, fallback = 0) => {
+  const n = Number(value);
+  return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback;
+};
+
+const normalizeStats = (stats) => ({
+  hp: safeNonNegInt(stats && stats.hp),
+  atk: safeNonNegInt(stats && stats.atk),
+  def: safeNonNegInt(stats && stats.def),
+  spAtk: safeNonNegInt(stats && stats.spAtk),
+  spDef: safeNonNegInt(stats && stats.spDef),
+  speed: safeNonNegInt(stats && stats.speed)
+});
+
+const calcAbilityStat = (base, talent, study, level) => {
+  const b = safeNonNegInt(base);
+  const t = Math.min(62, safeNonNegInt(talent));
+  const ev = Math.min(255, safeNonNegInt(study));
+  const lv = Math.max(1, Math.min(100, safeNonNegInt(level, 1)));
+  return Math.floor(((2 * b + t + Math.floor(ev / 4)) * lv) / 100 + 5);
+};
+
+const calcAbilityHp = (base, talent, study, level) => {
+  const b = safeNonNegInt(base);
+  const t = Math.min(62, safeNonNegInt(talent));
+  const ev = Math.min(255, safeNonNegInt(study));
+  const lv = Math.max(1, Math.min(100, safeNonNegInt(level, 1)));
+  return Math.floor(((2 * b + t + Math.floor(ev / 4)) * lv) / 100 + lv + 10);
+};
+
+const calcPetBattlePowerForSave = (pet, speciesByDex) => {
+  const dexId = Number((pet && pet.dexId) || (pet && pet.baseDexId)) || 0;
+  const species = speciesByDex[String(dexId)] || speciesByDex[dexId] || null;
+  const race = species && species.raceStats && typeof species.raceStats === "object" ? species.raceStats : null;
+  if (!race) return 0;
+  const talent = normalizeStats(pet && pet.talent);
+  const study = normalizeStats(pet && pet.study);
+  const level = Math.max(1, Math.min(100, safeNonNegInt(pet && pet.level, 1)));
+  const total =
+    calcAbilityHp(race.hp, talent.hp, study.hp, level) +
+    calcAbilityStat(race.atk, talent.atk, study.atk, level) +
+    calcAbilityStat(race.def, talent.def, study.def, level) +
+    calcAbilityStat(race.spAtk, talent.spAtk, study.spAtk, level) +
+    calcAbilityStat(race.spDef, talent.spDef, study.spDef, level) +
+    calcAbilityStat(race.speed, talent.speed, study.speed, level);
+  return Math.floor(Math.max(0, total) * 3.6);
+};
+
+const buildLeaderboardRows = () => {
+  const db = usersDb();
+  const speciesByDex = loadWindowDataScript("aola-species-data.js", "AOLA_SPECIES_DATA_BY_DEX") || {};
+  return db.users.map((user) => {
+    const payload = readJsonFile(userSaveFile(user.id), null);
+    const save = payload && payload.save && typeof payload.save === "object" && !Array.isArray(payload.save) ? payload.save : {};
+    const activePets = Array.isArray(save.activePets) ? save.activePets : [];
+    const petPowerRows = activePets
+      .map((pet) => calcPetBattlePowerForSave(pet, speciesByDex))
+      .sort((a, b) => b - a);
+    const currentMaxBagBattlePower = petPowerRows.slice(0, 6).reduce((sum, n) => sum + n, 0);
+    const maxBagBattlePower = Math.max(
+      Math.max(0, Math.floor(Number(save.maxBagBattlePower) || 0)),
+      currentMaxBagBattlePower
+    );
+    return {
+      userId: user.id,
+      username: safeUserName(user.username) || "匿名玩家",
+      battlePower: maxBagBattlePower,
+      maxBagBattlePower,
+      activatedDexCount: new Set(Array.isArray(save.activatedDexIds) ? save.activatedDexIds.map((id) => Number(id) || 0).filter(Boolean) : []).size,
+      hCoins: Math.max(0, Math.floor(Number(save.hCoins) || 0)),
+      savedAt: payload && payload.savedAt ? payload.savedAt : ""
+    };
+  });
+};
+
 const serveStatic = (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   let rel = decodeURIComponent(url.pathname);
@@ -458,9 +579,7 @@ const serveStatic = (req, res) => {
     };
     res.writeHead(200, {
       "Content-Type": typeMap[ext] || "application/octet-stream",
-      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-      "Pragma": "no-cache",
-      "Expires": "0"
+      ...staticCacheHeaders(ext)
     });
     fs.createReadStream(full).pipe(res);
   });
@@ -515,6 +634,37 @@ const handleApi = async (req, res) => {
     if (req.method === "GET" && req.url === "/api/auth/me") {
       const user = currentUser(req);
       return sendJson(res, 200, { ok: true, user: user ? publicUser(user) : null });
+    }
+    if (req.method === "GET" && new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname === "/api/preload-assets") {
+      return sendJson(res, 200, { ok: true, images: listPreloadImageAssets() }, {
+        "Cache-Control": "public, max-age=300"
+      });
+    }
+    if (req.method === "GET" && new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname === "/api/leaderboard") {
+      const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+      const metric = ["battlePower", "activatedDexCount", "hCoins"].includes(url.searchParams.get("metric"))
+        ? url.searchParams.get("metric")
+        : "battlePower";
+      const pageSize = 10;
+      const page = Math.max(1, Math.floor(Number(url.searchParams.get("page")) || 1));
+      const rows = buildLeaderboardRows()
+        .sort((a, b) => {
+          const delta = Math.max(0, Number(b[metric]) || 0) - Math.max(0, Number(a[metric]) || 0);
+          return delta || String(a.username).localeCompare(String(b.username), "zh-Hans-CN");
+        })
+        .map((row, idx) => ({ ...row, rank: idx + 1 }));
+      const total = rows.length;
+      const totalPages = Math.max(1, Math.ceil(total / pageSize));
+      const safePage = Math.min(page, totalPages);
+      return sendJson(res, 200, {
+        ok: true,
+        metric,
+        page: safePage,
+        pageSize,
+        total,
+        totalPages,
+        rows: rows.slice((safePage - 1) * pageSize, safePage * pageSize)
+      });
     }
     if (req.method === "GET" && req.url === "/api/save") {
       const user = requireUser(req, res);

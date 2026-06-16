@@ -67,6 +67,7 @@ const STORAGE_KEY = "aola_battle_platform_v2_ascii";
 const SESSION_MODE_KEY = "aola_star_session_mode_v1";
 const AUTH_TOKEN_KEY = "aola_star_auth_token_v1";
 const REMEMBER_LOGIN_KEY = "aola_star_remember_login_v1";
+const LOGIN_CAPTCHA_VERIFIED_KEY = "aola_star_login_captcha_verified_v1";
 const LOGIN_CAPTCHA_NOTICE = "验证码加群776802444获取，本游戏完全免费游玩，任何付费获取的玩家请在相应平台申请退款";
 const LOGIN_CAPTCHA_TEXT = "谨防闲鱼倒钩战神12等其他司马";
 const BGM_VOLUME_KEY = "aola_star_bgm_volume_v1";
@@ -8802,6 +8803,7 @@ createApp({
         timeTunnelRewardClaimedFloors: [],
         battleLog: [],
         showDexPanel: false,
+        maxBagBattlePower: 0,
         battleSpeed: 1,
         battleBackground: {
           mode: "default",
@@ -9118,6 +9120,7 @@ createApp({
           : [],
         battleLog: sanitizeBattleLog(loaded.battleLog),
         showDexPanel: false,
+        maxBagBattlePower: Math.max(0, Math.floor(Number(loaded.maxBagBattlePower) || 0)),
         battleBackground: (() => {
           const source = loaded.battleBackground && typeof loaded.battleBackground === "object" ? loaded.battleBackground : {};
           const mode = normalize(source.mode) === "custom" ? "custom" : "default";
@@ -9225,6 +9228,13 @@ createApp({
         }));
       } catch {}
     };
+    const readLoginCaptchaVerified = () => {
+      try { return localStorage.getItem(LOGIN_CAPTCHA_VERIFIED_KEY) === "1"; } catch { return false; }
+    };
+    const writeLoginCaptchaVerified = () => {
+      loginCaptchaVerified.value = true;
+      try { localStorage.setItem(LOGIN_CAPTCHA_VERIFIED_KEY, "1"); } catch {}
+    };
     const readBgmVolume = () => {
       try {
         const raw = Number(localStorage.getItem(BGM_VOLUME_KEY));
@@ -9316,6 +9326,7 @@ createApp({
     const showGlobalSettingsPanel = ref(false);
     const showReleaseNotesModal = ref(false);
     const showGameplayGuideModal = ref(false);
+    const loginCaptchaVerified = ref(false);
     const selectedWarehousePetId = ref("");
     const showWarehouseActionModal = ref(false);
     const skillLongPressTimer = ref(null);
@@ -9343,6 +9354,18 @@ createApp({
     const showShopPanel = ref(false);
     const showBadgePanel = ref(false);
     const showEggHatchPanel = ref(false);
+    const showLeaderboardPanel = ref(false);
+    const leaderboardMetric = ref("battlePower");
+    const leaderboardPage = ref(1);
+    const leaderboardRows = ref([]);
+    const leaderboardTotalPages = ref(1);
+    const leaderboardLoading = ref(false);
+    const leaderboardError = ref("");
+    const leaderboardTabs = [
+      { key: "battlePower", label: "战斗力" },
+      { key: "activatedDexCount", label: "激活图鉴" },
+      { key: "hCoins", label: "H币" }
+    ];
     const shopTab = ref("shop");
     const battleActionTab = ref("skills");
     const showPetDetailModal = ref(false);
@@ -9636,9 +9659,9 @@ createApp({
         dexId: Number(targetEntry.dexId) || 0,
         name: normalize(targetEntry.name) || "挑战目标",
         level: clamp(Number(targetLevel) || 1, 1, 100),
-        image: petBattleSvgImage(targetEntry.dexId, "target", "idle") || ensureHttps(targetEntry.image) || PLACEHOLDER,
+        image: petCroppedStaticImage(targetEntry.dexId) || ensureHttps(targetEntry.image) || PLACEHOLDER,
         staticImage: petCroppedStaticImage(targetEntry.dexId) || ensureHttps(targetEntry.image) || PLACEHOLDER,
-        animated: true,
+        animated: false,
         element: normalize(targetEntry.element),
         subElement: normalize(targetEntry.subElement)
       } : null;
@@ -10594,6 +10617,41 @@ createApp({
       if (!res.ok || data.ok === false) throw new Error(data.message || `请求失败：${res.status}`);
       return data;
     };
+    const leaderboardCurrentLabel = computed(() => {
+      const tab = leaderboardTabs.find((x) => x.key === leaderboardMetric.value);
+      return tab ? tab.label : "战斗力";
+    });
+    const applyLeaderboardData = (data, fallbackMetric = "battlePower", fallbackPage = 1) => {
+      if (!data || typeof data !== "object") return false;
+      leaderboardMetric.value = data.metric || fallbackMetric;
+      leaderboardPage.value = Math.max(1, Math.floor(Number(data.page) || fallbackPage));
+      leaderboardTotalPages.value = Math.max(1, Math.floor(Number(data.totalPages) || 1));
+      leaderboardRows.value = Array.isArray(data.rows) ? data.rows : [];
+      return true;
+    };
+    const consumePreloadedLeaderboard = (metric) => {
+      const bucket = (typeof window !== "undefined" && window.__aolaPreloadedLeaderboards && typeof window.__aolaPreloadedLeaderboards === "object")
+        ? window.__aolaPreloadedLeaderboards
+        : null;
+      const data = bucket && bucket[metric];
+      return data && applyLeaderboardData(data, metric, 1);
+    };
+    const fetchLeaderboard = async () => {
+      leaderboardLoading.value = true;
+      leaderboardError.value = "";
+      try {
+        const page = clamp(Math.floor(Number(leaderboardPage.value) || 1), 1, 999999);
+        const metric = leaderboardTabs.some((x) => x.key === leaderboardMetric.value) ? leaderboardMetric.value : "battlePower";
+        const data = await apiJson(`/api/leaderboard?metric=${encodeURIComponent(metric)}&page=${page}`);
+        applyLeaderboardData(data, metric, page);
+      } catch (err) {
+        leaderboardRows.value = [];
+        leaderboardTotalPages.value = 1;
+        leaderboardError.value = err && err.message ? err.message : "排行榜加载失败。";
+      } finally {
+        leaderboardLoading.value = false;
+      }
+    };
     const loadServerSave = async () => {
       if (!authUser.value) return false;
       const data = await apiJson("/api/save");
@@ -10622,6 +10680,7 @@ createApp({
       }
       const remembered = readRememberLogin();
       rememberPassword.value = remembered.remember;
+      loginCaptchaVerified.value = readLoginCaptchaVerified();
       if (remembered.remember) {
         authUsername.value = remembered.username;
         authPassword.value = remembered.password;
@@ -10667,8 +10726,13 @@ createApp({
       }
     };
     const normalizeCaptchaText = (text) => normalize(text).replace(/\s+/g, " ");
-    const validateLoginCaptcha = () => {
-      if (normalizeCaptchaText(authCaptcha.value) === normalizeCaptchaText(LOGIN_CAPTCHA_TEXT)) return true;
+    const validateLoginCaptcha = (options = {}) => {
+      const force = Boolean(options && options.force);
+      if (!force && loginCaptchaVerified.value) return true;
+      if (normalizeCaptchaText(authCaptcha.value) === normalizeCaptchaText(LOGIN_CAPTCHA_TEXT)) {
+        if (!force) writeLoginCaptchaVerified();
+        return true;
+      }
       showToast("验证码不正确，请按页面提示完整输入。");
       return false;
     };
@@ -10753,8 +10817,15 @@ createApp({
       if (!authUser.value || (saveLoading.value && !force)) return false;
       const silent = Boolean(options && options.silent);
       const wasLoading = Boolean(saveLoading.value);
+      const syncMaxBagBattlePower = () => {
+        state.value.maxBagBattlePower = Math.max(
+          Math.floor(Number(state.value.maxBagBattlePower) || 0),
+          Math.floor(Number(maxBagBattlePower.value) || 0)
+        );
+      };
       saveLoading.value = true;
       try {
+        syncMaxBagBattlePower();
         const data = await apiJson("/api/save", {
           method: "POST",
           body: JSON.stringify({ save: state.value })
@@ -10773,6 +10844,10 @@ createApp({
     const saveUserBeforeUnload = () => {
       if (!authUser.value || playMode.value !== "user") return false;
       try {
+        state.value.maxBagBattlePower = Math.max(
+          Math.floor(Number(state.value.maxBagBattlePower) || 0),
+          Math.floor(Number(maxBagBattlePower.value) || 0)
+        );
         const token = readAuthToken();
         const body = JSON.stringify({ save: state.value });
         const tokenQuery = token ? `?token=${encodeURIComponent(token)}` : "";
@@ -10865,7 +10940,7 @@ createApp({
         showToast("请输入用户名和密码。");
         return;
       }
-      if (!validateLoginCaptcha()) return;
+      if (!validateLoginCaptcha({ force: authMode.value === "register" })) return;
       authLoading.value = true;
       try {
         const path = authMode.value === "register" ? "/api/auth/register" : "/api/auth/login";
@@ -10875,6 +10950,7 @@ createApp({
         });
         authUser.value = data.user || null;
         writeAuthToken(data.token || "");
+        writeLoginCaptchaVerified();
         writeRememberLogin(username, password);
         if (!rememberPassword.value) authPassword.value = "";
         authCaptcha.value = "";
@@ -12202,10 +12278,14 @@ createApp({
       return calcBattlePowerFromAbilityTotal(ability ? ability.total : calcPetBattlePower(selectedPet.value));
     });
     const bagBattlePower = computed(() => bagPets.value.reduce((sum, pet) => sum + calcPetBattlePower(pet), 0));
-    const maxBagBattlePower = computed(() => {
+    const currentMaxBagBattlePower = computed(() => {
       const list = safeActivePets.value.map((pet) => calcPetBattlePower(pet)).sort((a, b) => b - a);
       return list.slice(0, 6).reduce((sum, value) => sum + value, 0);
     });
+    const maxBagBattlePower = computed(() => Math.max(
+      Math.floor(Number(state.value.maxBagBattlePower) || 0),
+      Math.floor(Number(currentMaxBagBattlePower.value) || 0)
+    ));
     const calcPetAbilityByRace = (raceStats, level, talentRaw, studyRaw) => {
       const race = raceStats && typeof raceStats === "object" ? raceStats : createZeroStats();
       const talent = normalizeTalent(talentRaw);
@@ -13285,7 +13365,7 @@ createApp({
     const battlePrepareBagPetVisual = (pet) => {
       if (!pet) return { src: PLACEHOLDER, animated: false };
       const dexId = Number(resolvePetCurrentDexId(pet)) || Number(pet && pet.dexId) || 0;
-      return { src: petBattleSvgImage(dexId, "target", "idle") || petCroppedStaticImage(dexId), staticImage: petCroppedStaticImage(dexId), animated: dexId > 0 };
+      return { src: petCroppedStaticImage(dexId) || ensureHttps(petCurrentForm(pet).img) || PLACEHOLDER, staticImage: petCroppedStaticImage(dexId), animated: false };
     };
     const markPetAnimStateOncePerAction = (scene, side, actionSeq, stateKey) => {
       if (!scene) return true;
@@ -16388,6 +16468,35 @@ const applyBossChainFinalBuff = (scene) => {
       return ok;
     };
     const selectedWarehouseActionPet = computed(() => state.value.activePets.find((p) => p && p.id === selectedWarehousePetId.value) || null);
+    const openLeaderboardPanel = () => {
+      showLeaderboardPanel.value = true;
+      leaderboardPage.value = 1;
+      consumePreloadedLeaderboard(leaderboardMetric.value);
+      fetchLeaderboard();
+    };
+    const closeLeaderboardPanel = () => {
+      showLeaderboardPanel.value = false;
+    };
+    const setLeaderboardMetric = (key) => {
+      if (!leaderboardTabs.some((x) => x.key === key)) return;
+      leaderboardMetric.value = key;
+      leaderboardPage.value = 1;
+      consumePreloadedLeaderboard(key);
+      fetchLeaderboard();
+    };
+    const changeLeaderboardPage = (delta) => {
+      const next = clamp((Math.floor(Number(leaderboardPage.value) || 1) + Math.floor(Number(delta) || 0)), 1, Math.max(1, leaderboardTotalPages.value));
+      if (next === leaderboardPage.value) return;
+      leaderboardPage.value = next;
+      fetchLeaderboard();
+    };
+    const refreshLeaderboard = () => {
+      fetchLeaderboard();
+    };
+    const formatLeaderboardValue = (row) => {
+      const value = row && row[leaderboardMetric.value];
+      return Math.max(0, Math.floor(Number(value) || 0)).toLocaleString("zh-CN");
+    };
     const openBadgePanel = () => { showBadgePanel.value = true; };
     const closeBadgePanel = () => { showBadgePanel.value = false; };
     const equipBadge = (badgeId) => {
@@ -17781,6 +17890,7 @@ const applyBossChainFinalBuff = (scene) => {
       authUsername,
       authPassword,
       authCaptcha,
+      loginCaptchaVerified,
       loginCaptchaNotice: LOGIN_CAPTCHA_NOTICE,
       rememberPassword,
       authMode,
@@ -17836,6 +17946,15 @@ const applyBossChainFinalBuff = (scene) => {
       showShopPanel,
       showBadgePanel,
       showEggHatchPanel,
+      showLeaderboardPanel,
+      leaderboardMetric,
+      leaderboardTabs,
+      leaderboardRows,
+      leaderboardPage,
+      leaderboardTotalPages,
+      leaderboardLoading,
+      leaderboardError,
+      leaderboardCurrentLabel,
       openChallengeRecordPanel,
       closeChallengeRecordPanel,
       exportChallengeRecording,
@@ -18141,6 +18260,12 @@ const applyBossChainFinalBuff = (scene) => {
       isWarehousePetExpanded,
       closeWarehouseActionModal,
       addToBagFromWarehouse,
+      openLeaderboardPanel,
+      closeLeaderboardPanel,
+      setLeaderboardMetric,
+      changeLeaderboardPage,
+      refreshLeaderboard,
+      formatLeaderboardValue,
       openBadgePanel,
       closeBadgePanel,
       equipBadge,
