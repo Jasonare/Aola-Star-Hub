@@ -10,7 +10,6 @@
     "electron": "electron .",
     "desktop": "electron .",
     "build:css": "tailwindcss -c tailwind.config.js -i tailwind.input.css -o vendor/tailwind.css --minify",
-    "bump:assets": "node scripts/bump-asset-version.js",
     "generate:skill-effects": "node generate-skill-effects-hardcoded.js",
     "pack": "electron-builder --dir",
     "dist": "node scripts/dist-ascii.js"
@@ -25,7 +24,6 @@
     "afterPack": "scripts/after-pack-win-icon.js",
     "files": [
       "aola-star.html",
-      "sw.js",
       "aola-star-app.js",
       "aola-star-crash.js",
       "aola-skill-effects-hardcoded.js",

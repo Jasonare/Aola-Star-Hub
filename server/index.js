@@ -2,7 +2,6 @@ const crypto = require("crypto");
 const fs = require("fs");
 const http = require("http");
 const path = require("path");
-const zlib = require("zlib");
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const DATA_DIR = process.env.AOLA_DATA_DIR || path.join(__dirname, "data");
@@ -11,12 +10,6 @@ const USERS_FILE = path.join(DATA_DIR, "users.json");
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
 const PORT = Number(process.env.PORT) || 3030;
 const sessions = new Map();
-const STATIC_LONG_CACHE_SECONDS = 365 * 24 * 60 * 60;
-const STATIC_SHORT_CACHE_SECONDS = 60;
-const COMPRESSIBLE_EXTENSIONS = new Set([".html", ".js", ".css", ".json", ".svg", ".txt"]);
-const LONG_CACHE_EXTENSIONS = new Set([
-  ".js", ".css", ".json", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif", ".ogg", ".mp3", ".wav", ".ico"
-]);
 
 const ensureDir = (dir) => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -34,24 +27,6 @@ const readJsonFile = (file, fallback) => {
 const writeJsonFile = (file, data) => {
   ensureDir(path.dirname(file));
   fs.writeFileSync(file, JSON.stringify(data, null, 2), "utf8");
-};
-
-const weakEtag = (stat) => `W/"${stat.size.toString(16)}-${Math.floor(stat.mtimeMs).toString(16)}"`;
-
-const compressionForRequest = (req, ext) => {
-  if (!COMPRESSIBLE_EXTENSIONS.has(ext)) return null;
-  const accept = String(req.headers["accept-encoding"] || "");
-  if (/\bbr\b/.test(accept)) return { encoding: "br", stream: zlib.createBrotliCompress() };
-  if (/\bgzip\b/.test(accept)) return { encoding: "gzip", stream: zlib.createGzip({ level: 6 }) };
-  return null;
-};
-
-const cacheControlForStatic = (rel, ext) => {
-  const isHtml = ext === ".html";
-  const isServiceWorker = /(^|\/)sw\.js$/i.test(rel);
-  if (isHtml || isServiceWorker) return `no-cache, max-age=${STATIC_SHORT_CACHE_SECONDS}, must-revalidate`;
-  if (LONG_CACHE_EXTENSIONS.has(ext)) return `public, max-age=${STATIC_LONG_CACHE_SECONDS}, immutable`;
-  return "public, max-age=3600";
 };
 
 const usersDb = () => {
@@ -481,30 +456,13 @@ const serveStatic = (req, res) => {
       ".gif": "image/gif",
       ".ogg": "audio/ogg"
     };
-    const etag = weakEtag(stat);
-    if (req.headers["if-none-match"] === etag) {
-      res.writeHead(304, {
-        "Cache-Control": cacheControlForStatic(rel, ext),
-        "ETag": etag
-      });
-      res.end();
-      return;
-    }
-    const compression = compressionForRequest(req, ext);
-    const headers = {
+    res.writeHead(200, {
       "Content-Type": typeMap[ext] || "application/octet-stream",
-      "Cache-Control": cacheControlForStatic(rel, ext),
-      "ETag": etag,
-      "Vary": "Accept-Encoding"
-    };
-    if (compression) headers["Content-Encoding"] = compression.encoding;
-    res.writeHead(200, headers);
-    const source = fs.createReadStream(full);
-    if (compression) {
-      source.pipe(compression.stream).pipe(res);
-    } else {
-      source.pipe(res);
-    }
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0"
+    });
+    fs.createReadStream(full).pipe(res);
   });
 };
 

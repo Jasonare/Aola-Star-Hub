@@ -4,11 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aola Star Hub</title>
-  <meta name="aola-asset-version" content="20260617_cache_v1">
-  <link rel="preload" href="./vendor/tailwind.css?v=20260617_cache_v1" as="style">
-  <link rel="preload" href="./ui/背景/hub-main.png?v=20260617_cache_v1" as="image" fetchpriority="high">
-  <link rel="preload" href="./aola-dex-1-100.js?v=20260617_cache_v1" as="script">
-  <link rel="preload" href="./aola-star-app.js?v=20260617_cache_v1" as="script">
   <script>
     (function () {
       var isAndroidWebView = /Android/i.test(navigator.userAgent || "") || String(location.href || "").indexOf("android_asset") >= 0;
@@ -25,7 +20,7 @@
       window.addEventListener("orientationchange", syncAndroidViewportClass);
     })();
   </script>
-  <link rel="stylesheet" href="./vendor/tailwind.css?v=20260617_cache_v1">
+  <link rel="stylesheet" href="./vendor/tailwind.css">
   <style>
     [v-cloak] { display: none !important; }
     :root {
@@ -5578,18 +5573,18 @@
       </div>
     </div>
     <div class="home-action-grid">
-      <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./ui/背景/赠礼.png" alt="" loading="lazy" decoding="async"></button>
-      <button @click="openTimeTunnelPanel" class="home-action-btn home-action-tunnel" title="时空隧道" aria-label="时空隧道"><img src="./ui/背景/时空隧道.png" alt="" loading="lazy" decoding="async"></button>
-      <button @click="openStudyPanel" class="home-action-btn home-action-study" title="学习力战场" aria-label="学习力战场"><img src="./ui/背景/学习力战场.png" alt="" loading="lazy" decoding="async"></button>
-      <button @click="openBadgePanel" class="home-action-btn home-action-badge" title="徽章" aria-label="徽章"><img src="./ui/背景/徽章.png" alt="" loading="lazy" decoding="async"></button>
-      <button @click="openEggHatchPanel" class="home-action-btn home-action-egg" title="亚比蛋孵化" aria-label="亚比蛋孵化"><img src="./ui/背景/亚比蛋孵化.png" alt="" loading="lazy" decoding="async"></button>
-      <button @click="openWarehousePanel" class="home-action-btn home-action-warehouse" title="亚比仓库" aria-label="亚比仓库"><img src="./ui/背景/亚比仓库.png" alt="" loading="lazy" decoding="async"></button>
-      <button @click="openDexPanel" class="home-action-btn home-action-dex" title="亚比图鉴" aria-label="亚比图鉴"><img src="./ui/背景/亚比图鉴.png" alt="" loading="lazy" decoding="async"></button>
-      <button @click="openBagPanel" class="home-action-btn home-action-bag" title="亚比背包" aria-label="亚比背包"><img src="./ui/背景/亚比背包.png" alt="" loading="lazy" decoding="async"></button>
-      <button @click="openShopPanel" class="home-action-btn home-action-shop" title="亚比商店" aria-label="亚比商店"><img src="./ui/背景/道具商城.png" alt="" loading="lazy" decoding="async"></button>
-      <button @click="openChallengeRoadPanel" class="home-action-btn home-action-challenge" title="挑战之路" aria-label="挑战之路"><img src="./ui/背景/boss挑战.png" alt="" loading="lazy" decoding="async"></button>
-      <button @click="openWeeklyBossPanel" class="home-action-btn home-action-weekly" title="每周BOSS" aria-label="每周BOSS"><img src="./ui/背景/每周boss.png" alt="" loading="lazy" decoding="async"></button>
-      <button @click="openQixingGachaPanel" class="home-action-btn home-action-gacha" title="启星转盘" aria-label="启星转盘"><img src="./ui/背景/转盘.png" alt="" loading="lazy" decoding="async"></button>
+      <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./ui/背景/赠礼.png" alt=""></button>
+      <button @click="openTimeTunnelPanel" class="home-action-btn home-action-tunnel" title="时空隧道" aria-label="时空隧道"><img src="./ui/背景/时空隧道.png" alt=""></button>
+      <button @click="openStudyPanel" class="home-action-btn home-action-study" title="学习力战场" aria-label="学习力战场"><img src="./ui/背景/学习力战场.png" alt=""></button>
+      <button @click="openBadgePanel" class="home-action-btn home-action-badge" title="徽章" aria-label="徽章"><img src="./ui/背景/徽章.png" alt=""></button>
+      <button @click="openEggHatchPanel" class="home-action-btn home-action-egg" title="亚比蛋孵化" aria-label="亚比蛋孵化"><img src="./ui/背景/亚比蛋孵化.png" alt=""></button>
+      <button @click="openWarehousePanel" class="home-action-btn home-action-warehouse" title="亚比仓库" aria-label="亚比仓库"><img src="./ui/背景/亚比仓库.png" alt=""></button>
+      <button @click="openDexPanel" class="home-action-btn home-action-dex" title="亚比图鉴" aria-label="亚比图鉴"><img src="./ui/背景/亚比图鉴.png" alt=""></button>
+      <button @click="openBagPanel" class="home-action-btn home-action-bag" title="亚比背包" aria-label="亚比背包"><img src="./ui/背景/亚比背包.png" alt=""></button>
+      <button @click="openShopPanel" class="home-action-btn home-action-shop" title="亚比商店" aria-label="亚比商店"><img src="./ui/背景/道具商城.png" alt=""></button>
+      <button @click="openChallengeRoadPanel" class="home-action-btn home-action-challenge" title="挑战之路" aria-label="挑战之路"><img src="./ui/背景/boss挑战.png" alt=""></button>
+      <button @click="openWeeklyBossPanel" class="home-action-btn home-action-weekly" title="每周BOSS" aria-label="每周BOSS"><img src="./ui/背景/每周boss.png" alt=""></button>
+      <button @click="openQixingGachaPanel" class="home-action-btn home-action-gacha" title="启星转盘" aria-label="启星转盘"><img src="./ui/背景/转盘.png" alt=""></button>
       <button
         @click="showGlobalSettingsPanel = true"
         class="home-settings-btn"
@@ -7629,13 +7624,7 @@
 
 <script>
 (function () {
-  var versionMeta = document.querySelector('meta[name="aola-asset-version"]');
-  var assetVersion = versionMeta && versionMeta.content ? versionMeta.content : "20260617_cache_v1";
-  if ("serviceWorker" in navigator && !/Android/i.test(navigator.userAgent || "") && location.protocol !== "file:") {
-    window.addEventListener("load", function () {
-      navigator.serviceWorker.register("./sw.js?v=" + encodeURIComponent(assetVersion)).catch(function () {});
-    });
-  }
+  var assetVersion = "20260616_login_captcha_hidden";
   var queue = [
     "./aola-dex-1-100.js",
     "./aola-species-data.js",

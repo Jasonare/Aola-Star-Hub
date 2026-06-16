@@ -13,7 +13,6 @@ New-Item -ItemType Directory -Path $dstRoot | Out-Null
 
 $copyFiles = @(
   "aola-star.html",
-  "sw.js",
   "aola-star-app.js",
   "aola-star-crash.js",
   "aola-dex-1-100.js",
