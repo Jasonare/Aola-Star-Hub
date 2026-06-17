@@ -1,7 +1,7 @@
 {
   "enabled": true,
   "desktopEnabled": true,
-  "desktopAppUrl": "http://127.0.0.1:3030/aola-star.html",
+  "desktopAppUrl": "http://110.40.157.248/:3030/aola-star.html",
   "resourceZipUrl": "",
   "zipRootHint": "resource.zip should contain ui/, pet-img/, BGM/ and other asset folders at the zip root.",
   "extractDir": ".",
