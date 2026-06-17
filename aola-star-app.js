@@ -33,7 +33,22 @@ const loadLocalAssetText = async (url) => {
 const encodeAssetSrc = (src) => {
   const raw = String(src || "");
   if (!raw) return "";
-  try { return encodeURI(raw); } catch { return raw; }
+  if (typeof window !== "undefined" && window.aolaDesktop && window.aolaDesktop.useLocalResources) {
+    try { return encodeURI(raw); } catch { return raw; }
+  }
+  const map = (typeof window !== "undefined" && window.AOLA_ASSET_URL_MAP && typeof window.AOLA_ASSET_URL_MAP === "object")
+    ? window.AOLA_ASSET_URL_MAP
+    : {};
+  const splitIndex = raw.search(/[?#]/);
+  const pathname = splitIndex >= 0 ? raw.slice(0, splitIndex) : raw;
+  const suffix = splitIndex >= 0 ? raw.slice(splitIndex) : "";
+  const key = pathname.replace(/^\.\/+/, "").replace(/^\/+/, "");
+  const mapped = map[raw] || map[pathname] || map[key];
+  if (mapped && !/^(https?:)?\/\//i.test(mapped)) {
+    try { return encodeURI(raw); } catch { return raw; }
+  }
+  const resolved = mapped ? `${mapped}${suffix}` : raw;
+  try { return encodeURI(resolved); } catch { return resolved; }
 };
 const assetSrcWithQuery = (src, key, value) => {
   const raw = String(src || "");
@@ -173,11 +188,11 @@ const BOSS_DEX_ENTRIES = [
   { dexId: 2019, name: "星宇侠X" }
 ];
 const BOSS_DEX_ID_TO_NAME = new Map(BOSS_DEX_ENTRIES.map((entry) => [entry.dexId, entry.name]));
-const CHALLENGE_ROAD_COVER_SRC_1 = "./boss-level/1-first.png";
-const CHALLENGE_ROAD_COVER_SRC_2 = "./boss-level/2-second.png";
-const CHALLENGE_ROAD_COVER_SRC_3 = "./boss-level/3-third.png";
-const CHALLENGE_ROAD_COVER_SRC_4 = "./boss-level/4-forth.png";
-const CHALLENGE_ROAD_COVER_SRC_5 = "./boss-level/5-fifth.png";
+const CHALLENGE_ROAD_COVER_SRC_1 = encodeAssetSrc("./boss-level/1-first.png");
+const CHALLENGE_ROAD_COVER_SRC_2 = encodeAssetSrc("./boss-level/2-second.png");
+const CHALLENGE_ROAD_COVER_SRC_3 = encodeAssetSrc("./boss-level/3-third.png");
+const CHALLENGE_ROAD_COVER_SRC_4 = encodeAssetSrc("./boss-level/4-forth.png");
+const CHALLENGE_ROAD_COVER_SRC_5 = encodeAssetSrc("./boss-level/5-fifth.png");
 
 const CHALLENGE_ROAD_NAME_ALIAS = {
   "青龙": "青龙灵兽",
@@ -283,7 +298,7 @@ const QIXING_SEAL_ITEM_ID = "qixing_seal";
 const QIXING_FRAGMENT_ITEM_ID = "qixing_fragment";
 const ZONGZI_ITEM_ID = "zongzi";
 const QIXING_SEAL_MAX_LEVEL = 4;
-const QIXING_SEAL_IMAGE_SRC = "./ui/qixing-seal.png?v=20260602";
+const QIXING_SEAL_IMAGE_SRC = encodeAssetSrc("./ui/qixing-seal.png?v=20260602");
 const BATTLE_MORALE_FX_SRC = encodeAssetSrc("./fight-ui/斗志.gif");
 const BATTLE_FIERCE_MORALE_FX_SRC = encodeAssetSrc("./fight-ui/狂暴斗志.gif");
 const BATTLE_SKIN_TRANSFORM_FX_SRC = encodeAssetSrc("./fight-ui/变身.gif");
@@ -684,14 +699,14 @@ const TIME_TUNNEL_EXTRA_SKILLS_BY_DEX_ID = {
   ]
 };
 const SHOP_EGG_PRICE = 5000;
-const LOGIN_BGM_SRC = "./BGM/小k橘子 - 主题公园3.ogg";
-const HOME_BGM_SRC = "./BGM/小k橘子 - 神宠殿堂.ogg";
-const TIME_TUNNEL_BGM_SRC = "./BGM/小k橘子 - 时空隧道.ogg";
-const WAREHOUSE_BGM_SRC = "./BGM/小k橘子 - 家园.ogg";
-const SHOP_BGM_SRC = "./BGM/小k橘子 - 经验战场.ogg";
-const STUDY_BGM_SRC = "./BGM/小k橘子 - 欢乐岛.ogg";
-const DEFAULT_BATTLE_BG_SRC = "./ui/aola-battle-background-default.png";
-const STAR_DOMAIN_BATTLE_BG_SRC = "./ui/star_domain.png";
+const LOGIN_BGM_SRC = encodeAssetSrc("./BGM/小k橘子 - 主题公园3.ogg");
+const HOME_BGM_SRC = encodeAssetSrc("./BGM/小k橘子 - 神宠殿堂.ogg");
+const TIME_TUNNEL_BGM_SRC = encodeAssetSrc("./BGM/小k橘子 - 时空隧道.ogg");
+const WAREHOUSE_BGM_SRC = encodeAssetSrc("./BGM/小k橘子 - 家园.ogg");
+const SHOP_BGM_SRC = encodeAssetSrc("./BGM/小k橘子 - 经验战场.ogg");
+const STUDY_BGM_SRC = encodeAssetSrc("./BGM/小k橘子 - 欢乐岛.ogg");
+const DEFAULT_BATTLE_BG_SRC = encodeAssetSrc("./ui/aola-battle-background-default.png");
+const STAR_DOMAIN_BATTLE_BG_SRC = encodeAssetSrc("./ui/star_domain.png");
 const GUARDIAN_LEVELS = [30, 40, 50, 60, 70, 80, 90, 100];
 const EXTRA_GUARDIAN_LEVELS = [100];
 const MAX_OPEN_CHALLENGE_DEX_ID = 2020;
@@ -729,7 +744,7 @@ const canDropEggByActionDexId = (dexId) => {
   return id > 0 && id <= MAX_OPEN_CHALLENGE_DEX_ID && !NO_EGG_ACTION_DEX_IDS.has(id);
 };
 const isNoEggActionDexId = (dexId) => NO_EGG_ACTION_DEX_IDS.has(Number(dexId) || 0);
-const BATTLE_BGM_SRC = "./BGM/小k橘子 - 战斗 (2015).ogg";
+const BATTLE_BGM_SRC = encodeAssetSrc("./BGM/小k橘子 - 战斗 (2015).ogg");
 const HATCH_MS = 5 * 60 * 1000;
 const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='24' fill='%23f1f5f9'/%3E%3Ccircle cx='60' cy='48' r='22' fill='%2394a3b8' opacity='0.35'/%3E%3Crect x='24' y='78' width='72' height='14' rx='7' fill='%2394a3b8' opacity='0.35'/%3E%3C/svg%3E";
 const ELEMENT_RELATION_IMAGE = "./属性克制.jpg";
@@ -809,7 +824,7 @@ const normalize = (s) => String(s || "").replace(/[\u200b\u00a0]/g, "").trim();
 const STATIC_PET_IMAGE_FALLBACK = "./pet-img/pet1_1_1_cropped.png";
 const petCroppedStaticImage = (dexId) => {
   const id = Math.max(0, Math.floor(Number(dexId) || 0));
-  return id > 0 ? `./pet-img/pet${id}_1_1_cropped.png` : STATIC_PET_IMAGE_FALLBACK;
+  return id > 0 ? encodeAssetSrc(`./pet-img/pet${id}_1_1_cropped.png`) : encodeAssetSrc(STATIC_PET_IMAGE_FALLBACK);
 };
 const PET_ACTION_SVG_ROOT = "./pet-action";
 const petBattleStateCodeByKey = (stateKey) => (
@@ -820,7 +835,7 @@ const petBattleSvgImage = (dexId, side = "target", stateKey = "idle") => {
   if (id <= 0) return "";
   const sideCode = side === "attacker" || side === "2" ? "2" : "1";
   const stateCode = /^\d+$/.test(String(stateKey || "")) ? String(stateKey) : petBattleStateCodeByKey(stateKey);
-  return `${PET_ACTION_SVG_ROOT}/${id}/pet${id}_${sideCode}_${stateCode}.svg`;
+  return encodeAssetSrc(`${PET_ACTION_SVG_ROOT}/${id}/pet${id}_${sideCode}_${stateCode}.svg`);
 };
 const WEEKLY_BOSS_HISTORY_BY_KEY = new Map(WEEKLY_BOSS_HISTORY_CONFIGS.map((config) => [normalize(config.key), config]));
 const WEEKLY_BOSS_HISTORY_BY_NAME = new Map(WEEKLY_BOSS_HISTORY_CONFIGS.map((config) => [normalize(config.name), config]));
@@ -860,7 +875,7 @@ const TIME_TUNNEL_ENVIRONMENT_IMAGE_BY_ELEMENT = {
   "神兵系": "./time-tunnel-environments/神兵系.png",
   "王系": "./time-tunnel-environments/王系.png"
 };
-const getTimeTunnelEnvironmentImage = (element) => TIME_TUNNEL_ENVIRONMENT_IMAGE_BY_ELEMENT[normalize(element)] || TIME_TUNNEL_ENVIRONMENT_IMAGE_BY_ELEMENT["木系"];
+const getTimeTunnelEnvironmentImage = (element) => encodeAssetSrc(TIME_TUNNEL_ENVIRONMENT_IMAGE_BY_ELEMENT[normalize(element)] || TIME_TUNNEL_ENVIRONMENT_IMAGE_BY_ELEMENT["木系"]);
 let TIME_TUNNEL_ENVIRONMENT_BY_ELEMENT = null;
 const randomTimeTunnelEnvironment = () => {
   const pool = TIME_TUNNEL_ENVIRONMENTS_ACTIVE.filter((env) => env.element !== "未知系");
@@ -1144,7 +1159,7 @@ const normalizeElementName = (element) => {
   return raw;
 };
 
-const PET_TYPE_ICON = {
+const PET_TYPE_ICON_SOURCE = {
   "木系": "./type/木系.png",
   "水系": "./type/水系.png",
   "火系": "./type/火系.png",
@@ -1169,8 +1184,11 @@ const PET_TYPE_ICON = {
   "?系": "",
   "未知系": ""
 };
+const PET_TYPE_ICON = Object.fromEntries(
+  Object.entries(PET_TYPE_ICON_SOURCE).map(([key, src]) => [key, encodeAssetSrc(src)])
+);
 const PET_TYPE_TRANSPARENT_ICON = Object.fromEntries(
-  Object.entries(PET_TYPE_ICON).map(([key, src]) => [key, String(src || "").replace("./type/", "./type-transparent/")])
+  Object.entries(PET_TYPE_ICON_SOURCE).map(([key, src]) => [key, encodeAssetSrc(String(src || "").replace("./type/", "./type-transparent/"))])
 );
 
 const ELEMENT_CHART = {
@@ -9789,7 +9807,7 @@ createApp({
       const name = normalize(guardianName);
       if (!name) return "";
       const fileName = guardianBadgeImageNameAlias[name] || name;
-      return `./hub 守护者联盟勋章/${fileName}.png`;
+      return encodeAssetSrc(`./hub 守护者联盟勋章/${fileName}.png`);
     };
     const allGuardianNightmareBadgeImageSrc = guardianBadgeImageSrc("守护者的噩梦");
     const badgeIdOf = (guardianName, threshold) => `guardian_${normalize(guardianName)}_${threshold}`;
@@ -10307,7 +10325,7 @@ createApp({
       const resolvedName = entry ? entry.name : (resolveChallengeRoadName(name) || normalize(name));
       const stageDir = CHALLENGE_ROAD_STAGE_COVER_DIRS[tierIndex] || "";
       const coverName = CHALLENGE_ROAD_STAGE_COVER_NAME_ALIAS[resolvedName] || CHALLENGE_ROAD_STAGE_COVER_NAME_ALIAS[name] || resolvedName;
-      const stageCover = stageDir && coverName ? `./地台boss/${stageDir}/${coverName}.png` : "";
+      const stageCover = stageDir && coverName ? encodeAssetSrc(`./地台boss/${stageDir}/${coverName}.png`) : "";
       if (!entry) return {
         tierIndex,
         kind,
@@ -13352,7 +13370,7 @@ createApp({
       if (id <= 0) return "";
       const cacheBust = actionSeq > 0 ? `?fx=${actionSeq}` : "";
       const root = isFullscreenSkillEffect(skill) ? FULLSCREEN_SKILL_EFFECT_ROOT : SKILL_EFFECT_ROOT;
-      return `${root}/effect${id}.gif${cacheBust}`;
+      return encodeAssetSrc(`${root}/effect${id}.gif${cacheBust}`);
     };
     const bagPetVisual = (pet) => {
       if (!pet) return { src: PLACEHOLDER, animated: false };

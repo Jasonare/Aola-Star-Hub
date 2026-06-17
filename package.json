@@ -4,6 +4,9 @@
   "private": true,
   "description": "Aola Star Hub frontend with local save server and Electron shell.",
   "main": "electron/main.js",
+  "dependencies": {
+    "extract-zip": "^2.0.1"
+  },
   "scripts": {
     "start": "node server/index.js",
     "server": "node server/index.js",
@@ -11,6 +14,7 @@
     "desktop": "electron .",
     "build:css": "tailwindcss -c tailwind.config.js -i tailwind.input.css -o vendor/tailwind.css --minify",
     "generate:skill-effects": "node generate-skill-effects-hardcoded.js",
+    "upload:assets": "node scripts/upload-assets-to-object-storage.js",
     "pack": "electron-builder --dir",
     "dist": "node scripts/dist-ascii.js"
   },

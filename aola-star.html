@@ -5539,7 +5539,7 @@
 </head>
 <body class="text-slate-800 min-h-screen">
 <script src="./aola-star-crash.js?v=20260617_bootdone_diag"></script>
-<div id="game-resource-loader" class="game-resource-loader" role="status" aria-live="polite">
+<div id="game-resource-loader" class="game-resource-loader is-hidden" role="status" aria-live="polite">
   <div class="game-resource-loader-card">
     <div class="game-resource-loader-title">Aola Star Hub</div>
     <div id="game-resource-loader-text" class="game-resource-loader-text">正在连接资源清单...</div>
@@ -7795,11 +7795,14 @@
   ];
   var loaded = [];
   var failed = [];
+  window.AOLA_ASSET_URL_MAP = window.AOLA_ASSET_URL_MAP || {};
   window.__aolaScriptDiag = { loaded: loaded, failed: failed, bootDone: false };
   var loader = document.getElementById("game-resource-loader");
   var loaderText = document.getElementById("game-resource-loader-text");
   var loaderBar = document.getElementById("game-resource-loader-bar");
   var loaderPercent = document.getElementById("game-resource-loader-percent");
+  var isDesktopShell = !!(window.aolaDesktop && window.aolaDesktop.useLocalResources);
+  if (loader) loader.classList.remove("is-hidden");
   function show(msg) {
     var tip = document.createElement("div");
     tip.style.position = "fixed";
@@ -7816,53 +7819,136 @@
     tip.textContent = msg;
     document.body.appendChild(tip);
   }
+  function assetMapKey(src) {
+    var raw = String(src || "");
+    var pathOnly = raw.split(/[?#]/)[0];
+    return pathOnly.replace(/^\.\/+/, "").replace(/^\/+/, "");
+  }
+  function resolveAssetSrc(src) {
+    var raw = String(src || "");
+    var map = window.AOLA_ASSET_URL_MAP || {};
+    var splitIndex = raw.search(/[?#]/);
+    var pathname = splitIndex >= 0 ? raw.slice(0, splitIndex) : raw;
+    var suffix = splitIndex >= 0 ? raw.slice(splitIndex) : "";
+    var mapped = map[raw] || map[pathname] || map[assetMapKey(pathname)];
+    if (mapped && !/^(https?:)?\/\//i.test(mapped)) return raw;
+    return mapped ? mapped + suffix : raw;
+  }
   function absUrl(rel) {
+    var resolved = resolveAssetSrc(rel);
+    if (/^https?:\/\//i.test(resolved) && resolved !== rel) return resolved;
     try {
-      var url = new URL(rel, window.location.href);
+      var url = new URL(resolved, window.location.href);
       url.searchParams.set("v", assetVersion);
       return url.href;
     } catch (_) {
-      return rel + (rel.indexOf("?") >= 0 ? "&" : "?") + "v=" + assetVersion;
+      return resolved + (resolved.indexOf("?") >= 0 ? "&" : "?") + "v=" + assetVersion;
     }
+  }
+  function applyAssetUrlMapToDom() {
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("[src], [href]"));
+    nodes.forEach(function (node) {
+      ["src", "href"].forEach(function (attr) {
+        if (!node.hasAttribute || !node.hasAttribute(attr)) return;
+        var raw = node.getAttribute(attr);
+        var resolved = resolveAssetSrc(raw);
+        if (resolved && resolved !== raw) node.setAttribute(attr, resolved);
+      });
+    });
+    Array.prototype.slice.call(document.querySelectorAll("style")).forEach(function (node) {
+      var css = String(node.textContent || "");
+      var nextCss = css.replace(/url\((['"]?)([^'")]+)\1\)/g, function (match, quote, rawUrl) {
+        if (/^(data:|blob:|https?:\/\/)/i.test(rawUrl)) return match;
+        var resolved = resolveAssetSrc(rawUrl);
+        return resolved && resolved !== rawUrl ? "url(\"" + resolved + "\")" : match;
+      });
+      if (nextCss !== css) node.textContent = nextCss;
+    });
+  }
+  function loadAssetUrlMap() {
+    if (isDesktopShell) {
+      window.AOLA_ASSET_URL_MAP = {};
+      applyAssetUrlMapToDom();
+      return Promise.resolve();
+    }
+    if (!window.fetch || !window.Promise) return Promise.resolve();
+    return fetch(absUrl("./asset-url-map.json"), { cache: "no-store" })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) {
+        if (data && typeof data === "object" && !Array.isArray(data)) {
+          window.AOLA_ASSET_URL_MAP = data;
+          applyAssetUrlMapToDom();
+        }
+      })
+      .catch(function () {
+        window.AOLA_ASSET_URL_MAP = window.AOLA_ASSET_URL_MAP || {};
+      });
   }
   function apiBaseUrl() {
     var protocol = String(window.location && window.location.protocol || "");
     if (protocol === "http:" || protocol === "https:") return "";
     return "http://127.0.0.1:3030";
   }
-  function mergeImageManifest(images) {
-    var seen = {};
-    imageManifest.forEach(function (item) { seen[item.src] = true; });
-    (Array.isArray(images) ? images : []).forEach(function (src) {
-      var rel = String(src || "");
-      if (!rel || seen[rel]) return;
-      seen[rel] = true;
-      imageManifest.push({ src: rel, label: "挑战之路站台" });
-    });
-  }
   function loadDynamicImageManifest() {
-    if (!window.fetch || !window.Promise) return Promise.resolve();
-    return fetch(apiBaseUrl() + "/api/preload-assets", { credentials: "include" })
-      .then(function (res) { return res.ok ? res.json() : null; })
-      .then(function (data) { if (data && data.ok) mergeImageManifest(data.images); })
-      .catch(function () {});
+    return Promise.resolve();
   }
-  function preloadLeaderboards() {
-    if (!window.fetch || !window.Promise) return;
-    var metrics = ["battlePower", "activatedDexCount", "hCoins"];
-    window.__aolaPreloadedLeaderboards = window.__aolaPreloadedLeaderboards || {};
-    metrics.forEach(function (metric) {
-      fetch(apiBaseUrl() + "/api/leaderboard?metric=" + encodeURIComponent(metric) + "&page=1", { credentials: "include" })
-        .then(function (res) { return res.ok ? res.json() : null; })
-        .then(function (data) {
-          if (data && data.ok) window.__aolaPreloadedLeaderboards[metric] = data;
-        })
-        .catch(function () {});
+  function preloadLeaderboards() {}
+  function apiBootstrapUrl(pathname) {
+    return apiBaseUrl() + pathname;
+  }
+  function fetchJson(pathname, options) {
+    return fetch(apiBootstrapUrl(pathname), Object.assign({
+      cache: "no-store",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }, options || {})).then(function (res) {
+      return res.json().catch(function () {
+        return {};
+      }).then(function (data) {
+        if (!res.ok) {
+          var message = data && data.message ? data.message : ("HTTP " + res.status);
+          throw new Error(message);
+        }
+        return data;
+      });
     });
+  }
+  function waitForResourceBootstrap() {
+    if (isDesktopShell && window.aolaDesktop && typeof window.aolaDesktop.onResourceBootstrapProgress === "function") {
+      return new Promise(function (resolve, reject) {
+        var settled = false;
+        function finish(fn, value, off) {
+          if (settled) return;
+          settled = true;
+          if (typeof off === "function") off();
+          fn(value);
+        }
+        function handleStatus(status, off) {
+          var percent = Math.max(0, Math.min(100, Number(status && status.percent) || 0));
+          updateProgress(percent, 100, status && status.message ? status.message : "正在准备本机资源...");
+          if (status && status.ready) {
+            finish(resolve, status, off);
+          } else if (status && status.error) {
+            finish(reject, new Error(status.error), off);
+          }
+        }
+        var off = window.aolaDesktop.onResourceBootstrapProgress(function (status) {
+          handleStatus(status, off);
+        });
+        if (typeof window.aolaDesktop.getResourceBootstrapStatus === "function") {
+          window.aolaDesktop.getResourceBootstrapStatus()
+            .then(function (status) { handleStatus(status, off); })
+            .catch(function () {});
+        }
+      });
+    }
+    return Promise.resolve({ ready: true, enabled: false });
   }
   function updateProgress(done, total, label) {
     var pct = total > 0 ? Math.round(done / total * 100) : 0;
-    if (loaderText) loaderText.textContent = label || "正在加载资源...";
+    if (loaderText) loaderText.textContent = label || "Loading...";
     if (loaderBar) loaderBar.style.width = pct + "%";
     if (loaderPercent) loaderPercent.textContent = pct + "%";
   }
@@ -7885,33 +7971,6 @@
       document.body.appendChild(s);
     });
   }
-  function preloadImage(item) {
-    return new Promise(function (resolve) {
-      var img = new Image();
-      img.onload = function () { loaded.push(item.src); resolve({ ok: true, item: item }); };
-      img.onerror = function () {
-        if (item.critical) failed.push(item.src);
-        resolve({ ok: false, item: item });
-      };
-      img.src = absUrl(item.src);
-    });
-  }
-  function warmResource(item) {
-    if (!document.head || item.entry) return;
-    var link = document.createElement("link");
-    link.rel = "preload";
-    link.as = "script";
-    link.href = absUrl(item.src);
-    document.head.appendChild(link);
-  }
-  function warmImage(item) {
-    if (!document.head) return;
-    var link = document.createElement("link");
-    link.rel = "preload";
-    link.as = "image";
-    link.href = absUrl(item.src);
-    document.head.appendChild(link);
-  }
   function mountCheck() {
     window.__aolaScriptDiag = { loaded: loaded.slice(), failed: failed.slice(), bootDone: true };
     try {
@@ -7928,34 +7987,19 @@
   }
   function startParallelLoader() {
     var done = 0;
-    var total = manifest.length + imageManifest.length;
-    updateProgress(0, total, "正在读取资源清单...");
-    manifest.forEach(warmResource);
-    imageManifest.forEach(warmImage);
-    var imageQueue = imageManifest.slice();
-    var imageWorkers = Math.min(8, imageQueue.length);
-    function pumpImage() {
-      var item = imageQueue.shift();
-      if (!item) return Promise.resolve();
-      updateProgress(done, total, "正在预载：" + item.label);
-      return preloadImage(item).then(function () {
-        done += 1;
-        updateProgress(done, total, "已预载：" + item.label);
-        return pumpImage();
-      });
-    }
-    for (var w = 0; w < imageWorkers; w += 1) pumpImage();
+    var total = manifest.length;
+    updateProgress(0, total, "Loading...");
     function next(i) {
       if (i >= manifest.length) {
-        updateProgress(done, total, "启动完成，继续缓存图片...");
+        updateProgress(done, total, "Ready");
         mountCheck();
         return;
       }
       var item = manifest[i];
-      updateProgress(done, total, "正在加载：" + item.label);
+      updateProgress(done, total, "Loading " + item.label);
       loadScriptElement(item).then(function () {
         done += 1;
-        updateProgress(done, total, "已加载：" + item.label);
+        updateProgress(done, total, "Loaded " + item.label);
         if (item.critical && failed.indexOf(item.src) >= 0) {
           show("[RESOURCE LOAD ERROR]\nfailed=" + failed.join(" | "));
           return;
@@ -7966,29 +8010,27 @@
     next(0);
   }
   function bootParallelLoader() {
-    updateProgress(0, manifest.length + imageManifest.length, "正在读取资源清单...");
-    preloadLeaderboards();
-    loadDynamicImageManifest().then(startParallelLoader);
+    waitForResourceBootstrap()
+      .then(loadAssetUrlMap)
+      .then(startParallelLoader)
+      .catch(function (err) {
+        updateProgress(0, 100, err && err.message ? err.message : "资源准备失败");
+        show("[RESOURCE BOOTSTRAP ERROR]\n" + (err && err.message ? err.message : String(err || "Unknown error")));
+      });
   }
   function startFallbackLoader() {
     var done = 0;
-    var total = manifest.length + imageManifest.length;
-    imageManifest.forEach(function (item) {
-      preloadImage(item).then(function () {
-        done += 1;
-        updateProgress(done, total, "已预载：" + item.label);
-      });
-    });
+    var total = manifest.length;
     function next(i) {
       if (i >= manifest.length) {
         mountCheck();
         return;
       }
       var item = manifest[i];
-      updateProgress(done, total, "正在加载：" + item.label);
+      updateProgress(done, total, "Loading " + item.label);
       loadScriptElement(item).then(function () {
         done += 1;
-        updateProgress(done, total, "已加载：" + item.label);
+        updateProgress(done, total, "Loaded " + item.label);
         next(i + 1);
       });
     }
