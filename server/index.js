@@ -1,32 +1,31 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const http = require("http");
-const https = require("https");
 const path = require("path");
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const DATA_DIR = process.env.AOLA_DATA_DIR || path.join(__dirname, "data");
 const SAVE_ROOT = path.join(DATA_DIR, "saves");
 const USERS_FILE = path.join(DATA_DIR, "users.json");
-const RESOURCE_BOOTSTRAP_CONFIG_FILE = path.join(ROOT_DIR, "resource-bootstrap.config.json");
 const STATIC_RESOURCE_DIR = process.env.AOLA_STATIC_RESOURCE_DIR || "";
 const STATIC_RESOURCE_PREFIXES = [
-  "BGM/",
-  "boss-level/",
-  "fight-ui/",
-  "hub 守护者联盟勋章/",
-  "pet-action/",
-  "pet-img/",
-  "pet-state/",
-  "skill-effect/",
-  "skill-effect-fullscreen/",
-  "time-tunnel-environments/",
-  "type/",
-  "type-transparent/",
-  "ui/",
+  "resource/BGM/",
+  "resource/boss-level/",
+  "resource/fight-ui/",
+  "resource/hub 守护者联盟勋章/",
+  "resource/pet-action/",
+  "resource/pet-img/",
+  "resource/pet-state/",
+  "resource/skill-effect/",
+  "resource/skill-effect-fullscreen/",
+  "resource/time-tunnel-environments/",
+  "resource/type/",
+  "resource/type-transparent/",
+  "resource/ui/",
   "vendor/",
-  "地台boss/",
-  "小图标/"
+  "resource/地台boss/",
+  "resource/小图标/",
+  "resource/提升/"
 ];
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
 const PORT = Number(process.env.PORT) || 3030;
@@ -51,191 +50,6 @@ const writeJsonFile = (file, data) => {
 };
 
 const toPosixPath = (value) => String(value || "").replace(/\\/g, "/");
-
-const safeJoinRoot = (value, fallback) => {
-  const target = path.resolve(ROOT_DIR, value || fallback);
-  if (target !== ROOT_DIR && !target.startsWith(`${ROOT_DIR}${path.sep}`)) {
-    throw new Error(`Path is outside project root: ${value}`);
-  }
-  return target;
-};
-
-const readResourceBootstrapConfig = () => {
-  const fileConfig = readJsonFile(RESOURCE_BOOTSTRAP_CONFIG_FILE, {});
-  const resourceZipUrl = String(process.env.AOLA_RESOURCE_ZIP_URL || fileConfig.resourceZipUrl || "").trim();
-  const enabled = String(process.env.AOLA_RESOURCE_BOOTSTRAP || fileConfig.enabled || (resourceZipUrl ? "true" : "false")) !== "false";
-  const extractDir = safeJoinRoot(process.env.AOLA_RESOURCE_EXTRACT_DIR || fileConfig.extractDir, ".");
-  const readyFile = safeJoinRoot(process.env.AOLA_RESOURCE_READY_FILE || fileConfig.readyFile, ".resource-ready.json");
-  const zipFile = path.resolve(DATA_DIR, process.env.AOLA_RESOURCE_ZIP_FILE || fileConfig.zipFile || "resource.zip");
-  return {
-    enabled,
-    resourceZipUrl,
-    extractDir,
-    readyFile,
-    zipFile
-  };
-};
-
-const resourceBootstrapState = {
-  running: false,
-  phase: "idle",
-  percent: 0,
-  downloadedBytes: 0,
-  totalBytes: 0,
-  message: "",
-  error: "",
-  startedAt: "",
-  updatedAt: "",
-  finishedAt: ""
-};
-
-const updateResourceBootstrapState = (patch) => {
-  Object.assign(resourceBootstrapState, patch, { updatedAt: new Date().toISOString() });
-};
-
-const isResourceBootstrapReady = (config = readResourceBootstrapConfig()) => fs.existsSync(config.readyFile);
-
-const getResourceBootstrapStatus = () => {
-  const config = readResourceBootstrapConfig();
-  const ready = !config.enabled || isResourceBootstrapReady(config);
-  if (ready) {
-    return {
-      ok: true,
-      enabled: config.enabled,
-      ready: true,
-      running: false,
-      phase: "ready",
-      percent: 100,
-      downloadedBytes: resourceBootstrapState.downloadedBytes,
-      totalBytes: resourceBootstrapState.totalBytes,
-      message: config.enabled ? "资源已准备完成。" : "资源引导未启用。",
-      error: "",
-      startedAt: resourceBootstrapState.startedAt,
-      updatedAt: resourceBootstrapState.updatedAt,
-      finishedAt: resourceBootstrapState.finishedAt
-    };
-  }
-  return {
-    ok: true,
-    enabled: config.enabled,
-    ready: false,
-    running: resourceBootstrapState.running,
-    phase: resourceBootstrapState.phase,
-    percent: resourceBootstrapState.percent,
-    downloadedBytes: resourceBootstrapState.downloadedBytes,
-    totalBytes: resourceBootstrapState.totalBytes,
-    message: resourceBootstrapState.message || "资源尚未准备。",
-    error: resourceBootstrapState.error,
-    startedAt: resourceBootstrapState.startedAt,
-    updatedAt: resourceBootstrapState.updatedAt,
-    finishedAt: resourceBootstrapState.finishedAt
-  };
-};
-
-const downloadFile = (url, outFile, onProgress, redirectCount = 0) => new Promise((resolve, reject) => {
-  if (redirectCount > 5) return reject(new Error("Too many redirects while downloading resource.zip."));
-  const parsed = new URL(url);
-  const client = parsed.protocol === "http:" ? http : https;
-  ensureDir(path.dirname(outFile));
-  const req = client.get(parsed, (res) => {
-    if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location) {
-      res.resume();
-      const nextUrl = new URL(res.headers.location, parsed).href;
-      downloadFile(nextUrl, outFile, onProgress, redirectCount + 1).then(resolve, reject);
-      return;
-    }
-    if (res.statusCode < 200 || res.statusCode >= 300) {
-      const chunks = [];
-      res.on("data", (chunk) => chunks.push(chunk));
-      res.on("end", () => reject(new Error(`Download failed with ${res.statusCode}: ${Buffer.concat(chunks).toString("utf8").slice(0, 300)}`)));
-      return;
-    }
-    const total = Number(res.headers["content-length"]) || 0;
-    let downloaded = 0;
-    const tempFile = `${outFile}.download`;
-    const stream = fs.createWriteStream(tempFile);
-    res.on("data", (chunk) => {
-      downloaded += chunk.length;
-      if (typeof onProgress === "function") onProgress(downloaded, total);
-    });
-    stream.on("error", reject);
-    res.on("error", reject);
-    stream.on("finish", () => {
-      fs.renameSync(tempFile, outFile);
-      resolve({ downloadedBytes: downloaded, totalBytes: total });
-    });
-    res.pipe(stream);
-  });
-  req.on("error", reject);
-});
-
-const ensureResourceBootstrapStarted = async () => {
-  const config = readResourceBootstrapConfig();
-  if (!config.enabled || isResourceBootstrapReady(config)) return getResourceBootstrapStatus();
-  if (!config.resourceZipUrl) throw new Error("resourceZipUrl is required in resource-bootstrap.config.json or AOLA_RESOURCE_ZIP_URL.");
-  if (resourceBootstrapState.running) return getResourceBootstrapStatus();
-
-  resourceBootstrapState.running = true;
-  updateResourceBootstrapState({
-    phase: "downloading",
-    percent: 1,
-    downloadedBytes: 0,
-    totalBytes: 0,
-    message: "正在下载资源包...",
-    error: "",
-    startedAt: new Date().toISOString(),
-    finishedAt: ""
-  });
-
-  (async () => {
-    try {
-      const result = await downloadFile(config.resourceZipUrl, config.zipFile, (downloaded, total) => {
-        const percent = total > 0 ? Math.max(1, Math.min(82, Math.floor((downloaded / total) * 82))) : 8;
-        updateResourceBootstrapState({
-          phase: "downloading",
-          percent,
-          downloadedBytes: downloaded,
-          totalBytes: total,
-          message: total > 0 ? `正在下载资源包 ${Math.floor(downloaded / 1024 / 1024)}MB / ${Math.floor(total / 1024 / 1024)}MB` : "正在下载资源包..."
-        });
-      });
-      updateResourceBootstrapState({
-        phase: "extracting",
-        percent: 88,
-        downloadedBytes: result.downloadedBytes,
-        totalBytes: result.totalBytes,
-        message: "正在解压资源包..."
-      });
-      const extract = require("extract-zip");
-      await extract(config.zipFile, { dir: config.extractDir });
-      writeJsonFile(config.readyFile, {
-        ok: true,
-        resourceZipUrl: config.resourceZipUrl,
-        zipFile: toPosixPath(path.relative(ROOT_DIR, config.zipFile)),
-        extractDir: toPosixPath(path.relative(ROOT_DIR, config.extractDir)) || ".",
-        finishedAt: new Date().toISOString()
-      });
-      updateResourceBootstrapState({
-        running: false,
-        phase: "ready",
-        percent: 100,
-        message: "资源已准备完成。",
-        error: "",
-        finishedAt: new Date().toISOString()
-      });
-    } catch (err) {
-      updateResourceBootstrapState({
-        running: false,
-        phase: "error",
-        percent: 0,
-        message: "资源准备失败。",
-        error: err && err.message ? err.message : String(err || "Unknown error")
-      });
-    }
-  })();
-
-  return getResourceBootstrapStatus();
-};
 
 const usersDb = () => {
   const raw = readJsonFile(USERS_FILE, { users: [] });
@@ -657,29 +471,6 @@ const staticCacheHeaders = (ext) => {
   };
 };
 
-const listPreloadImageAssets = () => {
-  const roots = ["地台boss"];
-  const imageExts = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg"]);
-  const out = [];
-  const walk = (dir) => {
-    let entries = [];
-    try {
-      entries = fs.readdirSync(dir, { withFileTypes: true });
-    } catch {
-      return;
-    }
-    entries.forEach((entry) => {
-      const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) return walk(full);
-      if (!entry.isFile() || !imageExts.has(path.extname(entry.name).toLowerCase())) return;
-      const rel = path.relative(ROOT_DIR, full).split(path.sep).join("/");
-      out.push(`./${rel}`);
-    });
-  };
-  roots.forEach((root) => walk(path.join(ROOT_DIR, root)));
-  return Array.from(new Set(out)).sort((a, b) => a.localeCompare(b, "zh-Hans-CN"));
-};
-
 const safeNonNegInt = (value, fallback = 0) => {
   const n = Number(value);
   return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback;
@@ -850,17 +641,6 @@ const handleApi = async (req, res) => {
     if (req.method === "GET" && req.url === "/api/auth/me") {
       const user = currentUser(req);
       return sendJson(res, 200, { ok: true, user: user ? publicUser(user) : null });
-    }
-    if (req.method === "GET" && new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname === "/api/resource-bootstrap/status") {
-      return sendJson(res, 200, getResourceBootstrapStatus());
-    }
-    if (req.method === "POST" && new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname === "/api/resource-bootstrap/start") {
-      return sendJson(res, 200, await ensureResourceBootstrapStarted());
-    }
-    if (req.method === "GET" && new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname === "/api/preload-assets") {
-      return sendJson(res, 200, { ok: true, images: listPreloadImageAssets() }, {
-        "Cache-Control": "public, max-age=300"
-      });
     }
     if (req.method === "GET" && new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname === "/api/leaderboard") {
       const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);

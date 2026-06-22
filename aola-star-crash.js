@@ -1,11 +1,13 @@
 (function () {
   var REQUIRED_GLOBALS = [
     "AOLA_DEX_1_100",
+    "Vue"
+  ];
+  var OPTIONAL_GAME_DATA_GLOBALS = [
     "AOLA_SPECIES_DATA_BY_DEX",
     "AOLA_SKILL_DATA_BY_ID",
     "AOLA_SKILL_DATA_LIST",
-    "AOLA_EVOLUTION_CHAINS",
-    "Vue"
+    "AOLA_EVOLUTION_CHAINS"
   ];
 
   function showCrash(message) {
@@ -64,9 +66,15 @@
         appVisible = !!(app.offsetWidth || app.offsetHeight || (app.getClientRects && app.getClientRects().length));
       }
       if (missing.length > 0 || hasRawMustache) {
+        var optionalMissing = [];
+        for (var j = 0; j < OPTIONAL_GAME_DATA_GLOBALS.length; j += 1) {
+          var optionalKey = OPTIONAL_GAME_DATA_GLOBALS[j];
+          if (!(optionalKey in window) || window[optionalKey] == null) optionalMissing.push(optionalKey);
+        }
         var lines = [];
         lines.push("[BOOT DIAG]");
         lines.push("missing_globals=" + (missing.length ? missing.join(", ") : "none"));
+        lines.push("optional_game_data_missing=" + (optionalMissing.length ? optionalMissing.join(", ") : "none"));
         lines.push("raw_mustache=" + (hasRawMustache ? "yes" : "no"));
         lines.push("app_visible=" + (appVisible ? "yes" : "no"));
         try {

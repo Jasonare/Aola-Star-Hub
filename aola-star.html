@@ -14,6 +14,8 @@
         var h = window.innerHeight || 0;
         root.classList.add("android-webview");
         root.classList.toggle("android-landscape", w >= h);
+        root.style.setProperty("--android-viewport-width", w + "px");
+        root.style.setProperty("--android-viewport-height", h + "px");
       }
       syncAndroidViewportClass();
       window.addEventListener("resize", syncAndroidViewportClass);
@@ -21,8 +23,71 @@
     })();
   </script>
   <link rel="stylesheet" href="./vendor/tailwind.css">
+  <script src="./vendor/vue.global.prod.js"></script>
   <style>
     [v-cloak] { display: none !important; }
+    .preboot-login-page {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      box-sizing: border-box;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(34, 211, 238, .22), transparent 32%),
+        radial-gradient(circle at 82% 78%, rgba(59, 130, 246, .18), transparent 34%),
+        linear-gradient(135deg, #020617 0%, #0f172a 52%, #082f49 100%);
+      color: #e0f2fe;
+      font-family: Arial, "Microsoft YaHei", sans-serif;
+    }
+    .preboot-login-card {
+      width: min(420px, calc(100vw - 32px));
+      border: 1px solid rgba(103, 232, 249, .32);
+      border-radius: 22px;
+      background: rgba(15, 23, 42, .74);
+      box-shadow: 0 24px 70px rgba(2, 6, 23, .42);
+      padding: 28px;
+      box-sizing: border-box;
+      backdrop-filter: blur(12px);
+    }
+    .preboot-login-title {
+      margin: 0;
+      color: #fff;
+      font-size: 34px;
+      line-height: 1.05;
+      font-weight: 900;
+    }
+    .preboot-login-text {
+      margin: 12px 0 0;
+      color: rgba(224, 242, 254, .78);
+      font-size: 13px;
+      line-height: 1.7;
+      font-weight: 700;
+    }
+    .preboot-login-bar {
+      height: 9px;
+      margin-top: 22px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(15, 23, 42, .95);
+      border: 1px solid rgba(125, 211, 252, .22);
+    }
+    .preboot-login-bar::before {
+      content: "";
+      display: block;
+      width: 42%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #22d3ee, #38bdf8, #a7f3d0);
+      animation: prebootLoginBar 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes prebootLoginBar {
+      from { transform: translateX(-18%); }
+      to { transform: translateX(156%); }
+    }
     :root {
       --ui-px: clamp(0.72px, min(0.0625vw, 0.1112vh), 1.08px);
       --warehouse-card-pet-size: clamp(calc(58 * var(--ui-px)), 7vw, calc(82 * var(--ui-px)));
@@ -52,7 +117,7 @@
       aspect-ratio: 2524 / 1315;
       border-radius: 18px;
       overflow: hidden;
-      background-image: url("./ui/背景/hub-main.png");
+      background-image: url("./resource/ui/背景/hub-main.png");
       background-size: 100% 100%;
       background-position: center;
       background-repeat: no-repeat;
@@ -80,9 +145,9 @@
     }
     .home-status-grid {
       display: grid;
-      grid-template-columns: repeat(6, minmax(72px, 1fr));
+      grid-template-columns: repeat(3, minmax(72px, 1fr));
       gap: 7px;
-      width: min(760px, 46vw);
+      width: min(585px, 40.5vw);
     }
     .home-status-card {
       min-height: 46px;
@@ -103,10 +168,13 @@
     }
     .home-status-value {
       color: #0f172a;
-      font-size: 16px;
+      font-size: clamp(11px, min(1.2vw, 2.15vh), 16px);
       font-weight: 950;
       line-height: 1.25;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
     }
     .home-save-panel {
       order: -1;
@@ -140,7 +208,7 @@
     .home-status-badge-slot {
       position: absolute;
       z-index: 6;
-      left: 83.4%;
+      left: 82.4%;
       top: 1.25%;
       width: 7.9%;
       height: 14.4%;
@@ -203,6 +271,7 @@
       -webkit-user-drag: none;
     }
     .home-action-gift { --x: 1.2%; --y: 83.4%; --w: 7.1%; }
+    .home-action-dragonboat { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
     .home-action-rank { --x: 25.6%; --y: 86.0%; --w: 8.0%; }
     .home-action-tunnel { --x: 34.0%; --y: 86.0%; --w: 8.4%; }
     .home-action-study { --x: 42.5%; --y: 85.5%; --w: 8.0%; }
@@ -212,8 +281,8 @@
     .home-action-dex { --x: 73.5%; --y: 86.5%; --w: 6.3%; }
     .home-action-bag { --x: 80.7%; --y: 86.2%; --w: 6.2%; }
     .home-action-shop { --x: 87.0%; --y: 71.8%; --w: 11.5%; }
-    .home-action-challenge { --x: 91.8%; --y: 12.2%; --w: 7.4%; }
-    .home-action-weekly { --x: 91.6%; --y: 31.8%; --w: 7.0%; }
+    .home-action-challenge { --x: 91.8%; --y: 10.8%; --w: 7.4%; }
+    .home-action-weekly { --x: 91.6%; --y: 29.5%; --w: 7.0%; }
     .home-action-gacha { --x: 91.6%; --y: 51.2%; --w: 7.0%; }
     .home-settings-btn {
       position: absolute;
@@ -247,7 +316,7 @@
     .home-main-content {
       margin-top: 14px;
     }
-    @media (max-width: 900px) {
+    @media (max-width: 900px) and (orientation: portrait) {
       .home-shell { padding: 8px; }
       .home-hub-scene {
         width: min(calc(100vw - 16px), calc((100vh - 16px) * 2524 / 1315));
@@ -264,15 +333,16 @@
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
       .home-status-badge-slot {
-        left: 72%;
-        top: 8%;
-        width: 14%;
-        height: 20%;
+        left: 76%;
+        top: 2%;
+        width: 16.5%;
+        height: 28%;
       }
       .home-save-panel {
         width: min(520px, calc(100vw - 32px));
       }
       .home-action-gift { --x: 2%; --y: 76%; --w: 18%; }
+      .home-action-dragonboat { --x: 2%; --y: 60%; --w: 18%; }
       .home-action-rank { --x: 18%; --y: 82%; --w: 18%; }
       .home-action-tunnel { --x: 34%; --y: 82%; --w: 18%; }
       .home-action-study { --x: 50%; --y: 82%; --w: 18%; }
@@ -282,8 +352,8 @@
       .home-action-dex { --x: 11%; --y: 62%; --w: 16%; }
       .home-action-bag { --x: 27%; --y: 62%; --w: 16%; }
       .home-action-shop { --x: 70%; --y: 61%; --w: 26%; }
-      .home-action-challenge { --x: 76%; --y: 24%; --w: 20%; }
-      .home-action-weekly { --x: 76%; --y: 39%; --w: 19%; }
+      .home-action-challenge { --x: 76%; --y: 32%; --w: 20%; }
+      .home-action-weekly { --x: 76%; --y: 45%; --w: 19%; }
       .home-action-gacha { --x: 76%; --y: 53%; --w: 19%; }
       .home-double-reward {
         left: 3%;
@@ -370,6 +440,7 @@
       min-height: var(--bag-main-h);
       max-height: var(--bag-main-h);
       overflow: hidden;
+      position: relative;
     }
     .bag-info-scroll { height: var(--bag-info-h); }
     .bag-item-use-overlay {
@@ -902,6 +973,7 @@
       max-width: none;
       max-height: none;
       object-fit: contain;
+      z-index: 90;
       transform-origin: 0 0;
       transform: translate(var(--battle-pet-offset-x, 0), var(--battle-pet-offset-y, 0)) !important;
       clip-path: inset(var(--battle-pet-clip-top, 0%) var(--battle-pet-clip-right, 0%) var(--battle-pet-clip-bottom, 0%) var(--battle-pet-clip-left, 0%));
@@ -1411,12 +1483,33 @@
     }
     .talent-grade-chip {
       min-width: calc(128 * var(--ui-px));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: calc(4 * var(--ui-px));
     }
     .talent-grade-img {
       width: clamp(calc(120 * var(--ui-px)), 11vw, calc(176 * var(--ui-px)));
       height: auto;
       object-fit: contain;
       display: block;
+    }
+    .bag-info-panel .talent-grade-chip {
+      position: absolute;
+      top: calc(16 * var(--ui-px));
+      right: calc(20 * var(--ui-px));
+      z-index: 12;
+      width: clamp(calc(126 * var(--ui-px)), 13.5vw, calc(204 * var(--ui-px)));
+      min-width: 0;
+      max-width: none;
+      min-height: calc(42 * var(--ui-px));
+      padding: calc(5 * var(--ui-px)) calc(8 * var(--ui-px)) !important;
+      border: calc(1 * var(--ui-px)) solid rgba(56, 189, 248, .45);
+    }
+    .bag-info-panel .talent-grade-img {
+      width: clamp(calc(92 * var(--ui-px)), 9.8vw, calc(158 * var(--ui-px)));
+      max-width: 100%;
     }
     .pet-detail-talent-img {
       width: min(100%, calc(190 * var(--ui-px)));
@@ -1493,6 +1586,181 @@
       background: transparent;
       display: block;
       flex: none;
+    }
+    .dragon-boat-shop-modal {
+      background-image: var(--dragon-boat-shop-bg);
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      width: min(94vw, 980px);
+      aspect-ratio: 1289 / 1003;
+      max-height: 92vh;
+      overflow: hidden;
+      padding: min(2vw, 18px) min(2.4vw, 24px) !important;
+    }
+    .dragon-boat-shop-header {
+      height: 12%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: .75rem;
+      position: relative;
+    }
+    .dragon-boat-shop-title {
+      width: min(32vw, 240px);
+      max-width: 46%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 .12rem .08rem rgba(84,97,10,.28));
+      pointer-events: none;
+    }
+    .dragon-boat-shop-zongzi-badge {
+      position: absolute;
+      top: 2%;
+      right: 6%;
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      min-height: 2.4rem;
+      padding: .2rem .55rem .2rem .35rem;
+      border-radius: 999px;
+      border: 1px solid rgba(234,179,8,.55);
+      background: linear-gradient(180deg, rgba(255,251,235,.96), rgba(254,243,199,.96));
+      box-shadow: 0 .18rem .32rem rgba(62,84,20,.18);
+    }
+    .dragon-boat-shop-zongzi-icon {
+      width: 2rem;
+      height: 2rem;
+      object-fit: contain;
+      flex: none;
+    }
+    .dragon-boat-shop-zongzi-count {
+      min-width: 3.35rem;
+      padding: .16rem .48rem;
+      border-radius: .45rem;
+      background: rgba(239,68,68,.92);
+      color: #fff7ed;
+      font-size: clamp(.82rem, 1.18vw, 1rem);
+      line-height: 1;
+      font-weight: 1000;
+      text-align: center;
+      box-shadow: inset 0 0 0 1px rgba(127,29,29,.24);
+    }
+    .dragon-boat-shop-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      column-gap: 2.2%;
+      row-gap: 7.5%;
+      width: 94%;
+      height: 66%;
+      margin: 2.4% auto 0;
+      align-items: center;
+      justify-items: center;
+    }
+    .dragon-boat-shop-card {
+      position: relative;
+      aspect-ratio: 283 / 252;
+      background: url("./resource/ui/端午商店/兑换底图.png") center / contain no-repeat;
+      border: 0;
+      box-shadow: none;
+      min-height: 0;
+      overflow: visible;
+      width: 100%;
+      max-width: 210px;
+    }
+    .dragon-boat-shop-item-slot {
+      position: absolute;
+      left: 25%;
+      top: 16%;
+      width: 46%;
+      height: 30%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      pointer-events: none;
+    }
+    .dragon-boat-shop-item-img {
+      width: min(50%, 3rem);
+      height: min(50%, 3rem);
+      object-fit: contain;
+      filter: drop-shadow(0 .12rem .14rem rgba(28,78,34,.22));
+    }
+    .dragon-boat-shop-item-name {
+      max-width: 100%;
+      margin-top: .08rem;
+      font-size: clamp(.48rem, .9vw, .68rem);
+      line-height: 1.05;
+      font-weight: 900;
+      color: #176231;
+      text-shadow: 0 1px 0 rgba(255,255,255,.85);
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .dragon-boat-shop-limit-count {
+      position: absolute;
+      left: 64%;
+      top: 56%;
+      transform: translate(-50%, -50%);
+      min-width: 1.35em;
+      text-align: center;
+      font-size: clamp(.84rem, 1.5vw, 1.18rem);
+      line-height: 1;
+      font-weight: 1000;
+      color: #ef4444;
+      -webkit-text-stroke: .035em #fff7ed;
+      text-shadow: 0 .1rem .08rem rgba(74,45,12,.38);
+      pointer-events: none;
+    }
+    .dragon-boat-shop-cost {
+      position: absolute;
+      left: 37%;
+      bottom: 10.8%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: .18rem;
+      min-width: 4.2rem;
+      justify-content: center;
+      font-size: clamp(.8rem, 1.28vw, 1.05rem);
+      font-weight: 1000;
+      color: #fff7b0;
+      -webkit-text-stroke: .045em #24723a;
+      text-shadow: 0 .1rem .08rem rgba(29,78,35,.45);
+      pointer-events: none;
+    }
+    .dragon-boat-shop-cost img {
+      width: 1.2rem;
+      height: 1.15rem;
+      object-fit: contain;
+    }
+    .dragon-boat-exchange-btn {
+      position: absolute;
+      right: 5.5%;
+      bottom: 5.2%;
+      width: 39%;
+      height: 27%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      color: #fff7b0;
+      border: 0;
+      padding: 0;
+      filter: drop-shadow(0 .12rem .12rem rgba(48,92,25,.28));
+    }
+    .dragon-boat-exchange-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .pet-gear-card {
+      border: 1px solid rgba(14,165,233,.25);
+      background: linear-gradient(180deg, rgba(240,249,255,.98), rgba(224,242,254,.98));
     }
     .qixing-gacha-modal {
       background:
@@ -1685,7 +1953,7 @@
       background:
         linear-gradient(90deg, rgba(5,12,25,.32), rgba(5,12,25,.86) 58%, rgba(5,12,25,.96)),
         radial-gradient(circle at 18% 24%, rgba(56,189,248,.34), transparent 34%),
-        url("./ui/Aola-Star-Hub-bg.png") center/cover no-repeat;
+        url("./resource/ui/Aola-Star-Hub-bg.png") center/cover no-repeat;
     }
     .login-card {
       width: min(92vw, 430px);
@@ -1744,6 +2012,81 @@
       border: 1px solid rgba(125,211,252,.3);
       background: rgba(15,23,42,.58);
       color: #bae6fd;
+    }
+    .panel-stat-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(125, 211, 252, .42);
+      background: rgba(240, 249, 255, .86);
+      color: #075985;
+      font-size: 12px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+    .login-loading-page {
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #020617 var(--login-loading-bg) center / cover no-repeat;
+      color: #e0f2fe;
+    }
+    .login-loading-panel {
+      position: relative;
+      width: min(86vw, 960px);
+      aspect-ratio: 1257 / 713;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 28px 48px rgba(3,7,18,.48));
+    }
+    .login-loading-frame,
+    .login-loading-slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .login-loading-slide {
+      padding: 5.5% 6.5%;
+      z-index: 1;
+    }
+    .login-loading-frame {
+      z-index: 2;
+      pointer-events: none;
+    }
+    .login-loading-logo {
+      position: absolute;
+      top: 4.5%;
+      left: 50%;
+      width: min(38vw, 360px);
+      transform: translateX(-50%);
+      z-index: 3;
+      filter: drop-shadow(0 8px 14px rgba(0,0,0,.28));
+    }
+    .login-loading-progress {
+      position: absolute;
+      left: 50%;
+      bottom: 6.5%;
+      width: min(70vw, 680px);
+      height: clamp(16px, 2.8vw, 34px);
+      transform: translateX(-50%);
+      overflow: hidden;
+      z-index: 3;
+    }
+    .login-loading-progress img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      clip-path: inset(0 calc(100% - var(--login-loading-progress, 0%)) 0 0);
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,.28));
     }
     .double-reward-marquee {
       position: relative;
@@ -2469,6 +2812,66 @@
       max-height: calc(100vh - calc(16 * var(--ui-px))) !important;
       border-radius: calc(18 * var(--ui-px)) !important;
     }
+    html.android-webview.android-landscape .login-page,
+    html.android-webview.android-landscape .login-loading-page {
+      width: 100vw !important;
+      min-height: 0 !important;
+      height: var(--android-viewport-height, 100vh) !important;
+      max-height: var(--android-viewport-height, 100vh) !important;
+      padding: calc(12 * var(--ui-px)) calc(18 * var(--ui-px)) !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
+    }
+    html.android-webview.android-landscape .login-page {
+      align-items: center !important;
+      justify-content: flex-end !important;
+      background-size: 100% 100% !important;
+    }
+    html.android-webview.android-landscape .login-card {
+      width: min(calc(380 * var(--ui-px)), 38vw) !important;
+      max-height: calc(var(--android-viewport-height, 100vh) - calc(24 * var(--ui-px))) !important;
+      padding: calc(16 * var(--ui-px)) !important;
+      border-radius: calc(20 * var(--ui-px)) !important;
+      overflow-y: auto !important;
+    }
+    html.android-webview.android-landscape .login-card .text-3xl,
+    html.android-webview.android-landscape .login-card .text-4xl {
+      font-size: calc(24 * var(--ui-px)) !important;
+      line-height: 1.08 !important;
+    }
+    html.android-webview.android-landscape .login-card .text-sm {
+      font-size: calc(11 * var(--ui-px)) !important;
+      line-height: 1.25 !important;
+    }
+    html.android-webview.android-landscape .login-input {
+      height: calc(36 * var(--ui-px)) !important;
+      border-radius: calc(12 * var(--ui-px)) !important;
+      font-size: calc(12 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .login-captcha-box {
+      padding: calc(7 * var(--ui-px)) calc(9 * var(--ui-px)) !important;
+      font-size: calc(10 * var(--ui-px)) !important;
+      line-height: 1.32 !important;
+    }
+    html.android-webview.android-landscape .login-primary-btn,
+    html.android-webview.android-landscape .login-ghost-btn {
+      height: calc(34 * var(--ui-px)) !important;
+      border-radius: calc(12 * var(--ui-px)) !important;
+      font-size: calc(12 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .login-loading-panel {
+      width: min(72vw, calc(var(--android-viewport-height, 100vh) * 1.35)) !important;
+      max-height: calc(var(--android-viewport-height, 100vh) * .66) !important;
+    }
+    html.android-webview.android-landscape .login-loading-logo {
+      top: 3% !important;
+      width: min(26vw, calc(var(--android-viewport-height, 100vh) * .46)) !important;
+    }
+    html.android-webview.android-landscape .login-loading-progress {
+      bottom: 4% !important;
+      width: min(54vw, calc(var(--android-viewport-height, 100vh) * 1.08)) !important;
+      height: calc(20 * var(--ui-px)) !important;
+    }
     html.android-webview.android-landscape .pet-detail-overlay {
       align-items: center !important;
       padding: calc(8 * var(--ui-px)) !important;
@@ -2663,6 +3066,7 @@
     html.android-webview.android-landscape header .home-action-grid > button:nth-child(11) { grid-column: 5; grid-row: 2; }
     html.android-webview.android-landscape header .home-action-grid > button:nth-child(12) { grid-column: 6; grid-row: 2; }
     html.android-webview.android-landscape header .home-action-grid > button:nth-child(13) { grid-column: 7; grid-row: 2; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(14) { grid-column: 8; grid-row: 2; }
     html.android-webview.android-landscape header .home-action-grid > button.h-9:not(.home-settings-btn) {
       height: calc(34 * var(--ui-px)) !important;
       min-height: calc(34 * var(--ui-px)) !important;
@@ -2712,6 +3116,68 @@
       min-width: 0 !important;
       height: clamp(34px, 3.2vw, 48px) !important;
       margin-left: 0 !important;
+    }
+    html.android-webview.android-landscape body:has(.home-shell) {
+      width: 100vw !important;
+      height: var(--android-viewport-height, 100vh) !important;
+      max-height: var(--android-viewport-height, 100vh) !important;
+      overflow: hidden !important;
+    }
+    html.android-webview.android-landscape #app:has(.home-shell) {
+      width: 100vw !important;
+      height: var(--android-viewport-height, 100vh) !important;
+      max-height: var(--android-viewport-height, 100vh) !important;
+      overflow: hidden !important;
+    }
+    html.android-webview.android-landscape .home-shell {
+      position: fixed !important;
+      inset: 0 !important;
+      min-height: 0 !important;
+      width: 100vw !important;
+      height: var(--android-viewport-height, 100vh) !important;
+      padding: 0 !important;
+      align-items: stretch !important;
+      justify-content: center !important;
+      overflow: hidden !important;
+    }
+    html.android-webview.android-landscape header.home-hub-scene {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: var(--android-viewport-height, 100vh) !important;
+      max-width: 100vw !important;
+      max-height: var(--android-viewport-height, 100vh) !important;
+      min-height: 0 !important;
+      aspect-ratio: auto !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      background-size: 100% 100% !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+    }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-gift { --x: 1.2%; --y: 68.8%; --w: 6.5%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-dragonboat { --x: 8.5%; --y: 67.6%; --w: 7.3%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-rank { --x: 25.6%; --y: 71.8%; --w: 7.2%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-tunnel { --x: 33.8%; --y: 71.8%; --w: 7.6%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-study { --x: 42.2%; --y: 71.4%; --w: 7.2%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-badge { --x: 52.2%; --y: 73.0%; --w: 5.3%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-egg { --x: 59.2%; --y: 73.2%; --w: 5.3%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-warehouse { --x: 66.6%; --y: 72.8%; --w: 5.5%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-dex { --x: 73.5%; --y: 72.3%; --w: 5.8%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-bag { --x: 80.7%; --y: 72.0%; --w: 5.7%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-shop { --x: 87.0%; --y: 71.8%; --w: 11.5%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-challenge { --x: 91.8%; --y: 18.5%; --w: 7.4%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-weekly { --x: 91.6%; --y: 34%; --w: 7.0%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-gacha { --x: 91.6%; --y: 51.2%; --w: 7.0%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-status-value {
+      font-size: clamp(10px, min(1.05vw, 3.3vh), 15px);
+    }
+    html.android-webview.android-landscape header.home-hub-scene .home-status-badge-slot {
+      left: 79.6%;
+      top: 1%;
+      width: 16%;
+      height: 28%;
     }
     html.android-webview.android-landscape .qixing-gacha-layout {
       grid-template-columns: minmax(0, 1.05fr) minmax(calc(260 * var(--ui-px)), .95fr) !important;
@@ -4077,14 +4543,14 @@
       --battle-old-panel: clamp(calc(188 * var(--ui-px)), 21vw, calc(300 * var(--ui-px))) !important;
       --battle-old-wheel: var(--battle-old-panel) !important;
       --battle-old-hp: clamp(calc(320 * var(--ui-px)), 31vw, calc(438 * var(--ui-px))) !important;
-      --battle-fight-ui-skill-panel: url("./fight-ui/shapes/70.png");
-      --battle-fight-ui-menu-background: url("./fight-ui/sprites/DefineSprite_77_mmo.fight.ui.res.control.MenuBackground/1.png");
-      --battle-fight-ui-skill-btn: url("./fight-ui/sprites/DefineSprite_334_fightui_fla.SkillButtonBackground_31/1.png");
-      --battle-fight-ui-skill-row: url("./fight-ui/sprites/DefineSprite_306/1.png");
-      --battle-fight-ui-skill-row-hover: url("./fight-ui/sprites/DefineSprite_306/2.png");
-      --battle-fight-ui-hpbar-right: url("./fight-ui/sprites/DefineSprite_273_fightui_fla.HP_1v1_Background_70/1.png");
-      --battle-fight-ui-hp-fill: url("./fight-ui/sprites/DefineSprite_299/1.png");
-      --battle-fight-ui-avatar-frame: url("./fight-ui/sprites/DefineSprite_65/1.png");
+      --battle-fight-ui-skill-panel: url("./resource/fight-ui/shapes/70.png");
+      --battle-fight-ui-menu-background: url("./resource/fight-ui/sprites/DefineSprite_77_mmo.fight.ui.res.control.MenuBackground/1.png");
+      --battle-fight-ui-skill-btn: url("./resource/fight-ui/sprites/DefineSprite_334_fightui_fla.SkillButtonBackground_31/1.png");
+      --battle-fight-ui-skill-row: url("./resource/fight-ui/sprites/DefineSprite_306/1.png");
+      --battle-fight-ui-skill-row-hover: url("./resource/fight-ui/sprites/DefineSprite_306/2.png");
+      --battle-fight-ui-hpbar-right: url("./resource/fight-ui/sprites/DefineSprite_273_fightui_fla.HP_1v1_Background_70/1.png");
+      --battle-fight-ui-hp-fill: url("./resource/fight-ui/sprites/DefineSprite_299/1.png");
+      --battle-fight-ui-avatar-frame: url("./resource/fight-ui/sprites/DefineSprite_65/1.png");
     }
     .battle-mobile-root .battle-mobile-attacker::before {
       display: none !important;
@@ -5280,16 +5746,16 @@
       overflow: auto !important;
     }
     html.android-webview.android-landscape .battle-scene-overlay .battle-mobile-root .battle-mobile-attacker-main {
-      right: clamp(calc(155 * var(--ui-px)), 15.5vw, calc(285 * var(--ui-px))) !important;
-      top: calc(var(--battle-old-wheel) - calc(2 * var(--ui-px))) !important;
-      bottom: auto !important;
-      width: clamp(calc(250 * var(--ui-px)), 29vw, calc(470 * var(--ui-px))) !important;
-      z-index: 8 !important;
+      right: clamp(calc(180 * var(--ui-px)), 20vw, calc(330 * var(--ui-px))) !important;
+      top: auto !important;
+      bottom: clamp(calc(22 * var(--ui-px)), 3vh, calc(54 * var(--ui-px))) !important;
+      width: clamp(calc(320 * var(--ui-px)), 38vw, calc(620 * var(--ui-px))) !important;
+      z-index: 9 !important;
     }
     html.android-webview.android-landscape .battle-scene-overlay .battle-mobile-root .battle-mobile-attacker-visual {
       width: 100% !important;
-      height: clamp(calc(250 * var(--ui-px)), 43vh, calc(410 * var(--ui-px))) !important;
-      align-items: flex-start !important;
+      height: clamp(calc(320 * var(--ui-px)), 58vh, calc(520 * var(--ui-px))) !important;
+      align-items: flex-end !important;
       justify-content: center !important;
     }
     html.android-webview.android-landscape .battle-scene-overlay .battle-mobile-root .battle-mobile-skills {
@@ -5436,7 +5902,7 @@
     }
 
     html.android-webview.android-landscape .battle-scene-overlay .battle-mobile-root {
-      --battle-skill-panel-height: clamp(calc(310 * var(--ui-px)), 48.2625vh, calc(471 * var(--ui-px))) !important;
+      --battle-skill-panel-height: clamp(calc(264 * var(--ui-px)), 41.023vh, calc(400 * var(--ui-px))) !important;
     }
     html.android-webview.android-landscape .battle-scene-overlay .battle-mobile-root .battle-mobile-skills {
       max-height: var(--battle-skill-panel-height) !important;
@@ -5471,82 +5937,17 @@
     html.android-webview .battle-scene-overlay .battle-mobile-root .battle-stage-hover-zone .battle-stage-popover {
       opacity: 1 !important;
       transform: translate(0, 0) !important;
-    }
-    .game-resource-loader {
-      position: fixed;
-      inset: 0;
-      z-index: 99998;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background:
-        radial-gradient(circle at 30% 20%, rgba(14, 165, 233, .22), transparent 34%),
-        radial-gradient(circle at 76% 82%, rgba(34, 197, 94, .18), transparent 32%),
-        #020617;
-      color: #dff7ff;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    .game-resource-loader.is-hidden {
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .24s ease;
-    }
-    .game-resource-loader-card {
-      width: min(420px, calc(100vw - 32px));
-      border: 1px solid rgba(125, 211, 252, .32);
-      border-radius: 18px;
-      background: rgba(15, 23, 42, .82);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, .34);
-      padding: 22px 24px;
-    }
-    .game-resource-loader-title {
-      font-size: 22px;
-      font-weight: 950;
-      letter-spacing: 0;
-      color: #fff;
-    }
-    .game-resource-loader-text {
-      margin-top: 8px;
-      min-height: 20px;
-      font-size: 12px;
-      font-weight: 800;
-      color: rgba(207, 250, 254, .78);
-    }
-    .game-resource-loader-track {
-      margin-top: 16px;
-      height: 10px;
-      overflow: hidden;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, .96);
-      border: 1px solid rgba(125, 211, 252, .22);
-    }
-    .game-resource-loader-bar {
-      width: 0%;
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #22d3ee, #a3e635);
-      transition: width .18s ease;
-    }
-    .game-resource-loader-percent {
-      margin-top: 10px;
-      text-align: right;
-      font-size: 12px;
-      font-weight: 950;
-      color: #a7f3d0;
-    }
+    }
 
   </style>
 </head>
 <body class="text-slate-800 min-h-screen">
-<script src="./aola-star-crash.js?v=20260617_bootdone_diag"></script>
-<div id="game-resource-loader" class="game-resource-loader is-hidden" role="status" aria-live="polite">
-  <div class="game-resource-loader-card">
-    <div class="game-resource-loader-title">Aola Star Hub</div>
-    <div id="game-resource-loader-text" class="game-resource-loader-text">正在连接资源清单...</div>
-    <div class="game-resource-loader-track">
-      <div id="game-resource-loader-bar" class="game-resource-loader-bar"></div>
-    </div>
-    <div id="game-resource-loader-percent" class="game-resource-loader-percent">0%</div>
+<script src="./aola-star-crash.js?v=20260619_lazy_data_diag"></script>
+<div id="preboot-login-shell" class="preboot-login-page" aria-live="polite">
+  <div class="preboot-login-card">
+    <h1 class="preboot-login-title">Aola Star Hub</h1>
+    <p class="preboot-login-text">Loading login page...</p>
+    <div class="preboot-login-bar"></div>
   </div>
 </div>
 <div id="app" v-cloak>
@@ -5582,6 +5983,17 @@
       <div class="mt-5 rounded-2xl border border-cyan-300/20 bg-slate-950/35 p-3 text-xs font-bold text-cyan-100/75 leading-5">
         登录用户会保存到对应用户目录；导入本地存档时会自动绑定为当前登录用户。
       </div>
+    </div>
+  </div>
+
+  <div v-else-if="loginLoadingActive" class="login-loading-page" :style="{ '--login-loading-bg': `url(${loginLoadingBgSrc})` }">
+    <img :src="loginLoadingLogoSrc" class="login-loading-logo" alt="">
+    <div class="login-loading-panel">
+      <img :key="'login_loading_slide_' + loginLoadingSlideIndex" :src="loginLoadingSlideSrc" class="login-loading-slide" alt="">
+      <img :src="loginLoadingFrameSrc" class="login-loading-frame" alt="">
+    </div>
+    <div class="login-loading-progress" :style="{ '--login-loading-progress': Math.round(loginLoadingProgress) + '%' }">
+      <img :src="loginLoadingProgressSrc" alt="">
     </div>
   </div>
 
@@ -5625,18 +6037,6 @@
           <div class="home-status-value">{{ warehouseCount }}</div>
         </div>
         <div class="home-status-card">
-          <div class="home-status-label">亚比背包</div>
-          <div class="home-status-value">{{ bagCount }}/6</div>
-        </div>
-        <div class="home-status-card">
-          <div class="home-status-label">孵化中蛋</div>
-          <div class="home-status-value">{{ state.eggs.length }}</div>
-        </div>
-        <div class="home-status-card">
-          <div class="home-status-label">H币</div>
-          <div class="home-status-value">{{ state.hCoins || 0 }}</div>
-        </div>
-        <div class="home-status-card">
           <div class="home-status-label">最大战斗力</div>
           <div class="home-status-value">{{ maxBagBattlePower }}</div>
         </div>
@@ -5652,19 +6052,20 @@
       </div>
     </div>
     <div class="home-action-grid">
-      <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./ui/背景/赠礼.png" alt=""></button>
-      <button @click="openLeaderboardPanel" class="home-action-btn home-action-rank" title="排行榜" aria-label="排行榜"><img src="./ui/背景/排行榜.png" alt=""></button>
-      <button @click="openTimeTunnelPanel" class="home-action-btn home-action-tunnel" title="时空隧道" aria-label="时空隧道"><img src="./ui/背景/时空隧道.png" alt=""></button>
-      <button @click="openStudyPanel" class="home-action-btn home-action-study" title="学习力战场" aria-label="学习力战场"><img src="./ui/背景/学习力战场.png" alt=""></button>
-      <button @click="openBadgePanel" class="home-action-btn home-action-badge" title="徽章" aria-label="徽章"><img src="./ui/背景/徽章.png" alt=""></button>
-      <button @click="openEggHatchPanel" class="home-action-btn home-action-egg" title="亚比蛋孵化" aria-label="亚比蛋孵化"><img src="./ui/背景/亚比蛋孵化.png" alt=""></button>
-      <button @click="openWarehousePanel" class="home-action-btn home-action-warehouse" title="亚比仓库" aria-label="亚比仓库"><img src="./ui/背景/亚比仓库.png" alt=""></button>
-      <button @click="openDexPanel" class="home-action-btn home-action-dex" title="亚比图鉴" aria-label="亚比图鉴"><img src="./ui/背景/亚比图鉴.png" alt=""></button>
-      <button @click="openBagPanel" class="home-action-btn home-action-bag" title="亚比背包" aria-label="亚比背包"><img src="./ui/背景/亚比背包.png" alt=""></button>
-      <button @click="openShopPanel" class="home-action-btn home-action-shop" title="亚比商店" aria-label="亚比商店"><img src="./ui/背景/道具商城.png" alt=""></button>
-      <button @click="openChallengeRoadPanel" class="home-action-btn home-action-challenge" title="挑战之路" aria-label="挑战之路"><img src="./ui/背景/boss挑战.png" alt=""></button>
-      <button @click="openWeeklyBossPanel" class="home-action-btn home-action-weekly" title="每周BOSS" aria-label="每周BOSS"><img src="./ui/背景/每周boss.png" alt=""></button>
-      <button @click="openQixingGachaPanel" class="home-action-btn home-action-gacha" title="启星转盘" aria-label="启星转盘"><img src="./ui/背景/转盘.png" alt=""></button>
+      <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./resource/ui/背景/赠礼.png" alt=""></button>
+      <button @click.stop.prevent="openDragonBoatShopPanel" class="home-action-btn home-action-dragonboat" title="端午特惠商店" aria-label="端午特惠商店"><img src="./resource/ui/端午商店/端午商店图标.png" alt=""></button>
+      <button @click.stop.prevent="openLeaderboardPanel" class="home-action-btn home-action-rank" title="排行榜" aria-label="排行榜"><img src="./resource/ui/背景/排行榜.png" alt=""></button>
+      <button @click="openTimeTunnelPanel" class="home-action-btn home-action-tunnel" title="时空隧道" aria-label="时空隧道"><img src="./resource/ui/背景/时空隧道.png" alt=""></button>
+      <button @click="openStudyPanel" class="home-action-btn home-action-study" title="学习力战场" aria-label="学习力战场"><img src="./resource/ui/背景/学习力战场.png" alt=""></button>
+      <button @click="openBadgePanel" class="home-action-btn home-action-badge" title="徽章" aria-label="徽章"><img src="./resource/ui/背景/徽章.png" alt=""></button>
+      <button @click="openEggHatchPanel" class="home-action-btn home-action-egg" title="亚比蛋孵化" aria-label="亚比蛋孵化"><img src="./resource/ui/背景/亚比蛋孵化.png" alt=""></button>
+      <button @click="openWarehousePanel" class="home-action-btn home-action-warehouse" title="亚比仓库" aria-label="亚比仓库"><img src="./resource/ui/背景/亚比仓库.png" alt=""></button>
+      <button @click="openDexPanel" class="home-action-btn home-action-dex" title="亚比图鉴" aria-label="亚比图鉴"><img src="./resource/ui/背景/亚比图鉴.png" alt=""></button>
+      <button @click="openBagPanel" class="home-action-btn home-action-bag" title="亚比背包" aria-label="亚比背包"><img src="./resource/ui/背景/亚比背包.png" alt=""></button>
+      <button @click="openShopPanel" class="home-action-btn home-action-shop" title="亚比商店" aria-label="亚比商店"><img src="./resource/ui/背景/道具商城.png" alt=""></button>
+      <button @click="openChallengeRoadPanel" class="home-action-btn home-action-challenge" title="挑战之路" aria-label="挑战之路"><img src="./resource/ui/背景/boss挑战.png" alt=""></button>
+      <button @click="openWeeklyBossPanel" class="home-action-btn home-action-weekly" title="每周BOSS" aria-label="每周BOSS"><img src="./resource/ui/背景/每周boss.png" alt=""></button>
+      <button @click="openQixingGachaPanel" class="home-action-btn home-action-gacha" title="启星转盘" aria-label="启星转盘"><img src="./resource/ui/背景/转盘.png" alt=""></button>
       <button
         @click="showGlobalSettingsPanel = true"
         class="home-settings-btn"
@@ -5804,6 +6205,20 @@
                     <button v-if="selectedQixingSealEquippedOnSelectedPet" @click="unequipPetItem(petId(selectedPet))" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
                     <button @click="upgradeQixingSeal" :disabled="!selectedQixingSeal || selectedQixingSealLevel>=4" class="h-8 px-3 rounded-lg bg-amber-400 text-slate-950 font-black disabled:opacity-50">升级</button>
                     <button @click="decomposeQixingSeal" :disabled="!canDecomposeSelectedQixingSeal" class="h-8 px-3 rounded-lg bg-slate-100 text-slate-700 font-black disabled:opacity-50">分解</button>
+                  </div>
+                  <div class="pet-gear-card mt-3 rounded-xl p-3 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <img :src="dragonBoatBladeImageSrc" @error="withFallback" class="w-14 h-14 rounded-lg object-cover border border-sky-200" alt="">
+                      <div class="min-w-0">
+                        <div class="text-sm font-black text-sky-950">装备</div>
+                        <div class="mt-1 text-xs font-black text-slate-700">{{ selectedPetEquippedGear ? selectedPetEquippedGear.name : '未装备' }}</div>
+                        <div class="mt-1 text-[11px] font-bold text-sky-700">端午竞技战刃：攻击+100、特攻+100</div>
+                      </div>
+                    </div>
+                    <div class="flex flex-wrap justify-end gap-2">
+                      <button v-if="!selectedPetEquippedGear" @click="equipDragonBoatBladeToSelectedPet(petId(selectedPet))" :disabled="getItemCount('dragon_boat_battle_blade') <= 0" class="h-8 px-3 rounded-lg bg-sky-600 text-white font-black disabled:opacity-50">装备</button>
+                      <button v-else @click="unequipSelectedPetGear(petId(selectedPet))" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
+                    </div>
                   </div>
                 </div>
               </template>
@@ -6050,7 +6465,7 @@
     </div>
   </div>
 
-  <div v-if="showLeaderboardPanel" class="fixed inset-0 z-[96] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" @click="closeLeaderboardPanel">
+  <div v-if="showLeaderboardPanel" class="fixed inset-0 z-[130] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" @click="closeLeaderboardPanel">
     <div class="w-full max-w-3xl rounded-[24px] border border-white/15 bg-slate-950/95 p-4 shadow-2xl app-modal text-white" @click.stop>
       <div class="flex items-center justify-between gap-3 mb-3">
         <div>
@@ -6096,6 +6511,39 @@
         <button @click="changeLeaderboardPage(-1)" :disabled="leaderboardLoading || leaderboardPage <= 1" class="h-9 px-4 rounded-xl bg-white/10 text-sm font-black text-white disabled:opacity-40">上一页</button>
         <div class="text-xs font-black text-slate-300">第 {{ leaderboardPage }} / {{ leaderboardTotalPages }} 页</div>
         <button @click="changeLeaderboardPage(1)" :disabled="leaderboardLoading || leaderboardPage >= leaderboardTotalPages" class="h-9 px-4 rounded-xl bg-white/10 text-sm font-black text-white disabled:opacity-40">下一页</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showDragonBoatShopPanel" class="fixed inset-0 z-[131] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeDragonBoatShopPanel">
+    <div class="dragon-boat-shop-modal rounded-[24px] border border-amber-200/70 shadow-2xl app-modal text-amber-950" :style="{ '--dragon-boat-shop-bg': `url(${dragonBoatShopBgSrc})` }" @click.stop>
+      <div class="dragon-boat-shop-header">
+        <img :src="dragonBoatShopTitleSrc" class="dragon-boat-shop-title" alt="端午商店">
+        <div class="dragon-boat-shop-zongzi-badge">
+          <img src="./resource/ui/端午商店/粽子_.png" class="dragon-boat-shop-zongzi-icon" alt="粽子">
+          <span class="dragon-boat-shop-zongzi-count">{{ dragonBoatZongziCount }}</span>
+        </div>
+        <button @click="closeDragonBoatShopPanel" class="w-10 h-10 rounded-full bg-white/70 hover:bg-white flex items-center justify-center">
+          <img :src="dragonBoatShopCloseSrc" class="w-7 h-7 object-contain" alt="关闭">
+        </button>
+      </div>
+      <div class="dragon-boat-shop-grid">
+        <div v-for="item in dragonBoatShopRows" :key="'dragon_boat_shop_'+item.id" class="dragon-boat-shop-card">
+          <div class="dragon-boat-shop-item-slot">
+            <img v-if="item.image" :src="item.image" @error="withFallback" class="dragon-boat-shop-item-img" alt="">
+            <span v-else class="dragon-boat-shop-item-name">{{ item.name.slice(0, 2) }}</span>
+            <div class="dragon-boat-shop-item-name">{{ item.countLabel }}</div>
+          </div>
+          <div class="dragon-boat-shop-limit-count">{{ item.remaining }}</div>
+          <div class="dragon-boat-shop-cost">
+            <img src="./resource/ui/端午商店/粽子_.png" alt="">
+            <span>{{ item.cost }}</span>
+          </div>
+          <button @click="buyDragonBoatShopItem(item.id)" :disabled="!item.canBuy" class="dragon-boat-exchange-btn disabled:opacity-45 disabled:grayscale" :title="item.remaining > 0 ? '兑换' : '已售罄'">
+            <img v-if="item.remaining > 0" :src="dragonBoatShopExchangeSrc" alt="兑换">
+            <span v-else>已售罄</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -6184,6 +6632,7 @@
       <div class="flex items-center justify-between gap-3 mb-3">
         <div class="flex items-center gap-3 min-w-0">
           <h3 class="text-lg font-black text-sky-950">亚比背包（6格）</h3>
+          <div class="panel-stat-chip">当前 {{ bagCount }}/6</div>
           <div class="battle-power-chip px-3 py-1 text-sm font-black">
             <span class="battle-power-icon"></span>
             <span>{{ bagBattlePower }}</span>
@@ -6228,6 +6677,11 @@
               <div class="min-w-0">
                 <div class="text-xl font-black text-sky-950 truncate">{{ petDisplayName(selectedPet) }}</div>
                 <div class="text-xs font-bold text-sky-700">#{{ selectedPet.dexId }} · Lv.{{ selectedPet.level }}</div>
+              </div>
+              <div class="shrink-0 flex flex-col items-end gap-1">
+                <div v-if="!(selectedPet && selectedPet.hideStudyTalentTabs)" class="talent-grade-chip rounded-xl bg-white px-2 py-1 shadow-sm" :title="`天赋：${selectedPetTalentGrade}`">
+                  <img :src="selectedPetTalentImageSrc" :alt="selectedPetTalentGrade" @error="withFallback" class="talent-grade-img">
+                </div>
               </div>
             </div>
             <div class="flex flex-wrap gap-2 mb-3">
@@ -6302,6 +6756,20 @@
                     <button @click="upgradeQixingSeal" :disabled="!selectedQixingSeal || selectedQixingSealLevel>=4" class="h-8 px-3 rounded-lg bg-amber-400 text-slate-950 font-black disabled:opacity-50">升级</button>
                     <button @click="decomposeQixingSeal" :disabled="!canDecomposeSelectedQixingSeal" class="h-8 px-3 rounded-lg bg-slate-100 text-slate-700 font-black disabled:opacity-50">分解</button>
                   </div>
+                  <div class="pet-gear-card mt-3 rounded-xl p-3 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <img :src="dragonBoatBladeImageSrc" @error="withFallback" class="w-14 h-14 rounded-lg object-cover border border-sky-200" alt="">
+                      <div class="min-w-0">
+                        <div class="text-sm font-black text-sky-950">装备</div>
+                        <div class="mt-1 text-xs font-black text-slate-700">{{ selectedPetEquippedGear ? selectedPetEquippedGear.name : '未装备' }}</div>
+                        <div class="mt-1 text-[11px] font-bold text-sky-700">端午竞技战刃：攻击+100、特攻+100</div>
+                      </div>
+                    </div>
+                    <div class="flex flex-wrap justify-end gap-2">
+                      <button v-if="!selectedPetEquippedGear" @click="equipDragonBoatBladeToSelectedPet(petId(selectedPet))" :disabled="getItemCount('dragon_boat_battle_blade') <= 0" class="h-8 px-3 rounded-lg bg-sky-600 text-white font-black disabled:opacity-50">装备</button>
+                      <button v-else @click="unequipSelectedPetGear(petId(selectedPet))" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
+                    </div>
+                  </div>
                 </div>
               </template>
               <template v-else-if="selectedInfoTab === 'talent' || selectedInfoTab === 'study' || selectedInfoTab === 'race'">
@@ -6356,6 +6824,7 @@
           <h3 class="text-lg font-black text-slate-900">亚比蛋孵化</h3>
           <div class="text-xs font-bold text-slate-500">孵化完成后可直接领取亚比。</div>
         </div>
+        <div class="panel-stat-chip ml-auto">孵化中 {{ state.eggs.length }}</div>
         <button @click="closeEggHatchPanel" class="h-8 w-8 rounded-full bg-slate-100 text-slate-600 font-black">×</button>
       </div>
       <div v-if="state.eggs.length === 0" class="min-h-[220px] rounded-2xl border border-dashed border-amber-200 bg-amber-50/70 flex items-center justify-center text-sm font-black text-amber-700">
@@ -6549,47 +7018,52 @@
     </div>
   </div>
 
-  <div v-if="selectedPet && replaceSkillCtx && String(replaceSkillCtx.petId)===String(petId(selectedPet))" class="fixed inset-0 z-[95] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4" @click="cancelReplaceSkill">
-    <div class="w-full max-w-md rounded-2xl border border-amber-200 bg-white p-4 shadow-2xl app-modal" @click.stop>
-      <div v-if="replaceSkillCtx.directReplaceMode" class="text-sm font-black text-amber-700 mb-2">选择当前等级可学习技能进行替换</div>
-      <div v-else class="text-sm font-black text-amber-700 mb-2">技能栏已满，请选择要替换的技能</div>
-      <div v-if="replaceSkillCtx.directReplaceMode" class="space-y-2 max-h-[52vh] overflow-y-auto pr-1 scrollbar">
-        <button
-          v-for="sk in availableSkillsForSelectedPet"
-          :key="'direct_pick_'+safeSkillName(sk)"
-          @click="confirmDirectReplaceSkill(safeSkillName(sk))"
-          :disabled="hasEquippedSkill(selectedPet, safeSkillName(sk))"
-          class="w-full rounded-lg border text-left px-3 py-2"
-          :class="hasEquippedSkill(selectedPet, safeSkillName(sk)) ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-70' : 'bg-indigo-50 border-indigo-200'"
-        >
-          <div class="flex items-center gap-1">
-            <span class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(sk)).label, 15)" :title="skillTypeMeta(safeSkillType(sk)).label"></span>
-            <div class="text-xs font-black text-indigo-900 truncate">{{ safeSkillName(sk) }}</div>
-          </div>
-          <div class="mt-1 text-[11px] font-bold" :class="hasEquippedSkill(selectedPet, safeSkillName(sk)) ? 'text-slate-400' : 'text-indigo-700'">Lv{{ sk.level }} | {{ skillTypeMeta(safeSkillType(sk)).label }} | {{ skillAttackTypeLabel(sk) }} | 威力 {{ safeSkillPower(sk) }} | 命中 {{ safeSkillAccuracy(sk) }} | PP {{ safeSkillPP(sk) }}{{ hasEquippedSkill(selectedPet, safeSkillName(sk)) ? ' | 已装备' : '' }}</div>
-          <div class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">{{ skillDisplayDesc(sk) }}</div>
-        </button>
+  <teleport to="body">
+    <div v-if="selectedPet && replaceSkillCtx && String(replaceSkillCtx.petId)===String(petId(selectedPet))" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="z-index:9999" @click="cancelReplaceSkill">
+      <div class="w-full max-w-md rounded-2xl border border-amber-200 bg-white p-4 shadow-2xl app-modal relative" style="z-index:10000" @click.stop>
+        <div v-if="replaceSkillCtx.directReplaceMode" class="text-sm font-black text-amber-700 mb-2">选择当前等级可学习技能进行替换</div>
+        <div v-else class="text-sm font-black text-amber-700 mb-2">技能栏已满，请选择要替换的技能</div>
+        <div v-if="replaceSkillCtx.directReplaceMode" class="space-y-2 max-h-[52vh] overflow-y-auto pr-1 scrollbar">
+          <button
+            v-for="sk in availableSkillsForSelectedPet"
+            :key="'direct_pick_'+safeSkillName(sk)"
+            @click="confirmDirectReplaceSkill(safeSkillName(sk))"
+            :disabled="hasEquippedSkill(selectedPet, safeSkillName(sk))"
+            class="w-full rounded-lg border text-left px-3 py-2"
+            :class="hasEquippedSkill(selectedPet, safeSkillName(sk)) ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-70' : 'bg-indigo-50 border-indigo-200'"
+          >
+            <div class="flex items-center gap-1">
+              <span class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(sk)).label, 15)" :title="skillTypeMeta(safeSkillType(sk)).label"></span>
+              <div class="text-xs font-black text-indigo-900 truncate">{{ safeSkillName(sk) }}</div>
+            </div>
+            <div class="mt-1 text-[11px] font-bold" :class="hasEquippedSkill(selectedPet, safeSkillName(sk)) ? 'text-slate-400' : 'text-indigo-700'">Lv{{ sk.level }} | {{ skillTypeMeta(safeSkillType(sk)).label }} | {{ skillAttackTypeLabel(sk) }} | 威力 {{ safeSkillPower(sk) }} | 命中 {{ safeSkillAccuracy(sk) }} | PP {{ safeSkillPP(sk) }}{{ hasEquippedSkill(selectedPet, safeSkillName(sk)) ? ' | 已装备' : '' }}</div>
+            <div class="mt-1 text-[11px] font-bold text-slate-600 leading-4 break-words">{{ skillDisplayDesc(sk) }}</div>
+          </button>
+        </div>
+        <div v-else class="grid grid-cols-2 gap-2">
+          <button
+            v-for="old in selectedPetEquippedSkills"
+            :key="'repl_modal_'+old"
+            @click="confirmReplaceSkill(old)"
+            class="h-9 rounded-lg bg-amber-50 border border-amber-300 text-[11px] font-black text-amber-800 truncate px-2"
+          >
+            {{ old }}
+          </button>
+        </div>
+        <button @click="cancelReplaceSkill" class="mt-3 w-full h-9 rounded-lg bg-slate-100 text-slate-700 text-xs font-black">取消替换</button>
       </div>
-      <div v-else class="grid grid-cols-2 gap-2">
-        <button
-          v-for="old in selectedPetEquippedSkills"
-          :key="'repl_modal_'+old"
-          @click="confirmReplaceSkill(old)"
-          class="h-9 rounded-lg bg-amber-50 border border-amber-300 text-[11px] font-black text-amber-800 truncate px-2"
-        >
-          {{ old }}
-        </button>
-      </div>
-      <button @click="cancelReplaceSkill" class="mt-3 w-full h-9 rounded-lg bg-slate-100 text-slate-700 text-xs font-black">取消替换</button>
     </div>
-  </div>
+  </teleport>
 
   <div v-show="showShopPanel" style="display:none" class="fixed inset-0 z-[70] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeShopPanel">
     <div class="w-full max-w-4xl rounded-3xl border border-white bg-white p-4 shadow-2xl app-modal" @click.stop>
       <div class="flex items-center justify-between mb-3">
-        <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
-          <button @click="shopTab='shop'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='shop' ? 'bg-emerald-600 text-white' : 'text-slate-600'">亚比商店</button>
-          <button @click="shopTab='eggs'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='eggs' ? 'bg-violet-600 text-white' : 'text-slate-600'">亚比蛋购买</button>
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+            <button @click="shopTab='shop'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='shop' ? 'bg-emerald-600 text-white' : 'text-slate-600'">亚比商店</button>
+            <button @click="shopTab='eggs'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='eggs' ? 'bg-violet-600 text-white' : 'text-slate-600'">亚比蛋购买</button>
+          </div>
+          <div class="panel-stat-chip">H币 {{ state.hCoins || 0 }}</div>
         </div>
         <button @click="closeShopPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
@@ -7506,7 +7980,7 @@
               @click.stop="triggerBattleSkinTransform"
               :disabled="!canTriggerBattleSkinTransform()"
               class="battle-skin-transform-btn"
-            ><img src="./ui/灵皮启耀.png" alt="灵皮启耀"></button>
+            ><img src="./resource/ui/灵皮启耀.png" alt="灵皮启耀"></button>
           </div>
         </div>
       </div>
@@ -7752,293 +8226,7 @@
   </div>
 </div>
 
-<script>
-(function () {
-  var assetVersion = "20260617_login_captcha_once";
-  var manifest = [
-    { src: "./aola-dex-1-100.js", label: "图鉴索引", critical: true },
-    { src: "./aola-species-data.js", label: "亚比资料", critical: true },
-    { src: "./aola-skill-data.js", label: "技能资料", critical: true },
-    { src: "./aola-skill-effects-hardcoded.js", label: "技能效果", critical: true },
-    { src: "./aola-evolution-chains.js", label: "进化链", critical: true },
-    { src: "./vendor/vue.global.prod.js", label: "界面引擎", critical: true },
-    { src: "./aola-star-app.js", label: "游戏启动器", critical: true, entry: true }
-  ];
-  var imageManifest = [
-    { src: "./ui/Aola-Star-Hub-bg.png", label: "登录背景", critical: true },
-    { src: "./ui/背景/hub-main.png", label: "主场景背景", critical: true },
-    { src: "./ui/背景/赠礼.png", label: "赠礼入口" },
-    { src: "./ui/背景/排行榜.png", label: "排行榜入口" },
-    { src: "./ui/背景/时空隧道.png", label: "时空隧道入口" },
-    { src: "./ui/背景/学习力战场.png", label: "学习力战场入口" },
-    { src: "./ui/背景/徽章.png", label: "徽章入口" },
-    { src: "./ui/背景/亚比蛋孵化.png", label: "亚比蛋孵化入口" },
-    { src: "./ui/背景/亚比仓库.png", label: "亚比仓库入口" },
-    { src: "./ui/背景/亚比图鉴.png", label: "亚比图鉴入口" },
-    { src: "./ui/背景/亚比背包.png", label: "亚比背包入口" },
-    { src: "./ui/背景/道具商城.png", label: "道具商城入口" },
-    { src: "./ui/背景/boss挑战.png", label: "BOSS挑战入口" },
-    { src: "./ui/背景/每周boss.png", label: "每周BOSS入口" },
-    { src: "./ui/背景/转盘.png", label: "启星转盘入口" },
-    { src: "./ui/aola-battle-background-default.png", label: "战斗背景" },
-    { src: "./ui/star_domain.png", label: "星神之域背景" },
-    { src: "./boss-level/1-first.png", label: "挑战之路第一梯度" },
-    { src: "./boss-level/2-second.png", label: "挑战之路第二梯度" },
-    { src: "./boss-level/3-third.png", label: "挑战之路第三梯度" },
-    { src: "./boss-level/4-forth.png", label: "挑战之路第四梯度" },
-    { src: "./boss-level/5-fifth.png", label: "挑战之路第五梯度" },
-    { src: "./小图标/已战胜（1）.png", label: "已战胜标记" },
-    { src: "./小图标/已战胜（2）.png", label: "已战胜小标记" },
-    { src: "./pet-img/pet1_1_1_cropped.png", label: "亚比兜底图" },
-    { src: "./pet-img/pet249_1_1_cropped.png", label: "背包常用亚比" },
-    { src: "./pet-img/pet296_1_1_cropped.png", label: "背包常用亚比" }
-  ];
-  var loaded = [];
-  var failed = [];
-  window.AOLA_ASSET_URL_MAP = window.AOLA_ASSET_URL_MAP || {};
-  window.__aolaScriptDiag = { loaded: loaded, failed: failed, bootDone: false };
-  var loader = document.getElementById("game-resource-loader");
-  var loaderText = document.getElementById("game-resource-loader-text");
-  var loaderBar = document.getElementById("game-resource-loader-bar");
-  var loaderPercent = document.getElementById("game-resource-loader-percent");
-  var isDesktopShell = !!(window.aolaDesktop && window.aolaDesktop.useLocalResources);
-  if (loader) loader.classList.remove("is-hidden");
-  function show(msg) {
-    var tip = document.createElement("div");
-    tip.style.position = "fixed";
-    tip.style.left = "12px";
-    tip.style.right = "12px";
-    tip.style.bottom = "12px";
-    tip.style.zIndex = "99999";
-    tip.style.background = "rgba(127,29,29,.95)";
-    tip.style.color = "#fff";
-    tip.style.padding = "10px 12px";
-    tip.style.borderRadius = "10px";
-    tip.style.font = "12px/1.5 Consolas, monospace";
-    tip.style.whiteSpace = "pre-wrap";
-    tip.textContent = msg;
-    document.body.appendChild(tip);
-  }
-  function assetMapKey(src) {
-    var raw = String(src || "");
-    var pathOnly = raw.split(/[?#]/)[0];
-    return pathOnly.replace(/^\.\/+/, "").replace(/^\/+/, "");
-  }
-  function resolveAssetSrc(src) {
-    var raw = String(src || "");
-    var map = window.AOLA_ASSET_URL_MAP || {};
-    var splitIndex = raw.search(/[?#]/);
-    var pathname = splitIndex >= 0 ? raw.slice(0, splitIndex) : raw;
-    var suffix = splitIndex >= 0 ? raw.slice(splitIndex) : "";
-    var mapped = map[raw] || map[pathname] || map[assetMapKey(pathname)];
-    if (mapped && !/^(https?:)?\/\//i.test(mapped)) return raw;
-    return mapped ? mapped + suffix : raw;
-  }
-  function absUrl(rel) {
-    var resolved = resolveAssetSrc(rel);
-    if (/^https?:\/\//i.test(resolved) && resolved !== rel) return resolved;
-    try {
-      var url = new URL(resolved, window.location.href);
-      url.searchParams.set("v", assetVersion);
-      return url.href;
-    } catch (_) {
-      return resolved + (resolved.indexOf("?") >= 0 ? "&" : "?") + "v=" + assetVersion;
-    }
-  }
-  function applyAssetUrlMapToDom() {
-    var nodes = Array.prototype.slice.call(document.querySelectorAll("[src], [href]"));
-    nodes.forEach(function (node) {
-      ["src", "href"].forEach(function (attr) {
-        if (!node.hasAttribute || !node.hasAttribute(attr)) return;
-        var raw = node.getAttribute(attr);
-        var resolved = resolveAssetSrc(raw);
-        if (resolved && resolved !== raw) node.setAttribute(attr, resolved);
-      });
-    });
-    Array.prototype.slice.call(document.querySelectorAll("style")).forEach(function (node) {
-      var css = String(node.textContent || "");
-      var nextCss = css.replace(/url\((['"]?)([^'")]+)\1\)/g, function (match, quote, rawUrl) {
-        if (/^(data:|blob:|https?:\/\/)/i.test(rawUrl)) return match;
-        var resolved = resolveAssetSrc(rawUrl);
-        return resolved && resolved !== rawUrl ? "url(\"" + resolved + "\")" : match;
-      });
-      if (nextCss !== css) node.textContent = nextCss;
-    });
-  }
-  function loadAssetUrlMap() {
-    if (isDesktopShell) {
-      window.AOLA_ASSET_URL_MAP = {};
-      applyAssetUrlMapToDom();
-      return Promise.resolve();
-    }
-    if (!window.fetch || !window.Promise) return Promise.resolve();
-    return fetch(absUrl("./asset-url-map.json"), { cache: "no-store" })
-      .then(function (res) { return res.ok ? res.json() : null; })
-      .then(function (data) {
-        if (data && typeof data === "object" && !Array.isArray(data)) {
-          window.AOLA_ASSET_URL_MAP = data;
-          applyAssetUrlMapToDom();
-        }
-      })
-      .catch(function () {
-        window.AOLA_ASSET_URL_MAP = window.AOLA_ASSET_URL_MAP || {};
-      });
-  }
-  function apiBaseUrl() {
-    var protocol = String(window.location && window.location.protocol || "");
-    if (protocol === "http:" || protocol === "https:") return "";
-    return "http://127.0.0.1:3030";
-  }
-  function loadDynamicImageManifest() {
-    return Promise.resolve();
-  }
-  function preloadLeaderboards() {}
-  function apiBootstrapUrl(pathname) {
-    return apiBaseUrl() + pathname;
-  }
-  function fetchJson(pathname, options) {
-    return fetch(apiBootstrapUrl(pathname), Object.assign({
-      cache: "no-store",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }, options || {})).then(function (res) {
-      return res.json().catch(function () {
-        return {};
-      }).then(function (data) {
-        if (!res.ok) {
-          var message = data && data.message ? data.message : ("HTTP " + res.status);
-          throw new Error(message);
-        }
-        return data;
-      });
-    });
-  }
-  function waitForResourceBootstrap() {
-    if (isDesktopShell && window.aolaDesktop && typeof window.aolaDesktop.onResourceBootstrapProgress === "function") {
-      return new Promise(function (resolve, reject) {
-        var settled = false;
-        function finish(fn, value, off) {
-          if (settled) return;
-          settled = true;
-          if (typeof off === "function") off();
-          fn(value);
-        }
-        function handleStatus(status, off) {
-          var percent = Math.max(0, Math.min(100, Number(status && status.percent) || 0));
-          updateProgress(percent, 100, status && status.message ? status.message : "正在准备本机资源...");
-          if (status && status.ready) {
-            finish(resolve, status, off);
-          } else if (status && status.error) {
-            finish(reject, new Error(status.error), off);
-          }
-        }
-        var off = window.aolaDesktop.onResourceBootstrapProgress(function (status) {
-          handleStatus(status, off);
-        });
-        if (typeof window.aolaDesktop.getResourceBootstrapStatus === "function") {
-          window.aolaDesktop.getResourceBootstrapStatus()
-            .then(function (status) { handleStatus(status, off); })
-            .catch(function () {});
-        }
-      });
-    }
-    return Promise.resolve({ ready: true, enabled: false });
-  }
-  function updateProgress(done, total, label) {
-    var pct = total > 0 ? Math.round(done / total * 100) : 0;
-    if (loaderText) loaderText.textContent = label || "Loading...";
-    if (loaderBar) loaderBar.style.width = pct + "%";
-    if (loaderPercent) loaderPercent.textContent = pct + "%";
-  }
-  function hideLoader() {
-    if (!loader) return;
-    loader.classList.add("is-hidden");
-    setTimeout(function () {
-      if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
-    }, 280);
-  }
-  function loadScriptElement(item) {
-    return new Promise(function (resolve) {
-      var s = document.createElement("script");
-      s.src = absUrl(item.src);
-      s.onload = function () { loaded.push(item.src); resolve({ ok: true, item: item }); };
-      s.onerror = function () {
-        failed.push(item.src);
-        resolve({ ok: false, item: item });
-      };
-      document.body.appendChild(s);
-    });
-  }
-  function mountCheck() {
-    window.__aolaScriptDiag = { loaded: loaded.slice(), failed: failed.slice(), bootDone: true };
-    try {
-      window.dispatchEvent(new CustomEvent("aola:bootdone"));
-    } catch (_) {}
-    hideLoader();
-    setTimeout(function () {
-      var app = document.getElementById("app");
-      var raw = app && (app.textContent || "").indexOf("{{") >= 0;
-      if (raw) {
-        show("[MOUNT CHECK] Vue app did not mount.\nloaded=" + loaded.join(" | ") + "\nfailed=" + failed.join(" | "));
-      }
-    }, 800);
-  }
-  function startParallelLoader() {
-    var done = 0;
-    var total = manifest.length;
-    updateProgress(0, total, "Loading...");
-    function next(i) {
-      if (i >= manifest.length) {
-        updateProgress(done, total, "Ready");
-        mountCheck();
-        return;
-      }
-      var item = manifest[i];
-      updateProgress(done, total, "Loading " + item.label);
-      loadScriptElement(item).then(function () {
-        done += 1;
-        updateProgress(done, total, "Loaded " + item.label);
-        if (item.critical && failed.indexOf(item.src) >= 0) {
-          show("[RESOURCE LOAD ERROR]\nfailed=" + failed.join(" | "));
-          return;
-        }
-        next(i + 1);
-      });
-    }
-    next(0);
-  }
-  function bootParallelLoader() {
-    waitForResourceBootstrap()
-      .then(loadAssetUrlMap)
-      .then(startParallelLoader)
-      .catch(function (err) {
-        updateProgress(0, 100, err && err.message ? err.message : "资源准备失败");
-        show("[RESOURCE BOOTSTRAP ERROR]\n" + (err && err.message ? err.message : String(err || "Unknown error")));
-      });
-  }
-  function startFallbackLoader() {
-    var done = 0;
-    var total = manifest.length;
-    function next(i) {
-      if (i >= manifest.length) {
-        mountCheck();
-        return;
-      }
-      var item = manifest[i];
-      updateProgress(done, total, "Loading " + item.label);
-      loadScriptElement(item).then(function () {
-        done += 1;
-        updateProgress(done, total, "Loaded " + item.label);
-        next(i + 1);
-      });
-    }
-    next(0);
-  }
-  if (window.fetch && window.Promise) bootParallelLoader();
-  else startFallbackLoader();
-})();
-</script>
+<script src="./aola-dex-1-100.js?v=20260617_fix_weekly_and_action_fx"></script>
+<script src="./aola-star-app.js?v=20260622_skill_json_prelogin"></script>
 </body>
 </html>

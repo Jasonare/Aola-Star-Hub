@@ -8,15 +8,6 @@ contextBridge.exposeInMainWorld("aolaDesktop", {
     ipcRenderer.on("aola:auto-save-before-close", listener);
     return () => ipcRenderer.removeListener("aola:auto-save-before-close", listener);
   },
-  onResourceBootstrapProgress(handler) {
-    if (typeof handler !== "function") return () => {};
-    const listener = (_event, payload) => handler(payload || {});
-    ipcRenderer.on("aola:resource-bootstrap-progress", listener);
-    return () => ipcRenderer.removeListener("aola:resource-bootstrap-progress", listener);
-  },
-  getResourceBootstrapStatus() {
-    return ipcRenderer.invoke("aola:resource-bootstrap-status");
-  },
   autoSaveDone(windowId) {
     ipcRenderer.send(`aola:auto-save-done:${windowId}`);
   }
