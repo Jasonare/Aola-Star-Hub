@@ -2039,26 +2039,30 @@
     }
     .login-loading-panel {
       position: relative;
-      width: min(86vw, 960px);
+      width: min(74vw, 820px);
       aspect-ratio: 1257 / 713;
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
       filter: drop-shadow(0 28px 48px rgba(3,7,18,.48));
     }
     .login-loading-frame,
     .login-loading-slide {
       position: absolute;
-      inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: contain;
     }
     .login-loading-slide {
-      padding: 5.5% 6.5%;
+      inset: 3.2% 4.5% 3.2% 1%;
+      width: auto;
+      height: auto;
+      object-fit: cover;
       z-index: 1;
     }
     .login-loading-frame {
+      inset: 0;
+      object-fit: contain;
       z-index: 2;
       pointer-events: none;
     }
@@ -2860,7 +2864,7 @@
       font-size: calc(12 * var(--ui-px)) !important;
     }
     html.android-webview.android-landscape .login-loading-panel {
-      width: min(72vw, calc(var(--android-viewport-height, 100vh) * 1.35)) !important;
+      width: min(64vw, calc(var(--android-viewport-height, 100vh) * 1.18)) !important;
       max-height: calc(var(--android-viewport-height, 100vh) * .66) !important;
     }
     html.android-webview.android-landscape .login-loading-logo {
@@ -5937,7 +5941,8 @@
     html.android-webview .battle-scene-overlay .battle-mobile-root .battle-stage-hover-zone .battle-stage-popover {
       opacity: 1 !important;
       transform: translate(0, 0) !important;
-    }
+    }
+
 
   </style>
 </head>

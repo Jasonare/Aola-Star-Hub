@@ -45,6 +45,8 @@ const assetSrcWithQuery = (src, key, value) => {
   const safeValue = encodeURIComponent(String(value || Date.now()));
   return `${raw}${raw.includes("?") ? "&" : "?"}${safeKey}=${safeValue}`;
 };
+const BADGE_IMAGE_MANIFEST_URL = "./resource-v7/badges/manifest.json";
+const BADGE_IMAGE_MANIFEST_VERSION = "20260623_badge_manifest_v1";
 
 const cleanupOrphanTemplateOverlays = () => {
   if (!document || !document.body) return;
@@ -9971,6 +9973,7 @@ createApp({
     const rewardFlyToastQueue = [];
     let rewardFlyToastRunning = false;
     const evolvingIds = ref([]);
+    const badgeImageManifest = ref({ byId: {}, byName: {} });
     const selectedSkillName = ref("");
     const selectedInfoTab = ref("skills");
     const selectedQixingSealId = ref("");
@@ -10015,6 +10018,52 @@ createApp({
     const autoBattleCountOptions = [10, 20, 50];
     const releaseNotes = RELEASE_NOTES_V040;
     const gameplayGuideLines = GAMEPLAY_GUIDE_LINES;
+    const normalizeBadgeImageManifestSrc = (raw) => {
+      const text = String(raw || "").trim();
+      if (!text) return "";
+      if (/^(?:https?:|data:|blob:|\.\/|\/)/i.test(text)) return encodeAssetSrc(text);
+      return encodeAssetSrc(`./resource-v7/badges/${text.replace(/^[\\/]+/, "")}`);
+    };
+    const normalizeBadgeImageManifest = (raw) => {
+      const out = { byId: {}, byName: {} };
+      const data = raw && typeof raw === "object" ? raw : {};
+      const applyEntries = (source, targetKey) => {
+        const rows = source && typeof source === "object" ? source : {};
+        Object.keys(rows).forEach((key) => {
+          const normalizedKey = normalize(key);
+          const resolvedSrc = normalizeBadgeImageManifestSrc(rows[key]);
+          if (!normalizedKey || !resolvedSrc) return;
+          out[targetKey][normalizedKey] = resolvedSrc;
+        });
+      };
+      applyEntries(data.byId, "byId");
+      applyEntries(data.byName, "byName");
+      return out;
+    };
+    const loadBadgeImageManifest = async () => {
+      try {
+        const url = assetSrcWithQuery(BADGE_IMAGE_MANIFEST_URL, "v", BADGE_IMAGE_MANIFEST_VERSION);
+        let data = null;
+        if (isAndroidWebView) {
+          data = JSON.parse(await loadLocalAssetText(url));
+        } else {
+          const res = await fetch(url, { cache: "no-store" });
+          if (!res.ok) throw new Error(`badge manifest load failed: ${res.status}`);
+          data = await res.json();
+        }
+        badgeImageManifest.value = normalizeBadgeImageManifest(data);
+      } catch (_) {
+        badgeImageManifest.value = { byId: {}, byName: {} };
+      }
+    };
+    const resolveBadgeImageSrc = (badgeId, badgeName, fallbackSrc = "") => {
+      const manifest = badgeImageManifest.value && typeof badgeImageManifest.value === "object" ? badgeImageManifest.value : {};
+      const byId = manifest.byId && typeof manifest.byId === "object" ? manifest.byId : {};
+      const byName = manifest.byName && typeof manifest.byName === "object" ? manifest.byName : {};
+      const normalizedId = normalize(badgeId);
+      const normalizedName = normalize(badgeName);
+      return byId[normalizedId] || byName[normalizedName] || String(fallbackSrc || "");
+    };
     const initialOnlyItems = [
       {
         id: "level_40_fruit",
@@ -10578,7 +10627,10 @@ createApp({
           description: "当周BOSS挑战荣耀奖励，拥有炫彩黑金特效"
         });
       });
-      return rows;
+      return rows.map((badge) => ({
+        ...badge,
+        imageSrc: resolveBadgeImageSrc(badge && badge.id, badge && badge.name, badge && badge.imageSrc)
+      }));
     });
     const imageBadges = computed(() => ownedBadges.value.filter((badge) => badge && badge.imageSrc));
     const textBadges = computed(() => ownedBadges.value.filter((badge) => badge && !badge.imageSrc));
@@ -12355,6 +12407,7 @@ createApp({
       hidePrebootLoginShell();
       timer = setInterval(() => { nowTs.value = Date.now(); }, 1000);
       updateViewportSize();
+      loadBadgeImageManifest();
       loadPetActionLayout();
       checkAuthSession();
       window.__aolaAndroidReceiveSaveJson = async (text) => {
