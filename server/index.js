@@ -79,6 +79,10 @@ const TEST_USER_ID = "test-account-all-pets-1-1960";
 const LEGACY_TEST_USER_IDS = ["test-account-all-pets-1-1928", "test-account-all-pets-1-796"];
 const TEST_USERNAME = "test";
 const TEST_PASSWORD = "test123456";
+const LEADERBOARD_MAX_OPEN_DEX_ID = 2020;
+const LEADERBOARD_MAX_HCOINS = 100000000;
+const LEADERBOARD_METRICS = new Set(["battlePower", "activatedDexCount", "hCoins", "timeTunnelMaxClearedFloor"]);
+const LEADERBOARD_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 const TEST_MAX_DEX_ID = 1960;
 const HATCH_MS = 5 * 60 * 1000;
 const SHOP_REDEEM_CODE_ALHUB666 = "ALHUB666";
@@ -519,12 +523,43 @@ const calcPetBattlePowerForSave = (pet, speciesByDex) => {
   return Math.floor(Math.max(0, total) * 3.6);
 };
 
+const extractGameSaveState = (payload) => {
+  let cur = payload;
+  for (let i = 0; i < 4; i += 1) {
+    if (!cur || typeof cur !== "object" || Array.isArray(cur)) return {};
+    if (cur.save && typeof cur.save === "object" && !Array.isArray(cur.save)) {
+      cur = cur.save.save && typeof cur.save.save === "object" && !Array.isArray(cur.save.save)
+        ? cur.save.save
+        : cur.save;
+      continue;
+    }
+    if (cur.state && typeof cur.state === "object" && !Array.isArray(cur.state)) { cur = cur.state; continue; }
+    if (cur.data && typeof cur.data === "object" && !Array.isArray(cur.data)) { cur = cur.data; continue; }
+    if (cur.payload && typeof cur.payload === "object" && !Array.isArray(cur.payload)) { cur = cur.payload; continue; }
+    return cur;
+  }
+  return cur && typeof cur === "object" && !Array.isArray(cur) ? cur : {};
+};
+
+const readLeaderboardTimeTunnelFloor = (save) => {
+  const direct = [
+    save && save.timeTunnelMaxClearedFloor,
+    save && save.timeTunnelHighestClearedFloor,
+    save && save.timeTunnelClearedFloor,
+    save && save.timeTunnelMaxFloor
+  ].map((value) => safeNonNegInt(value, 0));
+  const claimedFloors = Array.isArray(save && save.timeTunnelRewardClaimedFloors)
+    ? save.timeTunnelRewardClaimedFloors.map((floor) => safeNonNegInt(floor, 0))
+    : [];
+  return Math.max(0, ...direct, ...claimedFloors);
+};
+
 const buildLeaderboardRows = () => {
   const db = usersDb();
   const speciesByDex = loadWindowDataScript("aola-species-data.js", "AOLA_SPECIES_DATA_BY_DEX") || {};
   return db.users.map((user) => {
     const payload = readJsonFile(userSaveFile(user.id), null);
-    const save = payload && payload.save && typeof payload.save === "object" && !Array.isArray(payload.save) ? payload.save : {};
+    const save = extractGameSaveState(payload);
     const activePets = Array.isArray(save.activePets) ? save.activePets : [];
     const petPowerRows = activePets
       .map((pet) => calcPetBattlePowerForSave(pet, speciesByDex))
@@ -541,9 +576,29 @@ const buildLeaderboardRows = () => {
       maxBagBattlePower,
       activatedDexCount: new Set(Array.isArray(save.activatedDexIds) ? save.activatedDexIds.map((id) => Number(id) || 0).filter(Boolean) : []).size,
       hCoins: Math.max(0, Math.floor(Number(save.hCoins) || 0)),
+      timeTunnelMaxClearedFloor: readLeaderboardTimeTunnelFloor(save),
       savedAt: payload && payload.savedAt ? payload.savedAt : ""
     };
   });
+};
+
+const isLegalLeaderboardRow = (row) => (
+  Math.max(0, Math.floor(Number(row && row.activatedDexCount) || 0)) <= LEADERBOARD_MAX_OPEN_DEX_ID &&
+  Math.max(0, Math.floor(Number(row && row.hCoins) || 0)) <= LEADERBOARD_MAX_HCOINS
+);
+
+const buildQualifiedLeaderboardRows = () => buildLeaderboardRows().filter(isLegalLeaderboardRow);
+
+const buildRankedLeaderboardRows = (metric) => buildQualifiedLeaderboardRows()
+  .sort((a, b) => {
+    const delta = Math.max(0, Number(b[metric]) || 0) - Math.max(0, Number(a[metric]) || 0);
+    return delta || String(a.username).localeCompare(String(b.username), "zh-Hans-CN");
+  })
+  .map((row, idx) => ({ ...row, rank: idx + 1 }));
+
+const normalizeLeaderboardPageSize = (value) => {
+  const pageSize = Math.max(1, Math.floor(Number(value) || LEADERBOARD_PAGE_SIZE_OPTIONS[0]));
+  return LEADERBOARD_PAGE_SIZE_OPTIONS.includes(pageSize) ? pageSize : LEADERBOARD_PAGE_SIZE_OPTIONS[0];
 };
 
 const serveStatic = (req, res) => {
@@ -642,27 +697,49 @@ const handleApi = async (req, res) => {
       const user = currentUser(req);
       return sendJson(res, 200, { ok: true, user: user ? publicUser(user) : null });
     }
+    if (req.method === "GET" && new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname === "/api/leaderboard/my-rank") {
+      const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+      const requestedMetric = url.searchParams.get("metric");
+      const metric = LEADERBOARD_METRICS.has(requestedMetric)
+        ? requestedMetric
+        : "battlePower";
+      const pageSize = normalizeLeaderboardPageSize(url.searchParams.get("pageSize"));
+      const user = currentUser(req);
+      const viewerUserId = safeUserName(url.searchParams.get("viewerUserId"));
+      const viewerUsername = safeUserName(url.searchParams.get("viewerUsername"));
+      const rows = buildRankedLeaderboardRows(metric);
+      const myRank = rows.find((row) => (
+        (user && row.userId === user.id) ||
+        (viewerUserId && row.userId === viewerUserId) ||
+        (viewerUsername && String(row.username || "").toLowerCase() === viewerUsername.toLowerCase())
+      )) || null;
+      return sendJson(res, 200, {
+        ok: true,
+        metric,
+        pageSize,
+        myRank,
+        myPage: myRank ? Math.max(1, Math.ceil(myRank.rank / pageSize)) : null
+      });
+    }
     if (req.method === "GET" && new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname === "/api/leaderboard") {
       const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
-      const metric = ["battlePower", "activatedDexCount", "hCoins"].includes(url.searchParams.get("metric"))
-        ? url.searchParams.get("metric")
+      const requestedMetric = url.searchParams.get("metric");
+      const metric = LEADERBOARD_METRICS.has(requestedMetric)
+        ? requestedMetric
         : "battlePower";
-      const pageSize = 10;
+      const pageSize = normalizeLeaderboardPageSize(url.searchParams.get("pageSize"));
       const page = Math.max(1, Math.floor(Number(url.searchParams.get("page")) || 1));
-      const rows = buildLeaderboardRows()
-        .sort((a, b) => {
-          const delta = Math.max(0, Number(b[metric]) || 0) - Math.max(0, Number(a[metric]) || 0);
-          return delta || String(a.username).localeCompare(String(b.username), "zh-Hans-CN");
-        })
-        .map((row, idx) => ({ ...row, rank: idx + 1 }));
+      const rows = buildRankedLeaderboardRows(metric);
       const total = rows.length;
       const totalPages = Math.max(1, Math.ceil(total / pageSize));
       const safePage = Math.min(page, totalPages);
       return sendJson(res, 200, {
         ok: true,
+        filtered: true,
         metric,
         page: safePage,
         pageSize,
+        pageSizeOptions: LEADERBOARD_PAGE_SIZE_OPTIONS,
         total,
         totalPages,
         rows: rows.slice((safePage - 1) * pageSize, safePage * pageSize)

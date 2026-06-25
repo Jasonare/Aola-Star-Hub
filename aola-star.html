@@ -5939,6 +5939,42 @@
       transform: translate(0, 0) !important;
     }
 
+    .battle-scene-overlay .battle-mobile-root .battle-target-status-outside {
+      order: 3 !important;
+      position: relative !important;
+      left: auto !important;
+      top: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      transform: none !important;
+      display: flex !important;
+      flex-wrap: wrap !important;
+      align-items: center !important;
+      align-content: flex-start !important;
+      justify-content: center !important;
+      gap: calc(3 * var(--ui-px)) !important;
+      width: min(100%, calc(260 * var(--ui-px))) !important;
+      max-width: min(100%, calc(260 * var(--ui-px))) !important;
+      min-height: calc(20 * var(--ui-px)) !important;
+      margin: calc(5 * var(--ui-px)) auto 0 !important;
+      padding: 0 !important;
+      z-index: 120 !important;
+      pointer-events: auto !important;
+    }
+    .battle-scene-overlay .battle-mobile-root .battle-target-skill-float {
+      left: 50% !important;
+      top: 0 !important;
+      transform: translate(-50%, -100%) !important;
+      z-index: 260 !important;
+      max-width: min(calc(240 * var(--ui-px)), 46vw) !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      pointer-events: none !important;
+    }
+    .pet-detail-overlay {
+      z-index: 900 !important;
+    }
+
   </style>
 </head>
 <body class="text-slate-800 min-h-screen">
@@ -6470,12 +6506,12 @@
       <div class="flex items-center justify-between gap-3 mb-3">
         <div>
           <div class="text-lg font-black text-white">排行榜</div>
-          <div class="text-xs font-bold text-slate-400">每页显示 10 名玩家</div>
+          <div class="text-xs font-bold text-slate-400">已过滤异常图鉴和 H 币数据</div>
         </div>
         <button @click="closeLeaderboardPanel" class="h-8 w-8 rounded-full bg-white/10 text-white text-sm font-black">×</button>
       </div>
 
-      <div class="mb-3 grid grid-cols-3 gap-2">
+      <div class="mb-3 grid grid-cols-2 gap-2 md:grid-cols-4">
         <button
           v-for="tab in leaderboardTabs"
           :key="'leaderboard_tab_'+tab.key"
@@ -6483,6 +6519,28 @@
           class="h-10 rounded-xl border text-sm font-black transition"
           :class="leaderboardMetric === tab.key ? 'border-amber-300 bg-amber-400 text-slate-950' : 'border-white/10 bg-white/5 text-slate-200 hover:bg-white/10'"
         >{{ tab.label }}</button>
+      </div>
+
+      <div class="mb-3 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div class="flex flex-wrap items-center gap-2">
+          <select
+            :value="leaderboardPageSize"
+            @change="setLeaderboardPageSize($event.target.value)"
+            :disabled="leaderboardLoading"
+            class="h-9 rounded-xl border border-white/10 bg-slate-900 px-3 text-xs font-black text-white outline-none disabled:opacity-50"
+          >
+            <option v-for="size in leaderboardPageSizeOptions" :key="'leaderboard_page_size_'+size" :value="size">每页 {{ size }}</option>
+          </select>
+          <button @click="refreshLeaderboard" :disabled="leaderboardLoading" class="h-9 rounded-xl bg-white/10 px-3 text-xs font-black text-white disabled:opacity-40">刷新</button>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="text-xs font-black text-slate-300">{{ leaderboardMyRankText }}</div>
+          <button
+            @click="jumpToMyLeaderboardRank"
+            :disabled="leaderboardMyRankLoading || !authUser"
+            class="h-9 rounded-xl bg-cyan-400 px-3 text-xs font-black text-slate-950 disabled:opacity-40"
+          >查看我的排名</button>
+        </div>
       </div>
 
       <div class="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
@@ -6497,7 +6555,7 @@
         <div v-else>
           <div
             v-for="row in leaderboardRows"
-            :key="'leaderboard_row_'+leaderboardMetric+'_'+row.rank+'_'+row.username"
+            :key="'leaderboard_row_'+leaderboardMetric+'_'+row.rank+'_'+(row.userId || row.username)"
             class="grid grid-cols-[70px_minmax(0,1fr)_120px] gap-2 border-b border-white/5 px-3 py-2 text-sm font-bold last:border-b-0"
           >
             <div class="font-black text-amber-200">#{{ row.rank }}</div>
@@ -6507,9 +6565,22 @@
         </div>
       </div>
 
-      <div class="mt-3 flex items-center justify-between gap-3">
+      <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
         <button @click="changeLeaderboardPage(-1)" :disabled="leaderboardLoading || leaderboardPage <= 1" class="h-9 px-4 rounded-xl bg-white/10 text-sm font-black text-white disabled:opacity-40">上一页</button>
-        <div class="text-xs font-black text-slate-300">第 {{ leaderboardPage }} / {{ leaderboardTotalPages }} 页</div>
+        <div class="flex items-center gap-2 text-xs font-black text-slate-300">
+          <span>第</span>
+          <input
+            v-model.number="leaderboardPageInput"
+            type="number"
+            min="1"
+            :max="leaderboardTotalPages"
+            @keyup.enter="setLeaderboardPage(leaderboardPageInput)"
+            :disabled="leaderboardLoading"
+            class="h-9 w-16 rounded-xl border border-white/10 bg-slate-900 px-3 text-center text-xs font-black text-white outline-none disabled:opacity-50"
+          >
+          <span>/ {{ leaderboardTotalPages }} 页</span>
+          <button @click="setLeaderboardPage(leaderboardPageInput)" :disabled="leaderboardLoading" class="h-9 rounded-xl bg-white/10 px-3 text-xs font-black text-white disabled:opacity-40">跳转</button>
+        </div>
         <button @click="changeLeaderboardPage(1)" :disabled="leaderboardLoading || leaderboardPage >= leaderboardTotalPages" class="h-9 px-4 rounded-xl bg-white/10 text-sm font-black text-white disabled:opacity-40">下一页</button>
       </div>
     </div>
@@ -6914,7 +6985,7 @@
     </div>
   </div>
 
-  <div v-if="showPetDetailModal && selectedPet" class="fixed inset-0 z-[240] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4 pet-detail-overlay" @click="closePetDetailModal">
+  <div v-if="showPetDetailModal && selectedPet" class="fixed inset-0 z-[900] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4 pet-detail-overlay" @click="closePetDetailModal">
     <div class="w-full max-w-5xl rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl pet-detail-modal app-modal" @click.stop>
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center gap-2">
@@ -7830,10 +7901,6 @@
                 <div class="battle-target-hp-fill transition-all duration-300" :style="{ width: hpPercent(battleScene.uiTargetHp, battleScene.uiTargetMaxHp) + '%' }"></div>
               </div>
             </div>
-            <div class="battle-target-status">
-              <span v-for="b in battleTargetStatusBadges" :key="'tar_st_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
-              <span v-for="e in battleTargetTimedEffects" :key="'tar_fx_' + e.key" :title="`${e.desc}｜${e.durationLabel || ('剩余' + e.turns + '回合')}`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
-            </div>
           </div>
           <div class="mt-2 overflow-x-auto">
           <div class="battle-mobile-stat-side battle-stage-line inline-flex items-center gap-1 text-[10px] font-black whitespace-nowrap">
@@ -7847,7 +7914,11 @@
             <span class="px-1.5 py-0.5 rounded" :class="((battleScene.targetState && battleScene.targetState.critStage) || 0) > 0 ? 'stat-pos' : (((battleScene.targetState && battleScene.targetState.critStage) || 0) < 0 ? 'stat-neg' : 'stat-zero')">暴击{{ (battleScene.targetState && battleScene.targetState.critStage) || 0 }}</span>
           </div>
         </div>
+        </div>
       </div>
+      <div class="battle-target-status battle-target-status-outside">
+        <span v-for="b in battleTargetStatusBadges" :key="'tar_st_out_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
+        <span v-for="e in battleTargetTimedEffects" :key="'tar_fx_out_' + e.key" :title="`${e.desc}｜${e.durationLabel || ('剩余' + e.turns + '回合')}`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
       </div>
         <div class="mt-2 flex items-end justify-end gap-1 battle-mobile-target-sprite">
           <div
@@ -7864,7 +7935,7 @@
                 :class="row.value > 0 ? 'stage-up' : (row.value < 0 ? 'stage-down' : 'stage-zero')"
               >{{ row.text }}</span>
             </div>
-            <div v-if="battleScene.fxTargetSkillText" class="absolute top-[18%] left-[calc(50%+72px)] text-sm font-black whitespace-nowrap battle-skill-float">{{ battleScene.fxTargetSkillText }}</div>
+            <div v-if="battleScene.fxTargetSkillText" class="absolute top-[18%] left-[calc(50%+72px)] text-sm font-black whitespace-nowrap battle-skill-float battle-target-skill-float">{{ battleScene.fxTargetSkillText }}</div>
             <div :class="['battle-pet-visual-anchor', battleScene.fxTargetDefeated ? 'battle-defeated-exit' : '']">
               <img :key="'battle_target_pet_' + battleScene.targetImage" :src="battleScene.targetImage" :style="battlePetImageStyle('target')" @error="(event) => withBattlePetFallback(event, 'target')" class="battle-pet-img battle-target-pet-img drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
               <img v-if="battleVisualReady && battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'target'" :key="'skill_fx_target_' + battleScene.skillEffectFx.seq" :src="battleScene.skillEffectFx.src" class="battle-skill-effect-gif" :style="battleSkillEffectStyle('target')" alt="">
@@ -8227,6 +8298,6 @@
 </div>
 
 <script src="./aola-dex-1-100.js?v=20260617_fix_weekly_and_action_fx"></script>
-<script src="./aola-star-app.js?v=20260622_skill_json_prelogin"></script>
+<script src="./aola-star-app.js?v=20260625_leaderboard_split_rank_api"></script>
 </body>
 </html>

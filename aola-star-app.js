@@ -9427,6 +9427,18 @@ createApp({
       selectedAttackerId: "",
       selectedPetId: ""
     });
+    const readSavedTimeTunnelMaxClearedFloor = (loaded) => {
+      const direct = [
+        loaded && loaded.timeTunnelMaxClearedFloor,
+        loaded && loaded.timeTunnelHighestClearedFloor,
+        loaded && loaded.timeTunnelClearedFloor,
+        loaded && loaded.timeTunnelMaxFloor
+      ].map((value) => Math.max(0, Math.floor(Number(value) || 0)));
+      const claimedFloors = Array.isArray(loaded && loaded.timeTunnelRewardClaimedFloors)
+        ? loaded.timeTunnelRewardClaimedFloors.map((n) => Math.max(0, Math.floor(Number(n) || 0)))
+        : [];
+      return clamp(Math.max(0, ...direct, ...claimedFloors), 0, TIME_TUNNEL_OPEN_MAX_FLOOR);
+    };
 
     const sanitizeState = (loaded) => {
       if (!loaded || typeof loaded !== "object") return createInitialState();
@@ -9737,7 +9749,7 @@ createApp({
         selectedAttackerId,
         selectedPetId: activePets.some((p) => p.id === loaded.selectedPetId) ? loaded.selectedPetId : ((activePets[0] && activePets[0].id) || ""),
         targetLevel: clamp(Number(loaded.targetLevel) || 10, 1, 100),
-        timeTunnelMaxClearedFloor: clamp(Math.floor(Number(loaded.timeTunnelMaxClearedFloor) || 0), 0, TIME_TUNNEL_OPEN_MAX_FLOOR),
+        timeTunnelMaxClearedFloor: readSavedTimeTunnelMaxClearedFloor(loaded),
         timeTunnelRewardClaimedFloors: Array.isArray(loaded.timeTunnelRewardClaimedFloors)
           ? Array.from(new Set(loaded.timeTunnelRewardClaimedFloors.map((n) => Math.floor(Number(n) || 0)).filter((n) => n > 0 && n <= TIME_TUNNEL_OPEN_MAX_FLOOR && n % TIME_TUNNEL_REWARD_INTERVAL === 0))).sort((a, b) => a - b)
           : [],
@@ -9986,15 +9998,27 @@ createApp({
     const showDragonBoatShopPanel = ref(false);
     const leaderboardMetric = ref("battlePower");
     const leaderboardPage = ref(1);
+    const leaderboardPageInput = ref(1);
+    const leaderboardPageSize = ref(10);
     const leaderboardRows = ref([]);
     const leaderboardTotalPages = ref(1);
+    const leaderboardMyRank = ref(null);
+    const leaderboardMyPage = ref(null);
+    const leaderboardMyRankLoading = ref(false);
     const leaderboardLoading = ref(false);
     const leaderboardError = ref("");
+    const leaderboardPageSizeOptions = [10, 20, 50, 100];
     const leaderboardTabs = [
       { key: "battlePower", label: "战斗力" },
       { key: "activatedDexCount", label: "激活图鉴" },
-      { key: "hCoins", label: "H币" }
+      { key: "hCoins", label: "H币" },
+      { key: "timeTunnelMaxClearedFloor", label: "时空隧道" }
     ];
+    const leaderboardMaxHCoins = 100000000;
+    const isLegalLeaderboardRow = (row) => (
+      Math.max(0, Math.floor(Number(row && row.activatedDexCount) || 0)) <= MAX_OPEN_CHALLENGE_DEX_ID &&
+      Math.max(0, Math.floor(Number(row && row.hCoins) || 0)) <= leaderboardMaxHCoins
+    );
     const shopTab = ref("shop");
     const battleActionTab = ref("skills");
     const showPetDetailModal = ref(false);
@@ -11303,13 +11327,55 @@ createApp({
       const tab = leaderboardTabs.find((x) => x.key === leaderboardMetric.value);
       return tab ? tab.label : "战斗力";
     });
+    const leaderboardMyRankText = computed(() => {
+      if (!authUser.value) return "登录后可查看自己的当前排名";
+      if (leaderboardMyRankLoading.value) return "正在查询我的排名...";
+      if (!leaderboardMyRank.value || !leaderboardMyRank.value.rank) return "当前账号暂未进入此排行";
+      return `我的当前排名：#${leaderboardMyRank.value.rank}`;
+    });
+    const isCurrentLeaderboardUser = (row) => {
+      const user = authUser.value;
+      if (!row || !user) return false;
+      const rowUserId = normalize(row.userId || row.id);
+      const authUserId = normalize(user.id);
+      if (rowUserId && authUserId && rowUserId === authUserId) return true;
+      return normalize(row.username) && normalize(row.username) === normalize(user.username);
+    };
+    const normalizeLeaderboardRows = (data, options = {}) => {
+      const page = Math.max(1, Math.floor(Number((options && options.page) || (data && data.page)) || 1));
+      const pageSize = leaderboardPageSizeOptions.includes(Number((options && options.pageSize) || (data && data.pageSize)))
+        ? Number((options && options.pageSize) || (data && data.pageSize))
+        : leaderboardPageSize.value;
+      const startRank = (page - 1) * pageSize;
+      return (Array.isArray(data && data.rows) ? data.rows : [])
+        .filter(isLegalLeaderboardRow)
+        .map((row, idx) => ({ ...row, rank: startRank + idx + 1 }));
+    };
     const applyLeaderboardData = (data, fallbackMetric = "battlePower", fallbackPage = 1) => {
       if (!data || typeof data !== "object") return false;
-      leaderboardMetric.value = data.metric || fallbackMetric;
+      const requestedMetric = leaderboardTabs.some((x) => x.key === fallbackMetric) ? fallbackMetric : "battlePower";
+      leaderboardMetric.value = requestedMetric;
       leaderboardPage.value = Math.max(1, Math.floor(Number(data.page) || fallbackPage));
+      leaderboardPageInput.value = leaderboardPage.value;
+      leaderboardPageSize.value = leaderboardPageSizeOptions.includes(Number(data.pageSize)) ? Number(data.pageSize) : leaderboardPageSize.value;
       leaderboardTotalPages.value = Math.max(1, Math.floor(Number(data.totalPages) || 1));
-      leaderboardRows.value = Array.isArray(data.rows) ? data.rows : [];
+      const rows = normalizeLeaderboardRows(data, { page: leaderboardPage.value, pageSize: leaderboardPageSize.value });
+      const currentRow = rows.find(isCurrentLeaderboardUser) || null;
+      if (currentRow) {
+        leaderboardMyRank.value = currentRow;
+        leaderboardMyPage.value = leaderboardPage.value;
+      }
+      leaderboardRows.value = rows;
       return true;
+    };
+    const buildLeaderboardQuery = (metric, page, pageSize) => {
+      return `/api/leaderboard?metric=${encodeURIComponent(metric)}&page=${page}&pageSize=${pageSize}`;
+    };
+    const buildLeaderboardMyRankQuery = (metric, pageSize) => {
+      const viewerQuery = authUser.value
+        ? `&viewerUserId=${encodeURIComponent(authUser.value.id || "")}&viewerUsername=${encodeURIComponent(authUser.value.username || "")}`
+        : "";
+      return `/api/leaderboard/my-rank?metric=${encodeURIComponent(metric)}&pageSize=${pageSize}${viewerQuery}`;
     };
     const consumePreloadedLeaderboard = (metric) => {
       const bucket = (typeof window !== "undefined" && window.__aolaPreloadedLeaderboards && typeof window.__aolaPreloadedLeaderboards === "object")
@@ -11323,12 +11389,15 @@ createApp({
       leaderboardError.value = "";
       try {
         const page = clamp(Math.floor(Number(leaderboardPage.value) || 1), 1, 999999);
+        const pageSize = leaderboardPageSizeOptions.includes(Number(leaderboardPageSize.value)) ? Number(leaderboardPageSize.value) : 10;
         const metric = leaderboardTabs.some((x) => x.key === leaderboardMetric.value) ? leaderboardMetric.value : "battlePower";
-        const data = await apiJson(`/api/leaderboard?metric=${encodeURIComponent(metric)}&page=${page}`);
+        const data = await apiJson(buildLeaderboardQuery(metric, page, pageSize));
         applyLeaderboardData(data, metric, page);
+        if (authUser.value) fetchLeaderboardMyRank({ silent: true, refreshSave: false });
       } catch (err) {
         leaderboardRows.value = [];
         leaderboardTotalPages.value = 1;
+        leaderboardPageInput.value = 1;
         leaderboardError.value = err && err.message ? err.message : "排行榜加载失败。";
       } finally {
         leaderboardLoading.value = false;
@@ -16630,7 +16699,11 @@ const applyBossChainFinalBuff = (scene) => {
         if (scene.mode === "timeTunnel") {
           const floor = Math.max(1, Math.floor(Number(scene.timeTunnelMeta && scene.timeTunnelMeta.floor) || 1));
           hCoinGain = floor * 300;
-          state.value.timeTunnelMaxClearedFloor = Math.max(timeTunnelMaxClearedFloor.value, floor);
+          const nextTimeTunnelMaxClearedFloor = Math.max(timeTunnelMaxClearedFloor.value, floor);
+          state.value.timeTunnelMaxClearedFloor = nextTimeTunnelMaxClearedFloor;
+          state.value.timeTunnelHighestClearedFloor = nextTimeTunnelMaxClearedFloor;
+          state.value.timeTunnelClearedFloor = nextTimeTunnelMaxClearedFloor;
+          state.value.timeTunnelMaxFloor = nextTimeTunnelMaxClearedFloor;
           unlockText = `时空隧道第${floor}层挑战成功，通往下一层的门已开启。`;
           pushBattleLog(scene, unlockText);
           grantZongziReward(scene, 4, `通过时空隧道第${floor}层`);
@@ -16818,6 +16891,9 @@ const applyBossChainFinalBuff = (scene) => {
       }
       if (scene.mode === "normal" && scene.guardianMeta && scene.guardianMeta.dexChallenge) {
         grantZongziReward(scene, 1, `${target.name}图鉴挑战${win ? "完成" : "结束"}`);
+      }
+      if (win && scene.mode === "timeTunnel") {
+        autoSaveCurrentProgress({ notify: false });
       }
       scene.ended = true;
       scene.expGain = expGain;
@@ -17270,6 +17346,7 @@ const applyBossChainFinalBuff = (scene) => {
     const openLeaderboardPanel = () => {
       showLeaderboardPanel.value = true;
       leaderboardPage.value = 1;
+      leaderboardPageInput.value = 1;
       consumePreloadedLeaderboard(leaderboardMetric.value);
       fetchLeaderboard();
     };
@@ -17286,6 +17363,9 @@ const applyBossChainFinalBuff = (scene) => {
       if (!leaderboardTabs.some((x) => x.key === key)) return;
       leaderboardMetric.value = key;
       leaderboardPage.value = 1;
+      leaderboardPageInput.value = 1;
+      leaderboardMyRank.value = null;
+      leaderboardMyPage.value = null;
       consumePreloadedLeaderboard(key);
       fetchLeaderboard();
     };
@@ -17293,14 +17373,66 @@ const applyBossChainFinalBuff = (scene) => {
       const next = clamp((Math.floor(Number(leaderboardPage.value) || 1) + Math.floor(Number(delta) || 0)), 1, Math.max(1, leaderboardTotalPages.value));
       if (next === leaderboardPage.value) return;
       leaderboardPage.value = next;
+      leaderboardPageInput.value = next;
       fetchLeaderboard();
+    };
+    const setLeaderboardPage = (page) => {
+      const next = clamp(Math.floor(Number(page) || 1), 1, Math.max(1, leaderboardTotalPages.value));
+      leaderboardPageInput.value = next;
+      if (next === leaderboardPage.value) return;
+      leaderboardPage.value = next;
+      fetchLeaderboard();
+    };
+    const setLeaderboardPageSize = (pageSize) => {
+      const next = leaderboardPageSizeOptions.includes(Number(pageSize)) ? Number(pageSize) : 10;
+      if (next === leaderboardPageSize.value && leaderboardPage.value === 1) return;
+      leaderboardPageSize.value = next;
+      leaderboardPage.value = 1;
+      leaderboardPageInput.value = 1;
+      leaderboardMyRank.value = null;
+      leaderboardMyPage.value = null;
+      fetchLeaderboard();
+    };
+    const jumpToMyLeaderboardRank = () => {
+      const page = Math.max(0, Math.floor(Number(leaderboardMyPage.value) || 0));
+      if (!page) {
+        fetchLeaderboardMyRank({ jump: true });
+        return;
+      }
+      setLeaderboardPage(page);
+    };
+    const fetchLeaderboardMyRank = async (options = {}) => {
+      if (!authUser.value || leaderboardMyRankLoading.value) return false;
+      const jump = Boolean(options && options.jump);
+      const silent = Boolean(options && options.silent);
+      const refreshSave = !(options && options.refreshSave === false);
+      leaderboardMyRankLoading.value = true;
+      if (!silent) leaderboardError.value = "";
+      try {
+        if (refreshSave && playMode.value === "user") await autoSaveCurrentProgress({ notify: false });
+        const pageSize = leaderboardPageSizeOptions.includes(Number(leaderboardPageSize.value)) ? Number(leaderboardPageSize.value) : 10;
+        const metric = leaderboardTabs.some((x) => x.key === leaderboardMetric.value) ? leaderboardMetric.value : "battlePower";
+        const data = await apiJson(buildLeaderboardMyRankQuery(metric, pageSize));
+        if (metric !== leaderboardMetric.value || pageSize !== leaderboardPageSize.value) return false;
+        const myRank = data && data.myRank && typeof data.myRank === "object" && isLegalLeaderboardRow(data.myRank) ? data.myRank : null;
+        leaderboardMyRank.value = myRank;
+        leaderboardMyPage.value = myRank && data.myPage ? Math.max(1, Math.floor(Number(data.myPage) || 1)) : null;
+        if (jump && leaderboardMyPage.value) setLeaderboardPage(leaderboardMyPage.value);
+        return Boolean(myRank);
+      } catch (err) {
+        if (!silent || jump) leaderboardError.value = err && err.message ? err.message : "排行榜加载失败。";
+        return false;
+      } finally {
+        leaderboardMyRankLoading.value = false;
+      }
     };
     const refreshLeaderboard = () => {
       fetchLeaderboard();
     };
     const formatLeaderboardValue = (row) => {
       const value = row && row[leaderboardMetric.value];
-      return Math.max(0, Math.floor(Number(value) || 0)).toLocaleString("zh-CN");
+      const formatted = Math.max(0, Math.floor(Number(value) || 0)).toLocaleString("zh-CN");
+      return leaderboardMetric.value === "timeTunnelMaxClearedFloor" ? `${formatted}层` : formatted;
     };
     const openBadgePanel = () => { showBadgePanel.value = true; };
     const closeBadgePanel = () => { showBadgePanel.value = false; };
@@ -18818,7 +18950,14 @@ const applyBossChainFinalBuff = (scene) => {
       leaderboardTabs,
       leaderboardRows,
       leaderboardPage,
+      leaderboardPageInput,
+      leaderboardPageSize,
+      leaderboardPageSizeOptions,
       leaderboardTotalPages,
+      leaderboardMyRank,
+      leaderboardMyPage,
+      leaderboardMyRankLoading,
+      leaderboardMyRankText,
       leaderboardLoading,
       leaderboardError,
       leaderboardCurrentLabel,
@@ -19139,6 +19278,9 @@ const applyBossChainFinalBuff = (scene) => {
       closeLeaderboardPanel,
       setLeaderboardMetric,
       changeLeaderboardPage,
+      setLeaderboardPage,
+      setLeaderboardPageSize,
+      jumpToMyLeaderboardRank,
       refreshLeaderboard,
       formatLeaderboardValue,
       openDragonBoatShopPanel,

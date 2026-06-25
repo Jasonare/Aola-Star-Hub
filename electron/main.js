@@ -116,7 +116,7 @@ const createWindow = (targetUrl) => {
 app.whenReady().then(async () => {
   try {
     const backendPort = await startLocalBackend();
-    const localAppUrl = `http://127.0.0.1:${backendPort}/aola-star.html`;
+    const localAppUrl = `http://127.0.0.1:${backendPort}/aola-star-dev.html`;
     console.log(`[main:local-app] ${localAppUrl}`);
     createWindow(localAppUrl);
   } catch (err) {
