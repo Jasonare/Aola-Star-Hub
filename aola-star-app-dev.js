@@ -71,7 +71,7 @@ const hidePrebootLoginShell = () => {
   const shell = document.getElementById("preboot-login-shell");
   if (shell && shell.parentNode) shell.parentNode.removeChild(shell);
 };
-const AOLA_LAZY_DATA_VERSION = "dev_local_lazy_data";
+const AOLA_LAZY_DATA_VERSION = "dev_local_pet_recovery_fix";
 const AOLA_LAZY_DATA_BASE_URL = "./lazy-data";
 const aolaLazyDataUrl = (fileName) => `${AOLA_LAZY_DATA_BASE_URL}/${encodeURIComponent(fileName)}?v=${encodeURIComponent(AOLA_LAZY_DATA_VERSION)}`;
 const AOLA_LAZY_DATA_SCRIPTS = [
@@ -1364,6 +1364,12 @@ const normalizeBagIds = (rawIds, activePets) => {
   });
   while (out.length < 6) out.push("");
   return out.slice(0, 6);
+};
+const normalizePlayableBagIds = (rawIds, activePets) => {
+  const pets = Array.isArray(activePets) ? activePets : [];
+  const normalized = normalizeBagIds(rawIds, pets);
+  if (normalized.some((id) => normalize(id))) return normalized;
+  return normalizeBagIds(pets.slice(0, 6).map((p) => p && p.id), pets);
 };
 
 const sanitizeBattleLog = (rawList) => {
@@ -8793,7 +8799,7 @@ createApp({
       }
       if (typeof fetch !== "function") return null;
       const urls = [
-        aolaLazyDataUrl(fileName),
+        `./lazy-data/${fileName}?v=${encodeURIComponent(AOLA_LAZY_DATA_VERSION)}`,
         `./${fileName}?v=${encodeURIComponent(AOLA_LAZY_DATA_VERSION)}`
       ];
       let lastError = null;
@@ -8836,11 +8842,13 @@ createApp({
         indexBossPoolExtractSkills(petRows, skillRows);
 
         const descBySkillId = new Map();
+        const skillDetailById = new Map();
         (Array.isArray(skillRows) ? skillRows : []).forEach((row) => {
           const sid = Number(row && row.skill_id);
           if (!Number.isFinite(sid) || sid <= 0) return;
           const desc = normalizeLegacySkillElementText((row && row.client_desc) || (row && row.new_effect_desc) || (row && row.old_effect_desc) || "");
           if (desc) descBySkillId.set(sid, desc);
+          skillDetailById.set(sid, row);
         });
 
         const raceSkillsById = new Map();
@@ -8853,7 +8861,34 @@ createApp({
 
         speciesByDexMap.forEach((species, dexId) => {
           const raceSkills = raceSkillsById.get(Number(dexId));
-          if (!species || !Array.isArray(species.skills) || !Array.isArray(raceSkills)) return;
+          if (!species || !Array.isArray(raceSkills)) return;
+          const extractSkills = raceSkills.map((s) => {
+            const sid = Number(s && s.skill_id);
+            const detail = Number.isFinite(sid) && sid > 0 ? skillDetailById.get(sid) : null;
+            const attackTypeCode = Number(s && s.attack_type);
+            const detailPower = Number(detail && detail.power);
+            const detailPp = Number(detail && detail.all_pp);
+            const detailAcc = Number(detail && detail.hit_rate);
+            const desc = Number.isFinite(sid) && sid > 0 ? normalize(descBySkillId.get(sid)) : "";
+            const typeSource = normalize(s && s.skill_type) || desc || normalize((detail && detail.client_desc) || (detail && detail.old_effect_desc) || "");
+            return {
+              skillId: Number.isFinite(sid) && sid > 0 ? sid : null,
+              dexId: Number(dexId) || 0,
+              skillKey: "",
+              name: normalize(s && s.name) || normalize(detail && (detail.new_cn_name || detail.cn_name)),
+              level: Math.max(0, Math.floor(Number(s && s.level) || 0)),
+              power: Number(s && s.power) > 0 ? Number(s.power) : (Number.isFinite(detailPower) && detailPower > 0 ? detailPower : 0),
+              pp: Math.max(1, Math.floor(Number(s && s.pp) || detailPp || 10)),
+              accuracy: Number.isFinite(detailAcc) && detailAcc > 0 ? detailAcc : 100,
+              attackTypeCode: Number.isFinite(attackTypeCode) ? attackTypeCode : null,
+              attackTypeLabel: attackTypeLabelFromCode(attackTypeCode),
+              type: buildSkillTypeText(typeSource, attackTypeCode),
+              desc
+            };
+          }).filter((s) => s.name).sort((a, b) => Number(a.level) - Number(b.level));
+          if (extractSkills.length > 0) {
+            species.skills = extractSkills;
+          }
           const sidByName = new Map();
           const sidByNameLevel = new Map();
           const metaBySkillId = new Map();
@@ -9120,7 +9155,8 @@ createApp({
       const root = Array.isArray(ids) && ids.length > 0 ? Math.min(...ids.map((n) => Number(n) || 0).filter(Boolean)) : 0;
       if (root > 0) rootDexByFormName.set(name, root);
     });
-    let gameDataIndexesReady = !deferSkillExtractLoad;
+    let gameDataIndexesReady = false;
+    let gameDataIndexesPromise = null;
     const rebuildGameDataIndexes = () => {
       const speciesRaw = window.AOLA_SPECIES_DATA && typeof window.AOLA_SPECIES_DATA === "object" ? window.AOLA_SPECIES_DATA : {};
       const speciesRawByDex = window.AOLA_SPECIES_DATA_BY_DEX && typeof window.AOLA_SPECIES_DATA_BY_DEX === "object" ? window.AOLA_SPECIES_DATA_BY_DEX : {};
@@ -9225,10 +9261,17 @@ createApp({
     };
     const ensureGameDataIndexesReady = async () => {
       if (gameDataIndexesReady) return;
-      await ensureAolaLazyGameDataLoaded();
-      rebuildGameDataIndexes();
-      await ensureSkillExtractLoaded();
-      gameDataIndexesReady = true;
+      if (!gameDataIndexesPromise) {
+        gameDataIndexesPromise = (async () => {
+          await ensureAolaLazyGameDataLoaded();
+          rebuildGameDataIndexes();
+          await ensureSkillExtractLoaded();
+          gameDataIndexesReady = true;
+        })().finally(() => {
+          if (!gameDataIndexesReady) gameDataIndexesPromise = null;
+        });
+      }
+      await gameDataIndexesPromise;
     };
 
     const getSpeciesByDexId = (dexId, fallbackName = "") => {
@@ -9463,9 +9506,10 @@ createApp({
         const fixedStageIndex = Number.isFinite(savedFixedStage)
           ? clamp(savedFixedStage, 0, Math.max(1, Number(chain.formCount) || 1) - 1)
           : (savedDexChain.stageIndex > levelStage ? clamp(savedDexChain.stageIndex, 0, Math.max(1, Number(chain.formCount) || 1) - 1) : null);
-        const currentDexId = fixedStageIndex !== null
-          ? resolveEvolutionDexIdByPetAndStage({ dexId: rootDexId, baseDexId: rootDexId, speciesName: nameInSave || dex.name }, fixedStageIndex)
-          : Number(dex.dexId);
+        const resolvedStageIndex = fixedStageIndex !== null
+          ? clamp(Math.max(fixedStageIndex, levelStage), 0, Math.max(1, Number(chain.formCount) || 1) - 1)
+          : levelStage;
+        const currentDexId = resolveEvolutionDexIdByPetAndStage({ dexId: rootDexId, baseDexId: rootDexId, speciesName: nameInSave || dex.name }, resolvedStageIndex) || Number(dex.dexId);
         const currentDex = dexById.get(Number(currentDexId) || 0) || dex;
         const currentSpecies = getSpeciesByDexId(currentDex.dexId, currentDex.name) || species;
         const extraSkills = sanitizePetExtraSkills(p.extraSkills);
@@ -9492,7 +9536,7 @@ createApp({
           source: normalize(p.source),
           createdAt: Number(p.createdAt) || Date.now()
         };
-        if (fixedStageIndex !== null) sanitizedPet.fixedStageIndex = fixedStageIndex;
+        if (fixedStageIndex !== null || resolvedStageIndex > levelStage) sanitizedPet.fixedStageIndex = resolvedStageIndex;
         return sanitizedPet;
       }).filter((pet) => pet && canPersistPetRow(pet) && !shouldRecycleOwnedPetRow(pet)) : [];
 
@@ -9532,10 +9576,7 @@ createApp({
       }
 
       const fallbackBag = activePets.slice(0, 6).map((p) => p.id);
-      let bagPetIds = normalizeBagIds(Array.isArray(loaded.bagPetIds) ? loaded.bagPetIds : fallbackBag, activePets);
-      if (!bagPetIds.some((id) => normalize(id))) {
-        bagPetIds = normalizeBagIds(fallbackBag, activePets);
-      }
+      const bagPetIds = normalizePlayableBagIds(Array.isArray(loaded.bagPetIds) ? loaded.bagPetIds : fallbackBag, activePets);
       const selectedAttackerId = bagPetIds[0] || "";
       const qixingSeals = (() => {
         const out = [];
@@ -11408,6 +11449,7 @@ createApp({
     };
     const loadServerSave = async () => {
       if (!authUser.value) return false;
+      await ensureGameDataIndexesReady();
       const data = await apiJson("/api/save");
       if (data && data.save && data.save.save) {
         state.value = sanitizeState(data.save.save);
@@ -12423,7 +12465,12 @@ createApp({
       };
     };
     onMounted(async () => {
-      await preloadSkillExtractJson();
+      try {
+        await ensureGameDataIndexesReady();
+      } catch (err) {
+        console.warn("[AolaStar Dev] game data indexes preload failed:", err);
+        await preloadSkillExtractJson();
+      }
       hidePrebootLoginShell();
       timer = setInterval(() => { nowTs.value = Date.now(); }, 1000);
       updateViewportSize();
@@ -12479,7 +12526,7 @@ createApp({
     });
 
     watch(() => state.value.activePets.map((p) => p.id).join("|"), () => {
-      state.value.bagPetIds = normalizeBagIds(state.value.bagPetIds, state.value.activePets);
+      state.value.bagPetIds = normalizePlayableBagIds(state.value.bagPetIds, state.value.activePets);
       state.value.selectedAttackerId = state.value.bagPetIds[0] || "";
     });
     watch(bgmVolume, () => {
@@ -12587,7 +12634,20 @@ createApp({
       }) || null;
     });
 
-    const bagSlots = computed(() => state.value.bagPetIds.map((id, idx) => ({
+    const resolvedBagPetIds = computed(() => {
+      return normalizePlayableBagIds(state.value.bagPetIds, state.value.activePets);
+    });
+    watch(resolvedBagPetIds, (ids) => {
+      const next = Array.isArray(ids) ? ids.slice(0, 6) : ["", "", "", "", "", ""];
+      while (next.length < 6) next.push("");
+      const current = Array.isArray(state.value.bagPetIds) ? state.value.bagPetIds : [];
+      const changed = next.length !== current.length || next.some((id, idx) => String(id || "") !== String(current[idx] || ""));
+      if (changed) state.value.bagPetIds = next;
+      if (!normalize(state.value.selectedAttackerId) || !next.includes(state.value.selectedAttackerId)) {
+        state.value.selectedAttackerId = next.find((id) => normalize(id)) || "";
+      }
+    }, { immediate: true });
+    const bagSlots = computed(() => resolvedBagPetIds.value.map((id, idx) => ({
       idx,
       pet: state.value.activePets.find((p) => p.id === id) || null
     })));
@@ -12600,7 +12660,10 @@ createApp({
     });
     const bagCount = computed(() => bagPets.value.length);
     const safeActivePets = computed(() => state.value.activePets.filter((p) => p && p.id));
-    const warehousePets = computed(() => safeActivePets.value.filter((p) => !state.value.bagPetIds.includes(p.id)));
+    const warehousePets = computed(() => {
+      const bagIds = new Set(resolvedBagPetIds.value.map((id) => String(id || "")).filter(Boolean));
+      return safeActivePets.value.filter((p) => !bagIds.has(String(p.id || "")));
+    });
     const warehouseCount = computed(() => warehousePets.value.length);
     const shopTargetOptions = computed(() => bagPets.value.map((p) => ({
       id: p.id,
