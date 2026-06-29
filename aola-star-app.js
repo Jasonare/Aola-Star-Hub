@@ -1358,14 +1358,20 @@ const normalizeBagIds = (rawIds, activePets) => {
   const validIds = new Set(activePets.map((p) => p.id));
   const out = [];
   const seen = new Set();
-  (Array.isArray(rawIds) ? rawIds : []).forEach((id) => {
+  const rawArray = Array.isArray(rawIds) ? rawIds : [];
+  for (let i = 0; i < 6; i++) {
+    const id = rawArray[i];
     const sid = String(id || "");
-    if (!sid || !validIds.has(sid) || seen.has(sid)) return;
-    seen.add(sid);
-    out.push(sid);
-  });
-  while (out.length < 6) out.push("");
-  return out.slice(0, 6);
+    if (!sid) {
+      out.push("");
+    } else if (!validIds.has(sid) || seen.has(sid)) {
+      out.push("");
+    } else {
+      seen.add(sid);
+      out.push(sid);
+    }
+  }
+  return out;
 };
 
 const sanitizeBattleLog = (rawList) => {
@@ -1400,7 +1406,20 @@ const buildFallbackSpecies = (dexEntry) => {
       { name: `${name}守护`, level: 16, power: -1, pp: 10, type: "普通系/属性攻击", desc: "提升自身防御。" },
       { name: `${name}裂风斩`, level: 32, power: 180, pp: 8, type: "飞行系/普通攻击", desc: "中高威力输出。" },
       { name: `${name}终焰星陨`, level: 56, power: 300, pp: 4, type: "神秘系/特殊攻击", desc: "终结技能。" }
-    ]
+    ],
+    raceStats: {
+      id: String(dexEntry.dexId),
+      name: name,
+      hp: 80,
+      atk: 80,
+      def: 80,
+      spAtk: 80,
+      spDef: 80,
+      speed: 80,
+      total: 480
+    },
+    element: normalizeElementName(dexEntry.element) || "未知系",
+    subElement: normalizeElementName(dexEntry.subElement || "") || ""
   };
 };
 
@@ -8915,7 +8934,7 @@ createApp({
 
     const normalizeSpeciesSource = (source, entry) => {
       const fallback = buildFallbackSpecies(entry);
-      if (!source || typeof source !== "object") return { ...fallback, raceStats: null, formCount: 1, stageIndex: 0 };
+      if (!source || typeof source !== "object") return { ...fallback, formCount: 1, stageIndex: 0 };
 
       let forms = [];
       let formCount = 1;
@@ -9519,7 +9538,8 @@ createApp({
       }
 
       const fallbackBag = activePets.slice(0, 6).map((p) => p.id);
-      let bagPetIds = normalizeBagIds(Array.isArray(loaded.bagPetIds) ? loaded.bagPetIds : fallbackBag, activePets);
+      const savedBagIds = Array.isArray(loaded.bagPetIds) ? loaded.bagPetIds : [];
+      let bagPetIds = normalizeBagIds(savedBagIds, activePets);
       if (!bagPetIds.some((id) => normalize(id))) {
         bagPetIds = normalizeBagIds(fallbackBag, activePets);
       }
@@ -9917,6 +9937,14 @@ createApp({
     const warehouseSearch = ref("");
     const warehouseElementFilter = ref("全部系别");
     const warehouseSortMode = ref("created");
+    const bag2SortMode = ref(false);
+    const bag2SortFirstSlotIdx = ref(-1);
+    const showBag2StudyPanel = ref(false);
+    const showBag2SkillReplacePanel = ref(false);
+    const showBag2AbilitySkillPanel = ref(false);
+    const selectedSkillReplaceIdx = ref(-1);
+    const bag2SkillMoveMode = ref(false);
+    const bag2SkillMoveFirstIdx = ref(-1);
     const nowTs = ref(Date.now());
     const isDoubleRewardTimeAt = (ts = Date.now()) => {
       const d = new Date(ts);
@@ -9976,11 +10004,26 @@ createApp({
     const badgeImageManifest = ref({ byId: {}, byName: {} });
     const selectedSkillName = ref("");
     const selectedInfoTab = ref("skills");
+    const selectedBagTab = ref("info");
+    const selectedEnhanceTab = ref("traits");
     const selectedQixingSealId = ref("");
+    const isBagSorting = ref(false);
+    const draggingBagIndex = ref(-1);
+    const petEquipmentSlots = ref({
+      weapon: null,
+      shield: null,
+      amulet: null,
+      boots: null
+    });
     const replaceSkillCtx = ref(null);
     const bagReplaceCtx = ref(null);
     const showElementPanel = ref(false);
     const showBagPanel = ref(false);
+    const showBag2Panel = ref(false);
+    const bag2Loading = ref(false);
+    const bag2TopTab = ref("info");
+    const bag2InfoTab = ref("skills");
+    const bag2EnhanceTab = ref("traits");
     const showWarehousePanel = ref(false);
     const showShopPanel = ref(false);
     const showBadgePanel = ref(false);
@@ -10925,9 +10968,9 @@ createApp({
           equipped: safeActivePets.value.filter((pet) => normalize(pet && pet.equippedItemId) === normalize(it.id)).length
         };
       }));
-    const selectedPetFeatureText = computed(() => {
-      if (!selectedPet.value) return "";
-      const seal = selectedPetEquippedQixingSeal.value || null;
+    const petFeatureText = (pet) => {
+      if (!pet) return "";
+      const seal = qixingSealForPet(pet) || null;
       if (seal) {
         const level = clamp(Math.floor(Number(seal.level) || 1), 1, QIXING_SEAL_MAX_LEVEL);
         const meta = qixingSealMeta(seal);
@@ -10935,7 +10978,8 @@ createApp({
         return `当前亚比装配${meta.name}Lv.${level}，特性：${rule.label}`;
       }
       return "当前亚比未装配特性";
-    });
+    };
+    const selectedPetFeatureText = computed(() => petFeatureText(selectedPet.value));
     const hasObtainedEggDex = (dexId) => {
       const id = Number(dexId) || 0;
       if (!id) return false;
@@ -12573,7 +12617,62 @@ createApp({
       pet: state.value.activePets.find((p) => p.id === id) || null
     })));
     const firstPet = computed(() => (bagSlots.value[0] && bagSlots.value[0].pet) ? bagSlots.value[0].pet : null);
+    const bag2DisplayPet = computed(() => {
+      const sel = selectedPet.value;
+      if (sel && bagPets.value.some(p => p && petId(p) === petId(sel))) return sel;
+      return firstPet.value || null;
+    });
+    const bag2Species = computed(() => {
+      const pet = bag2DisplayPet.value;
+      if (!pet) return null;
+      try {
+        return getSpeciesForPet(pet);
+      } catch {
+        return null;
+      }
+    });
+    const bag2RaceStats = computed(() => {
+      const pet = bag2DisplayPet.value;
+      const species = bag2Species.value;
+      if (!pet || !species || !species.raceStats) return null;
+      return species.raceStats;
+    });
+    const bag2AbilityStats = computed(() => {
+      const pet = bag2DisplayPet.value;
+      const race = bag2RaceStats.value;
+      if (!pet || !race) return null;
+      const talent = normalizeTalent(pet.talent);
+      const study = normalizeStudy(pet.study);
+      const out = {
+        hp: calcAbilityHp(race.hp, talent.hp, study.hp, pet.level),
+        atk: calcAbilityStat(race.atk, talent.atk, study.atk, pet.level, 1),
+        def: calcAbilityStat(race.def, talent.def, study.def, pet.level, 1),
+        spAtk: calcAbilityStat(race.spAtk, talent.spAtk, study.spAtk, pet.level, 1),
+        spDef: calcAbilityStat(race.spDef, talent.spDef, study.spDef, pet.level, 1),
+        speed: calcAbilityStat(race.speed, talent.speed, study.speed, pet.level, 1)
+      };
+      out.total = out.hp + out.atk + out.def + out.spAtk + out.spDef + out.speed;
+      return applyPetGearAbilityBonus(out, pet);
+    });
+    const bag2AvailableSkills = computed(() => {
+      skillAttackTypeVersion.value;
+      const pet = bag2DisplayPet.value;
+      if (!pet) return [];
+      const species = bag2Species.value;
+      if (!species) return [];
+      const list = Array.isArray(species.skills) ? species.skills : [];
+      const extra = petExtraSkills(pet);
+      if (detailPreviewPet.value && detailPreviewPet.value.previewAllSkills) return list.concat(extra);
+      const skillLevel = skillLevelForPet(pet);
+      return list.filter((s) => skillLevel === null || Number(s && s.level) <= Number(skillLevel)).concat(extra);
+    });
     const bagPets = computed(() => bagSlots.value.map((x) => x.pet).filter((p) => p && p.id));
+    watch([showBag2Panel, bag2DisplayPet], ([visible, pet]) => {
+      if (!visible || !pet) return;
+      if (petId(selectedPet.value) !== petId(pet)) state.value.selectedPetId = petId(pet);
+      const seal = qixingSealForPet(pet);
+      if (seal) selectedQixingSealId.value = seal.id;
+    });
     const selectedBagSlotIndex = computed(() => {
       const id = petId(selectedPet.value);
       if (!id) return -1;
@@ -12611,6 +12710,25 @@ createApp({
       return { ...item, effectText: "攻击+100、特攻+100" };
     };
     const selectedPetEquippedGear = computed(() => petEquippedGear(selectedPet.value));
+    const bag2DisplayPetEquippedQixingSeal = computed(() => {
+      const seal = qixingSealForPet(bag2DisplayPet.value);
+      if (!seal) return null;
+      const level = clamp(Math.floor(Number(seal.level) || 1), 1, QIXING_SEAL_MAX_LEVEL);
+      const meta = qixingSealMeta(seal);
+      return {
+        ...seal,
+        level,
+        name: meta.name,
+        image: meta.image,
+        rule: qixingSealBattleRule(seal, level)
+      };
+    });
+    const bag2DisplayPetEquippedGear = computed(() => petEquippedGear(bag2DisplayPet.value));
+    const bag2DisplayPetFeatureText = computed(() => petFeatureText(bag2DisplayPet.value));
+    const dragonBoatBladeEquippedPetName = computed(() => {
+      const pet = safeActivePets.value.find((row) => normalize(row && row.equippedGearId) === DRAGON_BOAT_BLADE_ITEM_ID) || null;
+      return pet ? petDisplayName(pet) : "";
+    });
     const itemInventoryRows = computed(() => itemCatalog.value.map((it) => ({
       ...it,
       count: getItemCount(it.id),
@@ -14035,6 +14153,44 @@ createApp({
       const vh = Math.max(1, Number(viewportSize.value && viewportSize.value.height) || 765);
       const targetBodyH = Math.max(1, Math.min(vw * 0.042, vh * 0.082));
       const style = getPetAnimLayoutStyle(dexId, "1", "1", targetBodyH, "bottom");
+      if (!style.renderW) return {};
+      return {
+        "--pet-anim-render-width": style.renderW,
+        "--pet-anim-render-height": style.renderH,
+        "--pet-anim-offset-x": style.offsetX,
+        "--pet-anim-offset-y": style.offsetY,
+        "--pet-anim-clip-top": style.clipTop || "0%",
+        "--pet-anim-clip-right": style.clipRight || "0%",
+        "--pet-anim-clip-bottom": style.clipBottom || "0%",
+        "--pet-anim-clip-left": style.clipLeft || "0%"
+      };
+    };
+    const bag2FocusPetAnimImageStyle = (petOrDexId) => {
+      const dexId = typeof petOrDexId === "object"
+        ? (Number(resolvePetCurrentDexId(petOrDexId)) || Number(petOrDexId && petOrDexId.dexId) || 0)
+        : (Number(petOrDexId) || 0);
+      const panelW = Math.min(window.innerWidth * 0.85, 900);
+      const targetBodyH = Math.max(1, panelW * 0.19);
+      const style = dockBagFocusPetAnimStyle(dexId, targetBodyH, targetBodyH * 1.6);
+      if (!style.renderW) return {};
+      return {
+        "--pet-anim-render-width": style.renderW,
+        "--pet-anim-render-height": style.renderH,
+        "--pet-anim-offset-x": style.offsetX,
+        "--pet-anim-offset-y": style.offsetY,
+        "--pet-anim-clip-top": style.clipTop || "0%",
+        "--pet-anim-clip-right": style.clipRight || "0%",
+        "--pet-anim-clip-bottom": style.clipBottom || "0%",
+        "--pet-anim-clip-left": style.clipLeft || "0%"
+      };
+    };
+    const bag2SlotPetAnimImageStyle = (petOrDexId) => {
+      const dexId = typeof petOrDexId === "object"
+        ? (Number(resolvePetCurrentDexId(petOrDexId)) || Number(petOrDexId && petOrDexId.dexId) || 0)
+        : (Number(petOrDexId) || 0);
+      const panelW = Math.min(window.innerWidth * 0.85, 900);
+      const targetBodyH = Math.max(1, panelW * 0.075);
+      const style = getPetAnimLayoutStyle(dexId, "1", "1", targetBodyH, "center");
       if (!style.renderW) return {};
       return {
         "--pet-anim-render-width": style.renderW,
@@ -17240,6 +17396,27 @@ const applyBossChainFinalBuff = (scene) => {
       ids[b] = tmp;
       state.value.selectedAttackerId = ids[0] || "";
     };
+    const toggleBagSorting = () => {
+      isBagSorting.value = !isBagSorting.value;
+      if (!isBagSorting.value) {
+        draggingBagIndex.value = -1;
+      }
+    };
+    const startBagDrag = (idx) => {
+      if (!isBagSorting.value) return;
+      draggingBagIndex.value = idx;
+    };
+    const endBagDrag = () => {
+      draggingBagIndex.value = -1;
+    };
+    const dropBagItem = (targetIdx) => {
+      if (!isBagSorting.value || draggingBagIndex.value === -1 || draggingBagIndex.value === targetIdx) {
+        draggingBagIndex.value = -1;
+        return;
+      }
+      swapBagSlots(draggingBagIndex.value, targetIdx);
+      draggingBagIndex.value = -1;
+    };
     const moveBagLeft = (slotIdx) => {
       if (slotIdx <= 0) return;
       swapBagSlots(slotIdx, slotIdx - 1);
@@ -17291,14 +17468,146 @@ const applyBossChainFinalBuff = (scene) => {
     const openDexPanel = () => { state.value.showDexPanel = true; };
     const closeDexPanel = () => { state.value.showDexPanel = false; };
     const openBagPanel = () => {
-      showBagPanel.value = true;
+      bag2Loading.value = true;
+      showBag2Panel.value = true;
+      setTimeout(() => { bag2Loading.value = false; }, 600);
     };
     const closeBagPanel = () => {
-      showBagPanel.value = false;
+      showBag2Panel.value = false;
+    };
+    const openBag2Panel = () => {
+      if (!bagPets.value.some((pet) => pet && petId(pet) === petId(selectedPet.value))) {
+        state.value.selectedPetId = petId(firstPet.value) || "";
+      }
+      bag2Loading.value = true;
+      showBag2Panel.value = true;
+      bag2TopTab.value = "info";
+      bag2InfoTab.value = "skills";
+      bag2EnhanceTab.value = "traits";
+      setTimeout(() => { bag2Loading.value = false; }, 600);
+    };
+    const closeBag2Panel = () => {
+      showBag2Panel.value = false;
+    };
+    const setBag2TopTab = (tab) => {
+      bag2TopTab.value = tab;
+      if (tab === "enhance") bag2EnhanceTab.value = "traits";
+    };
+    const setBag2InfoTab = (tab) => {
+      bag2InfoTab.value = tab;
+    };
+    const setBag2EnhanceTab = (tab) => {
+      bag2EnhanceTab.value = tab;
     };
     const openWarehousePanel = () => {
       showWarehousePanel.value = true;
       playSceneBgm(WAREHOUSE_BGM_SRC);
+    };
+    const bag2SetFirstPet = () => {
+      if (!bag2DisplayPet.value) return;
+      const pet = bag2DisplayPet.value;
+      const idx = state.value.bagPetIds.indexOf(petId(pet));
+      if (idx > 0) {
+        swapBagSlots(0, idx);
+      }
+    };
+    const bag2ReturnToWarehouse = () => {
+      if (!bag2DisplayPet.value) return;
+      const pet = bag2DisplayPet.value;
+      const idx = state.value.bagPetIds.indexOf(petId(pet));
+      if (idx >= 0) {
+        removeFromBag(idx);
+      }
+    };
+    const toggleBag2SortMode = () => {
+      bag2SortMode.value = !bag2SortMode.value;
+      if (!bag2SortMode.value) {
+        bag2SortFirstSlotIdx.value = -1;
+      }
+    };
+    const toggleBag2StudyPanel = () => {
+      showBag2StudyPanel.value = !showBag2StudyPanel.value;
+      if (showBag2StudyPanel.value) {
+        showBag2SkillReplacePanel.value = false;
+        showBag2AbilitySkillPanel.value = false;
+      }
+    };
+    const toggleBag2SkillReplacePanel = () => {
+      showBag2SkillReplacePanel.value = !showBag2SkillReplacePanel.value;
+      if (showBag2SkillReplacePanel.value) {
+        showBag2StudyPanel.value = false;
+        showBag2AbilitySkillPanel.value = false;
+        selectedSkillReplaceIdx.value = -1;
+        bag2SkillMoveMode.value = false;
+        bag2SkillMoveFirstIdx.value = -1;
+      }
+    };
+    const toggleBag2AbilitySkillPanel = () => {
+      showBag2AbilitySkillPanel.value = !showBag2AbilitySkillPanel.value;
+      if (showBag2AbilitySkillPanel.value) {
+        showBag2StudyPanel.value = false;
+        showBag2SkillReplacePanel.value = false;
+      }
+    };
+    const toggleBag2SkillMoveMode = () => {
+      bag2SkillMoveMode.value = !bag2SkillMoveMode.value;
+      bag2SkillMoveFirstIdx.value = -1;
+      if (bag2SkillMoveMode.value) {
+        selectedSkillReplaceIdx.value = -1;
+      }
+    };
+    const selectSkillToReplace = (idx) => {
+      if (bag2SkillMoveMode.value) {
+        if (bag2SkillMoveFirstIdx.value < 0) {
+          bag2SkillMoveFirstIdx.value = idx;
+        } else if (bag2SkillMoveFirstIdx.value === idx) {
+          bag2SkillMoveFirstIdx.value = -1;
+        } else {
+          const pet = selectedPet.value;
+          if (pet && Array.isArray(pet.equippedSkills)) {
+            const newSkills = [...pet.equippedSkills];
+            const temp = newSkills[bag2SkillMoveFirstIdx.value];
+            newSkills[bag2SkillMoveFirstIdx.value] = newSkills[idx];
+            newSkills[idx] = temp;
+            pet.equippedSkills = newSkills;
+          }
+          bag2SkillMoveFirstIdx.value = -1;
+        }
+        return;
+      }
+      selectedSkillReplaceIdx.value = selectedSkillReplaceIdx.value === idx ? -1 : idx;
+    };
+    const replaceSelectedSkill = (skill) => {
+      if (selectedSkillReplaceIdx.value < 0) return;
+      const pet = selectedPet.value;
+      if (!pet) return;
+      const idx = selectedSkillReplaceIdx.value;
+      const newSkills = [...(pet.equippedSkills || [])];
+      newSkills[idx] = skill.name;
+      pet.equippedSkills = newSkills;
+      selectedSkillReplaceIdx.value = -1;
+    };
+    const selectedPetAllSkills = computed(() => {
+      const pet = selectedPet.value;
+      if (!pet) return [];
+      return availableSkillsForSelectedPet.value.slice();
+    });
+    const handleBag2SlotClick = (slot) => {
+      if (!bag2SortMode.value) {
+        if (slot.pet) {
+          selectPet(petId(slot.pet));
+        }
+        return;
+      }
+      if (bag2SortFirstSlotIdx.value < 0) {
+        bag2SortFirstSlotIdx.value = slot.idx;
+      } else {
+        const firstIdx = bag2SortFirstSlotIdx.value;
+        bag2SortFirstSlotIdx.value = -1;
+        if (firstIdx !== slot.idx) {
+          swapBagSlots(firstIdx, slot.idx);
+        }
+      }
     };
     const closeWarehousePanel = () => {
       showWarehousePanel.value = false;
@@ -18861,6 +19170,11 @@ const applyBossChainFinalBuff = (scene) => {
       switchPanelMode,
       showElementPanel,
       showBagPanel,
+      showBag2Panel,
+      bag2Loading,
+      bag2TopTab,
+      bag2InfoTab,
+      bag2EnhanceTab,
       showWarehousePanel,
       showShopPanel,
       showBadgePanel,
@@ -18918,6 +19232,15 @@ const applyBossChainFinalBuff = (scene) => {
       selectedPetStudy,
       selectedStudyTotal,
       selectedInfoTab,
+      selectedBagTab,
+      selectedEnhanceTab,
+      isBagSorting,
+      draggingBagIndex,
+      petEquipmentSlots,
+      toggleBagSorting,
+      startBagDrag,
+      endBagDrag,
+      dropBagItem,
       replaceSkillCtx,
       bagReplaceCtx,
       filteredDex,
@@ -18927,6 +19250,14 @@ const applyBossChainFinalBuff = (scene) => {
       bagSlots,
       selectedBagSlotIndex,
       firstPet,
+      bag2DisplayPet,
+      bag2DisplayPetEquippedQixingSeal,
+      bag2DisplayPetEquippedGear,
+      bag2DisplayPetFeatureText,
+      bag2Species,
+      bag2RaceStats,
+      bag2AbilityStats,
+      bag2AvailableSkills,
       bagPets,
       bagCount,
       bagBattlePower,
@@ -18978,6 +19309,7 @@ const applyBossChainFinalBuff = (scene) => {
       bagItemUseValidationText,
       petItemInventoryRows,
       selectedPetFeatureText,
+      dragonBoatBladeEquippedPetName,
       rewardFlyToast,
       shopTargetPetId,
       shopTargetOptions,
@@ -19043,6 +19375,8 @@ const applyBossChainFinalBuff = (scene) => {
       battlePetImageStyle,
       bagFocusPetAnimImageStyle,
       bagSlotPetAnimImageStyle,
+      bag2FocusPetAnimImageStyle,
+      bag2SlotPetAnimImageStyle,
       warehousePetAnimImageStyle,
       battlePreparePetAnimImageStyle,
       timeTunnelPetAnimImageStyle,
@@ -19182,7 +19516,31 @@ const applyBossChainFinalBuff = (scene) => {
       closeDexPanel,
       openBagPanel,
       closeBagPanel,
+      openBag2Panel,
+      closeBag2Panel,
+      setBag2TopTab,
+      setBag2InfoTab,
+      setBag2EnhanceTab,
       openWarehousePanel,
+      bag2SetFirstPet,
+      bag2ReturnToWarehouse,
+      bag2SortMode,
+      bag2SortFirstSlotIdx,
+      toggleBag2SortMode,
+      handleBag2SlotClick,
+      showBag2StudyPanel,
+      showBag2SkillReplacePanel,
+      showBag2AbilitySkillPanel,
+      selectedSkillReplaceIdx,
+      bag2SkillMoveMode,
+      bag2SkillMoveFirstIdx,
+      toggleBag2StudyPanel,
+      toggleBag2SkillReplacePanel,
+      toggleBag2AbilitySkillPanel,
+      toggleBag2SkillMoveMode,
+      selectSkillToReplace,
+      replaceSelectedSkill,
+      selectedPetAllSkills,
       closeWarehousePanel,
       toggleWarehousePetActions,
       isWarehousePetExpanded,

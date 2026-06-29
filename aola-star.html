@@ -117,7 +117,7 @@
       aspect-ratio: 2524 / 1315;
       border-radius: 18px;
       overflow: hidden;
-      background-image: url("./resource/ui/背景/hub-main.png");
+      background-image: url("./resource-v7/背包ui/界面大背景ui 拷贝.png");
       background-size: 100% 100%;
       background-position: center;
       background-repeat: no-repeat;
@@ -527,6 +527,1367 @@
       :root {
         --warehouse-card-pet-size: clamp(calc(52 * var(--ui-px)), 13vw, calc(70 * var(--ui-px)));
       }
+    }
+    .bag2-panel {
+      position: relative;
+      width: min(95vw, 900px);
+      aspect-ratio: 1848 / 1137;
+    }
+    .bag2-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+    }
+    .bag2-close-btn {
+      position: absolute;
+      top: 2.5%;
+      right: 1.5%;
+      width: 5%;
+      height: 8%;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      z-index: 10;
+    }
+    .bag2-close-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .bag2-close-btn:hover { filter: brightness(1.1); }
+    .bag2-close-btn:active { filter: brightness(0.9); transform: scale(0.95); }
+    .bag2-loading-mask {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .bag2-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(0,0,0,0.2);
+      border-top-color: #1d4ed8;
+      border-radius: 50%;
+      animation: bag2-spin 0.8s linear infinite;
+    }
+    @keyframes bag2-spin {
+      to { transform: rotate(360deg); }
+    }
+    .bag2-loading-text {
+      margin-top: 16px;
+      color: #1e3a8a;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .bag2-top-tabs {
+      position: absolute;
+      top: 2.1%;
+      left: 48%;
+      width: 40%;
+      height: 7.5%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: center;
+      gap: 0;
+      z-index: 5;
+    }
+    .bag2-top-btn {
+      height: 100%;
+      flex: 1;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0.9;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .bag2-top-btn img {
+      height: 100%;
+      width: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .bag2-top-btn:hover { opacity: 1; }
+    .bag2-top-btn.active { opacity: 1; filter: brightness(1.15) drop-shadow(0 0 4px rgba(255,255,255,0.6)); }
+    .bag2-top-btn:active { transform: scale(0.96); }
+    .bag2-items-btn {
+      transform: translateY(-2px) translateX(-2px);
+    }
+    .bag2-pet-display {
+      position: absolute;
+      top: 15%;
+      left: 7.2%;
+      width: 35.9%;
+      height: 48%;
+      z-index: 3;
+    }
+    .bag2-display-pet-frame {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 6%;
+    }
+    .bag2-display-pet-img {
+      max-width: 150%;
+      max-height: 150%;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 14px rgba(0,0,0,0.34));
+      transform: none !important;
+    }
+    .bag2-pet-trait-disc {
+      position: absolute;
+      left: 11%;
+      bottom: 21%;
+      width: 19%;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .bag2-pet-trait-disc-img {
+      width: 76%;
+      height: 76%;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(15,23,42,.28));
+    }
+    .bag2-pet-element-grid {
+      position: absolute;
+      left: 4%;
+      top: 4%;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .bag2-pet-element-box {
+      width: 28%;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      background: rgba(255,255,255,.9);
+      border: 2px solid rgba(125,211,252,.8);
+      box-shadow: 0 2px 6px rgba(15,23,42,.3);
+    }
+    .bag2-pet-element-icon {
+      width: 85%;
+      height: 85%;
+      display: block;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      min-width: 20px;
+      min-height: 20px;
+    }
+    .bag2-pet-info-header {
+      margin-bottom: 6px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 10px;
+      border: 1px solid rgba(125, 211, 252, 0.5);
+    }
+    .bag2-pet-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+    .bag2-pet-info-row .bag2-pet-name {
+      font-size: clamp(11px, 1.3vw, 14px);
+      font-weight: 900;
+      color: #0c4a6e;
+      margin: 0;
+    }
+    .bag2-pet-info-row .bag2-pet-level {
+      font-size: clamp(10px, 1.1vw, 12px);
+      font-weight: 800;
+      color: #b45309;
+      margin: 0;
+    }
+    .bag2-pet-info-header .bag2-exp-bar {
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.5);
+      overflow: hidden;
+      margin-bottom: 1px;
+    }
+    .bag2-pet-info-header .bag2-exp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #34d399, #10b981);
+      transition: width 0.3s;
+    }
+    .bag2-pet-info-header .bag2-exp-text {
+      font-size: clamp(7px, 0.75vw, 8px);
+      text-align: right;
+      color: #475569;
+      line-height: 1;
+    }
+    .bag2-display-pet-info {
+      position: absolute;
+      left: 7%;
+      right: 8%;
+      bottom: 6%;
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      grid-template-areas:
+        "name level exp"
+        "bar bar bar";
+      align-items: end;
+      gap: 2px 6px;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      pointer-events: none;
+    }
+    .bag2-pet-name {
+      grid-area: name;
+      font-size: clamp(9px, 1.12vw, 12px);
+      font-weight: 900;
+      margin-bottom: 0;
+      line-height: 1.1;
+    }
+    .bag2-pet-level {
+      grid-area: level;
+      font-size: clamp(8px, 0.92vw, 10px);
+      font-weight: 800;
+      color: #fde68a;
+      margin-bottom: 0;
+      line-height: 1.1;
+    }
+    .bag2-exp-bar {
+      grid-area: bar;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.3);
+      overflow: hidden;
+    }
+    .bag2-exp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #bef264, #fde047);
+      border-radius: inherit;
+    }
+    .bag2-exp-text {
+      grid-area: exp;
+      margin-top: 0;
+      font-size: clamp(7px, 0.82vw, 9px);
+      font-weight: 700;
+      text-align: right;
+      color: #e0f2fe;
+      line-height: 1.1;
+    }
+    .bag2-no-pet {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.6);
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .bag2-side-tabs {
+      position: absolute;
+      top: 15%;
+      left: 46%;
+      width: 4.7%;
+      height: 43.5%;
+      display: grid;
+      grid-template-rows: repeat(3, minmax(0, 1fr));
+      align-items: center;
+      gap: 0;
+      z-index: 5;
+    }
+    .bag2-side-tabs-enhance {
+      top: 15%;
+      left: 46.2%;
+      width: 4.8%;
+      height: 31%;
+      grid-template-rows: 55% 40%;
+      gap: 0%;
+      align-items: start;
+    }
+    .bag2-side-tabs-enhance .bag2-side-btn:first-child {
+      transform: translateY(-6%);
+      transition: none !important;
+    }
+    .bag2-side-tabs-enhance .bag2-side-btn:first-child:active {
+      transform: translateY(-6%) !important;
+      transition: none !important;
+    }
+    .bag2-gear-btn {
+      transform: translateY(-22%) scaleX(0.93) scaleY(0.82);
+      margin-top: -5%;
+      transition: none !important;
+    }
+    .bag2-gear-btn img {
+      transform: translateY(-3%);
+      transition: none !important;
+    }
+    .bag2-side-tabs-enhance .bag2-side-btn.bag2-gear-btn:active {
+      transform: translateY(-22%) scaleX(0.93) scaleY(0.82) !important;
+      transition: none !important;
+    }
+    .bag2-side-btn {
+      width: 100%;
+      flex: 1;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0.9;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .bag2-side-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .bag2-side-btn:hover { opacity: 1; }
+    .bag2-side-btn.active { opacity: 1; filter: brightness(1.2) drop-shadow(0 0 3px rgba(255,255,255,0.7)); }
+    .bag2-side-btn:not(.bag2-gear-btn):active { transform: scale(0.96); }
+    .bag2-content-area {
+      position: absolute;
+      top: 16%;
+      left: 50%;
+      right: 7%;
+      height: 45%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 4;
+      padding: 0 11px;
+      color: #0c4a6e;
+      font-size: clamp(9px, 1vw, 11px);
+      scrollbar-width: thin;
+    }
+    .bag2-content-area::-webkit-scrollbar { width: 6px; }
+    .bag2-content-area::-webkit-scrollbar-thumb { background: #7dd3fc; border-radius: 3px; }
+    .bag2-content-area::-webkit-scrollbar-track { background: transparent; }
+    .bag2-skills-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 8px;
+      width: 95%;
+      margin: 0 auto 6px;
+    }
+    .bag2-skills-talent-icon {
+      height: 26px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 12px;
+      border: 1px solid rgba(251, 191, 36, 0.5);
+      margin-left: 8px;
+    }
+    .bag2-skills-study-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .bag2-skills-study-btn:hover {
+      background: rgba(224, 242, 254, 0.8);
+    }
+    .bag2-skills-study-btn.active {
+      background: rgba(56, 189, 248, 0.3);
+      border-color: rgba(56, 189, 248, 0.8);
+    }
+    .bag2-skills-power-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(251, 191, 36, 0.5);
+      border-radius: 999px;
+    }
+    .bag2-skills-power-label {
+      font-size: clamp(8px, 0.8vw, 9px);
+      color: rgba(251, 191, 36, 0.8);
+      font-weight: bold;
+    }
+    .bag2-skills-power-value {
+      font-size: clamp(10px, 1vw, 12px);
+      color: #fbbf24;
+      font-weight: bold;
+      text-shadow: 0 0 4px rgba(251, 191, 36, 0.5);
+    }
+    .bag2-skills-study-label {
+      font-size: clamp(8px, 0.8vw, 9px);
+      font-weight: 700;
+      color: #0c4a6e;
+    }
+    .bag2-skills-study-value {
+      font-size: clamp(9px, 0.95vw, 11px);
+      font-weight: 900;
+      color: #0369a1;
+    }
+    .bag2-skills-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      width: 95%;
+      margin: 0 auto;
+      align-content: start;
+    }
+    .bag2-skill-item {
+      background: rgba(224, 242, 254, 0.72);
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      border-radius: 10px;
+      padding: 10px 12px 8px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.32);
+    }
+    .bag2-skill-name {
+      font-weight: 900;
+      font-size: clamp(11px, 1.15vw, 13px);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #0c4a6e;
+      line-height: 1.3;
+    }
+    .bag2-skill-type-dot {
+      display: inline-block;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+    .bag2-skill-meta {
+      font-size: clamp(9px, 0.9vw, 10px);
+      font-weight: 700;
+      color: #0369a1;
+      margin-top: 4px;
+    }
+    .bag2-skill-desc {
+      font-size: clamp(8px, 0.82vw, 9px);
+      font-weight: 600;
+      color: #475569;
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+    .bag2-skill-replace-btn {
+      position: absolute;
+      bottom: 33%;
+      right: 22%;
+      width: 14%;
+      height: 5%;
+      padding: 0;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: transform 0.15s, filter 0.15s;
+      z-index: 5;
+    }
+    .bag2-skill-replace-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+    .bag2-skill-replace-btn.active {
+      filter: brightness(1.2) drop-shadow(0 0 6px rgba(251, 191, 36, 0.8));
+    }
+    .bag2-skill-replace-btn img {
+      height: 100%;
+      width: auto;
+      object-fit: contain;
+    }
+    .bag2-modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .bag2-modal {
+      background: linear-gradient(180deg, #f0f9ff, #e0f2fe);
+      border: 2px solid #38bdf8;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      min-width: 50%;
+      max-width: 70%;
+      max-height: 70%;
+      overflow-y: auto;
+    }
+    .bag2-modal-title {
+      font-size: clamp(12px, 1.3vw, 14px);
+      font-weight: 900;
+      color: #0c4a6e;
+      text-align: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .bag2-modal-close {
+      display: block;
+      margin: 12px auto 0;
+      padding: 6px 20px;
+      background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: clamp(10px, 1vw, 12px);
+      font-weight: 700;
+      cursor: pointer;
+      transition: filter 0.2s;
+    }
+    .bag2-modal-close:hover {
+      filter: brightness(1.1);
+    }
+    .bag2-study-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .bag2-study-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .bag2-study-name {
+      font-size: clamp(10px, 1vw, 11px);
+      font-weight: 700;
+      color: #0369a1;
+    }
+    .bag2-study-value {
+      font-size: clamp(11px, 1.1vw, 13px);
+      font-weight: 900;
+      color: #0c4a6e;
+    }
+    .bag2-study-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+    .bag2-study-fill {
+      height: 100%;
+      transition: width 0.3s;
+    }
+    .bag2-skill-replace-modal {
+      min-width: 80%;
+      max-width: 90%;
+    }
+    .bag2-skill-replace-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .bag2-skill-move-btn {
+      padding: 4px 12px;
+      font-size: clamp(9px, 0.9vw, 10px);
+      font-weight: 700;
+      color: #0369a1;
+      background: rgba(255,255,255,0.8);
+      border: 1px solid rgba(56, 189, 248, 0.6);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .bag2-skill-move-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+    }
+    .bag2-skill-move-btn.active {
+      background: rgba(245, 158, 11, 0.3);
+      border-color: rgba(245, 158, 11, 0.8);
+      color: #92400e;
+    }
+    .bag2-modal-close-btn {
+      padding: 4px 16px;
+      font-size: clamp(9px, 0.9vw, 10px);
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(180deg, #38bdf8, #0284c7);
+      border: 1px solid rgba(56, 189, 248, 0.8);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .bag2-modal-close-btn:hover {
+      filter: brightness(1.1);
+    }
+    .bag2-modal-close-btn:active {
+      filter: brightness(0.9);
+      transform: translateY(1px);
+    }
+    .bag2-skill-replace-body {
+      display: flex;
+      gap: 12px;
+    }
+    .bag2-skill-replace-current {
+      flex: 1;
+      min-width: 0;
+    }
+    .bag2-skill-replace-available {
+      flex: 1;
+      min-width: 0;
+    }
+    .bag2-skill-replace-section-title {
+      font-size: clamp(9px, 0.9vw, 10px);
+      font-weight: 700;
+      color: #0369a1;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .bag2-skill-replace-current-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .bag2-skill-replace-current-item {
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .bag2-skill-replace-current-item:hover {
+      background: rgba(56, 189, 248, 0.2);
+    }
+    .bag2-skill-replace-current-item.active {
+      background: rgba(56, 189, 248, 0.4);
+      border-color: rgba(56, 189, 248, 0.8);
+    }
+    .bag2-skill-replace-current-item.move-mode {
+      cursor: move;
+    }
+    .bag2-skill-replace-current-item.move-selected {
+      background: rgba(245, 158, 11, 0.4);
+      border-color: rgba(245, 158, 11, 0.9);
+      transform: scale(1.03);
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+    }
+    .bag2-skill-replace-current-header {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .bag2-skill-replace-current-name {
+      font-size: clamp(10px, 1vw, 11px);
+      font-weight: 900;
+      color: #0c4a6e;
+    }
+    .bag2-skill-replace-current-meta {
+      font-size: clamp(7px, 0.7vw, 8px);
+      font-weight: 700;
+      color: #0369a1;
+      margin-top: 3px;
+    }
+    .bag2-skill-replace-current-submeta {
+      font-size: clamp(7px, 0.7vw, 8px);
+      font-weight: 700;
+      color: #0284c7;
+      margin-top: 1px;
+    }
+    .bag2-skill-replace-current-desc {
+      font-size: clamp(7px, 0.7vw, 8px);
+      font-weight: 600;
+      color: #475569;
+      margin-top: 3px;
+      line-height: 1.3;
+    }
+    .bag2-skill-replace-available-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .bag2-skill-replace-available-item {
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .bag2-skill-replace-available-item:hover:not(.disabled) {
+      background: rgba(56, 189, 248, 0.2);
+    }
+    .bag2-skill-replace-available-item.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .bag2-skill-replace-available-header {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .bag2-skill-replace-available-name {
+      font-size: clamp(10px, 1vw, 11px);
+      font-weight: 900;
+      color: #0c4a6e;
+    }
+    .bag2-skill-replace-available-meta {
+      font-size: clamp(7px, 0.7vw, 8px);
+      font-weight: 700;
+      color: #0369a1;
+      margin-top: 3px;
+    }
+    .bag2-skill-replace-available-submeta {
+      font-size: clamp(7px, 0.7vw, 8px);
+      font-weight: 700;
+      color: #0284c7;
+      margin-top: 1px;
+    }
+    .bag2-skill-replace-available-desc {
+      font-size: clamp(7px, 0.7vw, 8px);
+      font-weight: 600;
+      color: #475569;
+      margin-top: 3px;
+      line-height: 1.3;
+    }
+    .bag2-talent-display {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .bag2-talent-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8px;
+      margin: 0;
+      flex-shrink: 0;
+    }
+    .bag2-talent-icon {
+      width: 130px;
+      height: 130px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.7));
+      display: block;
+    }
+    .bag2-talent-total {
+      font-size: clamp(10px, 1vw, 12px);
+      font-weight: 900;
+      color: #0c4a6e;
+      padding: 4px 16px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 16px;
+      border: 2px solid rgba(251, 191, 36, 0.6);
+      min-width: 80px;
+      text-align: center;
+    }
+    .bag2-talent-list,
+    .bag2-ability-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 92%;
+      margin: 0 auto;
+      padding: 0;
+      flex: 1;
+      justify-content: flex-start;
+    }
+    .bag2-stat-row {
+      display: grid;
+      grid-template-columns: 58px 34px 1fr;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(186, 230, 253, 0.9);
+      border-radius: 7px;
+      padding: 4px 7px;
+    }
+    .bag2-stat-name {
+      font-weight: 800;
+      font-size: clamp(9px, 0.9vw, 10px);
+      color: #0c4a6e;
+    }
+    .bag2-stat-value {
+      font-weight: 900;
+      font-size: clamp(9px, 0.95vw, 11px);
+      color: #1d4ed8;
+      text-align: right;
+    }
+    .bag2-stat-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: #e0f2fe;
+      overflow: hidden;
+    }
+    .bag2-stat-fill {
+      height: 100%;
+      border-radius: inherit;
+    }
+    .bag2-stat-total {
+      margin-top: 4px;
+      font-weight: 900;
+      font-size: clamp(10px, 1.15vw, 13px);
+      color: #4338ca;
+      text-align: right;
+    }
+    .bag2-ability-container {
+      padding-top: 4px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .bag2-ability-skill-btn {
+      align-self: flex-end;
+      margin-right: 4%;
+      margin-bottom: 6px;
+      padding: 4px 14px;
+      font-size: clamp(9px, 0.9vw, 11px);
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(180deg, #38bdf8, #0284c7);
+      border: 1px solid rgba(56, 189, 248, 0.8);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: filter 0.2s;
+      flex-shrink: 0;
+    }
+    .bag2-ability-skill-btn:hover {
+      filter: brightness(1.1);
+    }
+    .bag2-ability-skill-btn:active {
+      filter: brightness(0.9);
+      transform: translateY(1px);
+    }
+    .bag2-ability-list {
+      width: 92%;
+      margin: 0 auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow-y: auto;
+    }
+    .bag2-ability-row {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(186, 230, 253, 0.9);
+      border-radius: 7px;
+      padding: 4px 8px;
+    }
+    .bag2-ability-name {
+      font-weight: 800;
+      font-size: clamp(9px, 0.9vw, 11px);
+      color: #0c4a6e;
+    }
+    .bag2-ability-values {
+      display: flex;
+      gap: 12px;
+    }
+    .bag2-ability-race,
+    .bag2-ability-cur {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .bag2-ability-label {
+      font-size: clamp(7px, 0.7vw, 9px);
+      font-weight: 700;
+      color: #64748b;
+    }
+    .bag2-ability-num {
+      font-size: clamp(10px, 1vw, 12px);
+      font-weight: 900;
+      color: #1d4ed8;
+    }
+    .bag2-ability-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .bag2-ability-bar {
+      height: 4px;
+      border-radius: 2px;
+      background: #e0f2fe;
+      overflow: hidden;
+    }
+    .bag2-ability-total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 8px;
+      font-size: clamp(9px, 0.9vw, 11px);
+      font-weight: 900;
+      color: #4338ca;
+    }
+    .bag2-ability-skill-modal {
+      min-width: 60%;
+      max-width: 80%;
+    }
+    .bag2-ability-skill-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    .bag2-ability-skill-item {
+      background: rgba(224, 242, 254, 0.72);
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+    .bag2-ability-skill-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .bag2-ability-skill-name {
+      font-weight: 900;
+      font-size: clamp(11px, 1.1vw, 13px);
+      color: #0c4a6e;
+    }
+    .bag2-ability-skill-level {
+      font-size: clamp(8px, 0.8vw, 10px);
+      font-weight: 700;
+      color: #b45309;
+      margin-left: auto;
+    }
+    .bag2-ability-skill-meta {
+      font-size: clamp(8px, 0.8vw, 10px);
+      font-weight: 700;
+      color: #0369a1;
+      margin-top: 4px;
+    }
+    .bag2-ability-skill-desc {
+      font-size: clamp(8px, 0.8vw, 10px);
+      font-weight: 600;
+      color: #475569;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+    .bag2-items-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      width: 94%;
+      margin: 6% auto 0;
+    }
+    .bag2-item-card {
+      background: rgba(224, 242, 254, 0.74);
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      border-radius: 8px;
+      padding: 7px 5px 6px;
+      text-align: center;
+    }
+    .bag2-item-name {
+      font-weight: 900;
+      font-size: clamp(9px, 0.9vw, 10px);
+      color: #0c4a6e;
+      line-height: 1.2;
+    }
+    .bag2-item-count {
+      font-size: clamp(8px, 0.85vw, 9px);
+      font-weight: 700;
+      color: #0369a1;
+      margin-top: 2px;
+    }
+    .bag2-item-use-btn {
+      margin-top: 3px;
+      height: 18px;
+      padding: 0 6px;
+      border-radius: 4px;
+      background: #0284c7;
+      color: #fff;
+      font-size: clamp(8px, 0.8vw, 9px);
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+    }
+    .bag2-item-use-btn:hover { background: #0369a1; }
+    .bag2-item-use-btn:active { transform: scale(0.96); }
+    .bag2-enhance-content {
+      font-size: clamp(9px, 1vw, 11px);
+      width: 95%;
+      margin: 3% auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-bottom: 8px;
+    }
+    .bag2-enhance-section-title {
+      font-weight: 900;
+      font-size: clamp(10px, 1.1vw, 12px);
+      color: #0c4a6e;
+      line-height: 1.1;
+    }
+    .bag2-enhance-equipped-card,
+    .bag2-gear-card {
+      display: grid;
+      grid-template-columns: 86px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(125, 211, 252, 0.75);
+      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(224,242,254,.88));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.4);
+    }
+    .bag2-enhance-equipped-card.is-empty,
+    .bag2-gear-card.is-empty {
+      border-style: dashed;
+    }
+    .bag2-enhance-equipped-media,
+    .bag2-gear-card-media {
+      min-height: 74px;
+      border-radius: 10px;
+      background: radial-gradient(circle at 50% 30%, rgba(255,255,255,.9), rgba(191,219,254,.82) 45%, rgba(125,211,252,.46));
+      border: 1px solid rgba(125, 211, 252, 0.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+    }
+    .bag2-enhance-equipped-img,
+    .bag2-gear-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .bag2-enhance-equipped-empty,
+    .bag2-gear-card-empty {
+      font-size: clamp(9px, 0.95vw, 11px);
+      font-weight: 800;
+      color: #64748b;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .bag2-enhance-equipped-name,
+    .bag2-gear-card-name {
+      font-size: clamp(10px, 1.05vw, 12px);
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+    .bag2-enhance-equipped-desc,
+    .bag2-gear-card-desc {
+      margin-top: 4px;
+      font-size: clamp(8px, 0.85vw, 10px);
+      font-weight: 700;
+      color: #0369a1;
+      line-height: 1.35;
+    }
+    .bag2-enhance-equipped-extra,
+    .bag2-gear-card-extra {
+      margin-top: 4px;
+      font-size: clamp(8px, 0.8vw, 9px);
+      font-weight: 700;
+      color: #64748b;
+      line-height: 1.25;
+    }
+    .bag2-enhance-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .bag2-enhance-chip {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(224,242,254,.9);
+      border: 1px solid rgba(125, 211, 252, 0.75);
+      color: #075985;
+      font-size: clamp(8px, 0.8vw, 9px);
+      font-weight: 800;
+      line-height: 1.1;
+    }
+    .bag2-enhance-seals {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .bag2-seal-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      min-height: 112px;
+      border: 1px solid rgba(125, 211, 252, 0.78);
+      border-radius: 10px;
+      padding: 6px 5px;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(224,242,254,.9));
+      cursor: pointer;
+      transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease;
+    }
+    .bag2-seal-card.is-selected {
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 2px rgba(251,191,36,0.4), 0 10px 20px rgba(14,116,144,.16);
+      transform: translateY(-1px);
+    }
+    .bag2-seal-img {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto;
+      display: block;
+      object-fit: contain;
+    }
+    .bag2-seal-name {
+      font-size: clamp(8px, 0.85vw, 9px);
+      font-weight: 800;
+      color: #0c4a6e;
+      line-height: 1.2;
+    }
+    .bag2-seal-owner {
+      font-size: clamp(7px, 0.75vw, 8px);
+      font-weight: 700;
+      color: #0369a1;
+      line-height: 1.15;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+    .bag2-gear-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .bag2-gear-list-card {
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(125, 211, 252, 0.75);
+      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(224,242,254,.88));
+    }
+    .bag2-gear-list-img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid rgba(125, 211, 252, 0.75);
+      background: rgba(255,255,255,.9);
+    }
+    .bag2-gear-list-name {
+      font-size: clamp(10px, 1.05vw, 12px);
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+    .bag2-gear-list-desc {
+      margin-top: 3px;
+      font-size: clamp(8px, 0.85vw, 9px);
+      font-weight: 700;
+      color: #0369a1;
+      line-height: 1.25;
+    }
+    .bag2-gear-list-meta {
+      margin-top: 4px;
+      font-size: clamp(8px, 0.8vw, 9px);
+      font-weight: 700;
+      color: #64748b;
+      line-height: 1.2;
+    }
+    .bag2-gear-list-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-end;
+    }
+    .bag2-slots {
+      position: absolute;
+      bottom: 6.5%;
+      left: 8%;
+      right: 10%;
+      height: 22%;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0;
+      align-items: stretch;
+      z-index: 3;
+    }
+    .bag2-slot-btn {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 95%;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      border-radius: 50%;
+      transition: transform 0.15s, filter 0.15s;
+      justify-self: center;
+    }
+    .bag2-slot-btn:hover { transform: translateY(-3px); filter: brightness(1.1); }
+    .bag2-slot-btn:active { transform: scale(0.95); }
+    .bag2-slot-btn.active {
+      filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.9));
+    }
+    .bag2-slot-pet-stage {
+      position: absolute;
+      left: 50%;
+      bottom: 25%;
+      transform: translateX(-50%);
+      width: 70%;
+      height: 50%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      overflow: visible;
+      z-index: 2;
+    }
+    .bag2-slot-pet-name {
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 22%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(8px, 0.8vw, 10px);
+      font-weight: 900;
+      color: #0c4a6e;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+      z-index: 3;
+      white-space: nowrap;
+    }
+    .bag2-slot-pet-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transform: none !important;
+    }
+    .bag2-slot-bg {
+      position: absolute;
+      left: 50%;
+      top: 70%;
+      transform: translate(-50%, -50%);
+      width: 135%;
+      height: 135%;
+      object-fit: contain;
+      z-index: 1;
+    }
+    .bag2-slot-level {
+      position: absolute;
+      bottom: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      font-size: clamp(6px, 0.6vw, 8px);
+      font-weight: 900;
+      color: #fef3c7;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+      z-index: 2;
+      white-space: nowrap;
+    }
+    .bag2-action-btns {
+      position: absolute;
+      bottom: 33%;
+      left: 11%;
+      right: 8%;
+      height: 8%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 2%;
+      z-index: 4;
+    }
+    .bag2-action-btn {
+      height: 100%;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .bag2-action-btn:hover:not(.disabled) { transform: translateY(-2px); filter: brightness(1.1); }
+    .bag2-action-btn:active:not(.disabled) { transform: scale(0.96); }
+    .bag2-action-btn.disabled { opacity: 0.5; cursor: not-allowed; }
+    .bag2-action-btn.active { opacity: 1; filter: brightness(1.3) drop-shadow(0 0 8px rgba(251, 191, 36, 0.9)); }
+    .bag2-action-btn.active img { filter: brightness(1.1); }
+    .bag2-action-btn img {
+      height: 100%;
+      width: auto;
+      object-fit: contain;
+    }
+    .bag2-sort-btn {
+      height: 140%;
+      width: 14%;
+      flex-shrink: 0;
+      position: relative;
+      left: 71%;
+      top: 200%;
+      z-index: 2;
+    }
+    .bag2-slot-btn.is-sorting {
+      cursor: pointer;
+      animation: sortingPulse 1.5s ease-in-out infinite;
+    }
+    .bag2-slot-btn.is-sorting .bag2-slot-bg {
+      filter: brightness(1.15) saturate(1.1);
+    }
+    .bag2-slot-btn.is-sorting-first {
+      animation: none;
+      filter: drop-shadow(0 0 16px rgba(34, 211, 238, 1)) drop-shadow(0 0 28px rgba(34, 211, 238, 0.6));
+      transform: scale(1.05);
+    }
+    .bag2-slot-btn.is-sorting-first .bag2-slot-bg {
+      filter: brightness(1.3) saturate(1.2);
+    }
+    @keyframes sortingPulse {
+      0%, 100% { filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.3)); }
+      50% { filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.7)); }
+    }
+    .bag2-sorting-hint {
+      position: absolute;
+      bottom: 24%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 16px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(251, 191, 36, 0.7);
+      border-radius: 20px;
+      color: #fef3c7;
+      font-size: clamp(9px, 0.8vw, 11px);
+      font-weight: 900;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 12px rgba(251, 191, 36, 0.3);
+      z-index: 25;
+      animation: hintSlideIn 0.3s ease-out;
+    }
+    @keyframes hintSlideIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
     @keyframes evoRing { 0% { transform: scale(0.6); opacity: 1; } 100% { transform: scale(1.45); opacity: 0; } }
     @keyframes evoFlash { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
@@ -6516,6 +7877,341 @@
         <button @click="changeLeaderboardPage(-1)" :disabled="leaderboardLoading || leaderboardPage <= 1" class="h-9 px-4 rounded-xl bg-white/10 text-sm font-black text-white disabled:opacity-40">上一页</button>
         <div class="text-xs font-black text-slate-300">第 {{ leaderboardPage }} / {{ leaderboardTotalPages }} 页</div>
         <button @click="changeLeaderboardPage(1)" :disabled="leaderboardLoading || leaderboardPage >= leaderboardTotalPages" class="h-9 px-4 rounded-xl bg-white/10 text-sm font-black text-white disabled:opacity-40">下一页</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showBag2Panel" class="fixed inset-0 z-[132] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeBag2Panel">
+    <div class="bag2-panel" @click.stop>
+      <img src="./resource-v7/背包ui/背包ui底图.png" class="bag2-bg" alt="">
+      <div v-if="bag2Loading" class="bag2-loading-mask">
+        <div class="bag2-spinner"></div>
+        <div class="bag2-loading-text">正在加载...</div>
+      </div>
+      <button @click="closeBag2Panel" class="bag2-close-btn" title="关闭">
+        <img src="./resource-v7/背包ui/退出.png" alt="关闭">
+      </button>
+
+      <div class="bag2-top-tabs">
+        <button @click="setBag2TopTab('info')" class="bag2-top-btn" :class="{ active: bag2TopTab === 'info' }">
+          <img src="./resource-v7/背包ui/信息.png" alt="信息">
+        </button>
+        <button @click="setBag2TopTab('items')" class="bag2-top-btn bag2-items-btn" :class="{ active: bag2TopTab === 'items' }">
+          <img src="./resource-v7/背包ui/物品.png" alt="物品">
+        </button>
+        <button @click="setBag2TopTab('enhance')" class="bag2-top-btn" :class="{ active: bag2TopTab === 'enhance' }">
+          <img src="./resource-v7/背包ui/强化.png" alt="强化">
+        </button>
+      </div>
+
+      <div class="bag2-pet-display">
+        <template v-if="bag2DisplayPet">
+          <div class="bag2-display-pet-frame pet-anim-frame">
+            <img :src="bagPetVisual(bag2DisplayPet).src" :style="bag2FocusPetAnimImageStyle(bag2DisplayPet)" @error="(event) => { const img = event && event.target; if (!img) return; if (img.dataset.animFallbackDone === '1') { withFallback(event); img.classList.add('pet-bob'); return; } img.dataset.animFallbackDone = '1'; img.src = petCurrentForm(bag2DisplayPet).img || ''; img.classList.add('pet-bob'); }" :class="['bag2-display-pet-img pet-anim-img', bagPetVisual(bag2DisplayPet).animated ? '' : 'pet-bob']">
+          </div>
+          <div v-if="bag2DisplayPetEquippedQixingSeal" class="bag2-pet-trait-disc" :title="`${bag2DisplayPetEquippedQixingSeal.name} Lv.${bag2DisplayPetEquippedQixingSeal.level}`">
+            <img :src="bag2DisplayPetEquippedQixingSeal.image" @error="withFallback" class="bag2-pet-trait-disc-img" alt="特性图标">
+          </div>
+          <div class="bag2-pet-element-grid">
+            <div v-for="(el, idx) in petElementList(bag2Species)" :key="'bag2_element_'+idx" class="bag2-pet-element-box">
+              <span class="bag2-pet-element-icon" :style="petElementIconStyle(el, 28)" :title="el"></span>
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <div class="bag2-no-pet">暂无亚比</div>
+        </template>
+      </div>
+
+      <div class="bag2-side-tabs" :class="{ 'bag2-side-tabs-enhance': bag2TopTab === 'enhance' }" v-if="bag2DisplayPet && (bag2TopTab === 'info' || bag2TopTab === 'enhance')">
+        <template v-if="bag2TopTab === 'info'">
+          <button @click="setBag2InfoTab('skills')" class="bag2-side-btn" :class="{ active: bag2InfoTab === 'skills' }">
+            <img src="./resource-v7/背包ui/技能按钮 拷贝.png" alt="技能">
+          </button>
+          <button @click="setBag2InfoTab('talent')" class="bag2-side-btn" :class="{ active: bag2InfoTab === 'talent' }">
+            <img src="./resource-v7/背包ui/天赋按钮 拷贝.png" alt="天赋">
+          </button>
+          <button @click="setBag2InfoTab('ability')" class="bag2-side-btn" :class="{ active: bag2InfoTab === 'ability' }">
+            <img src="./resource-v7/背包ui/能力按钮 拷贝.png" alt="能力">
+          </button>
+        </template>
+        <template v-else>
+          <button @click="setBag2EnhanceTab('traits')" class="bag2-side-btn" :class="{ active: bag2EnhanceTab === 'traits' }">
+            <img src="./resource-v7/背包ui/特性.png" alt="特性">
+          </button>
+          <button @click="setBag2EnhanceTab('gear')" class="bag2-side-btn bag2-gear-btn" :class="{ active: bag2EnhanceTab === 'gear' }">
+            <img src="./resource-v7/背包ui/装备.png" alt="装备">
+          </button>
+        </template>
+      </div>
+
+      <div class="bag2-content-area">
+        <template v-if="bag2TopTab === 'info' && bag2DisplayPet">
+          <div class="bag2-pet-info-header" v-if="bag2InfoTab !== 'talent' && bag2InfoTab !== 'ability'">
+            <div class="bag2-pet-info-row">
+              <span class="bag2-pet-name">{{ petDisplayName(bag2DisplayPet) }}</span>
+              <span class="bag2-pet-level">Lv.{{ bag2DisplayPet.level }}</span>
+            </div>
+            <div class="bag2-exp-bar">
+              <div class="bag2-exp-fill" :style="{ width: expPercent(bag2DisplayPet) + '%' }"></div>
+            </div>
+            <div class="bag2-exp-text">EXP {{ bag2DisplayPet.exp }} / {{ expRequired(bag2DisplayPet.level) }}</div>
+          </div>
+          <template v-if="bag2InfoTab === 'skills'">
+            <div class="bag2-skills-header">
+              <img :src="selectedPetTalentImageSrc" @error="withFallback" class="bag2-skills-talent-icon">
+              <div class="bag2-skills-power-btn">
+                <span class="bag2-skills-power-label">战斗力</span>
+                <span class="bag2-skills-power-value">{{ selectedPetBattlePower }}</span>
+              </div>
+              <button @click="toggleBag2StudyPanel" class="bag2-skills-study-btn" :class="{ active: showBag2StudyPanel }">
+                <span class="bag2-skills-study-label">学习力</span>
+                <span class="bag2-skills-study-value">{{ selectedStudyTotal }}</span>
+              </button>
+            </div>
+            <div class="bag2-skills-list">
+              <div v-for="(skillName, idx) in selectedPetEquippedSkills" :key="'bag2_skill_'+idx" class="bag2-skill-item">
+                <div class="bag2-skill-name">
+                  <span v-if="skillName" class="bag2-skill-type-dot" :style="petElementIconStyle(skillTypeMeta(safeSkillType(selectedPetSkillByName(skillName) || {})).label, 12)"></span>
+                  {{ skillName || '空白技能' }}
+                </div>
+                <div v-if="skillName" class="bag2-skill-meta">威力 {{ safeSkillPower(selectedPetSkillByName(skillName) || {}) }} | PP {{ safeSkillPP(selectedPetSkillByName(skillName) || {}) }}</div>
+                <div v-if="skillName" class="bag2-skill-desc">{{ skillDisplayDesc(selectedPetSkillByName(skillName) || {}) }}</div>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="bag2InfoTab === 'talent'">
+            <div class="bag2-talent-display">
+              <div class="bag2-talent-header">
+                <img :src="selectedPetTalentImageSrc" @error="withFallback" class="bag2-talent-icon">
+                <div class="bag2-talent-total">{{ selectedPetTalentTotal }}</div>
+              </div>
+              <div class="bag2-talent-list">
+                <div v-for="row in [{k:'hp',n:'体力天赋',v:selectedPetTalent.hp,c:'bg-emerald-400'},{k:'atk',n:'攻击天赋',v:selectedPetTalent.atk,c:'bg-indigo-400'},{k:'def',n:'防御天赋',v:selectedPetTalent.def,c:'bg-cyan-400'},{k:'spAtk',n:'特攻天赋',v:selectedPetTalent.spAtk,c:'bg-fuchsia-400'},{k:'spDef',n:'特防天赋',v:selectedPetTalent.spDef,c:'bg-violet-400'},{k:'speed',n:'速度天赋',v:selectedPetTalent.speed,c:'bg-amber-400'}]" :key="'bag2_talent_'+row.k" class="bag2-stat-row">
+                  <span class="bag2-stat-name">{{ row.n }}</span>
+                  <span class="bag2-stat-value">{{ row.v }}</span>
+                  <div class="bag2-stat-bar"><div class="bag2-stat-fill" :class="row.c" :style="{ width: Math.min(100, (row.v/62)*100)+'%' }"></div></div>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="bag2InfoTab === 'ability'">
+            <div v-if="bag2RaceStats && bag2AbilityStats" class="bag2-ability-container">
+              <button @click="toggleBag2AbilitySkillPanel" class="bag2-ability-skill-btn">查看技能</button>
+              <div class="bag2-ability-list">
+                <div v-for="row in [{k:'hp',n:'体力',race:bag2RaceStats.hp,ability:bag2AbilityStats.hp,c:'bg-emerald-400'},{k:'atk',n:'攻击',race:bag2RaceStats.atk,ability:bag2AbilityStats.atk,c:'bg-indigo-400'},{k:'def',n:'防御',race:bag2RaceStats.def,ability:bag2AbilityStats.def,c:'bg-cyan-400'},{k:'spAtk',n:'特攻',race:bag2RaceStats.spAtk,ability:bag2AbilityStats.spAtk,c:'bg-fuchsia-400'},{k:'spDef',n:'特防',race:bag2RaceStats.spDef,ability:bag2AbilityStats.spDef,c:'bg-violet-400'},{k:'speed',n:'速度',race:bag2RaceStats.speed,ability:bag2AbilityStats.speed,c:'bg-amber-400'}]" :key="'bag2_ability_'+row.k" class="bag2-ability-row">
+                  <span class="bag2-ability-name">{{ row.n }}</span>
+                  <div class="bag2-ability-values">
+                    <div class="bag2-ability-race">
+                      <span class="bag2-ability-label">种族</span>
+                      <span class="bag2-ability-num">{{ row.race }}</span>
+                    </div>
+                    <div class="bag2-ability-cur">
+                      <span class="bag2-ability-label">能力</span>
+                      <span class="bag2-ability-num">{{ row.ability }}</span>
+                    </div>
+                  </div>
+                  <div class="bag2-ability-bars">
+                    <div class="bag2-ability-bar"><div class="bag2-stat-fill" :class="row.c" :style="{ width: Math.min(100, (row.race/200)*100)+'%' }"></div></div>
+                    <div class="bag2-ability-bar"><div class="bag2-stat-fill" :class="row.c" :style="{ width: Math.min(100, (row.ability/800)*100)+'%' }"></div></div>
+                  </div>
+                </div>
+                <div class="bag2-ability-total-row">
+                  <span>种族总和：{{ bag2RaceStats.total }}</span>
+                  <span>能力总和：{{ bag2AbilityStats.total }}</span>
+                </div>
+              </div>
+            </div>
+            <div v-else class="flex items-center justify-center h-full text-sm font-black text-sky-700">暂无能力数据</div>
+          </template>
+        </template>
+        <template v-else-if="bag2TopTab === 'items'">
+          <div class="bag2-items-grid">
+            <div v-for="item in petItemInventoryRows" :key="'bag2_item_'+item.id" @click="item.canUse ? (item.supportsUseQuantity ? openBagItemUseDialog(item) : useBagItemOnSelectedPet(item.id)) : null" class="bag2-item-card" :class="item.canUse ? 'cursor-pointer' : 'opacity-60'">
+              <div class="bag2-item-name">{{ item.name }}</div>
+              <div class="bag2-item-count">{{ item.countLabel }}</div>
+              <button v-if="item.canUse" @click.stop="item.supportsUseQuantity ? openBagItemUseDialog(item) : useBagItemOnSelectedPet(item.id)" class="bag2-item-use-btn">使用</button>
+            </div>
+          </div>
+        </template>
+        <template v-else-if="bag2TopTab === 'enhance' && bag2DisplayPet">
+          <div class="bag2-enhance-content">
+            <template v-if="bag2EnhanceTab === 'traits'">
+              <div class="bag2-enhance-section-title">已装备特性</div>
+              <div class="bag2-enhance-equipped-card" :class="{ 'is-empty': !bag2DisplayPetEquippedQixingSeal }">
+                <div class="bag2-enhance-equipped-media">
+                  <img v-if="bag2DisplayPetEquippedQixingSeal" :src="bag2DisplayPetEquippedQixingSeal.image" @error="withFallback" class="bag2-enhance-equipped-img" alt="已装备特性">
+                  <div v-else class="bag2-enhance-equipped-empty">未装配特性</div>
+                </div>
+                <div>
+                  <div class="bag2-enhance-equipped-name">{{ bag2DisplayPetEquippedQixingSeal ? `${bag2DisplayPetEquippedQixingSeal.name} Lv.${bag2DisplayPetEquippedQixingSeal.level}` : '当前亚比未装配特性' }}</div>
+                  <div class="bag2-enhance-equipped-desc">{{ bag2DisplayPetEquippedQixingSeal ? bag2DisplayPetEquippedQixingSeal.rule.label : '装配后会在左侧小圆盘显示特性图标。' }}</div>
+                  <div class="bag2-enhance-equipped-extra">{{ bag2DisplayPetFeatureText }}</div>
+                </div>
+              </div>
+              <div class="bag2-enhance-toolbar">
+                <span class="bag2-enhance-chip">特性碎片 x {{ getItemCount('qixing_fragment') }}</span>
+                <span v-if="selectedQixingSeal && selectedQixingSealLevel < 4" class="bag2-enhance-chip">下级消耗 x {{ selectedQixingSealNextCost }} / {{ selectedQixingSealNextHcoinCost }}H币</span>
+                <span v-if="selectedQixingSeal && selectedQixingSealLevel < 4" class="bag2-enhance-chip">成功率 {{ selectedQixingSealUpgradeSuccessText }}</span>
+                <span v-if="selectedQixingSeal" class="bag2-enhance-chip">分解返还 x {{ selectedQixingSealDecomposeGain }}</span>
+                <button v-if="selectedQixingSeal && !selectedQixingSealEquippedOnSelectedPet" @click="equipPetItemToSelectedPet('qixing_seal', petId(bag2DisplayPet))" :disabled="!canEquipSelectedQixingSeal" class="h-8 px-3 rounded-lg bg-slate-900 text-white font-black disabled:opacity-50">装配</button>
+                <button v-if="selectedQixingSealEquippedOnSelectedPet" @click="unequipPetItem(petId(bag2DisplayPet))" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
+                <button @click="upgradeQixingSeal" :disabled="!selectedQixingSeal || selectedQixingSealLevel >= 4" class="h-8 px-3 rounded-lg bg-amber-400 text-slate-950 font-black disabled:opacity-50">升级</button>
+                <button @click="decomposeQixingSeal" :disabled="!canDecomposeSelectedQixingSeal" class="h-8 px-3 rounded-lg bg-slate-100 text-slate-700 font-black disabled:opacity-50">分解</button>
+              </div>
+              <div class="bag2-enhance-section-title">特性仓库</div>
+              <div class="bag2-enhance-seals">
+                <button v-for="seal in qixingSealRows" :key="'bag2_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="bag2-seal-card" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
+                  <img :src="seal.image" @error="withFallback" class="bag2-seal-img" :class="{ 'is-legacy': seal.isLegacy }">
+                  <div class="bag2-seal-name">{{ seal.name }} Lv.{{ seal.level }}</div>
+                  <div class="bag2-seal-owner">{{ seal.equippedPetName || '未装配' }}</div>
+                </button>
+              </div>
+            </template>
+            <template v-else>
+              <div class="bag2-enhance-section-title">当前装备</div>
+              <div class="bag2-gear-card" :class="{ 'is-empty': !bag2DisplayPetEquippedGear }">
+                <div class="bag2-gear-card-media">
+                  <img v-if="bag2DisplayPetEquippedGear" :src="dragonBoatBladeImageSrc" @error="withFallback" class="bag2-gear-card-img" alt="当前装备">
+                  <div v-else class="bag2-gear-card-empty">未装配装备</div>
+                </div>
+                <div>
+                  <div class="bag2-gear-card-name">{{ bag2DisplayPetEquippedGear ? bag2DisplayPetEquippedGear.name : '当前亚比未装备' }}</div>
+                  <div class="bag2-gear-card-desc">{{ bag2DisplayPetEquippedGear ? bag2DisplayPetEquippedGear.effectText : '装配装备后会替换当前亚比的装备栏。' }}</div>
+                  <div class="bag2-gear-card-extra">{{ dragonBoatBladeEquippedPetName ? `当前由 ${dragonBoatBladeEquippedPetName} 装备` : '当前没有亚比装备该武器。' }}</div>
+                </div>
+              </div>
+              <div class="bag2-enhance-section-title">装备仓库</div>
+              <div class="bag2-gear-list">
+                <div class="bag2-gear-list-card">
+                  <img :src="dragonBoatBladeImageSrc" @error="withFallback" class="bag2-gear-list-img" alt="端午竞技战刃">
+                  <div>
+                    <div class="bag2-gear-list-name">端午竞技战刃</div>
+                    <div class="bag2-gear-list-desc">攻击 +100，特攻 +100</div>
+                    <div class="bag2-gear-list-meta">库存 {{ getItemCount('dragon_boat_battle_blade') }}{{ dragonBoatBladeEquippedPetName ? `｜${dragonBoatBladeEquippedPetName}已装备` : '｜未装配' }}</div>
+                  </div>
+                  <div class="bag2-gear-list-actions">
+                    <button v-if="!bag2DisplayPetEquippedGear" @click="equipDragonBoatBladeToSelectedPet(petId(bag2DisplayPet))" :disabled="getItemCount('dragon_boat_battle_blade') <= 0" class="h-8 px-3 rounded-lg bg-sky-600 text-white font-black disabled:opacity-50">装备</button>
+                    <button v-else @click="unequipSelectedPetGear(petId(bag2DisplayPet))" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
+
+      <button v-if="bag2TopTab === 'info' && bag2InfoTab === 'skills' && bag2DisplayPet" @click="toggleBag2SkillReplacePanel" class="bag2-skill-replace-btn" :class="{ active: showBag2SkillReplacePanel }">
+        <img src="./resource-v7/背包ui/技能替换 拷贝 2.png" alt="技能替换">
+      </button>
+
+      <div class="bag2-action-btns">
+        <button @click="bag2SetFirstPet" class="bag2-action-btn" :class="{ disabled: !bag2DisplayPet }" title="设为首宠">
+          <img src="./resource-v7/背包ui/首发.png" alt="设为首宠">
+        </button>
+        <button @click="bag2ReturnToWarehouse" class="bag2-action-btn" :class="{ disabled: !bag2DisplayPet }" title="回仓">
+          <img src="./resource-v7/背包ui/回仓.png" alt="回仓">
+        </button>
+        <button @click="openWarehousePanel" class="bag2-action-btn" title="仓库">
+          <img src="./resource-v7/背包ui/仓库.png" alt="仓库">
+        </button>
+        <button @click="toggleBag2SortMode" class="bag2-action-btn bag2-sort-btn" :class="{ active: bag2SortMode }" title="排序">
+          <img src="./resource-v7/背包ui/排序.png" alt="排序">
+        </button>
+      </div>
+
+      <div v-if="bag2SortMode" class="bag2-sorting-hint">
+        <span v-if="bag2SortFirstSlotIdx < 0">点击选择要交换的亚比</span>
+        <span v-else>点击另一个亚比完成交换</span>
+      </div>
+
+      <div class="bag2-slots">
+        <button v-for="slot in bagSlots" :key="'bag2_slot_'+slot.idx" @click="handleBag2SlotClick(slot)" class="bag2-slot-btn" :class="{ active: slot.pet && petId(selectedPet)===petId(slot.pet), 'is-sorting': bag2SortMode, 'is-sorting-first': bag2SortMode && slot.idx === bag2SortFirstSlotIdx }">
+          <img src="./resource-v7/背包ui/球.png" class="bag2-slot-bg" alt="">
+          <template v-if="slot.pet">
+            <div class="bag2-slot-pet-name">{{ petDisplayName(slot.pet) }}</div>
+            <div class="bag2-slot-pet-stage pet-anim-frame">
+              <img :src="bagPetVisual(slot.pet).src" :style="bag2SlotPetAnimImageStyle(slot.pet)" @error="(event) => { const img = event && event.target; if (!img) return; if (img.dataset.animFallbackDone === '1') { withFallback(event); img.classList.add('pet-bob'); return; } img.dataset.animFallbackDone = '1'; img.src = petCurrentForm(slot.pet).img || ''; img.classList.add('pet-bob'); }" :class="['bag2-slot-pet-img pet-anim-img', bagPetVisual(slot.pet).animated ? '' : 'pet-bob']">
+            </div>
+            <div class="bag2-slot-level">Lv.{{ slot.pet.level }}</div>
+          </template>
+        </button>
+      </div>
+
+      <div v-if="showBag2StudyPanel" class="bag2-modal-overlay" @click="toggleBag2StudyPanel">
+        <div class="bag2-modal bag2-study-modal" @click.stop>
+          <div class="bag2-modal-title">学习力详情</div>
+          <div class="bag2-study-grid">
+            <div v-for="row in [{k:'hp',n:'体力',v:selectedPetStudy.hp,c:'bg-emerald-400'},{k:'atk',n:'攻击',v:selectedPetStudy.atk,c:'bg-indigo-400'},{k:'def',n:'防御',v:selectedPetStudy.def,c:'bg-cyan-400'},{k:'spAtk',n:'特攻',v:selectedPetStudy.spAtk,c:'bg-fuchsia-400'},{k:'spDef',n:'特防',v:selectedPetStudy.spDef,c:'bg-violet-400'},{k:'speed',n:'速度',v:selectedPetStudy.speed,c:'bg-amber-400'}]" :key="'bag2_study_'+row.k" class="bag2-study-item">
+              <span class="bag2-study-name">{{ row.n }}</span>
+              <span class="bag2-study-value">{{ row.v }}</span>
+              <div class="bag2-study-bar"><div class="bag2-study-fill" :class="row.c" :style="{ width: Math.min(100, (row.v/255)*100)+'%' }"></div></div>
+            </div>
+          </div>
+          <button @click="toggleBag2StudyPanel" class="bag2-modal-close">关闭</button>
+        </div>
+      </div>
+
+      <div v-if="showBag2AbilitySkillPanel" class="bag2-modal-overlay" @click="toggleBag2AbilitySkillPanel">
+        <div class="bag2-modal bag2-ability-skill-modal" @click.stop>
+          <div class="bag2-modal-title">可学习技能</div>
+          <div class="bag2-ability-skill-list">
+            <div v-for="skill in bag2AvailableSkills" :key="'bag2_ability_skill_'+skill.name" class="bag2-ability-skill-item">
+              <div class="bag2-ability-skill-header">
+                <span class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(skill || {})).label, 14)" :title="skillTypeMeta(safeSkillType(skill || {})).label"></span>
+                <span class="bag2-ability-skill-name">{{ skill.name }}</span>
+                <span class="bag2-ability-skill-level" v-if="skill.level">Lv.{{ skill.level }}</span>
+              </div>
+              <div class="bag2-ability-skill-meta">
+                {{ skillAttackTypeLabel(skill) }} | 威力 {{ safeSkillPower(skill) }} | 命中 {{ safeSkillAccuracy(skill) }} | PP {{ safeSkillPP(skill) }}
+              </div>
+              <div class="bag2-ability-skill-desc">{{ skillDisplayDesc(skill) }}</div>
+            </div>
+          </div>
+          <button @click="toggleBag2AbilitySkillPanel" class="bag2-modal-close">关闭</button>
+        </div>
+      </div>
+
+      <div v-if="showBag2SkillReplacePanel" class="bag2-modal-overlay" @click="toggleBag2SkillReplacePanel">
+        <div class="bag2-modal bag2-skill-replace-modal" @click.stop>
+          <div class="bag2-modal-title">技能替换</div>
+          <div class="bag2-skill-replace-toolbar">
+            <button @click="toggleBag2SkillMoveMode" class="bag2-skill-move-btn" :class="{ active: bag2SkillMoveMode }">
+              {{ bag2SkillMoveMode ? '退出调整位置' : '调整位置' }}
+            </button>
+            <button @click="toggleBag2SkillReplacePanel" class="bag2-modal-close-btn">关闭</button>
+          </div>
+          <div class="bag2-skill-replace-body">
+            <div class="bag2-skill-replace-current">
+              <div class="bag2-skill-replace-section-title">{{ bag2SkillMoveMode ? '点击两个技能交换位置' : '当前技能（点击选择要替换的）' }}</div>
+              <div class="bag2-skill-replace-current-list">
+                <div v-for="(skillName, idx) in selectedPetEquippedSkills" :key="'bag2_replace_current_'+idx" @click="selectSkillToReplace(idx)" class="bag2-skill-replace-current-item" :class="{ active: selectedSkillReplaceIdx === idx, 'move-selected': bag2SkillMoveMode && bag2SkillMoveFirstIdx === idx, 'move-mode': bag2SkillMoveMode }">
+                  <div class="bag2-skill-replace-current-header">
+                    <span class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(selectedPetSkillByName(skillName) || {})).label, 14)" :title="skillTypeMeta(safeSkillType(selectedPetSkillByName(skillName) || {})).label"></span>
+                    <span class="bag2-skill-replace-current-name">{{ skillName || '空' }}</span>
+                  </div>
+                  <div v-if="skillName" class="bag2-skill-replace-current-meta">Lv{{ selectedPetSkillByName(skillName)?.level || 1 }} | {{ skillTypeMeta(safeSkillType(selectedPetSkillByName(skillName) || {})).label }} | {{ skillAttackTypeLabel(selectedPetSkillByName(skillName) || {}) }}</div>
+                  <div v-if="skillName" class="bag2-skill-replace-current-submeta">威力 {{ safeSkillPower(selectedPetSkillByName(skillName) || {}) }} | 命中 {{ safeSkillAccuracy(selectedPetSkillByName(skillName) || {}) }} | PP {{ safeSkillPP(selectedPetSkillByName(skillName) || {}) }}</div>
+                  <div v-if="skillName" class="bag2-skill-replace-current-desc">{{ skillDisplayDesc(selectedPetSkillByName(skillName) || {}) }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="bag2-skill-replace-available">
+              <div class="bag2-skill-replace-section-title">{{ bag2SkillMoveMode ? '（调整位置模式）' : (selectedSkillReplaceIdx >= 0 ? '可用技能（点击替换）' : '可用技能（请先选择要替换的技能）') }}</div>
+              <div class="bag2-skill-replace-available-list">
+                <div v-for="skill in selectedPetAllSkills" :key="'bag2_replace_available_'+skill.id" @click="replaceSelectedSkill(skill)" class="bag2-skill-replace-available-item" :class="{ disabled: selectedPetEquippedSkills.includes(skill.name) || selectedSkillReplaceIdx < 0 || bag2SkillMoveMode }">
+                  <div class="bag2-skill-replace-available-header">
+                    <span class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(skill)).label, 14)" :title="skillTypeMeta(safeSkillType(skill)).label"></span>
+                    <span class="bag2-skill-replace-available-name">{{ skill.name }}</span>
+                  </div>
+                  <div class="bag2-skill-replace-available-meta">Lv{{ skill.level || 1 }} | {{ skillTypeMeta(safeSkillType(skill)).label }} | {{ skillAttackTypeLabel(skill) }}</div>
+                  <div class="bag2-skill-replace-available-submeta">威力 {{ safeSkillPower(skill) }} | 命中 {{ safeSkillAccuracy(skill) }} | PP {{ safeSkillPP(skill) }}{{ selectedPetEquippedSkills.includes(skill.name) ? ' | 已装备' : '' }}</div>
+                  <div class="bag2-skill-replace-available-desc">{{ skillDisplayDesc(skill) }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
