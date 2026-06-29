@@ -215,7 +215,8 @@ const BOSS_NAMES = [
   "君焰狼王", "魂战", "炽燎天", "擎霸空", "冰晶凤凰", "擎战", "帝王奇灵", "真·苍炎战神", "真·噬月武神",
   "真·烈焰凤凰", "龙·炎王", "真·赤色梦魇", "圣王麒麟", "圣·天伊", "冰罗皇", "奥天",
   "圣羽凌风", "噬星白虎", "夜羽银风", "飓焰朱雀", "断空翼皇",
-  "天苍霜龙", "创世星灵", "克劳斯", "斗焰吉拉", "皇极兔", "圣渊露龙", "星宇侠X"
+  "天苍霜龙", "创世星灵", "克劳斯", "斗焰吉拉", "皇极兔", "圣渊露龙", "星宇侠X",
+  "龙·帝卡", "裂空菲洛", "爆裂侠X", "天辉侠X", "帝夜奇纳", "司马懿", "达力戈", "艾恩"
 ];
 const BOSS_DEX_ENTRIES = [
   { dexId: 177, name: "骰子大王" }, { dexId: 215, name: "青龙灵兽" }, { dexId: 290, name: "七星神龙" }, { dexId: 305, name: "龙族大法师" },
@@ -250,7 +251,10 @@ const BOSS_DEX_ENTRIES = [
   { dexId: 1975, name: "飓焰朱雀" }, { dexId: 1985, name: "断空翼皇" },
   { dexId: 1994, name: "天苍霜龙" }, { dexId: 1999, name: "创世星灵" }, { dexId: 2001, name: "克劳斯" },
   { dexId: 2006, name: "斗焰吉拉" }, { dexId: 2010, name: "皇极兔" }, { dexId: 2011, name: "圣渊露龙" },
-  { dexId: 2019, name: "星宇侠X" }, { dexId: 2020, name: "无念" }
+  { dexId: 2019, name: "星宇侠X" }, { dexId: 2020, name: "无念" },
+  { dexId: 2023, name: "龙·帝卡" }, { dexId: 2027, name: "裂空菲洛" }, { dexId: 2030, name: "爆裂侠X" },
+  { dexId: 2037, name: "天辉侠X" }, { dexId: 2039, name: "帝夜奇纳" }, { dexId: 2043, name: "司马懿" },
+  { dexId: 2044, name: "达力戈" }, { dexId: 2049, name: "艾恩" }
 ];
 const BOSS_DEX_ID_TO_NAME = new Map(BOSS_DEX_ENTRIES.map((entry) => [entry.dexId, entry.name]));
 const CHALLENGE_ROAD_COVER_SRC_1 = encodeAssetSrc("./resource/boss-level/1-first.png");
@@ -273,7 +277,10 @@ const CHALLENGE_ROAD_NAME_ALIAS = {
   "龙炎王": "龙·炎王",
   "圣天伊": "圣·天伊",
   "真赤色梦魇": "真·赤色梦魇",
-  "天霜苍龙": "天苍霜龙"
+  "天霜苍龙": "天苍霜龙",
+  "龙帝卡": "龙·帝卡",
+  "爆裂侠x": "爆裂侠X",
+  "天辉侠x": "天辉侠X"
 };
 const CHALLENGE_ROAD_STAGE_COVER_DIRS = ["第一阶段", "第二阶段", "第三阶段", "第四阶段", "第五阶段"];
 const CHALLENGE_ROAD_STAGE_COVER_NAME_ALIAS = {
@@ -332,7 +339,7 @@ const CHALLENGE_ROAD_TIERS = [
     bossNames: [
       "白羽公主", "极冰海牙", "焚浪", "鲁曼", "拉诺斯", "纳兹", "岩战", "施瓦辛格", "塞妊", "幻冥",
       "金刚虎王", "千年瑞兽", "震天金刚", "太阳星诺", "月亮星诺", "疾影侠", "啸天侠", "炼狱战狮", "曹操", "巨角剑龙",
-      "天怒", "天煞", "雷霆", "万钧", "星皇", "张飞"
+      "天怒", "天煞", "雷霆", "万钧", "星皇", "张飞", "爆裂侠X", "天辉侠X", "艾恩"
     ]
   },
   {
@@ -347,7 +354,7 @@ const CHALLENGE_ROAD_TIERS = [
       "菲尔", "可兰", "雷霆青龙", "惊涛玄武", "炎王", "阿尔萨斯", "帝卡", "冥焰夜王", "斗罗明王", "光暗弑神",
       "龙刃", "君焰狼王", "魂战", "炽燎天", "擎霸空", "冰晶凤凰", "擎战", "帝王奇灵",
       "圣羽凌风", "噬星白虎", "夜羽银风", "飓焰朱雀", "断空翼皇",
-      "天苍霜龙", "克劳斯", "斗焰吉拉", "皇极兔", "圣渊露龙"
+      "天苍霜龙", "克劳斯", "斗焰吉拉", "皇极兔", "圣渊露龙", "裂空菲洛", "帝夜奇纳", "司马懿", "达力戈"
     ]
   },
   {
@@ -356,7 +363,7 @@ const CHALLENGE_ROAD_TIERS = [
     subtitle: "终阶BOSS挑战",
     cover: CHALLENGE_ROAD_COVER_SRC_5,
     guardianNames: [],
-    bossNames: ["真苍炎", "真噬月武神", "真烈焰凤凰", "龙炎王", "真赤色梦魇", "圣王麒麟", "圣天伊", "冰罗皇", "奥天", "创世星灵", "星宇侠X"]
+    bossNames: ["真苍炎", "真噬月武神", "真烈焰凤凰", "龙炎王", "真赤色梦魇", "圣王麒麟", "圣天伊", "冰罗皇", "奥天", "创世星灵", "星宇侠X", "龙·帝卡"]
   }
 ];
 const QIXING_SEAL_ITEM_ID = "qixing_seal";
@@ -622,7 +629,15 @@ const BOSS_RANDOM_SKILL_POOL_BY_DEX_ID = {
   2010: ["春木之歌", "永恒之力", "星辰破", "乾坤炮"],
   2011: ["应龙沧海", "古渊巨啸", "怒涛咆哮"],
   2019: ["星宇X斩", "星宇魂魄", "光之斩魄", "乾坤斗转", "光之耀"],
-  2020: ["邪念俱灰", "无念化境", "圣念破暗", "念之意志", "幻魔拳", "圣灵噬魂", "无尽黑洞"]
+  2020: ["邪念俱灰", "无念化境", "圣念破暗", "念之意志", "幻魔拳", "圣灵噬魂", "无尽黑洞"],
+  2023: ["破次元斩", "数据爆发", "龙流破碎", "龙·魂闪"],
+  2027: ["裂空轨迹", "空间碎裂击", "破碎空灵球", "噬空之灵"],
+  2030: ["奥特X爆焰", "火海之歌", "星火灵光", "火海焚烧"],
+  2037: ["天辉翔空炮", "X光辉", "奥特极光闪", "奥特念力"],
+  2039: ["逆转炎天", "暗夜帝影", "夜火之拥", "怒火焚夜"],
+  2043: ["灵爆", "吞日", "叠耀", "界灵业火"],
+  2044: ["刀剑如梦", "攻守兼备", "混森难搜", "大力奇迹"],
+  2049: ["王之降临", "剑芒之歌", "王之剑"]
 };
 const BOSS_CHAIN_CHALLENGE_BY_FINAL_DEX_ID = {
   1915: { firstDexId: 1461, firstName: "苍炎战神", finalName: "真·苍炎战神", finalDamageReduction: 0.3, finalDamageReductionTurns: 3 },
@@ -645,11 +660,11 @@ const EXCLUDED_GUARDIAN_NAMES = ["魔灯鬼王"];
 const EXCLUDED_BOSS_NAMES = ["冰山修罗", "神照修罗王", "黯天凯撒皇"];
 const SHOP_EGG_NAMES = [
   "阿努比斯", "寒冰公主", "花冠公主", "燕尾怪盗", "黑暗守卫", "变异库斯特", "星云大圣", "暗影夜蝠",
-  "宇宙侠", "冰霜射手", "爆裂侠", "怒风侠", "天辉侠", "霸气侠", "圣盾奇凌王"
+  "宇宙侠", "冰霜射手", "爆裂侠", "怒风侠", "天辉侠", "霸气侠", "圣盾奇凌王", "炫光金小问"
 ];
 const SHOP_EGG_EXCLUDED_NAMES = new Set(["爆裂侠X", "天辉侠X"]);
 const SHOP_EGG_EXCLUDED_DEX_IDS = new Set([1767]);
-const SHOP_EGG_DEX_IDS = new Set([1736,1746,1782,1834,1645,1678,1680,1728,1881,948,1296,1298,1300,1307,1662]);
+const SHOP_EGG_DEX_IDS = new Set([1736,1746,1782,1834,1645,1678,1680,1728,1881,948,1296,1298,1300,1307,1662,2024]);
 const STUDY_BATTLEFIELDS = [
   { key: "atk", label: "攻击", guardianName: "朵朵兔" },
   { key: "spAtk", label: "特攻", guardianName: "闪光河豚" },
@@ -789,7 +804,7 @@ const DEFAULT_BATTLE_BG_SRC = encodeAssetSrc("./resource/ui/aola-battle-backgrou
 const STAR_DOMAIN_BATTLE_BG_SRC = encodeAssetSrc("./resource/ui/star_domain.png");
 const GUARDIAN_LEVELS = [30, 40, 50, 60, 70, 80, 90, 100];
 const EXTRA_GUARDIAN_LEVELS = [100];
-const MAX_OPEN_CHALLENGE_DEX_ID = 2020;
+const MAX_OPEN_CHALLENGE_DEX_ID = 2049;
 const EXTRA_PERSIST_DEX_IDS = new Set([QIXING_ANCIENT_STAR_DRAGON_DEX.rootDexId, QIXING_ANCIENT_STAR_DRAGON_DEX.dexId]);
 const canPersistPetDexId = (dexId) => {
   const id = Number(dexId) || 0;
@@ -812,7 +827,7 @@ const NO_EGG_ACTION_DEX_IDS = new Set([
   116,117,118,119,210,213,216,217,218,219,222,223,224,225,227,237,239,240,241,242,243,244,245,246,247,248,250,251,252,
   269,270,272,301,304,306,307,308,318,319,321,322,324,325,326,327,329,330,331,332,333,334,340,359,360,361,369,399,400,
   401,402,403,404,405,415,419,420,446,447,448,461,462,464,465,466,523,527,609,716,717,735,791,792,808,809,869,888,889,
-  892,893,998,999,1000,1001,1087,1088,1089,1090,1283,1310,1617,1835,1836,1885,1886,1929,1930,1979
+  892,893,998,999,1000,1001,1087,1088,1089,1090,1283,1310,1617,1835,1836,1885,1886,1929,1930,1979,2025
 ]);
 const canObtainEggByActionDexId = (dexId) => {
   const id = Number(dexId) || 0;
@@ -870,20 +885,68 @@ const SUPER_DICE_BOMB_STONE_BACKFILL_MIGRATION_KEY = "superDiceBombStoneBackfill
 const DICE_KING_DEX_ID = 177;
 const NO14_DEX_ID = 1713;
 const DICE_BOMB_SKILL_EFFECT_ID = 9204;
-const SUPER_DICE_BOMB_SKILL = {
+const makeLearnableSkill = ({ skillId, name, element, attackType, attackTypeCode, power, pp, accuracy, desc }) => ({
+  skillId,
+  skillKey: `${name}#${element}`,
+  name,
+  element,
+  attackType,
+  attackTypeCode,
+  attackTypeLabel: attackType,
+  type: `${element}/${attackType}`,
+  power,
+  pp,
+  accuracy,
+  desc
+});
+const SUPER_DICE_BOMB_SKILL = makeLearnableSkill({
   skillId: 900314,
-  skillKey: "超级骰子炸弹#机械系",
-  name: "超级骰子炸弹",
-  element: "机械系",
-  attackType: "属性攻击",
+  name: "\u8d85\u7ea7\u9ab0\u5b50\u70b8\u5f39",
+  element: "\u673a\u68b0\u7cfb",
+  attackType: "\u5c5e\u6027\u653b\u51fb",
   attackTypeCode: 2,
-  attackTypeLabel: "属性攻击",
-  type: "机械系/属性攻击",
-  power: 0,
+  power: -1,
   pp: 10,
   accuracy: 70,
-  desc: "投掷点数1-6，每回合扣除对方点数×100的体力值，自身回复点数×100的体力值，持续5回合。"
-};
+  desc: "\u968f\u673a\u63b7\u51fa1-6\u70b9\uff0c\u6839\u636e\u70b9\u6570\u89e6\u53d1\u6548\u679c\u3002"
+});
+const SKILL_STONE_ONLY_MECHA_WARRIOR = "mecha_warrior";
+const SKILL_STONE_ONLY_XUANGUANG_TIEQUANSHU = "xg_tiequan_mouse";
+const MECHA_WARRIOR_DEX_ID = 123;
+const XUANGUANG_TIEQUANSHU_DEX_ID = 1392;
+const SKILL_STONE_SHOP_CONFIG = Object.freeze({
+  alloy_v_slash_skill_stone: {
+    item: { id: "alloy_v_slash_skill_stone", name: "\u8d85\u5408\u91d1v\u578b\u65a9\u6280\u80fd\u77f3", price: 500000, purchaseLimit: 1, desc: "\u4ec5\u9650\u673a\u7532\u52c7\u58eb\u4f7f\u7528\uff0c\u4f7f\u7528\u540e\u53ef\u5b66\u4e60\u6280\u80fd\u8d85\u5408\u91d1v\u578b\u65a9\u3002" },
+    onlyFor: SKILL_STONE_ONLY_MECHA_WARRIOR,
+    skill: makeLearnableSkill({ skillId: 900401, name: "\u8d85\u5408\u91d1v\u578b\u65a9", element: "\u673a\u68b0\u7cfb", attackType: "\u666e\u901a\u653b\u51fb", attackTypeCode: 0, power: 400, pp: 5, accuracy: 100, desc: "\u653b\u51fb\u5bf9\u65b9\u5355\u4f53\uff0c30%\u7684\u6982\u7387\u964d\u4f4e\u5bf9\u65b9\u9632\u5fa1\u3001\u7279\u9632\u548c\u95ea\u907f\u54041\u7ea7\uff0c\u5e76\u5c06\u4f24\u5bb3\u503c\u768430%\u8f6c\u5316\u4e3a\u81ea\u8eab\u4f53\u529b\u3002" })
+  },
+  mecha_overclock_skill_stone: {
+    item: { id: "mecha_overclock_skill_stone", name: "\u673a\u7532\u8d85\u9891\u6280\u80fd\u77f3", price: 800000, purchaseLimit: 1, desc: "\u4ec5\u9650\u673a\u7532\u52c7\u58eb\u4f7f\u7528\uff0c\u4f7f\u7528\u540e\u53ef\u5b66\u4e60\u6280\u80fd\u673a\u7532\u8d85\u9891\u3002" },
+    onlyFor: SKILL_STONE_ONLY_MECHA_WARRIOR,
+    skill: makeLearnableSkill({ skillId: 900402, name: "\u673a\u7532\u8d85\u9891", element: "\u673a\u68b0\u7cfb", attackType: "\u5c5e\u6027\u653b\u51fb", attackTypeCode: 2, power: -1, pp: 5, accuracy: 100, desc: "\u63d0\u5347\u81ea\u8eab\u9664\u7279\u653b\u4ee5\u5916\u7684\u5168\u5c5e\u60271\u7ea7\uff0c\u63d0\u5347\u4f24\u5bb315%\uff0c\u6bcf\u56de\u5408\u672b\u63d0\u5347\u653b\u51fb\u3001\u547d\u4e2d\u548c\u66b4\u51fb\u54041\u7ea7\uff0c\u6301\u7eed3\u56de\u5408\u3002" })
+  },
+  mecha_field_skill_stone: {
+    item: { id: "mecha_field_skill_stone", name: "\u673a\u7532\u9886\u57df\u6280\u80fd\u77f3", price: 300000, purchaseLimit: 1, desc: "\u4ec5\u9650\u673a\u7532\u52c7\u58eb\u4f7f\u7528\uff0c\u4f7f\u7528\u540e\u53ef\u5b66\u4e60\u6280\u80fd\u673a\u7532\u9886\u57df\u3002" },
+    onlyFor: SKILL_STONE_ONLY_MECHA_WARRIOR,
+    skill: makeLearnableSkill({ skillId: 900403, name: "\u673a\u7532\u9886\u57df", element: "\u673a\u68b0\u7cfb", attackType: "\u5c5e\u6027\u653b\u51fb", attackTypeCode: 2, power: -1, pp: 3, accuracy: 100, desc: "\u5148\u53d1\uff0c\u4fdd\u62a4\u81ea\u8eab\u5c5e\u60274\u56de\u5408\uff0c\u63d0\u5347\u53cc\u963220%\uff0c\u5e76\u83b7\u5f9715%\u51cf\u4f24\uff0c\u6301\u7eed4\u56de\u5408\u3002" })
+  },
+  hurricane_meteor_punch_skill_stone: {
+    item: { id: "hurricane_meteor_punch_skill_stone", name: "\u98d3\u98ce\u6d41\u661f\u62f3\u6280\u80fd\u77f3", price: 500000, purchaseLimit: 1, desc: "\u4ec5\u9650\u70ab\u5149\u94c1\u62f3\u9f20\u4f7f\u7528\uff0c\u4f7f\u7528\u540e\u53ef\u5b66\u4e60\u6280\u80fd\u98d3\u98ce\u6d41\u661f\u62f3\u3002" },
+    onlyFor: SKILL_STONE_ONLY_XUANGUANG_TIEQUANSHU,
+    skill: makeLearnableSkill({ skillId: 900404, name: "\u98d3\u98ce\u6d41\u661f\u62f3", element: "\u683c\u6597\u7cfb", attackType: "\u7279\u6b8a\u653b\u51fb", attackTypeCode: 1, power: 40, pp: 5, accuracy: 100, desc: "1\u56de\u5408\u7206\u53d12-20\u6b21\u653b\u51fb\u5bf9\u65b9\u5355\u4f53\uff0c\u5355\u6570\u6b21\u63d0\u5347\u7279\u9632\u3001\u9632\u5fa1\u548c\u95ea\u907f\uff0c\u5076\u6570\u6b21\u63d0\u5347\u7279\u653b\u3001\u66b4\u51fb\u548c\u547d\u4e2d\uff0c\u5e76\u5438\u53d630%\u4f24\u5bb3\u56de\u590d\u4f53\u529b\u3002" })
+  },
+  unstoppable_skill_stone: {
+    item: { id: "unstoppable_skill_stone", name: "\u6240\u5411\u62ab\u9761\u6280\u80fd\u77f3", price: 300000, purchaseLimit: 1, desc: "\u4ec5\u9650\u70ab\u5149\u94c1\u62f3\u9f20\u4f7f\u7528\uff0c\u4f7f\u7528\u540e\u53ef\u5b66\u4e60\u6280\u80fd\u6240\u5411\u62ab\u9761\u3002" },
+    onlyFor: SKILL_STONE_ONLY_XUANGUANG_TIEQUANSHU,
+    skill: makeLearnableSkill({ skillId: 900405, name: "\u6240\u5411\u62ab\u9761", element: "\u683c\u6597\u7cfb", attackType: "\u5c5e\u6027\u653b\u51fb", attackTypeCode: 2, power: -1, pp: 5, accuracy: 100, desc: "\u63d0\u5347\u81ea\u8eab\u9664\u653b\u51fb\u5916\u7684\u5168\u5c5e\u60271\u7ea7\uff0c\u63d0\u5347\u81ea\u8eab\u4f24\u5bb3\u6297\u602733%\uff0c\u6301\u7eed4\u56de\u5408\u3002" })
+  },
+  iron_fist_thousand_weight_skill_stone: {
+    item: { id: "iron_fist_thousand_weight_skill_stone", name: "\u94c1\u62f3\u5343\u94a7\u6280\u80fd\u77f3", price: 800000, purchaseLimit: 1, desc: "\u4ec5\u9650\u70ab\u5149\u94c1\u62f3\u9f20\u4f7f\u7528\uff0c\u4f7f\u7528\u540e\u53ef\u5b66\u4e60\u6280\u80fd\u94c1\u62f3\u5343\u94a7\u3002" },
+    onlyFor: SKILL_STONE_ONLY_XUANGUANG_TIEQUANSHU,
+    skill: makeLearnableSkill({ skillId: 900406, name: "\u94c1\u62f3\u5343\u94a7", element: "\u683c\u6597\u7cfb", attackType: "\u7279\u6b8a\u653b\u51fb", attackTypeCode: 1, power: 150, pp: 10, accuracy: 100, desc: "\u5148\u53d1\uff0c\u5fc5\u4e2d\uff0c\u524a\u5f31\u5bf9\u65b9\u653b\u51fb\u3001\u7279\u653b\u3001\u7279\u9632\u3001\u547d\u4e2d\u3001\u901f\u5ea6\u54041\u7ea7\uff0c\u5e76\u4ee4\u5bf9\u65b92\u56de\u5408\u5185\u65e0\u6cd5\u63d0\u5347\u5c5e\u6027\u3002" })
+  }
+});
+const SKILL_STONE_ITEM_IDS = new Set(Object.keys(SKILL_STONE_SHOP_CONFIG));
 const CHALLENGE_MORALE_INTERVAL_TURNS = 10;
 const GAMEPLAY_GUIDE_LINES = [
   "欢迎来到Aola Star Hub！",
@@ -3861,6 +3924,49 @@ const manualHardcodedSkillEffects = (skill) => {
   const compactSkillName = name.replace(/[·.\s]/g, "");
   const skillDesc = normalize(skill && skill.desc).replace(/％/g, "%");
   const skillId = Number(skill && skill.skillId) || 0;
+
+  if (skillId === 900401 || name === "\u8d85\u5408\u91d1v\u578b\u65a9") {
+    return [
+      { kind: "stage", target: "opponent", keys: ["def", "spDef", "evasion"], delta: -1, chance: 0.3, requireHit: true },
+      { kind: "lifesteal", target: "self", ratio: 0.3, requireHit: true }
+    ];
+  }
+  if (skillId === 900402 || name === "\u673a\u7532\u8d85\u9891") {
+    return [
+      { kind: "stage", target: "self", keys: ["atk", "def", "spDef", "speed", "accuracy", "evasion", "critStage"], delta: 1, chance: 1, requireHit: false },
+      { kind: "damageBoost", target: "self", factor: 1.15, turns: 3 },
+      { kind: "timedStage", target: "self", keys: ["atk", "accuracy", "critStage"], delta: 1, turns: 3 }
+    ];
+  }
+  if (skillId === 900403 || name === "\u673a\u7532\u9886\u57df") {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "stageGuard", target: "self", mode: "debuff", turns: 4, requireHit: false },
+      { kind: "abilityStatFactor", target: "self", keys: ["def", "spDef"], factor: 1.2, turns: 4 },
+      { kind: "damageReduction", target: "self", ratio: 0.15, turns: 4 }
+    ];
+  }
+  if (skillId === 900404 || name === "\u98d3\u98ce\u6d41\u661f\u62f3") {
+    return [
+      { kind: "multiHit", target: "opponent", min: 2, max: 20 },
+      { kind: "landedHitParityStage", target: "self", oddKeys: ["spDef", "def", "evasion"], evenKeys: ["spAtk", "critStage", "accuracy"], delta: 1, requireHit: true },
+      { kind: "lifesteal", target: "self", ratio: 0.3, requireHit: true }
+    ];
+  }
+  if (skillId === 900405 || name === "\u6240\u5411\u62ab\u9761") {
+    return [
+      { kind: "stage", target: "self", keys: ["def", "spAtk", "spDef", "speed", "accuracy", "evasion", "critStage"], delta: 1, chance: 1, requireHit: false },
+      { kind: "damageReduction", target: "self", ratio: 0.33, turns: 4 }
+    ];
+  }
+  if (skillId === 900406 || name === "\u94c1\u62f3\u5343\u94a7") {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "mustHit", target: "self" },
+      { kind: "stage", target: "opponent", keys: ["atk", "spAtk", "spDef", "accuracy", "speed"], delta: -1, chance: 1, requireHit: true },
+      { kind: "stageGuard", target: "opponent", mode: "buff", turns: 2, requireHit: true }
+    ];
+  }
   if (skillId === 1050) {
     return [
       { kind: "selfKo", target: "self" },
@@ -6051,6 +6157,34 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
           logs.push(`${who}${act}${Math.abs(e.delta)}级：${changed.map((k) => battleStatLabel(k)).join("、")}${chance < 1 ? `（概率${Math.round(chance * 100)}%）` : ""}`);
         }
       });
+      return;
+    }
+
+    if (e.kind === "abilityStatFactor") {
+      const side = sideByTarget(e.target || "self");
+      const keys = (Array.isArray(e.keys) ? e.keys : []).map((k) => normalize(k)).filter((k, idx, arr) => BATTLE_STAGE_KEYS.includes(k) && arr.indexOf(k) === idx);
+      const factor = Math.max(0.01, Number(e.factor) || 1);
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      if (keys.length <= 0) return;
+      addTimedEffect(scene, side, { kind: "abilityStatFactor", turns, data: { keys, factor } });
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      const pct = Math.round(Math.abs(factor - 1) * 100);
+      logs.push(`${who}${keys.map((k) => battleStatLabel(k)).join("\u3001")}\u6570\u503c${factor >= 1 ? "\u63d0\u5347" : "\u964d\u4f4e"}${pct}%\uff0c\u6301\u7eed${turns}\u56de\u5408`);
+      return;
+    }
+    if (e.kind === "landedHitParityStage") {
+      const hitCount = Math.max(0, Math.floor(Number(skill && skill.__lastLandedHitCount) || 0));
+      if (hitCount <= 0) return;
+      const side = sideByTarget(e.target || "self");
+      const sourceKeys = hitCount % 2 === 1 ? e.oddKeys : e.evenKeys;
+      const keys = (Array.isArray(sourceKeys) ? sourceKeys : []).map((k) => normalize(k)).filter((k, idx, arr) => ALL_ABILITY_STAGE_KEYS.includes(k) && arr.indexOf(k) === idx);
+      const delta = Math.floor(Number(e.delta) || 0);
+      if (keys.length <= 0 || delta === 0) return;
+      const changed = applyStageDelta(scene, side, keys, delta);
+      if (changed.length > 0) {
+        const who = side === "attacker" ? scene.attackerName : scene.targetName;
+        logs.push(`${skill.name}\u547d\u4e2d${hitCount}\u6b21\uff0c${who}${delta > 0 ? "\u63d0\u5347" : "\u964d\u4f4e"}${Math.abs(delta)}\u7ea7\uff1a${changed.map((k) => battleStatLabel(k)).join("\u3001")}`);
+      }
       return;
     }
     if (e.kind === "damageDelay") {
@@ -9447,6 +9581,8 @@ createApp({
         weeklyBossAttempts: { bossKey: WEEKLY_BOSS_CONFIG.key, date: "", used: 0 },
         weeklyBossHonorRewards: {},
         weeklyBossRewardState: { bossKey: WEEKLY_BOSS_CONFIG.key, rewardStateVersion: WEEKLY_BOSS_REWARD_STATE_VERSION, divinePetKeyClaimed: false, exchangedEgg: false, lastRewardDate: "", clearedDifficulties: {} },
+        shopDailyPurchases: { date: "", counts: {} },
+        shopLimitedPurchases: {},
         dragonBoatShopPurchases: {},
         qixingSeals: [],
         qixingGacha: { pity: 0, pityByKey: { phase1_ice_princess: 0, phase2_qiankun_skin: 0 }, limitedEggs: {} },
@@ -9748,6 +9884,27 @@ createApp({
             lastRewardDate: isCurrentRewardState ? normalize(source.lastRewardDate) : "",
             clearedDifficulties
           };
+        })(),
+        shopDailyPurchases: (() => {
+          const source = loaded.shopDailyPurchases && typeof loaded.shopDailyPurchases === "object" ? loaded.shopDailyPurchases : {};
+          const countsSource = source.counts && typeof source.counts === "object" ? source.counts : {};
+          const counts = {};
+          Object.keys(countsSource).forEach((rawId) => {
+            const id = normalize(rawId);
+            if (!id) return;
+            counts[id] = Math.max(0, Math.floor(Number(countsSource[rawId]) || 0));
+          });
+          return { date: normalize(source.date), counts };
+        })(),
+        shopLimitedPurchases: (() => {
+          const source = loaded.shopLimitedPurchases && typeof loaded.shopLimitedPurchases === "object" ? loaded.shopLimitedPurchases : {};
+          const out = {};
+          Object.keys(source).forEach((rawId) => {
+            const id = normalize(rawId);
+            if (!id) return;
+            out[id] = Math.max(0, Math.floor(Number(source[rawId]) || 0));
+          });
+          return out;
         })(),
         dragonBoatShopPurchases: (() => {
           const source = loaded.dragonBoatShopPurchases && typeof loaded.dragonBoatShopPurchases === "object" ? loaded.dragonBoatShopPurchases : {};
@@ -10150,6 +10307,7 @@ createApp({
       { id: "talent_grade_tianxia_fruit", name: "天下无双果实", count: 1, cost: 50, limit: 2 },
       { id: DRAGON_BOAT_BLADE_ITEM_ID, name: "端午竞技战刃", count: 1, cost: 100, limit: 1, image: DRAGON_BOAT_BLADE_IMAGE_SRC }
     ];
+    const skillShopItems = ref(Object.values(SKILL_STONE_SHOP_CONFIG).map((config) => ({ ...config.item })));
     const shopItems = ref([
       {
         id: "pp_bean_s",
@@ -10248,6 +10406,13 @@ createApp({
         desc: "指定亚比速度学习力 +1"
       },
       {
+        id: "divine_pet_key",
+        name: "神宠之匙",
+        price: 30000,
+        dailyLimit: 10,
+        desc: "用于启星转盘抽取神宠，每日限购 10 把"
+      },
+      {
         id: "small_exp_fruit",
         name: "小经验果",
         price: 200,
@@ -10302,7 +10467,8 @@ createApp({
         desc: "使指定亚比天赋总值直接达到天下无双"
       }
     ]);
-    const itemCatalog = computed(() => initialOnlyItems.concat(shopItems.value));
+    const allHcoinShopItems = computed(() => shopItems.value.concat(skillShopItems.value));
+    const itemCatalog = computed(() => initialOnlyItems.concat(shopItems.value, skillShopItems.value));
     const getTimeTunnelRewardInfo = (floor) => {
       const safeFloor = Math.max(1, Math.floor(Number(floor) || 1));
       const nextRewardFloor = Math.ceil(safeFloor / TIME_TUNNEL_REWARD_INTERVAL) * TIME_TUNNEL_REWARD_INTERVAL;
@@ -10777,6 +10943,52 @@ createApp({
         || names.includes("骰子大王")
         || names.includes("NO.14");
     };
+
+    const skillStoneConfigByItemId = (itemId) => SKILL_STONE_SHOP_CONFIG[normalize(itemId)] || null;
+    const skillStoneRestrictionLabel = (config) => {
+      if (!config || !config.onlyFor) return "";
+      if (config.onlyFor === SKILL_STONE_ONLY_MECHA_WARRIOR) return "\u673a\u7532\u52c7\u58eb";
+      if (config.onlyFor === SKILL_STONE_ONLY_XUANGUANG_TIEQUANSHU) return "\u70ab\u5149\u94c1\u62f3\u9f20";
+      return "\u6307\u5b9a\u4e9a\u6bd4";
+    };
+    const canUseRestrictedSkillStoneOnPet = (pet, config) => {
+      if (!config || !config.onlyFor) return true;
+      if (!pet) return false;
+      const ids = [pet.dexId, pet.baseDexId, resolveEvolutionDexIdByPetAndStage(pet, 0)].map((id) => Number(id) || 0);
+      const names = [pet.speciesName, pet.fixedName, petDisplayName(pet)].map((name) => normalize(name)).filter(Boolean);
+      if (config.onlyFor === SKILL_STONE_ONLY_MECHA_WARRIOR) {
+        return ids.includes(MECHA_WARRIOR_DEX_ID) || names.some((name) => name.includes("\u673a\u7532\u52c7\u58eb"));
+      }
+      if (config.onlyFor === SKILL_STONE_ONLY_XUANGUANG_TIEQUANSHU) {
+        return ids.includes(XUANGUANG_TIEQUANSHU_DEX_ID) || names.some((name) => name.includes("\u70ab\u5149\u94c1\u62f3\u9f20"));
+      }
+      return true;
+    };
+    const learnSkillFromSkillStone = (pet, itemId) => {
+      const config = skillStoneConfigByItemId(itemId);
+      if (!config || !config.skill) return false;
+      const skillName = normalizeSkillKey(config.skill.name);
+      if (!canUseRestrictedSkillStoneOnPet(pet, config)) {
+        showToast(`${skillName}\u6280\u80fd\u77f3\u4ec5\u9650${skillStoneRestrictionLabel(config)}\u4f7f\u7528\u3002`);
+        return true;
+      }
+      const learned = skillNameSetFromList(petExtraSkills(pet));
+      const species = getSpeciesForPet(pet);
+      const nativeSkills = speciesSkillNameSet(species, skillLevelForPet(pet));
+      if (learned.has(skillName) || nativeSkills.has(skillName)) {
+        showToast(`${petDisplayName(pet)} \u5df2\u5b66\u4f1a${skillName}\u3002`);
+        return true;
+      }
+      const learnedSkills = petExtraSkills(pet);
+      learnedSkills.push({ ...config.skill });
+      pet.extraSkills = sanitizePetExtraSkills(learnedSkills);
+      pet.equippedSkills = currentEquippedSkillNamesBySpecies(species, pet.equippedSkills, skillLevelForPet(pet), pet.extraSkills);
+      if (!hasEquippedSkill(pet, skillName) && pet.equippedSkills.length < 4) pet.equippedSkills.push(skillName);
+      addItemCount(config.item.id, -1);
+      syncSelectedSkillName();
+      showToast(`${petDisplayName(pet)} \u5b66\u4f1a\u4e86${skillName}${hasEquippedSkill(pet, skillName) ? "\uff0c\u5df2\u88c5\u5907\u5230\u6280\u80fd\u680f" : "\uff0c\u53ef\u5728\u6280\u80fd\u680f\u66ff\u6362\u88c5\u5907"}\u3002`);
+      return true;
+    };
     const firstAvailableQixingSeal = () => ensureQixingSeals().find((seal) => !normalize(seal.equippedPetId)) || null;
     const qixingSealRows = computed(() => ensureQixingSeals().map((seal) => {
       const pet = safeActivePets.value.find((p) => p && p.id === normalize(seal.equippedPetId)) || null;
@@ -11183,6 +11395,46 @@ createApp({
       return true;
     };
     const dragonBoatZongziCount = computed(() => getItemCount(ZONGZI_ITEM_ID));
+    const ensureShopDailyPurchases = () => {
+      const today = localDateKey();
+      const source = state.value.shopDailyPurchases && typeof state.value.shopDailyPurchases === "object" ? state.value.shopDailyPurchases : {};
+      if (normalize(source.date) !== today || !source.counts || typeof source.counts !== "object") {
+        state.value.shopDailyPurchases = { date: today, counts: {} };
+      }
+      return state.value.shopDailyPurchases.counts;
+    };
+    const shopItemDailyLimit = (item) => Math.max(0, Math.floor(Number(item && item.dailyLimit) || 0));
+    const shopItemDailyBoughtCount = (itemId) => {
+      const id = normalize(String(itemId || ""));
+      if (!id) return 0;
+      return Math.max(0, Math.floor(Number(ensureShopDailyPurchases()[id]) || 0));
+    };
+    const ensureShopLimitedPurchases = () => {
+      if (!state.value.shopLimitedPurchases || typeof state.value.shopLimitedPurchases !== "object") state.value.shopLimitedPurchases = {};
+      return state.value.shopLimitedPurchases;
+    };
+    const shopItemPurchaseLimit = (item) => Math.max(0, Math.floor(Number(item && item.purchaseLimit) || 0));
+    const shopItemLimitedBoughtCount = (itemId) => {
+      const id = normalize(String(itemId || ""));
+      if (!id) return 0;
+      return Math.max(0, Math.floor(Number(ensureShopLimitedPurchases()[id]) || 0));
+    };
+    const shopItemRemainingLimited = (item) => {
+      const limit = shopItemPurchaseLimit(item);
+      if (!limit) return 999;
+      return Math.max(0, limit - shopItemLimitedBoughtCount(item && item.id));
+    };
+    const shopItemRemainingDaily = (item) => {
+      const limit = shopItemDailyLimit(item);
+      if (!limit) return 999;
+      return Math.max(0, limit - shopItemDailyBoughtCount(item && item.id));
+    };
+    const shopItemRemaining = (item) => Math.min(shopItemRemainingDaily(item), shopItemRemainingLimited(item));
+    const shopItemMaxBuyQuantity = (item) => Math.max(0, Math.min(999, shopItemRemaining(item)));
+    const shopItemCanBuy = (item) => {
+      if (!item) return false;
+      return shopItemMaxBuyQuantity(item) > 0 && Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) >= shopItemTotalPrice(item);
+    };
     const ensureDragonBoatShopPurchases = () => {
       if (!state.value.dragonBoatShopPurchases || typeof state.value.dragonBoatShopPurchases !== "object") state.value.dragonBoatShopPurchases = {};
       return state.value.dragonBoatShopPurchases;
@@ -11212,12 +11464,16 @@ createApp({
     });
     const shopBuyQuantity = (itemId) => {
       const id = normalize(String(itemId || ""));
-      return clamp(Math.floor(Number(shopBuyQuantities.value[id]) || 1), 1, 999);
+      const item = allHcoinShopItems.value.find((row) => normalize(row.id) === id);
+      const max = item ? Math.max(1, shopItemMaxBuyQuantity(item)) : 999;
+      return clamp(Math.floor(Number(shopBuyQuantities.value[id]) || 1), 1, max);
     };
     const setShopBuyQuantity = (itemId, value) => {
       const id = normalize(String(itemId || ""));
       if (!id) return;
-      shopBuyQuantities.value[id] = clamp(Math.floor(Number(value) || 1), 1, 999);
+      const item = allHcoinShopItems.value.find((row) => normalize(row.id) === id);
+      const max = item ? Math.max(1, shopItemMaxBuyQuantity(item)) : 999;
+      shopBuyQuantities.value[id] = clamp(Math.floor(Number(value) || 1), 1, max);
     };
     const shopItemTotalPrice = (item) => {
       if (!item) return 0;
@@ -13615,6 +13871,7 @@ createApp({
     const gifDurationCache = new Map();
     const skillEffectObjectUrlCache = new Map();
     const skillEffectCoreBoundsCache = new Map();
+    const petAnimSpeedObjectUrlCache = new Map();
     const petActionLayout = ref({});
     const loadPetActionLayout = async () => {
       try {
@@ -13676,76 +13933,160 @@ createApp({
         return PET_ANIM_FALLBACK_IDLE_DELAY_MS;
       }
     };
-    const buildSingleLoopGifObjectUrl = (key, bytes) => {
-      if (typeof Blob === "undefined" || typeof URL === "undefined" || !URL.createObjectURL) return key;
-      if (skillEffectObjectUrlCache.has(key)) return skillEffectObjectUrlCache.get(key);
-      const patched = new Uint8Array(bytes);
-      const marker = "NETSCAPE2.0";
-      for (let i = 0; i + marker.length + 5 < patched.length; i += 1) {
-        let matched = true;
-        for (let j = 0; j < marker.length; j += 1) {
-          if (patched[i + j] !== marker.charCodeAt(j)) {
-            matched = false;
-            break;
-          }
-        }
-        if (!matched) continue;
-        const block = i + marker.length;
-        if (patched[block] === 0x03 && patched[block + 1] === 0x01) {
-          patched[block + 2] = 0x01;
-          patched[block + 3] = 0x00;
-          const objectUrl = URL.createObjectURL(new Blob([patched], { type: "image/gif" }));
-          skillEffectObjectUrlCache.set(key, objectUrl);
-          return objectUrl;
-        }
-      }
-      skillEffectObjectUrlCache.set(key, key);
-      return key;
+    const battleAnimAssetKey = (src) => String(src || "").split("?")[0];
+    const loadBattleAnimBuffer = async (src) => {
+      const key = battleAnimAssetKey(src);
+      if (!key) throw new Error("empty battle animation asset");
+      return loadLocalAssetBuffer(key, "arraybuffer");
     };
-    const getAnimatedGifTiming = async (src) => {
-      const key = String(src || "").split("?")[0];
-      if (!key) return { durationMs: BATTLE_SKILL_EFFECT_DURATION_MS, removeMs: BATTLE_SKILL_EFFECT_DURATION_MS, src };
-      if (gifDurationCache.has(key)) return gifDurationCache.get(key);
-      if (isAndroidWebView) {
-        const timing = {
-          durationMs: BATTLE_SKILL_EFFECT_DURATION_MS,
-          removeMs: BATTLE_SKILL_EFFECT_DURATION_MS + BATTLE_SKILL_EFFECT_SETTLE_MS,
-          src
-        };
-        gifDurationCache.set(key, timing);
-        return timing;
-      }
+    const loadBattleAnimText = async (src) => {
+      const key = battleAnimAssetKey(src);
+      if (!key) throw new Error("empty battle animation asset");
+      return loadLocalAssetText(key);
+    };
+    const buildBattleSpeedPetAnimObjectUrl = async (src, speed = 1) => {
+      const key = battleAnimAssetKey(src);
+      const safeSpeed = clampBattleSpeed(speed);
+      if (!key || safeSpeed <= 1 || !/\.svg$/i.test(key)) return src;
+      if (typeof Blob === "undefined" || typeof URL === "undefined" || !URL.createObjectURL) return src;
+      const cacheKey = `${key}|speed:${safeSpeed}`;
+      if (petAnimSpeedObjectUrlCache.has(cacheKey)) return petAnimSpeedObjectUrlCache.get(cacheKey);
       try {
-        const res = await fetch(key);
-        const buf = await res.arrayBuffer();
-        const bytes = new Uint8Array(buf);
-        let total = 0;
-        let frames = 0;
-        let lastDelay = 0;
-        for (let i = 0; i + 7 < bytes.length; i += 1) {
-          if (bytes[i] === 0x21 && bytes[i + 1] === 0xf9 && bytes[i + 2] === 0x04) {
-            const delay = bytes[i + 4] | (bytes[i + 5] << 8);
-            lastDelay = Math.max(2, delay) * 10;
-            total += lastDelay;
-            frames += 1;
+        const text = await loadBattleAnimText(key);
+        const patched = String(text || "").replace(/animation-duration\s*:\s*([\d.]+)\s*ms/gi, (match, rawMs) => {
+          const ms = Math.max(40, Math.round((Number(rawMs) || 0) / safeSpeed));
+          return `animation-duration: ${ms}ms`;
+        });
+        if (!patched || patched === text) return src;
+        const objectUrl = URL.createObjectURL(new Blob([patched], { type: "image/svg+xml" }));
+        petAnimSpeedObjectUrlCache.set(cacheKey, objectUrl);
+        return objectUrl;
+      } catch {
+        return src;
+      }
+    };
+    const skipGifSubBlocks = (bytes, offset) => {
+      let i = offset;
+      while (i < bytes.length) {
+        const size = bytes[i];
+        i += 1;
+        if (!size) return i;
+        i += size;
+      }
+      return i;
+    };
+    const patchGifAnimationBytes = (bytes, speed = 1) => {
+      const patched = new Uint8Array(bytes);
+      const safeSpeed = clampBattleSpeed(speed);
+      const globalColorTableSize = (patched[10] & 0x80) ? (3 * (2 ** ((patched[10] & 0x07) + 1))) : 0;
+      let i = 13 + globalColorTableSize;
+      while (i < patched.length) {
+        const blockType = patched[i];
+        if (blockType === 0x3b) break;
+        if (blockType === 0x21) {
+          const label = patched[i + 1];
+          if (label === 0xf9 && patched[i + 2] === 0x04 && i + 7 < patched.length) {
+            const delay = patched[i + 4] | (patched[i + 5] << 8);
+            const nextDelay = Math.max(2, Math.round(Math.max(2, delay) / safeSpeed));
+            patched[i + 4] = nextDelay & 0xff;
+            patched[i + 5] = (nextDelay >> 8) & 0xff;
+            i += 8;
+            continue;
           }
+          if (label === 0xff && patched[i + 2] === 0x0b && i + 17 < patched.length) {
+            const appId = String.fromCharCode(...patched.slice(i + 3, i + 14));
+            if (appId === "NETSCAPE2.0" && patched[i + 14] === 0x03 && patched[i + 15] === 0x01) {
+              patched[i + 16] = 0x01;
+              patched[i + 17] = 0x00;
+            }
+          }
+          i = skipGifSubBlocks(patched, i + 2);
+          continue;
         }
-        const durationMs = Math.max(BATTLE_SKILL_EFFECT_DURATION_MS, total || frames * 100 || BATTLE_SKILL_EFFECT_DURATION_MS);
-        const singleLoopSrc = buildSingleLoopGifObjectUrl(key, bytes);
+        if (blockType === 0x2c) {
+          if (i + 9 >= patched.length) break;
+          const localColorTableSize = (patched[i + 9] & 0x80) ? (3 * (2 ** ((patched[i + 9] & 0x07) + 1))) : 0;
+          i = skipGifSubBlocks(patched, i + 10 + localColorTableSize + 1);
+          continue;
+        }
+        break;
+      }
+      return patched;
+    };
+    const readGifAnimationDurationMs = (bytes) => {
+      const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes || []);
+      const globalColorTableSize = (data[10] & 0x80) ? (3 * (2 ** ((data[10] & 0x07) + 1))) : 0;
+      let i = 13 + globalColorTableSize;
+      let total = 0;
+      let frames = 0;
+      while (i < data.length) {
+        const blockType = data[i];
+        if (blockType === 0x3b) break;
+        if (blockType === 0x21) {
+          const label = data[i + 1];
+          if (label === 0xf9 && data[i + 2] === 0x04 && i + 7 < data.length) {
+            const delay = data[i + 4] | (data[i + 5] << 8);
+            total += Math.max(2, delay) * 10;
+            frames += 1;
+            i += 8;
+            continue;
+          }
+          i = skipGifSubBlocks(data, i + 2);
+          continue;
+        }
+        if (blockType === 0x2c) {
+          if (i + 9 >= data.length) break;
+          const localColorTableSize = (data[i + 9] & 0x80) ? (3 * (2 ** ((data[i + 9] & 0x07) + 1))) : 0;
+          i = skipGifSubBlocks(data, i + 10 + localColorTableSize + 1);
+          continue;
+        }
+        break;
+      }
+      return total || frames * 100 || 0;
+    };
+    const buildSingleLoopGifObjectUrl = (key, bytes, speed = 1) => {
+      if (typeof Blob === "undefined" || typeof URL === "undefined" || !URL.createObjectURL) return key;
+      const safeSpeed = clampBattleSpeed(speed);
+      const cacheKey = `${key}|speed:${safeSpeed}|parser:v2`;
+      if (skillEffectObjectUrlCache.has(cacheKey)) return skillEffectObjectUrlCache.get(cacheKey);
+      const patched = patchGifAnimationBytes(bytes, safeSpeed);
+      const objectUrl = URL.createObjectURL(new Blob([patched], { type: "image/gif" }));
+      skillEffectObjectUrlCache.set(cacheKey, objectUrl);
+      return objectUrl;
+    };
+    const getAnimatedGifTiming = async (src, speed = 1) => {
+      const key = battleAnimAssetKey(src);
+      if (!key) return { durationMs: BATTLE_SKILL_EFFECT_DURATION_MS, removeMs: BATTLE_SKILL_EFFECT_DURATION_MS, src };
+      const safeSpeed = clampBattleSpeed(speed);
+      const cacheKey = `${key}|speed:${safeSpeed}`;
+      if (gifDurationCache.has(cacheKey)) return gifDurationCache.get(cacheKey);
+      try {
+        const buf = await loadBattleAnimBuffer(key);
+        const bytes = new Uint8Array(buf);
+        const rawDurationMs = Math.max(BATTLE_SKILL_EFFECT_DURATION_MS, readGifAnimationDurationMs(bytes) || BATTLE_SKILL_EFFECT_DURATION_MS);
+        const durationMs = Math.max(120, Math.round(rawDurationMs / safeSpeed));
+        const settleMs = Math.max(60, Math.round(BATTLE_SKILL_EFFECT_SETTLE_MS / safeSpeed));
+        const singleLoopSrc = buildSingleLoopGifObjectUrl(key, bytes, safeSpeed);
         const timing = {
           durationMs,
-          removeMs: durationMs + BATTLE_SKILL_EFFECT_SETTLE_MS,
-          src: singleLoopSrc
+          removeMs: durationMs + settleMs,
+          rawDurationMs,
+          rawRemoveMs: rawDurationMs + BATTLE_SKILL_EFFECT_SETTLE_MS,
+          src: singleLoopSrc,
+          speedAdjusted: singleLoopSrc !== key
         };
-        gifDurationCache.set(key, timing);
+        gifDurationCache.set(cacheKey, timing);
         return timing;
       } catch {
         const timing = {
           durationMs: BATTLE_SKILL_EFFECT_DURATION_MS,
           removeMs: BATTLE_SKILL_EFFECT_DURATION_MS + BATTLE_SKILL_EFFECT_SETTLE_MS,
-          src
+          rawDurationMs: BATTLE_SKILL_EFFECT_DURATION_MS,
+          rawRemoveMs: BATTLE_SKILL_EFFECT_DURATION_MS + BATTLE_SKILL_EFFECT_SETTLE_MS,
+          src,
+          speedAdjusted: false
         };
-        gifDurationCache.set(key, timing);
+        gifDurationCache.set(cacheKey, timing);
         return timing;
       }
     };
@@ -13758,11 +14099,12 @@ createApp({
       return `${key}${sep}act=${encodeURIComponent(actionSeq)}`;
     };
     const getBattleActionVisualDurationMs = (scene, actionSrc, effectSrc = "") => {
+      const speed = clampBattleSpeed(scene && scene.battleSpeed);
       const effectMs = () => effectSrc
-        ? getAnimatedGifTiming(effectSrc)
+        ? getAnimatedGifTiming(effectSrc, speed)
           .then((effectTiming) => Math.max(
             BATTLE_SKILL_EFFECT_DURATION_MS,
-            Number(effectTiming && effectTiming.removeMs) || Number(effectTiming && effectTiming.durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS
+            Number(effectTiming && effectTiming.rawRemoveMs) || Number(effectTiming && effectTiming.removeMs) || Number(effectTiming && effectTiming.durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS
           ))
           .catch(() => BATTLE_SKILL_EFFECT_DURATION_MS)
         : Promise.resolve(0);
@@ -13870,7 +14212,9 @@ createApp({
     };
     const getPetBattleStateCode = (scene, side) => {
       const safeSide = side === "target" ? "target" : "attacker";
-      const src = normalize(safeSide === "target" ? (scene && scene.targetImage) : (scene && scene.attackerImage));
+      const imageSrc = normalize(safeSide === "target" ? (scene && scene.targetImage) : (scene && scene.attackerImage));
+      const layoutSrc = normalize(safeSide === "target" ? (scene && scene._petAnimTargetLayoutSrc) : (scene && scene._petAnimAttackerLayoutSrc));
+      const src = /^blob:/i.test(imageSrc) && layoutSrc ? layoutSrc : imageSrc;
       const match = src.match(/_(\d+)\.(?:svg|png)(?:\?|$)/);
       return match ? match[1] : "1";
     };
@@ -14064,6 +14408,19 @@ createApp({
       if (battlePetImageStyleCache.size > 80) battlePetImageStyleCache.delete(battlePetImageStyleCache.keys().next().value);
       return result;
     };
+    const battlePetValueFloatStyle = (side, lane = "damage") => {
+      const style = battlePetImageStyle(side) || {};
+      const renderW = normalize(style["--battle-pet-render-width"]);
+      const offsetX = normalize(style["--battle-pet-offset-x"]) || "0px";
+      const offsetY = normalize(style["--battle-pet-offset-y"]) || "0px";
+      const topGap = lane === "heal"
+        ? "calc(44 * var(--ui-px))"
+        : (lane === "total" ? "calc(36 * var(--ui-px))" : "calc(8 * var(--ui-px))");
+      return {
+        left: renderW && renderW !== "auto" ? `calc(${offsetX} + (${renderW}) / 2)` : "50%",
+        top: `calc(${offsetY} - ${topGap})`
+      };
+    };
     const petAnimImageStyle = (petOrDexId, targetBodyH = 96, side = "target") => {
       const dexId = typeof petOrDexId === "object"
         ? (Number(resolvePetCurrentDexId(petOrDexId)) || Number(petOrDexId && petOrDexId.dexId) || 0)
@@ -14229,7 +14586,17 @@ createApp({
       };
     };
     const timeTunnelEnemyScaleStyle = () => ({ transform: "scale(3)" });
+    const SKILL_STONE_SKILL_EFFECT_ID_BY_SKILL_ID = Object.freeze({
+      900401: 9201,
+      900402: 9228,
+      900403: 9215,
+      900404: 2310,
+      900405: 2221,
+      900406: 2244
+    });
     const getBattleSkillEffectId = (skill) => {
+      const mappedSkillStoneEffectId = SKILL_STONE_SKILL_EFFECT_ID_BY_SKILL_ID[Number(skill && skill.skillId) || 0];
+      if (mappedSkillStoneEffectId) return mappedSkillStoneEffectId;
       const name = normalizeSkillKey(skill && skill.name).replace(/[·.\s]/g, "");
       if (name === "骰子炸弹" || name === "超级骰子炸弹") return DICE_BOMB_SKILL_EFFECT_ID;
       return Number(FULLSCREEN_SKILL_EFFECT_ID_BY_NAME[name]) || Number(skill && skill.skillId) || 0;
@@ -14427,10 +14794,13 @@ createApp({
         live.statusEffectFx = null;
       }, scene.statusEffectFx.durationMs + 80);
     };
-    const setBattleSkillEffectFx = (scene, fx, durationMs, expireMs) => {
+    const setBattleSkillEffectFx = (scene, fx, durationMs, expireMs, alreadyScaled = false) => {
       if (!scene || !fx) return;
-      const safeDuration = battleSceneDelayMs(scene, Number(durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS, 120);
-      const safeExpire = Math.max(safeDuration, battleSceneDelayMs(scene, Number(expireMs) || Number(durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS, 120));
+      const rawDuration = Number(durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS;
+      const rawExpire = Number(expireMs) || rawDuration;
+      const safeDuration = alreadyScaled ? Math.max(120, Math.round(rawDuration)) : battleSceneDelayMs(scene, rawDuration, 120);
+      const safeExpireBase = alreadyScaled ? Math.max(120, Math.round(rawExpire)) : battleSceneDelayMs(scene, rawExpire, 120);
+      const safeExpire = Math.max(safeDuration, safeExpireBase);
       scene.skillEffectFx = { ...fx, durationMs: safeDuration };
       scene._skillEffectUntil = Date.now() + safeExpire;
     };
@@ -14450,6 +14820,7 @@ createApp({
       const safeSide = side === "target" ? "target" : "attacker";
       const lockKey = safeSide === "target" ? "_petAnimTargetPlayLock" : "_petAnimAttackerPlayLock";
       const imageKey = safeSide === "target" ? "targetImage" : "attackerImage";
+      const layoutSrcKey = safeSide === "target" ? "_petAnimTargetLayoutSrc" : "_petAnimAttackerLayoutSrc";
       const timerKey = safeSide === "target" ? "_petAnimTargetAutoIdleTimer" : "_petAnimAttackerAutoIdleTimer";
       if (!BATTLE_IDLE_USES_ACTION_SVG) {
         if (scene[timerKey]) {
@@ -14465,6 +14836,7 @@ createApp({
           ? (scene.targetStaticImage || petCroppedStaticImage(scene.targetDexId))
           : (current ? battleUnitStaticImage(current) : (scene.attackerStaticImage || petCroppedStaticImage(scene.attackerBattleVisualDexId || scene.attackerDexId)));
         if (fallback) scene[imageKey] = fallback;
+        scene[layoutSrcKey] = "";
         return;
       }
       if (stateKey !== "idle" && scene[lockKey]) {
@@ -14477,47 +14849,68 @@ createApp({
       }
       const dexId = resolveBattleSideDexId(scene, safeSide);
       const baseNext = getPetBattleAnimPath(dexId, safeSide, stateKey);
-      const next = petAnimActionSrc(baseNext, actionSeq, stateKey);
-      if (!next) {
+      const rawNext = petAnimActionSrc(baseNext, actionSeq, stateKey);
+      if (!rawNext) {
         petAnimDebugLog("skip side (no anim path)", { side: safeSide, dexId, stateKey });
         return;
       }
+      const speed = clampBattleSpeed(scene && scene.battleSpeed);
       const startedAt = Date.now();
-      const scheduleAutoIdle = (duration) => {
+      const scheduleAutoIdle = (duration, speedAdjusted = speed <= 1) => {
         if (scene[timerKey]) clearTimeout(scene[timerKey]);
-        const delay = Math.max(80, (startedAt + battleSceneDelayMs(scene, petAnimPlayMs(duration), 80)) - Date.now());
+        const playMs = petAnimPlayMs(duration);
+        const waitMs = speedAdjusted ? battleSceneDelayMs(scene, playMs, 80) : Math.max(80, playMs);
+        const delay = Math.max(80, (startedAt + waitMs) - Date.now());
         scene[timerKey] = setTimeout(() => {
           const live = battleScene.value;
-          if (!live || live !== scene || live.ended || live[imageKey] !== next) return;
+          if (!live || live !== scene || live.ended || live[imageKey] !== scene[`_${imageKey}ExpectedSrc`]) return;
           applyBattleAnimImage(live, safeSide, "idle");
         }, delay);
       };
-      if (scene[imageKey] === next) {
-        if (stateKey === "idle") {
-          if (scene[timerKey]) {
-            clearTimeout(scene[timerKey]);
-            scene[timerKey] = null;
+      const commitNext = (next, speedAdjusted = speed <= 1) => {
+        if (!next) return;
+        scene[`_${imageKey}ExpectedSrc`] = next;
+        scene[layoutSrcKey] = rawNext;
+        if (scene[imageKey] === next) {
+          if (stateKey === "idle") {
+            if (scene[timerKey]) {
+              clearTimeout(scene[timerKey]);
+              scene[timerKey] = null;
+            }
+            scene[lockKey] = false;
           }
-          scene[lockKey] = false;
+          return;
         }
+        scene[imageKey] = next;
+        petAnimDebugLog(`${safeSide} image -> ${stateKey}`, next);
+        if (stateKey !== "idle") {
+          scene[lockKey] = true;
+          scheduleAutoIdle(estimatePetBattleAnimDurationMs(dexId, safeSide, stateKey), speedAdjusted);
+          getAnimatedWebpDurationMs(rawNext).then((duration) => {
+            if (!battleScene.value || battleScene.value !== scene || scene.ended || scene[imageKey] !== next) return;
+            scheduleAutoIdle(duration, speedAdjusted);
+          });
+          return;
+        }
+        if (scene[timerKey]) {
+          clearTimeout(scene[timerKey]);
+          scene[timerKey] = null;
+        }
+        scene[lockKey] = false;
+      };
+      if (stateKey !== "idle" && speed > 1) {
+        buildBattleSpeedPetAnimObjectUrl(rawNext, speed)
+          .then((next) => {
+            if (!battleScene.value || battleScene.value !== scene || scene.ended) return;
+            commitNext(next || rawNext, Boolean(next && next !== rawNext));
+          })
+          .catch(() => {
+            if (!battleScene.value || battleScene.value !== scene || scene.ended) return;
+            commitNext(rawNext, false);
+          });
         return;
       }
-      scene[imageKey] = next;
-      petAnimDebugLog(`${safeSide} image -> ${stateKey}`, next);
-      if (stateKey !== "idle") {
-        scene[lockKey] = true;
-        scheduleAutoIdle(estimatePetBattleAnimDurationMs(dexId, safeSide, stateKey));
-        getAnimatedWebpDurationMs(next).then((duration) => {
-          if (!battleScene.value || battleScene.value !== scene || scene.ended || scene[imageKey] !== next) return;
-          scheduleAutoIdle(duration);
-        });
-        return;
-      }
-      if (scene[timerKey]) {
-        clearTimeout(scene[timerKey]);
-        scene[timerKey] = null;
-      }
-      scene[lockKey] = false;
+      commitNext(rawNext, true);
     };
     const resetBattleAnimIdle = (scene) => {
       if (!scene) return;
@@ -14687,6 +15080,7 @@ createApp({
       const actorDexId = resolveBattleSideDexId(scene, actorSide);
       const actionSrc = BATTLE_IDLE_USES_ACTION_SVG ? getPetBattleAnimPath(actorDexId, actorSide, actionStateKey) : "";
       const effectSrc = getBattleSkillEffectPath(skill, actionSeq);
+      const speed = clampBattleSpeed(scene && scene.battleSpeed);
       const scheduledActionSrc = petAnimActionSrc(actionSrc, actionSeq, actionStateKey);
       const runAfterEffect = () => {
         if (typeof afterEffect === "function") afterEffect();
@@ -14712,12 +15106,11 @@ createApp({
             runAfterEffect();
             return;
           }
-          getAnimatedGifTiming(effectSrc).then((effectTiming) => {
-            const rawHoldMs = Math.max(BATTLE_SKILL_EFFECT_DURATION_MS, Number(effectTiming && effectTiming.durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS);
-            const rawRemoveMs = Math.max(rawHoldMs, Number(effectTiming && effectTiming.removeMs) || rawHoldMs);
-            const removeMs = battleSceneDelayMs(scene, rawRemoveMs, 120);
+          getAnimatedGifTiming(effectSrc, speed).then((effectTiming) => {
+            const displayHoldMs = Math.max(120, Number(effectTiming && effectTiming.durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS);
+            const displayRemoveMs = Math.max(displayHoldMs, Number(effectTiming && effectTiming.removeMs) || displayHoldMs);
             const singleLoopSrc = (effectTiming && effectTiming.src) || effectSrc;
-            const applyFx = (coreBounds = null) => setBattleSkillEffectFx(scene, { side: visualSide, src: singleLoopSrc, seq: actionSeq, coreBounds }, rawHoldMs, rawRemoveMs);
+            const applyFx = (coreBounds = null) => setBattleSkillEffectFx(scene, { side: visualSide, src: singleLoopSrc, seq: actionSeq, coreBounds }, displayHoldMs, displayRemoveMs, true);
             if (visualSide === "fullscreen") {
               getSkillEffectCoreBounds(singleLoopSrc).then((bounds) => {
                 const current = battleScene.value;
@@ -14730,7 +15123,7 @@ createApp({
               const current = battleScene.value;
               if (current && current === scene) clearBattleSkillEffectFxIfExpired(scene, actionSeq);
               runAfterEffect();
-            }, removeMs);
+            }, displayRemoveMs);
           }).catch(() => {
             if (visualSide === "fullscreen") {
               getSkillEffectCoreBounds(effectSrc).then((bounds) => {
@@ -16534,6 +16927,7 @@ const applyBossChainFinalBuff = (scene) => {
       if (skillEffectDidApply && damage <= 0 && (atkKind === "physical" || atkKind === "special") && hasUsablePower) {
         runOnDamagedEffects(scene, targetSide, actorSide, { reason: "attacked" });
       }
+      if (skill && typeof skill === "object") skill.__lastLandedHitCount = landedHitCount;
       const hasOnlyInvalidHits = comboHitList.length > 0 && comboHitList.every((x) => normalize(x) === "无效" || normalize(x) === "MISS");
       const isEffectOnlySkill = atkKind === "status" || !hasUsablePower;
       const canApplySkillEffect = didHit && (elementFactorForEffectGate > 0 || selfAccuracyFreeSkill) && !hasOnlyInvalidHits && (skillEffectDidApply || isEffectOnlySkill);
@@ -17537,21 +17931,40 @@ const applyBossChainFinalBuff = (scene) => {
     const closeEggHatchPanel = () => {
       showEggHatchPanel.value = false;
     };
-    const buyShopItem = (itemId) => {
+    const buyHcoinShopItem = (itemId, sourceItems) => {
       const id = normalize(String(itemId || ""));
       if (!id) return;
-      const item = shopItems.value.find((x) => normalize(x.id) === id);
+      const list = Array.isArray(sourceItems) ? sourceItems : [];
+      const item = list.find((x) => normalize(x.id) === id);
       if (!item) return;
       const price = Math.max(0, Math.floor(Number(item.price) || 0));
-      const quantity = shopBuyQuantity(id);
+      const remaining = shopItemRemaining(item);
+      if (remaining <= 0) {
+        const message = shopItemPurchaseLimit(item) > 0 && shopItemRemainingLimited(item) <= 0
+          ? `${item.name} \u5df2\u8fbe\u5230\u9650\u8d2d\u6b21\u6570\u3002`
+          : `${item.name} \u4eca\u65e5\u5df2\u8fbe\u5230\u9650\u8d2d\u6b21\u6570\u3002`;
+        return showToast(message);
+      }
+      const quantity = Math.min(shopBuyQuantity(id), remaining);
       const totalPrice = price * quantity;
       const wallet = Math.max(0, Math.floor(Number(state.value.hCoins) || 0));
-      if (wallet < totalPrice) return showToast(`H币不足，需要 ${totalPrice} H币。`);
+      if (wallet < totalPrice) return showToast(`H\u5e01\u4e0d\u8db3\uff0c\u9700\u8981 ${totalPrice} H\u5e01\u3002`);
       state.value.hCoins = wallet - totalPrice;
       const gainCount = id === "double_exp_device" || id === "auto_battle_device" ? quantity * 10 : quantity;
       addItemCount(id, gainCount);
-      showToast(totalPrice > 0 ? `已购买 ${item.name} x${quantity}，获得 ${gainCount} 次可用次数，花费 ${totalPrice} H币。` : `已获取 ${item.name} x${quantity}。`);
+      if (shopItemDailyLimit(item) > 0) {
+        const purchases = ensureShopDailyPurchases();
+        purchases[id] = shopItemDailyBoughtCount(id) + quantity;
+      }
+      if (shopItemPurchaseLimit(item) > 0) {
+        const purchases = ensureShopLimitedPurchases();
+        purchases[id] = shopItemLimitedBoughtCount(id) + quantity;
+      }
+      const gainLabel = id === "double_exp_device" || id === "auto_battle_device" ? `${gainCount} \u6b21\u6570` : `${gainCount} \u4e2a`;
+      showToast(totalPrice > 0 ? `\u5df2\u8d2d\u4e70${item.name} x${quantity}\uff0c\u83b7\u5f97${gainLabel}\uff0c\u82b1\u8d39 ${totalPrice} H\u5e01\u3002` : `\u5df2\u8d2d\u4e70${item.name} x${quantity}\u3002`);
     };
+    const buyShopItem = (itemId) => buyHcoinShopItem(itemId, shopItems.value);
+    const buySkillShopItem = (itemId) => buyHcoinShopItem(itemId, skillShopItems.value);
     const buyDragonBoatShopItem = (itemId) => {
       const id = normalize(String(itemId || ""));
       const item = dragonBoatShopItems.find((row) => normalize(row.id) === id);
@@ -17889,6 +18302,9 @@ const applyBossChainFinalBuff = (scene) => {
         addItemCount(id, -1);
         showToast(`${petDisplayName(pet)} 已装配${QIANKUN_XIULUOSHEN_SKIN_NAME}。`);
         return;
+      }
+      if (SKILL_STONE_ITEM_IDS.has(id)) {
+        if (learnSkillFromSkillStone(pet, id)) return;
       }
       if (id === SUPER_DICE_BOMB_SKILL_STONE_ITEM_ID) {
         if (!canUseSuperDiceBombSkillStoneOnPet(pet)) return showToast("超级骰子炸弹技能石只能给骰子大王或NO.14使用。");
@@ -19091,6 +19507,7 @@ const applyBossChainFinalBuff = (scene) => {
       imageBadges,
       textBadges,
       shopItems,
+      skillShopItems,
       shopBuyQuantities,
       shopEggEntries,
       itemInventoryRows,
@@ -19193,6 +19610,7 @@ const applyBossChainFinalBuff = (scene) => {
       battleSceneAvailablePets,
       isBattleAnimSide,
       battlePetImageStyle,
+      battlePetValueFloatStyle,
       bagFocusPetAnimImageStyle,
       bagSlotPetAnimImageStyle,
       warehousePetAnimImageStyle,
@@ -19361,12 +19779,17 @@ const applyBossChainFinalBuff = (scene) => {
       openEggHatchPanel,
       closeEggHatchPanel,
       buyShopItem,
+      buySkillShopItem,
       buyDragonBoatShopItem,
       redeemShopCode,
       setBgmVolume,
       shopBuyQuantity,
       setShopBuyQuantity,
       shopItemTotalPrice,
+      shopItemRemainingDaily,
+      shopItemRemainingLimited,
+      shopItemMaxBuyQuantity,
+      shopItemCanBuy,
       itemUseQuantity,
       setItemUseQuantity,
       isStudyFruitItem,

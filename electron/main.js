@@ -32,7 +32,9 @@ const findAvailableBackendPort = async (preferredPort) => {
 };
 
 const startLocalBackend = async () => {
-  process.env.AOLA_DATA_DIR = path.join(app.getPath("userData"), "data");
+  process.env.AOLA_DATA_DIR = app.isPackaged
+    ? path.join(app.getPath("userData"), "data")
+    : path.join(__dirname, "..", "server", "data");
   delete process.env.AOLA_STATIC_RESOURCE_DIR;
   const port = await findAvailableBackendPort(process.env.PORT);
   process.env.PORT = String(port);

@@ -71,7 +71,8 @@
       height: 9px;
       margin-top: 22px;
       border-radius: 999px;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       background: rgba(15, 23, 42, .95);
       border: 1px solid rgba(125, 211, 252, .22);
     }
@@ -104,6 +105,226 @@
     .scrollbar::-webkit-scrollbar { width: calc(8 * var(--ui-px)); height: calc(8 * var(--ui-px)); }
     .scrollbar::-webkit-scrollbar-thumb { background: #b5c4e8; border-radius: 999px; }
     .scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .leaderboard-overlay {
+      background:
+        radial-gradient(circle at 26% 16%, rgba(250, 204, 21, .14), transparent 28%),
+        radial-gradient(circle at 80% 72%, rgba(34, 211, 238, .13), transparent 32%),
+        rgba(2, 6, 23, .74);
+    }
+    .leaderboard-modal {
+      position: relative;
+      overflow: hidden;
+      width: min(960px, calc(100vw - 24px));
+      max-height: min(86vh, 760px);
+      border: 1px solid rgba(250, 204, 21, .24);
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(15, 23, 42, .98), rgba(2, 6, 23, .96) 52%, rgba(15, 23, 42, .98)),
+        radial-gradient(circle at top left, rgba(250, 204, 21, .12), transparent 42%);
+      box-shadow: 0 28px 80px rgba(2, 6, 23, .55), inset 0 1px 0 rgba(255, 255, 255, .12);
+      color: #fff;
+    }
+    .leaderboard-modal::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .08), transparent);
+      transform: translateX(-70%);
+    }
+    .leaderboard-header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .leaderboard-title {
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: 0;
+      color: #f8fafc;
+      text-shadow: 0 2px 10px rgba(250, 204, 21, .16);
+    }
+    .leaderboard-subtitle {
+      margin-top: 5px;
+      color: rgba(226, 232, 240, .72);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .leaderboard-tabs {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 8px;
+      margin-bottom: 14px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .leaderboard-tab {
+      flex: 1 0 132px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, .28);
+      background: linear-gradient(180deg, rgba(30, 41, 59, .88), rgba(15, 23, 42, .92));
+      color: rgba(226, 232, 240, .9);
+      font-size: 13px;
+      font-weight: 950;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+      white-space: nowrap;
+    }
+    .leaderboard-tab:hover {
+      transform: translateY(-1px);
+      border-color: rgba(250, 204, 21, .48);
+    }
+    .leaderboard-tab.is-active {
+      border-color: rgba(253, 224, 71, .9);
+      background: linear-gradient(180deg, #fef08a 0%, #fbbf24 45%, #d97706 100%);
+      color: #1e293b;
+      box-shadow: 0 10px 26px rgba(251, 191, 36, .26), inset 0 1px 0 rgba(255, 255, 255, .45);
+    }
+    .leaderboard-toolbar {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 14px;
+    }
+    .leaderboard-table {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, .18);
+      background: rgba(15, 23, 42, .72);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+    }
+    .leaderboard-head,
+    .leaderboard-row {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) 132px;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 16px;
+    }
+    .leaderboard-head {
+      min-height: 58px;
+      background: linear-gradient(180deg, rgba(51, 65, 85, .92), rgba(30, 41, 59, .88));
+      color: rgba(226, 232, 240, .9);
+      font-size: 12px;
+      font-weight: 950;
+      border-bottom: 1px solid rgba(255, 255, 255, .12);
+    }
+    .leaderboard-row {
+      min-height: 64px;
+      border-bottom: 1px solid rgba(148, 163, 184, .16);
+      color: #f8fafc;
+      font-size: 14px;
+      font-weight: 850;
+      background: rgba(15, 23, 42, .44);
+    }
+    .leaderboard-row:last-child { border-bottom: 0; }
+    .leaderboard-row.is-top-1 {
+      background: linear-gradient(90deg, rgba(250, 204, 21, .18), rgba(15, 23, 42, .48) 48%, rgba(250, 204, 21, .08));
+    }
+    .leaderboard-row.is-top-2 {
+      background: linear-gradient(90deg, rgba(226, 232, 240, .16), rgba(15, 23, 42, .48) 48%, rgba(148, 163, 184, .08));
+    }
+    .leaderboard-row.is-top-3 {
+      background: linear-gradient(90deg, rgba(217, 119, 6, .18), rgba(15, 23, 42, .48) 48%, rgba(217, 119, 6, .08));
+    }
+    .leaderboard-rank-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .leaderboard-rank-number {
+      color: #fde68a;
+      font-weight: 950;
+    }
+    .leaderboard-trophy {
+      position: relative;
+      width: 26px;
+      height: 26px;
+      display: inline-block;
+      flex: 0 0 26px;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .35));
+    }
+    .leaderboard-trophy::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 3px;
+      width: 14px;
+      height: 11px;
+      border-radius: 3px 3px 8px 8px;
+      background: var(--trophy-main);
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, .45);
+    }
+    .leaderboard-trophy::after {
+      content: "";
+      position: absolute;
+      left: 9px;
+      top: 14px;
+      width: 8px;
+      height: 9px;
+      border-radius: 2px 2px 1px 1px;
+      background: var(--trophy-main);
+      box-shadow: 0 7px 0 -2px var(--trophy-main);
+    }
+    .leaderboard-trophy-cup::before,
+    .leaderboard-trophy-cup::after {
+      content: "";
+      position: absolute;
+      top: 5px;
+      width: 8px;
+      height: 8px;
+      border: 2px solid var(--trophy-main);
+      border-radius: 50%;
+    }
+    .leaderboard-trophy-cup::before { left: 1px; }
+    .leaderboard-trophy-cup::after { right: 1px; }
+    .leaderboard-trophy.rank-1 { --trophy-main: #f59e0b; }
+    .leaderboard-trophy.rank-2 { --trophy-main: #cbd5e1; }
+    .leaderboard-trophy.rank-3 { --trophy-main: #b45309; }
+    .leaderboard-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #fff;
+      text-shadow: 0 1px 6px rgba(15, 23, 42, .5);
+    }
+    .leaderboard-value {
+      text-align: right;
+      color: #cffafe;
+      font-size: 15px;
+      font-weight: 950;
+      text-shadow: 0 0 14px rgba(34, 211, 238, .16);
+    }
+    @media (max-width: 640px) {
+      .leaderboard-modal {
+        width: calc(100vw - 16px);
+        border-radius: 20px;
+        padding: 14px !important;
+      }
+      .leaderboard-tab {
+        flex-basis: 104px;
+        height: 38px;
+        font-size: 12px;
+      }
+      .leaderboard-head,
+      .leaderboard-row {
+        grid-template-columns: 76px minmax(0, 1fr) 92px;
+        gap: 6px;
+        padding: 10px 12px;
+      }
+      .leaderboard-value { font-size: 13px; }
+    }
     .home-shell {
       min-height: 100vh;
       display: flex;
@@ -801,7 +1022,7 @@
       justify-content: flex-end;
     }
     @keyframes comboFloatUp { 0% { opacity: 0; transform: translate(-50%, calc(8 * var(--ui-px))) scale(0.92); } 12% { opacity: 1; } 82% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, calc(-56 * var(--ui-px))) scale(1.08); } }
-    @keyframes comboTotalPop { 0% { opacity: 0; transform: translateY(0) scale(0.85); } 12% { opacity: 1; transform: translateY(0) scale(1.18); } 70% { opacity: 1; transform: translateY(calc(-4 * var(--ui-px))) scale(1.05); } 100% { opacity: 0; transform: translateY(calc(-14 * var(--ui-px))) scale(0.96); } }
+    @keyframes comboTotalPop { 0% { opacity: 0; transform: translate(-50%, 0) scale(0.85); } 12% { opacity: 1; transform: translate(-50%, 0) scale(1.18); } 70% { opacity: 1; transform: translate(-50%, calc(-4 * var(--ui-px))) scale(1.05); } 100% { opacity: 0; transform: translate(-50%, calc(-14 * var(--ui-px))) scale(0.96); } }
     @keyframes evoGlowPulse { 0% { filter: drop-shadow(0 0 0 rgba(99,102,241,0)); transform: scale(0.96); } 50% { filter: drop-shadow(0 0 18px rgba(129,140,248,.85)); transform: scale(1.03); } 100% { filter: drop-shadow(0 0 10px rgba(59,130,246,.55)); transform: scale(1); } }
     @keyframes battleDamagePop { 0% { opacity: 0; transform: translate(-50%, calc(8 * var(--ui-px))) scale(.9); } 18% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, calc(-28 * var(--ui-px))) scale(1.06); } }
     @keyframes battleCritPop { 0% { opacity: 0; transform: translate(-50%, calc(8 * var(--ui-px))) scale(.88); } 14% { opacity: 1; transform: translate(-50%, 0) scale(1.26); filter: drop-shadow(0 0 calc(10 * var(--ui-px)) rgba(251,191,36,.95)); } 100% { opacity: 0; transform: translate(-50%, calc(-26 * var(--ui-px))) scale(1); filter: drop-shadow(0 0 0 rgba(251,191,36,0)); } }
@@ -1001,6 +1222,20 @@
       --battle-pet-size: clamp(14vw, 25.2vmin, 26.6vw);
     }
     .battle-skill-float { border-radius: calc(16 * var(--ui-px)); border: calc(1 * var(--ui-px)) solid rgba(125,211,252,.85); background: linear-gradient(135deg, rgba(8,47,73,.92), rgba(14,116,144,.78)); box-shadow: 0 calc(8 * var(--ui-px)) calc(24 * var(--ui-px)) rgba(34,211,238,.28), inset 0 0 calc(16 * var(--ui-px)) rgba(255,255,255,.08); padding: calc(6 * var(--ui-px)) calc(12 * var(--ui-px)); color: #e0f2fe; letter-spacing: .04em; text-shadow: 0 calc(1 * var(--ui-px)) calc(8 * var(--ui-px)) rgba(34,211,238,.55); z-index: 26; }
+    .battle-pet-value-float {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      z-index: 260;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .battle-pet-value-float-row {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: calc(8 * var(--ui-px));
+      min-width: max-content;
+    }
     .battle-shake-left { animation: battleShakeLeft .45s ease-in-out; }
     .battle-shake-right { animation: battleShakeRight .45s ease-in-out; }
     .battle-mobile-stat-side { width: calc(120 * var(--ui-px)); }
@@ -5937,7 +6172,8 @@
     html.android-webview .battle-scene-overlay .battle-mobile-root .battle-stage-hover-zone .battle-stage-popover {
       opacity: 1 !important;
       transform: translate(0, 0) !important;
-    }
+    }
+
 
     .battle-scene-overlay .battle-mobile-root .battle-target-status-outside {
       order: 3 !important;
@@ -6501,27 +6737,27 @@
     </div>
   </div>
 
-  <div v-if="showLeaderboardPanel" class="fixed inset-0 z-[130] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" @click="closeLeaderboardPanel">
-    <div class="w-full max-w-3xl rounded-[24px] border border-white/15 bg-slate-950/95 p-4 shadow-2xl app-modal text-white" @click.stop>
-      <div class="flex items-center justify-between gap-3 mb-3">
+  <div v-if="showLeaderboardPanel" class="leaderboard-overlay fixed inset-0 z-[130] backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeLeaderboardPanel">
+    <div class="leaderboard-modal p-4 app-modal text-white" @click.stop>
+      <div class="leaderboard-header">
         <div>
-          <div class="text-lg font-black text-white">排行榜</div>
-          <div class="text-xs font-bold text-slate-400">已过滤异常图鉴和 H 币数据</div>
+          <div class="leaderboard-title">排行榜</div>
+          <div class="leaderboard-subtitle">已过滤异常图鉴和 H 币数据</div>
         </div>
         <button @click="closeLeaderboardPanel" class="h-8 w-8 rounded-full bg-white/10 text-white text-sm font-black">×</button>
       </div>
 
-      <div class="mb-3 grid grid-cols-2 gap-2 md:grid-cols-4">
+      <div class="leaderboard-tabs scrollbar">
         <button
           v-for="tab in leaderboardTabs"
           :key="'leaderboard_tab_'+tab.key"
           @click="setLeaderboardMetric(tab.key)"
-          class="h-10 rounded-xl border text-sm font-black transition"
-          :class="leaderboardMetric === tab.key ? 'border-amber-300 bg-amber-400 text-slate-950' : 'border-white/10 bg-white/5 text-slate-200 hover:bg-white/10'"
+          class="leaderboard-tab"
+          :class="{ 'is-active': leaderboardMetric === tab.key }"
         >{{ tab.label }}</button>
       </div>
 
-      <div class="mb-3 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+      <div class="leaderboard-toolbar flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div class="flex flex-wrap items-center gap-2">
           <select
             :value="leaderboardPageSize"
@@ -6543,8 +6779,8 @@
         </div>
       </div>
 
-      <div class="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-        <div class="grid grid-cols-[70px_minmax(0,1fr)_120px] gap-2 border-b border-white/10 bg-white/10 px-3 py-2 text-xs font-black text-slate-300">
+      <div class="leaderboard-table">
+        <div class="leaderboard-head">
           <div>名次</div>
           <div>用户名</div>
           <div class="text-right">{{ leaderboardCurrentLabel }}</div>
@@ -6556,11 +6792,15 @@
           <div
             v-for="row in leaderboardRows"
             :key="'leaderboard_row_'+leaderboardMetric+'_'+row.rank+'_'+(row.userId || row.username)"
-            class="grid grid-cols-[70px_minmax(0,1fr)_120px] gap-2 border-b border-white/5 px-3 py-2 text-sm font-bold last:border-b-0"
+            class="leaderboard-row"
+            :class="{ 'is-top-1': row.rank === 1, 'is-top-2': row.rank === 2, 'is-top-3': row.rank === 3 }"
           >
-            <div class="font-black text-amber-200">#{{ row.rank }}</div>
-            <div class="truncate text-white" :title="row.username">{{ row.username }}</div>
-            <div class="text-right font-black text-cyan-100">{{ formatLeaderboardValue(row) }}</div>
+            <div class="leaderboard-rank-cell">
+              <span v-if="row.rank <= 3" class="leaderboard-trophy" :class="'rank-'+row.rank" aria-hidden="true"><span class="leaderboard-trophy-cup"></span></span>
+              <span class="leaderboard-rank-number">#{{ row.rank }}</span>
+            </div>
+            <div class="leaderboard-name" :title="row.username">{{ row.username }}</div>
+            <div class="leaderboard-value">{{ formatLeaderboardValue(row) }}</div>
           </div>
         </div>
       </div>
@@ -7130,9 +7370,10 @@
     <div class="w-full max-w-4xl rounded-3xl border border-white bg-white p-4 shadow-2xl app-modal" @click.stop>
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center gap-3 min-w-0">
-          <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+          <div class="inline-flex max-w-full overflow-x-auto rounded-xl border border-slate-200 bg-slate-50 p-1">
             <button @click="shopTab='shop'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='shop' ? 'bg-emerald-600 text-white' : 'text-slate-600'">亚比商店</button>
             <button @click="shopTab='eggs'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='eggs' ? 'bg-violet-600 text-white' : 'text-slate-600'">亚比蛋购买</button>
+            <button @click="shopTab='skillStones'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='skillStones' ? 'bg-amber-500 text-slate-950' : 'text-slate-600'">&#25216;&#33021;&#30707;&#21830;&#24215;</button>
           </div>
           <div class="panel-stat-chip">H币 {{ state.hCoins || 0 }}</div>
         </div>
@@ -7144,17 +7385,39 @@
             <div class="text-sm font-black text-emerald-900">{{ it.name }}</div>
             <div class="text-[11px] font-bold text-emerald-700">{{ it.desc }}</div>
             <div class="text-[11px] font-black text-amber-700 mt-1">{{ it.price > 0 ? (it.price + ' H币') : '免费' }}</div>
+            <div v-if="it.dailyLimit" class="text-[11px] font-black text-rose-600 mt-1">今日剩余 {{ shopItemRemainingDaily(it) }}/{{ it.dailyLimit }}</div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
             <input
               type="number"
               min="1"
-              max="999"
+              :max="Math.max(1, shopItemMaxBuyQuantity(it))"
               :value="shopBuyQuantity(it.id)"
               @input="setShopBuyQuantity(it.id, $event.target.value)"
               class="w-20 h-9 rounded-xl border border-emerald-200 bg-white px-2 text-sm font-black text-emerald-900"
             >
-            <button @click="buyShopItem(it.id)" :disabled="(state.hCoins || 0) < shopItemTotalPrice(it)" class="h-9 px-4 rounded-xl bg-emerald-600 text-white text-sm font-black disabled:opacity-45">购买</button>
+            <button @click="buyShopItem(it.id)" :disabled="!shopItemCanBuy(it)" class="h-9 px-4 rounded-xl bg-emerald-600 text-white text-sm font-black disabled:opacity-45">购买</button>
+          </div>
+        </div>
+      </div>
+      <div v-else-if="shopTab==='skillStones'" class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
+        <div v-for="it in skillShopItems" :key="'skill_shop_item_'+it.id" class="rounded-2xl border border-amber-100 bg-amber-50 p-3 flex items-center justify-between gap-3">
+          <div>
+            <div class="text-sm font-black text-amber-950">{{ it.name }}</div>
+            <div class="text-[11px] font-bold text-amber-800">{{ it.desc }}</div>
+            <div class="text-[11px] font-black text-rose-700 mt-1">{{ it.price }} H&#24065;</div>
+            <div v-if="it.purchaseLimit" class="text-[11px] font-black text-orange-700 mt-1">&#38480;&#36141;&#21097;&#20313; {{ shopItemRemainingLimited(it) }}/{{ it.purchaseLimit }}</div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <input
+              type="number"
+              min="1"
+              :max="Math.max(1, shopItemMaxBuyQuantity(it))"
+              :value="shopBuyQuantity(it.id)"
+              @input="setShopBuyQuantity(it.id, $event.target.value)"
+              class="w-20 h-9 rounded-xl border border-amber-200 bg-white px-2 text-sm font-black text-amber-950"
+            >
+            <button @click="buySkillShopItem(it.id)" :disabled="!shopItemCanBuy(it)" class="h-9 px-4 rounded-xl bg-amber-500 text-slate-950 text-sm font-black disabled:opacity-45">&#36141;&#20080;</button>
           </div>
         </div>
       </div>
@@ -7942,8 +8205,7 @@
               <img v-if="battleVisualReady && battleScene.statusEffectFx && battleScene.statusEffectFx.side === 'target'" :key="'status_fx_target_' + battleScene.statusEffectFx.seq" :src="battleScene.statusEffectFx.src" class="battle-status-effect-gif" :style="battleStatusEffectStyle('target')" alt="">
               <img v-if="battleVisualReady && battleScene.moraleEffectFx && battleScene.moraleEffectFx.side === 'target'" :key="'morale_fx_target_' + battleScene.moraleEffectFx.seq" :src="battleScene.moraleEffectFx.src" class="battle-status-effect-gif battle-morale-effect-gif" :style="battleStatusEffectStyle('target', true)" alt="">
               <img v-if="battleVisualReady && battleScene.stageChangeFx && battleScene.stageChangeFx.target" :key="'stage_change_target_' + battleScene.stageChangeFx.target.seq" :src="battleScene.stageChangeFx.target.src" class="battle-stage-change-fx" :style="battleStageChangeFxStyle('target')" alt="">
-            </div>
-          <div v-if="battleScene.damageOnTarget || battleScene.damageTagOnTarget" class="absolute top-6 left-1/2 -translate-x-1/2 inline-flex items-center justify-center gap-2 battle-damage-pop whitespace-nowrap pointer-events-none min-w-max">
+          <div v-if="battleScene.damageOnTarget || battleScene.damageTagOnTarget" class="battle-pet-value-float battle-pet-value-float-row battle-damage-pop" :style="battlePetValueFloatStyle('target', 'damage')">
             <span
               v-for="tag in String(battleScene.damageTagOnTarget || '').split(' ').filter(Boolean)"
               :key="'tar_tag_'+tag"
@@ -7953,11 +8215,12 @@
             <span v-if="battleScene.damageOnTarget === '无效'" class="inline-flex items-center h-10 px-3 rounded-xl border border-slate-300/70 bg-slate-500/85 text-2xl font-black text-white shadow-lg">无效</span>
             <span v-else :class="['text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.damageOnTarget === 'MISS' ? 'text-slate-300' : (battleScene.critOnTarget ? 'text-amber-300 battle-crit-pop' : 'text-rose-300')]">{{ battleScene.damageOnTarget }}</span>
           </div>
+          <div v-if="battleScene.healOnTarget" class="battle-pet-value-float text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop" :style="battlePetValueFloatStyle('target', 'heal')">{{ battleScene.healOnTarget }}</div>
+          <div v-for="(hit, idx) in (battleScene.comboHitsOnTarget || [])" :key="'combo_tar_'+idx+'_'+hit" class="battle-pet-value-float text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="[battlePetValueFloatStyle('target', 'damage'), { animationDelay: (idx*250)+'ms' }]">{{ hit }}</div>
+          <div v-if="battleScene.comboTotalOnTarget" class="battle-pet-value-float text-5xl font-black text-amber-300 [text-shadow:0_3px_16px_rgba(0,0,0,.5)] combo-total-pop" :style="battlePetValueFloatStyle('target', 'total')">{{ battleScene.comboTotalOnTarget }}</div>
+            </div>
           <div v-if="battleScene.actionNoticeOnTarget" class="absolute top-20 left-1/2 -translate-x-1/2 inline-flex items-center justify-center rounded-xl border border-amber-200/80 bg-slate-950/80 px-3 py-1.5 text-lg font-black text-amber-200 shadow-lg battle-damage-pop whitespace-nowrap pointer-events-none">{{ battleScene.actionNoticeOnTarget }}</div>
-          <div v-if="battleScene.healOnTarget" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnTarget }}</div>
           <div v-if="battleScene.ppOnTarget" class="absolute top-16 left-[66%] text-2xl font-black text-sky-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.ppOnTarget }}</div>
-          <div v-for="(hit, idx) in (battleScene.comboHitsOnTarget || [])" :key="'combo_tar_'+idx+'_'+hit" class="absolute top-10 left-1/2 text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="{ animationDelay: (idx*250)+'ms' }">{{ hit }}</div>
-          <div v-if="battleScene.comboTotalOnTarget" class="absolute top-8 left-[72%] text-5xl font-black text-amber-300 [text-shadow:0_3px_16px_rgba(0,0,0,.5)] combo-total-pop">{{ battleScene.comboTotalOnTarget }}</div>
           </div>
       </div>
       <div class="rounded-2xl border border-cyan-200/20 bg-slate-900/35 p-3 mt-2 w-[65%] battle-mobile-ability hidden md:block">
@@ -8114,9 +8377,7 @@
           <img v-if="battleVisualReady && battleScene.statusEffectFx && battleScene.statusEffectFx.side === 'attacker'" :key="'status_fx_attacker_' + battleScene.statusEffectFx.seq" :src="battleScene.statusEffectFx.src" class="battle-status-effect-gif" :style="battleStatusEffectStyle('attacker')" alt="">
           <img v-if="battleVisualReady && battleScene.moraleEffectFx && battleScene.moraleEffectFx.side === 'attacker'" :key="'morale_fx_attacker_' + battleScene.moraleEffectFx.seq" :src="battleScene.moraleEffectFx.src" class="battle-status-effect-gif battle-morale-effect-gif" :style="battleStatusEffectStyle('attacker', true)" alt="">
           <img v-if="battleVisualReady && battleScene.stageChangeFx && battleScene.stageChangeFx.attacker" :key="'stage_change_attacker_' + battleScene.stageChangeFx.attacker.seq" :src="battleScene.stageChangeFx.attacker.src" class="battle-stage-change-fx" :style="battleStageChangeFxStyle('attacker')" alt="">
-        </div>
-        <div v-if="battleScene.fxAttackerSkillText" class="absolute top-[-14px] left-1/2 -translate-x-1/2 text-sm font-black whitespace-nowrap battle-skill-float">{{ battleScene.fxAttackerSkillText }}</div>
-        <div v-if="battleScene.damageOnAttacker || battleScene.damageTagOnAttacker" class="absolute top-6 left-1/2 -translate-x-1/2 inline-flex items-center justify-center gap-2 battle-damage-pop whitespace-nowrap pointer-events-none min-w-max">
+        <div v-if="battleScene.damageOnAttacker || battleScene.damageTagOnAttacker" class="battle-pet-value-float battle-pet-value-float-row battle-damage-pop" :style="battlePetValueFloatStyle('attacker', 'damage')">
           <span
             v-for="tag in String(battleScene.damageTagOnAttacker || '').split(' ').filter(Boolean)"
             :key="'atk_tag_'+tag"
@@ -8126,11 +8387,13 @@
           <span v-if="battleScene.damageOnAttacker === '无效'" class="inline-flex items-center h-10 px-3 rounded-xl border border-slate-300/70 bg-slate-500/85 text-2xl font-black text-white shadow-lg">无效</span>
           <span v-else :class="['text-4xl font-black [text-shadow:0_2px_10px_rgba(0,0,0,.45)]', battleScene.damageOnAttacker === 'MISS' ? 'text-slate-300' : (battleScene.critOnAttacker ? 'text-amber-300 battle-crit-pop' : 'text-rose-300')]">{{ battleScene.damageOnAttacker }}</span>
         </div>
+        <div v-if="battleScene.healOnAttacker" class="battle-pet-value-float text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop" :style="battlePetValueFloatStyle('attacker', 'heal')">{{ battleScene.healOnAttacker }}</div>
+        <div v-for="(hit, idx) in (battleScene.comboHitsOnAttacker || [])" :key="'combo_atk_'+idx+'_'+hit" class="battle-pet-value-float text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="[battlePetValueFloatStyle('attacker', 'damage'), { animationDelay: (idx*250)+'ms' }]">{{ hit }}</div>
+        <div v-if="battleScene.comboTotalOnAttacker" class="battle-pet-value-float text-5xl font-black text-amber-300 [text-shadow:0_3px_16px_rgba(0,0,0,.5)] combo-total-pop" :style="battlePetValueFloatStyle('attacker', 'total')">{{ battleScene.comboTotalOnAttacker }}</div>
+        </div>
+        <div v-if="battleScene.fxAttackerSkillText" class="absolute top-[-14px] left-1/2 -translate-x-1/2 text-sm font-black whitespace-nowrap battle-skill-float">{{ battleScene.fxAttackerSkillText }}</div>
         <div v-if="battleScene.actionNoticeOnAttacker" class="absolute top-20 left-1/2 -translate-x-1/2 inline-flex items-center justify-center rounded-xl border border-amber-200/80 bg-slate-950/80 px-3 py-1.5 text-lg font-black text-amber-200 shadow-lg battle-damage-pop whitespace-nowrap pointer-events-none">{{ battleScene.actionNoticeOnAttacker }}</div>
-        <div v-if="battleScene.healOnAttacker" class="absolute top-12 left-1/2 -translate-x-1/2 text-3xl font-black text-emerald-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.healOnAttacker }}</div>
         <div v-if="battleScene.ppOnAttacker" class="absolute top-16 left-[66%] text-2xl font-black text-sky-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.ppOnAttacker }}</div>
-        <div v-for="(hit, idx) in (battleScene.comboHitsOnAttacker || [])" :key="'combo_atk_'+idx+'_'+hit" class="absolute top-10 left-1/2 text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="{ animationDelay: (idx*250)+'ms' }">{{ hit }}</div>
-        <div v-if="battleScene.comboTotalOnAttacker" class="absolute top-8 left-[72%] text-5xl font-black text-amber-300 [text-shadow:0_3px_16px_rgba(0,0,0,.5)] combo-total-pop">{{ battleScene.comboTotalOnAttacker }}</div>
       </div>
       </div>
     </div>
