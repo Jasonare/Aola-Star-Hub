@@ -385,6 +385,388 @@ const BATTLE_STAGE_UP_FX_SRC = encodeAssetSrc("./resource/ui/提升.png");
 const BATTLE_STAGE_DOWN_FX_SRC = encodeAssetSrc("./resource/ui/下降.png");
 const CHALLENGE_CLEARED_MARK_SRC = encodeAssetSrc("./resource/小图标/已战胜（1）.png");
 const CHALLENGE_CLEARED_MINI_MARK_SRC = encodeAssetSrc("./resource/小图标/已战胜（2）.png");
+const EQUIPMENT_DUNGEON_BUTTON_SRC = encodeAssetSrc("./resource/装备/装备秘境按钮.jpeg");
+const EQUIPMENT_DUNGEON_GALAXY_MAP_SRC = encodeAssetSrc("./resource/scene/sprites/DefineSprite_255_mmo.map.galaxy.Galaxy1/frames.gif");
+const EQUIPMENT_DUNGEON_AIXI_SCENE_SRC = encodeAssetSrc("./resource/scene/sprites/DefineSprite_70_mmo.scene.aixi.AiXi/frames.gif");
+const EQUIPMENT_DUNGEON_RETURN_HOVER_SRC = encodeAssetSrc("./resource/scene/sprites/DefineSprite_252/frames.gif");
+const EQUIPMENT_DUNGEON_SCENE_SVG_SRCS = {
+  aixi: encodeAssetSrc("./resource/scene/aixi.svg"),
+  leimingdalu: encodeAssetSrc("./resource/scene/leimingdalu.svg"),
+  suolide: encodeAssetSrc("./resource/scene/suolide.svg"),
+  haiwenhuayuan: encodeAssetSrc("./resource/scene/haiwenhuayuan.svg"),
+  yishuzhidu: encodeAssetSrc("./resource/scene/yishuzhidu.svg"),
+  siwude: encodeAssetSrc("./resource/scene/siwude.svg"),
+  famingdao: encodeAssetSrc("./resource/scene/famingdao.svg"),
+  woerte: encodeAssetSrc("./resource/scene/woerte.svg"),
+  bite: encodeAssetSrc("./resource/scene/bite.svg"),
+  feier: encodeAssetSrc("./resource/scene/feier.svg"),
+  shanggushendian: encodeAssetSrc("./resource/scene/shanggushendian.svg")
+};
+const EQUIPMENT_DUNGEON_MAP_REGIONS = [
+  {
+    key: "aixi",
+    sceneSvgKey: "aixi",
+    name: "艾夕区",
+    detailsReady: true,
+    x: 14.5,
+    y: 25,
+    w: 13,
+    h: 26,
+    panelX: 28,
+    panelY: 28,
+    minLevel: "10级以上",
+    scenes: ["冰雕广场", "冰河瀑布", "奇迹冰殿", "寒冰洞"],
+    resources: ["麦冰", "雪盐", "火焰冰"],
+    pets: ["小冰犬", "库多兽", "冰蓝蓝", "朵朵兔"],
+    games: ["冰之迷阵"]
+  },
+  {
+    key: "leimingdalu",
+    sceneSvgKey: "leimingdalu",
+    name: "雷鸣大陆",
+    x: 2.8,
+    y: 50,
+    w: 11,
+    h: 18,
+    panelX: 13,
+    panelY: 52,
+    minLevel: "10级以上",
+    scenes: ["雷鸣大陆"],
+    resources: [],
+    pets: [],
+    games: []
+  },
+  {
+    key: "suolide",
+    sceneSvgKey: "suolide",
+    name: "索里德区",
+    x: 27.4,
+    y: 18,
+    w: 16,
+    h: 20,
+    panelX: 39,
+    panelY: 16,
+    minLevel: "10级以上",
+    scenes: ["索里德区"],
+    resources: [],
+    pets: [],
+    games: []
+  },
+  {
+    key: "haiwenhuayuan",
+    sceneSvgKey: "haiwenhuayuan",
+    name: "海文花园",
+    x: 31,
+    y: 46,
+    w: 17,
+    h: 19,
+    panelX: 43,
+    panelY: 43,
+    minLevel: "10级以上",
+    scenes: ["海文花园"],
+    resources: [],
+    pets: [],
+    games: []
+  },
+  {
+    key: "yishuzhidu",
+    sceneSvgKey: "yishuzhidu",
+    name: "艺术之都",
+    x: 18,
+    y: 63,
+    w: 16,
+    h: 21,
+    panelX: 30,
+    panelY: 58,
+    minLevel: "10级以上",
+    scenes: ["艺术之都"],
+    resources: [],
+    pets: [],
+    games: []
+  },
+  {
+    key: "siwude",
+    sceneSvgKey: "siwude",
+    name: "思伍德区",
+    x: 47,
+    y: 19,
+    w: 15,
+    h: 23,
+    panelX: 58,
+    panelY: 20,
+    minLevel: "10级以上",
+    scenes: ["思伍德区"],
+    resources: [],
+    pets: [],
+    games: []
+  },
+  {
+    key: "famingdao",
+    sceneSvgKey: "famingdao",
+    name: "发明岛",
+    x: 47.5,
+    y: 67,
+    w: 16,
+    h: 19,
+    panelX: 58,
+    panelY: 58,
+    minLevel: "10级以上",
+    scenes: ["发明岛"],
+    resources: [],
+    pets: [],
+    games: []
+  },
+  {
+    key: "woerte",
+    sceneSvgKey: "woerte",
+    name: "沃尔特区",
+    x: 66.5,
+    y: 18,
+    w: 15,
+    h: 23,
+    panelX: 48,
+    panelY: 17,
+    minLevel: "10级以上",
+    scenes: ["沃尔特区"],
+    resources: [],
+    pets: [],
+    games: []
+  },
+  {
+    key: "bite",
+    sceneSvgKey: "bite",
+    name: "比特区",
+    x: 61.5,
+    y: 44,
+    w: 17,
+    h: 21,
+    panelX: 45,
+    panelY: 41,
+    minLevel: "10级以上",
+    scenes: ["比特区"],
+    resources: [],
+    pets: [],
+    games: []
+  },
+  {
+    key: "feier",
+    sceneSvgKey: "feier",
+    name: "费尔区",
+    x: 82.2,
+    y: 38,
+    w: 16,
+    h: 23,
+    panelX: 61,
+    panelY: 36,
+    minLevel: "10级以上",
+    scenes: ["费尔区"],
+    resources: [],
+    pets: [],
+    games: []
+  },
+  {
+    key: "shanggushendian",
+    sceneSvgKey: "shanggushendian",
+    name: "上古神殿",
+    x: 72.5,
+    y: 66,
+    w: 16,
+    h: 20,
+    panelX: 54,
+    panelY: 58,
+    minLevel: "10级以上",
+    scenes: ["上古神殿"],
+    resources: [],
+    pets: [],
+    games: []
+  }
+];
+const EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID = "equipment_dungeon_crystal";
+const EQUIPMENT_DUNGEON_DAILY_ATTEMPT_LIMIT = 6;
+const EQUIPMENT_DUNGEON_ROUTE_KEYS = [
+  "aixi",
+  "suolide",
+  "siwude",
+  "woerte",
+  "feier",
+  "bite",
+  "haiwenhuayuan",
+  "leimingdalu",
+  "yishuzhidu",
+  "famingdao",
+  "shanggushendian"
+];
+const ALL_ABILITY_STAGE_KEYS = ["atk", "def", "spAtk", "spDef", "speed", "accuracy", "evasion", "critStage"];
+const EQUIPMENT_DUNGEON_DIFFICULTIES = [
+  { key: "normal", label: "普通", score: 300, fixedHp: 10000, talent: 30, immuneStatus: false, damageReductionRatio: 0, counteredDamageReductionRatio: 0, desc: "体力10000，天赋值均为30，除体力外学习力均为102，不免疫异常状态。" },
+  { key: "hard", label: "困难", score: 500, fixedHp: 20000, talent: 50, immuneStatus: true, damageReductionRatio: 0.2, counteredDamageReductionRatio: 0.4, desc: "体力20000，天赋值均为50，除体力外学习力均为102，免疫异常状态。" },
+  { key: "nightmare", label: "噩梦", score: 800, fixedHp: 30000, talent: 60, immuneStatus: true, damageReductionRatio: 0.3, counteredDamageReductionRatio: 0.6, desc: "体力30000，天赋值均为60，除体力外学习力均为102，免疫异常状态。" }
+];
+const EQUIPMENT_DUNGEON_SCORE_REWARDS = [
+  { min: 8000, rating: "SSS", crystals: 50 },
+  { min: 6600, rating: "SS", crystals: 40 },
+  { min: 5500, rating: "S", crystals: 30 },
+  { min: 4500, rating: "A", crystals: 24 },
+  { min: 3300, rating: "B", crystals: 16 },
+  { min: 0, rating: "C", crystals: 8 }
+];
+const EQUIPMENT_DUNGEON_BOSS_CONFIGS = [
+  {
+    regionKey: "aixi",
+    bossName: "冰拳艾司",
+    skills: ["霜冻护佑", "恢复性睡眠", "水龙击打", "宇宙力量", "急冻寒流", "魔高一丈", "冰瀑寒花", "霜之哀伤"],
+    difficulty: {
+      normal: "无额外buff。",
+      hard: "减伤20%，对克制伤害额外减伤40%，霜之哀伤释放概率提升到25%。",
+      nightmare: "减伤30%，对克制伤害额外减伤60%，霜之哀伤释放概率提升到40%。"
+    },
+    skillWeights: {
+      hard: { "霜之哀伤": 0.25 },
+      nightmare: { "霜之哀伤": 0.4 }
+    }
+  },
+  {
+    regionKey: "suolide",
+    bossName: "法老王",
+    skills: ["秽土转生", "灭沙瀑葬", "沙缚柩", "污秽"],
+    difficulty: {
+      normal: "无额外buff。",
+      hard: "减伤20%，对克制伤害额外减伤40%，每回合末10%概率降低对方全属性1级。",
+      nightmare: "减伤30%，对克制伤害额外减伤60%，每回合末20%概率降低对方全属性1级。"
+    },
+    endTurn: {
+      hard: [{ kind: "stage", side: "attacker", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: -1, chance: 0.1 }],
+      nightmare: [{ kind: "stage", side: "attacker", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: -1, chance: 0.2 }]
+    }
+  },
+  {
+    regionKey: "siwude",
+    bossName: "蚁将军",
+    skills: ["万物生长", "春木之歌", "聚气凝神", "破魔剑气", "巨兽之力", "芒刺", "木叶飞舞", "将军KICK"],
+    difficulty: {
+      normal: "无额外buff。",
+      hard: "减伤20%，对克制伤害额外减伤40%，每回合末回复200体力值，50%概率提升暴击1级。",
+      nightmare: "减伤30%，对克制伤害额外减伤60%，每回合末回复400体力值，80%概率提升暴击1级。"
+    },
+    endTurn: {
+      hard: [{ kind: "heal", amount: 200 }, { kind: "stage", side: "target", keys: ["critStage"], delta: 1, chance: 0.5 }],
+      nightmare: [{ kind: "heal", amount: 400 }, { kind: "stage", side: "target", keys: ["critStage"], delta: 1, chance: 0.8 }]
+    }
+  },
+  {
+    regionKey: "woerte",
+    bossName: "金刚库巴",
+    skills: ["虚弱光线", "水神祝福", "横行霸道", "龟息", "巨人力量", "流星拳", "巨兽之力", "定海神针"],
+    difficulty: {
+      normal: "无额外buff。",
+      hard: "减伤20%，对克制伤害额外减伤40%，体力高于50%每回合末提升攻击1级，低于50%提升防御1级。",
+      nightmare: "减伤30%，对克制伤害额外减伤60%，体力高于70%提升攻击、暴击1级，低于70%提升双防1级并回复300体力。"
+    },
+    endTurn: {
+      hard: [{ kind: "hpBranchStage", threshold: 0.5, aboveKeys: ["atk"], belowKeys: ["def"], delta: 1 }],
+      nightmare: [{ kind: "hpBranchStage", threshold: 0.7, aboveKeys: ["atk", "critStage"], belowKeys: ["def", "spDef"], delta: 1, belowHeal: 300 }]
+    }
+  },
+  {
+    regionKey: "feier",
+    bossName: "烈焰凤凰",
+    skills: ["凤凰涅槃", "聒噪", "巨人力量", "鸟神降临", "乱舞八重击", "双莲苍火坠", "浴火凤凰", "丹凤朝阳"],
+    difficulty: {
+      normal: "无额外buff。",
+      hard: "减伤20%，对克制伤害额外减伤40%，体力低于50%时每回合末60%概率令对方烧伤，50%概率提升攻击1级。",
+      nightmare: "减伤30%，对克制伤害额外减伤60%，体力低于70%时每回合末80%概率令对方烧伤，攻击提升1级。"
+    },
+    endTurn: {
+      hard: [{ kind: "lowHpStatus", threshold: 0.5, status: "burn", chance: 0.6 }, { kind: "lowHpStage", threshold: 0.5, keys: ["atk"], delta: 1, chance: 0.5 }],
+      nightmare: [{ kind: "lowHpStatus", threshold: 0.7, status: "burn", chance: 0.8 }, { kind: "lowHpStage", threshold: 0.7, keys: ["atk"], delta: 1, chance: 1 }]
+    }
+  },
+  {
+    regionKey: "bite",
+    bossName: "机甲勇士",
+    skills: ["超合金v型斩", "机甲超频", "机甲领域", "铜墙铁壁"],
+    difficulty: {
+      normal: "无额外buff。",
+      hard: "减伤20%，对克制伤害额外减伤40%，每6回合恢复自身被降低的能力等级。",
+      nightmare: "减伤30%，对克制伤害额外减伤60%，每4回合恢复自身被降低的能力等级。"
+    },
+    endTurn: {
+      hard: [{ kind: "clearNegativeStageEvery", interval: 6 }],
+      nightmare: [{ kind: "clearNegativeStageEvery", interval: 4 }]
+    }
+  },
+  {
+    regionKey: "haiwenhuayuan",
+    bossName: "霸羽灵者",
+    skills: ["天马行空", "凤凰涅槃", "天神之吼", "弱点探测", "神兵逆袭", "灵风拂面", "凝神霸体", "灭魂枪"],
+    difficulty: {
+      normal: "无额外buff。",
+      hard: "减伤20%，对克制伤害额外减伤40%，每回合末提升暴击1级。",
+      nightmare: "减伤30%，对克制伤害额外减伤60%，每回合末提升暴击、速度、闪避1级。"
+    },
+    endTurn: {
+      hard: [{ kind: "stage", side: "target", keys: ["critStage"], delta: 1, chance: 1 }],
+      nightmare: [{ kind: "stage", side: "target", keys: ["critStage", "speed", "evasion"], delta: 1, chance: 1 }]
+    }
+  },
+  {
+    regionKey: "leimingdalu",
+    bossName: "王者蒙奇",
+    skills: ["斗气护甲", "橡皮橡皮闪", "热血燃烧", "橡皮雷霆缚", "橡皮橡皮拳"],
+    difficulty: {
+      normal: "无额外buff。",
+      hard: "减伤20%，对克制伤害额外减伤40%，每回合末40%概率令对方麻痹；若对方麻痹，恢复自身200体力。",
+      nightmare: "减伤30%，对克制伤害额外减伤60%，每回合末60%概率令对方麻痹；若对方麻痹，恢复自身400体力。"
+    },
+    endTurn: {
+      hard: [{ kind: "statusThenHealIfStatus", status: "paralyze", chance: 0.4, heal: 200 }],
+      nightmare: [{ kind: "statusThenHealIfStatus", status: "paralyze", chance: 0.6, heal: 400 }]
+    }
+  },
+  {
+    regionKey: "yishuzhidu",
+    bossName: "浮云尊者",
+    skills: ["炫目", "欢乐之铃", "浮光掠影", "浮云朝露", "神马皆浮云", "腐蚀酸云"],
+    difficulty: {
+      normal: "无额外buff。",
+      hard: "减伤20%，对克制伤害额外减伤40%，每回合末恢复50体力，50%概率提升双防1级。",
+      nightmare: "减伤30%，对克制伤害额外减伤60%，每回合末恢复100体力，80%概率提升双防1级。"
+    },
+    endTurn: {
+      hard: [{ kind: "heal", amount: 50 }, { kind: "stage", side: "target", keys: ["def", "spDef"], delta: 1, chance: 0.5 }],
+      nightmare: [{ kind: "heal", amount: 100 }, { kind: "stage", side: "target", keys: ["def", "spDef"], delta: 1, chance: 0.8 }]
+    }
+  },
+  {
+    regionKey: "famingdao",
+    bossName: "斗士豪达",
+    skills: ["光之耀", "刀剑如梦", "光之剑", "八门遁甲", "光明漩涡", "狂暴碎裂击", "圣光气功波"],
+    difficulty: {
+      normal: "无额外buff。",
+      hard: "减伤20%，对克制伤害额外减伤40%，每回合末降低对方防御、特防1级。",
+      nightmare: "减伤30%，对克制伤害额外减伤60%，每回合末降低对方全属性1级。"
+    },
+    endTurn: {
+      hard: [{ kind: "stage", side: "attacker", keys: ["def", "spDef"], delta: -1, chance: 1 }],
+      nightmare: [{ kind: "stage", side: "attacker", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: -1, chance: 1 }]
+    }
+  },
+  {
+    regionKey: "shanggushendian",
+    bossName: "苍穹圣龙",
+    skills: ["炫纹锁链", "光之耀", "天尊法身", "战武乾坤", "天地同寿", "地破天穹"],
+    difficulty: {
+      normal: "无额外buff。",
+      hard: "减伤20%，对克制伤害额外减伤40%，每回合末令对方陷入束缚/冰冻/烧伤/麻痹中的一种异常状态。",
+      nightmare: "减伤30%，对克制伤害额外减伤60%，每回合末令对方陷入束缚/冰冻/烧伤/麻痹中的两种异常状态。"
+    },
+    endTurn: {
+      hard: [{ kind: "randomStatuses", count: 1, statuses: ["bind", "freeze", "burn", "paralyze"] }],
+      nightmare: [{ kind: "randomStatuses", count: 2, statuses: ["bind", "freeze", "burn", "paralyze"] }]
+    }
+  }
+];
+const EQUIPMENT_DUNGEON_BOSS_BY_REGION = new Map(EQUIPMENT_DUNGEON_BOSS_CONFIGS.map((config) => [config.regionKey, config]));
 const QIXING_TRAIT_KEYS = {
   LEGACY: "qixing_seal",
   LIANGYI: "liangyi",
@@ -491,6 +873,9 @@ const QIXING_ANCIENT_STAR_DRAGON_DEX = {
   sourceUrl: ""
 };
 const NORMAL_HARD_CHALLENGE_FORBIDDEN_DEX_IDS = new Set([QIXING_ANCIENT_STAR_DRAGON_DEX.rootDexId, QIXING_ANCIENT_STAR_DRAGON_DEX.dexId]);
+const NORMAL_HARD_CHALLENGE_FORBIDDEN_PET_NAMES = ["上古星龙"];
+const NORMAL_HARD_CHALLENGE_FORBIDDEN_DIFFICULTY_KEYS = new Set(["normal", "hard"]);
+const NORMAL_HARD_CHALLENGE_FORBIDDEN_TEXT = `普通/困难挑战禁用亚比：${NORMAL_HARD_CHALLENGE_FORBIDDEN_PET_NAMES.join("、")}。`;
 const QIXING_GACHA_PHASES = [
   {
     key: "phase1",
@@ -541,22 +926,78 @@ const QIXING_GACHA_PHASES = [
 ];
 const QIXING_GACHA_PHASE_BY_KEY = new Map(QIXING_GACHA_PHASES.map((phase) => [phase.key, phase]));
 const WEEKLY_BOSS_CONFIG = {
-  key: "wunian_2020",
-  dexId: 2020,
-  name: "无念",
+  key: "darkflame_dragon_2036",
+  dexId: 2036,
+  name: "暗焰天龙",
   level: 100,
   hpRaceMultiplier: 15,
-  statBoostRatio: 0.5,
+  statBoostRatio: 0,
   dailyAttempts: 5,
-  rewardHCoins: 5000,
   itemId: QIXING_SEAL_ITEM_ID,
   itemName: "启星之印",
-  fixedHp: 15000,
-  damageReductionRatio: 0,
+  fixedHp: 10000,
+  damageReductionRatio: 0.15,
   qixingSealLevel: 4,
-  honorBadgeId: "weekly_boss_wunian_2020_honor",
-  honorBadgeName: "无念专属黑金徽章"
+  honorBadgeId: "weekly_boss_darkflame_dragon_2036_honor",
+  honorBadgeName: "暗焰天龙专属黑金徽章"
 };
+const WEEKLY_BOSS_CONFIGS = [
+  {
+    ...WEEKLY_BOSS_CONFIG,
+    lowHpKind: "darkflame",
+    counterDexId: 2033,
+    counterName: "风暴龙",
+    skillWeights: [
+      { name: "紫·炎", weight: 40 },
+      { name: "天焰灭世", weight: 40 },
+      { name: "三重影狱", weight: 15 },
+      { name: "炽龙伐罪", weight: 5 }
+    ],
+    difficultyRules: {
+      normal: { periodicInterval: 3, periodicHealRatio: 0.05, periodicStatusCount: 1, lowHpFixedDamage: 40 },
+      hard: { periodicInterval: 3, periodicHealRatio: 0.1, periodicStatusCount: 1, lowHpFixedDamage: 60 },
+      nightmare: { periodicInterval: 3, periodicHealRatio: 0.15, periodicStatusCount: 2, lowHpFixedDamage: 80 }
+    }
+  },
+  {
+    key: "storm_dragon_2033",
+    dexId: 2033,
+    name: "风暴龙",
+    level: 100,
+    hpRaceMultiplier: 15,
+    statBoostRatio: 0,
+    dailyAttempts: 5,
+    itemId: QIXING_SEAL_ITEM_ID,
+    itemName: "启星之印",
+    fixedHp: 10000,
+    damageReductionRatio: 0.15,
+    qixingSealLevel: 4,
+    honorBadgeId: "weekly_boss_storm_dragon_2033_honor",
+    honorBadgeName: "风暴龙专属黑金徽章",
+    lowHpKind: "storm",
+    counterDexId: 2036,
+    counterName: "暗焰天龙",
+    skillWeights: [
+      { name: "破宇风暴", weight: 40 },
+      { name: "雷龙之怒", weight: 40 },
+      { name: "星系神力", weight: 15 },
+      { name: "磁爆漩涡", weight: 5 }
+    ],
+    difficultyRules: {
+      normal: { periodicInterval: 7, lowHpHealRatio: 0.15, lowHpFixedDamage: 40 },
+      hard: { periodicInterval: 6, lowHpHealRatio: 0.25, lowHpFixedDamage: 60 },
+      nightmare: { periodicInterval: 5, lowHpHealRatio: 0.35, lowHpFixedDamage: 80 }
+    }
+  }
+];
+const normalizeWeeklyBossConstKey = (value) => String(value || "").replace(/[\u200b\u00a0]/g, "").trim();
+const WEEKLY_BOSS_CONFIG_BY_KEY = new Map(WEEKLY_BOSS_CONFIGS.map((config) => [config.key, config]));
+const WEEKLY_BOSS_DEX_IDS = new Set(WEEKLY_BOSS_CONFIGS.map((config) => Number(config.dexId) || 0));
+const WEEKLY_BOSS_NAME_SET = new Set(WEEKLY_BOSS_CONFIGS.map((config) => normalizeWeeklyBossConstKey(config.name)).filter(Boolean));
+const WEEKLY_BOSS_ATTEMPT_GROUP_KEY = "weekly_boss_darkflame_storm_202606";
+const WEEKLY_BOSS_EXTRA_ATTEMPT_MAX = 3;
+const WEEKLY_BOSS_EXTRA_ATTEMPT_COST = 10000;
+const getWeeklyBossConfigByKey = (key) => WEEKLY_BOSS_CONFIG_BY_KEY.get(normalizeWeeklyBossConstKey(key)) || WEEKLY_BOSS_CONFIG;
 const WEEKLY_BOSS_HISTORY_CONFIGS = [
   {
     key: "emperor_holy_dragon_1953",
@@ -578,16 +1019,23 @@ const WEEKLY_BOSS_HISTORY_CONFIGS = [
     name: WEEKLY_BOSS_CONFIG.name,
     honorBadgeId: WEEKLY_BOSS_CONFIG.honorBadgeId,
     honorBadgeName: WEEKLY_BOSS_CONFIG.honorBadgeName
+  },
+  {
+    key: "storm_dragon_2033",
+    dexId: 2033,
+    name: "风暴龙",
+    honorBadgeId: "weekly_boss_storm_dragon_2033_honor",
+    honorBadgeName: "风暴龙专属黑金徽章"
   }
 ];
-const WEEKLY_BOSS_MEDAL_ITEM_ID = "weekly_boss_medal_wunian_2020";
-const WEEKLY_BOSS_MEDAL_MAX = 50;
+const WEEKLY_BOSS_MEDAL_ITEM_ID = "weekly_boss_medal_darkflame_storm_202606";
+const WEEKLY_BOSS_MEDAL_MAX = 100;
 const WEEKLY_BOSS_EGG_EXCHANGE_COST = 50;
-const WEEKLY_BOSS_REWARD_STATE_VERSION = "wunian_2020_exchange_reset_v2";
+const WEEKLY_BOSS_REWARD_STATE_VERSION = "darkflame_storm_202606_reset_v1";
 const WEEKLY_BOSS_DIFFICULTY_OPTIONS = [
-  { key: "normal", label: "普通", tone: "normal", fixedHp: 15000, damageReductionRatio: 0.1, statBoostRatio: 0.5, randomStageDelta: 2, lowHpDamageBoostFactor: 1.2, lowHpDamageReductionRatio: 0.4, rewardMedals: [5, 15], rewardHCoins: 2000, divinePetKeyCount: 5, blackgoldBadge: false },
-  { key: "hard", label: "困难", tone: "hard", fixedHp: 20000, damageReductionRatio: 0.2, statBoostRatio: 0.6, randomStageDelta: 3, lowHpDamageBoostFactor: 1.25, lowHpDamageReductionRatio: 0.6, rewardMedals: [15, 25], rewardHCoins: 5000, divinePetKeyCount: 10, blackgoldBadge: false },
-  { key: "nightmare", label: "噩梦", tone: "nightmare", fixedHp: 30000, damageReductionRatio: 0.3, statBoostRatio: 0.7, randomStageDelta: 4, lowHpDamageBoostFactor: 1.3, lowHpDamageReductionRatio: 1, rewardMedals: [50, 50], rewardHCoins: 8000, divinePetKeyCount: 15, blackgoldBadge: true }
+  { key: "normal", label: "普通", tone: "normal", fixedHp: 10000, damageReductionRatio: 0.15, statBoostRatio: 0, rewardMedals: [5, 15], rewardHCoins: 2000, divinePetKeyCount: 5, blackgoldBadge: false },
+  { key: "hard", label: "困难", tone: "hard", fixedHp: 20000, damageReductionRatio: 0.2, statBoostRatio: 0, rewardMedals: [15, 25], rewardHCoins: 5000, divinePetKeyCount: 10, blackgoldBadge: false },
+  { key: "nightmare", label: "噩梦", tone: "nightmare", fixedHp: 30000, damageReductionRatio: 0.3, statBoostRatio: 0, rewardMedals: [50, 50], rewardHCoins: 8000, divinePetKeyCount: 15, blackgoldBadge: true }
 ];
 const WEEKLY_BOSS_DIFFICULTY_BY_KEY = new Map(WEEKLY_BOSS_DIFFICULTY_OPTIONS.map((option) => [option.key, option]));
 const EXCLUDED_BOSS_DEX_IDS = new Set([1808, 1898]);
@@ -630,6 +1078,8 @@ const BOSS_RANDOM_SKILL_POOL_BY_DEX_ID = {
   2011: ["应龙沧海", "古渊巨啸", "怒涛咆哮"],
   2019: ["星宇X斩", "星宇魂魄", "光之斩魄", "乾坤斗转", "光之耀"],
   2020: ["邪念俱灰", "无念化境", "圣念破暗", "念之意志", "幻魔拳", "圣灵噬魂", "无尽黑洞"],
+  2033: ["破宇风暴", "雷龙之怒", "星系神力", "磁爆漩涡"],
+  2036: ["紫·炎", "天焰灭世", "三重影狱", "炽龙伐罪"],
   2023: ["破次元斩", "数据爆发", "龙流破碎", "龙·魂闪"],
   2027: ["裂空轨迹", "空间碎裂击", "破碎空灵球", "噬空之灵"],
   2030: ["奥特X爆焰", "火海之歌", "星火灵光", "火海焚烧"],
@@ -1231,7 +1681,7 @@ const isLegacyBossEntry = (entry) => {
 };
 const isWeeklyBossEntry = (entry) => {
   if (!entry) return false;
-  return Number(entry.dexId) === Number(WEEKLY_BOSS_CONFIG.dexId) || normalize(entry.name) === normalize(WEEKLY_BOSS_CONFIG.name);
+  return WEEKLY_BOSS_DEX_IDS.has(Number(entry.dexId) || 0) || WEEKLY_BOSS_NAME_SET.has(normalize(entry.name));
 };
 const resolveShopEggName = (name) => {
   const raw = normalize(name);
@@ -1704,7 +2154,6 @@ const calcAbilityHp = (base, talent, study, level) => {
 };
 const BATTLE_STAGE_KEYS = ["atk", "def", "spAtk", "spDef", "speed", "accuracy", "evasion"];
 const BATTLE_BASE_STAGE_KEYS = ["atk", "def", "spAtk", "spDef", "speed"];
-const ALL_ABILITY_STAGE_KEYS = ["atk", "def", "spAtk", "spDef", "speed", "accuracy", "evasion", "critStage"];
 const ELEMENT_NAMES = Object.keys(PET_TYPE_ICON || {});
 const BATTLE_ABILITY_KEYS = ["hp", "atk", "def", "spAtk", "spDef", "speed"];
 const TIME_TUNNEL_ENVIRONMENTS = [
@@ -3418,7 +3867,18 @@ const applyBattleMaxHpDrain = (scene, fromSide, toSide, ratio, label = "吸取")
   pushBattleLog(scene, `${label}：${toName}吸取${fromName}${actual}点体力。`);
   return { actual, healed };
 };
+const isWeeklyBossCounterPetActive = (scene, side = "attacker") => {
+  if (!scene || scene.mode !== "weeklyBoss") return false;
+  const meta = scene.guardianMeta && typeof scene.guardianMeta === "object" ? scene.guardianMeta : {};
+  const counterDexId = Number(meta.weeklyBossCounterDexId) || Number(getWeeklyBossConfigByKey(meta.weeklyBossKey).counterDexId) || 0;
+  if (!counterDexId) return false;
+  const ids = side === "attacker"
+    ? [scene.attackerDexId, scene.attackerBaseDexId, scene.attackerBattleVisualDexId, scene.attackerOriginalBattleVisualDexId]
+    : [scene.targetDexId, scene.targetBaseDexId, scene.targetBattleVisualDexId, scene.targetOriginalBattleVisualDexId];
+  return ids.some((id) => Number(id) === counterDexId);
+};
 const hasStatusShield = (scene, side, status = "") => {
+  if (isWeeklyBossCounterPetActive(scene, side)) return true;
   const state = getSideState(scene, side);
   cleanupExpiredEffects(state);
   return (state.timedEffects || []).some((e) => {
@@ -9532,9 +9992,11 @@ createApp({
         guardianWinCounts: {},
         bossFirstWinRewardV1: null,
         bossDifficultyFirstWinRewards: {},
-        weeklyBossAttempts: { bossKey: WEEKLY_BOSS_CONFIG.key, date: "", used: 0 },
+        weeklyBossAttempts: { bossKey: WEEKLY_BOSS_ATTEMPT_GROUP_KEY, date: "", used: 0, bought: 0 },
         weeklyBossHonorRewards: {},
         weeklyBossRewardState: { bossKey: WEEKLY_BOSS_CONFIG.key, rewardStateVersion: WEEKLY_BOSS_REWARD_STATE_VERSION, divinePetKeyClaimed: false, exchangedEgg: false, lastRewardDate: "", clearedDifficulties: {} },
+        weeklyBossRewardStates: {},
+        equipmentDungeon: { date: "", attemptsUsed: 0, score: 0, active: false, completedRegionKeys: [], unlockedRegionKeys: ["aixi"], settled: false },
         shopDailyPurchases: { date: "", counts: {} },
         shopLimitedPurchases: {},
         dragonBoatShopPurchases: {},
@@ -9714,6 +10176,30 @@ createApp({
         source[QIXING_SEAL_ITEM_ID] = 0;
         return source;
       })();
+      const equipmentDungeon = (() => {
+        const source = loaded.equipmentDungeon && typeof loaded.equipmentDungeon === "object" ? loaded.equipmentDungeon : {};
+        const validKeys = new Set(EQUIPMENT_DUNGEON_ROUTE_KEYS);
+        const completedRegionKeys = Array.isArray(source.completedRegionKeys)
+          ? source.completedRegionKeys.map(normalize).filter((key) => validKeys.has(key))
+          : [];
+        const unlocked = new Set(Array.isArray(source.unlockedRegionKeys)
+          ? source.unlockedRegionKeys.map(normalize).filter((key) => validKeys.has(key))
+          : []);
+        unlocked.add("aixi");
+        completedRegionKeys.forEach((key) => {
+          const idx = EQUIPMENT_DUNGEON_ROUTE_KEYS.indexOf(key);
+          if (idx >= 0 && idx < EQUIPMENT_DUNGEON_ROUTE_KEYS.length - 1) unlocked.add(EQUIPMENT_DUNGEON_ROUTE_KEYS[idx + 1]);
+        });
+        return {
+          date: normalize(source.date),
+          attemptsUsed: clamp(Math.floor(Number(source.attemptsUsed) || 0), 0, EQUIPMENT_DUNGEON_DAILY_ATTEMPT_LIMIT),
+          score: Math.max(0, Math.floor(Number(source.score) || 0)),
+          active: Boolean(source.active),
+          completedRegionKeys: Array.from(new Set(completedRegionKeys)),
+          unlockedRegionKeys: Array.from(unlocked),
+          settled: Boolean(source.settled)
+        };
+      })();
       const migrations = (() => {
         const source = loaded.migrations && typeof loaded.migrations === "object" ? loaded.migrations : {};
         return {
@@ -9793,14 +10279,16 @@ createApp({
           });
           return out;
         })(),
+        equipmentDungeon,
         weeklyBossAttempts: (() => {
           const source = loaded.weeklyBossAttempts && typeof loaded.weeklyBossAttempts === "object" ? loaded.weeklyBossAttempts : {};
           const bossKey = normalize(source.bossKey);
-          if (bossKey !== WEEKLY_BOSS_CONFIG.key) return { bossKey: WEEKLY_BOSS_CONFIG.key, date: "", used: 0 };
+          if (bossKey !== WEEKLY_BOSS_ATTEMPT_GROUP_KEY) return { bossKey: WEEKLY_BOSS_ATTEMPT_GROUP_KEY, date: "", used: 0, bought: 0 };
           return {
-            bossKey: WEEKLY_BOSS_CONFIG.key,
+            bossKey: WEEKLY_BOSS_ATTEMPT_GROUP_KEY,
             date: normalize(source.date),
-            used: Math.max(0, Math.floor(Number(source.used) || 0))
+            used: Math.max(0, Math.floor(Number(source.used) || 0)),
+            bought: clamp(Math.floor(Number(source.bought) || 0), 0, WEEKLY_BOSS_EXTRA_ATTEMPT_MAX)
           };
         })(),
         weeklyBossHonorRewards: (() => {
@@ -9840,6 +10328,36 @@ createApp({
             lastRewardDate: isCurrentRewardState ? normalize(source.lastRewardDate) : "",
             clearedDifficulties
           };
+        })(),
+        weeklyBossRewardStates: (() => {
+          const source = loaded.weeklyBossRewardStates && typeof loaded.weeklyBossRewardStates === "object" ? loaded.weeklyBossRewardStates : {};
+          const out = {};
+          WEEKLY_BOSS_CONFIGS.forEach((config) => {
+            const row = source[config.key] && typeof source[config.key] === "object" ? source[config.key] : {};
+            const isCurrentRewardState = normalize(row.rewardStateVersion) === WEEKLY_BOSS_REWARD_STATE_VERSION;
+            const clearedSource = row.clearedDifficulties && typeof row.clearedDifficulties === "object" ? row.clearedDifficulties : {};
+            const clearedDifficulties = {};
+            if (isCurrentRewardState) {
+              WEEKLY_BOSS_DIFFICULTY_OPTIONS.forEach((option) => {
+                if (clearedSource[option.key]) clearedDifficulties[option.key] = true;
+              });
+            }
+            const claimedSource = row.claimedRewardDates && typeof row.claimedRewardDates === "object" ? row.claimedRewardDates : {};
+            const claimedRewardDates = {};
+            if (isCurrentRewardState) {
+              WEEKLY_BOSS_DIFFICULTY_OPTIONS.forEach((option) => {
+                claimedRewardDates[option.key] = normalize(claimedSource[option.key]);
+              });
+            }
+            out[config.key] = {
+              bossKey: config.key,
+              rewardStateVersion: WEEKLY_BOSS_REWARD_STATE_VERSION,
+              exchangedEgg: isCurrentRewardState ? Boolean(row.exchangedEgg) : false,
+              claimedRewardDates,
+              clearedDifficulties
+            };
+          });
+          return out;
         })(),
         shopDailyPurchases: (() => {
           const source = loaded.shopDailyPurchases && typeof loaded.shopDailyPurchases === "object" ? loaded.shopDailyPurchases : {};
@@ -10111,6 +10629,12 @@ createApp({
     const challengeRoadDefeatFilter = ref("全部战绩");
     const showChallengeRoadTierPanel = ref(false);
     const showWeeklyBossPanel = ref(false);
+    const showEquipmentDungeonPanel = ref(false);
+    const equipmentDungeonView = ref("map");
+    const equipmentDungeonHoverRegionKey = ref("");
+    const equipmentDungeonSceneSvgSrc = ref("");
+    const equipmentDungeonSceneKey = ref("");
+    const equipmentDungeonBossCardRegionKey = ref("");
     const showQixingGachaPanel = ref(false);
     const showStudyPanel = ref(false);
     const showTimeTunnelPanel = ref(false);
@@ -10131,6 +10655,7 @@ createApp({
     const selectedGuardianDexId = ref(null);
     const selectedBossDexId = ref(null);
     const selectedBossDifficulty = ref("normal");
+    const selectedWeeklyBossKey = ref(WEEKLY_BOSS_CONFIG.key);
     const selectedWeeklyBossDifficulty = ref("normal");
     const battleReturnContext = ref(null);
     const selectedAutoBattleCount = ref(10);
@@ -10220,6 +10745,12 @@ createApp({
         name: "当周BOSS勋章",
         price: 0,
         desc: "当周BOSS挑战奖励，50个可兑换当周BOSS亚比蛋"
+      },
+      {
+        id: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID,
+        name: "秘境晶石",
+        price: 0,
+        desc: "装备秘境评分奖励，可用于后续装备相关兑换"
       },
       {
         id: QIXING_FRAGMENT_ITEM_ID,
@@ -11158,8 +11689,9 @@ createApp({
         return normalize(badge.id) === badgeId || normalize(badge.name) === badgeName;
       });
     };
-    const weeklyBossClearedDifficultyMap = () => {
-      const rewardState = ensureWeeklyBossRewardState();
+    const weeklyBossClearedDifficultyMap = (bossKey = selectedWeeklyBossKey.value) => {
+      const config = getWeeklyBossConfigByKey(bossKey);
+      const rewardState = ensureWeeklyBossRewardState(config.key);
       const source = rewardState.clearedDifficulties && typeof rewardState.clearedDifficulties === "object" ? rewardState.clearedDifficulties : {};
       const out = {};
       Object.keys(source).forEach((key) => {
@@ -11167,7 +11699,7 @@ createApp({
         if (WEEKLY_BOSS_DIFFICULTY_BY_KEY.has(normalizedKey) && source[key]) out[normalizedKey] = true;
       });
       const honorRewards = state.value.weeklyBossHonorRewards && typeof state.value.weeklyBossHonorRewards === "object" ? state.value.weeklyBossHonorRewards : {};
-      const honor = honorRewards[WEEKLY_BOSS_CONFIG.key];
+      const honor = honorRewards[config.key];
       if (honor) {
         const honorDifficulty = normalize(honor.difficulty || honor.difficultyKey) || "nightmare";
         if (WEEKLY_BOSS_DIFFICULTY_BY_KEY.has(honorDifficulty)) out[honorDifficulty] = true;
@@ -11312,22 +11844,21 @@ createApp({
       queueRewardFlyToasts(`获取粽子×${count}！`);
       return text;
     };
-    const ensureWeeklyBossRewardState = () => {
-      if (!state.value.weeklyBossRewardState || typeof state.value.weeklyBossRewardState !== "object" || normalize(state.value.weeklyBossRewardState.bossKey) !== WEEKLY_BOSS_CONFIG.key) {
-        state.value.weeklyBossRewardState = { bossKey: WEEKLY_BOSS_CONFIG.key, rewardStateVersion: WEEKLY_BOSS_REWARD_STATE_VERSION, divinePetKeyClaimed: false, exchangedEgg: false, lastRewardDate: "", clearedDifficulties: {} };
+    const ensureWeeklyBossRewardState = (bossKey = selectedWeeklyBossKey.value) => {
+      const config = getWeeklyBossConfigByKey(bossKey);
+      if (!state.value.weeklyBossRewardStates || typeof state.value.weeklyBossRewardStates !== "object") state.value.weeklyBossRewardStates = {};
+      let row = state.value.weeklyBossRewardStates[config.key];
+      if (!row || typeof row !== "object" || normalize(row.bossKey) !== config.key || normalize(row.rewardStateVersion) !== WEEKLY_BOSS_REWARD_STATE_VERSION) {
+        row = { bossKey: config.key, rewardStateVersion: WEEKLY_BOSS_REWARD_STATE_VERSION, exchangedEgg: false, claimedRewardDates: {}, clearedDifficulties: {} };
+        state.value.weeklyBossRewardStates[config.key] = row;
       }
-      if (normalize(state.value.weeklyBossRewardState.rewardStateVersion) !== WEEKLY_BOSS_REWARD_STATE_VERSION) {
-        state.value.weeklyBossRewardState.rewardStateVersion = WEEKLY_BOSS_REWARD_STATE_VERSION;
-        state.value.weeklyBossRewardState.divinePetKeyClaimed = false;
-        state.value.weeklyBossRewardState.exchangedEgg = false;
-        state.value.weeklyBossRewardState.lastRewardDate = "";
-        state.value.weeklyBossRewardState.clearedDifficulties = {};
-      }
-      state.value.weeklyBossRewardState.lastRewardDate = normalize(state.value.weeklyBossRewardState.lastRewardDate);
-      if (!state.value.weeklyBossRewardState.clearedDifficulties || typeof state.value.weeklyBossRewardState.clearedDifficulties !== "object") {
-        state.value.weeklyBossRewardState.clearedDifficulties = {};
-      }
-      return state.value.weeklyBossRewardState;
+      if (!row.claimedRewardDates || typeof row.claimedRewardDates !== "object") row.claimedRewardDates = {};
+      if (!row.clearedDifficulties || typeof row.clearedDifficulties !== "object") row.clearedDifficulties = {};
+      WEEKLY_BOSS_DIFFICULTY_OPTIONS.forEach((option) => {
+        row.claimedRewardDates[option.key] = normalize(row.claimedRewardDates[option.key]);
+      });
+      state.value.weeklyBossRewardState = row;
+      return row;
     };
     const weeklyBossMedalCount = computed(() => Math.min(WEEKLY_BOSS_MEDAL_MAX, getItemCount(WEEKLY_BOSS_MEDAL_ITEM_ID)));
     const addWeeklyBossMedals = (amount) => {
@@ -11342,7 +11873,7 @@ createApp({
       const max = Math.max(min, Math.floor(Number(range[1]) || min));
       return min + Math.floor(Math.random() * (max - min + 1));
     };
-    const weeklyBossEggExchangeAvailable = computed(() => weeklyBossMedalCount.value >= WEEKLY_BOSS_EGG_EXCHANGE_COST && !ensureWeeklyBossRewardState().exchangedEgg);
+    const weeklyBossEggExchangeAvailable = computed(() => weeklyBossMedalCount.value >= WEEKLY_BOSS_EGG_EXCHANGE_COST && !ensureWeeklyBossRewardState(selectedWeeklyBossKey.value).exchangedEgg);
     const consumeItemCount = (itemId, amount = 1) => {
       const id = normalize(String(itemId || ""));
       const need = Math.max(1, Math.floor(Number(amount) || 1));
@@ -12035,6 +12566,11 @@ createApp({
         showChallengeRoadTierPanel.value = true;
       } else if (ctx.panel === "weeklyBoss") {
         showWeeklyBossPanel.value = true;
+      } else if (ctx.panel === "equipmentDungeon") {
+        openEquipmentDungeonPanel();
+        const nextKey = equipmentDungeonActiveRouteKey.value;
+        const nextRegion = EQUIPMENT_DUNGEON_MAP_REGIONS.find((region) => region.key === nextKey);
+        if (nextRegion && isEquipmentDungeonRegionUnlocked(nextRegion)) enterEquipmentDungeonRegion(nextRegion);
       } else if (ctx.panel === "dex") {
         state.value.showDexPanel = true;
         state.value.selectedDexId = null;
@@ -12995,15 +13531,19 @@ createApp({
       const scene = timeTunnelEnvironmentScene.value;
       return scene && Array.isArray(scene.enemies) ? scene.enemies : [];
     });
+    const weeklyBossTabs = WEEKLY_BOSS_CONFIGS;
+    const selectedWeeklyBossConfig = computed(() => getWeeklyBossConfigByKey(selectedWeeklyBossKey.value));
     const weeklyBossEntry = computed(() => {
-      const entry = dexById.get(WEEKLY_BOSS_CONFIG.dexId);
-      return entry ? { ...entry, name: WEEKLY_BOSS_CONFIG.name } : null;
+      const config = selectedWeeklyBossConfig.value;
+      const entry = dexById.get(config.dexId);
+      return entry ? { ...entry, name: config.name } : null;
     });
-    const weeklyBossAnimSrc = computed(() => getTimeTunnelBattleAnimSrc(WEEKLY_BOSS_CONFIG.dexId));
+    const weeklyBossAnimSrc = computed(() => getTimeTunnelBattleAnimSrc(selectedWeeklyBossConfig.value.dexId));
     const weeklyBossAnimStyle = computed(() => {
+      const config = selectedWeeklyBossConfig.value;
       const vh = Math.max(1, Number(viewportSize.value && viewportSize.value.height) || 720);
       const targetBodyH = Math.floor(clamp(vh * 0.4, 300, 390));
-      const style = centerPetAnimBodyStyle(getPetAnimLayoutStyle(WEEKLY_BOSS_CONFIG.dexId, "1", "1", targetBodyH, "center"), WEEKLY_BOSS_CONFIG.dexId, "1", "1");
+      const style = centerPetAnimBodyStyle(getPetAnimLayoutStyle(config.dexId, "1", "1", targetBodyH, "center"), config.dexId, "1", "1");
       if (!style.renderW) return {};
       return {
         "--pet-anim-render-width": style.renderW,
@@ -13018,24 +13558,39 @@ createApp({
     });
     const weeklyBossAttemptsUsed = computed(() => {
       const row = state.value.weeklyBossAttempts && typeof state.value.weeklyBossAttempts === "object" ? state.value.weeklyBossAttempts : {};
-      return normalize(row.bossKey) === WEEKLY_BOSS_CONFIG.key && normalize(row.date) === localDateKey() ? Math.max(0, Math.floor(Number(row.used) || 0)) : 0;
+      return normalize(row.bossKey) === WEEKLY_BOSS_ATTEMPT_GROUP_KEY && normalize(row.date) === localDateKey() ? Math.max(0, Math.floor(Number(row.used) || 0)) : 0;
     });
-    const weeklyBossAttemptsLeft = computed(() => Math.max(0, WEEKLY_BOSS_CONFIG.dailyAttempts - weeklyBossAttemptsUsed.value));
+    const weeklyBossExtraAttemptsBought = computed(() => {
+      const row = state.value.weeklyBossAttempts && typeof state.value.weeklyBossAttempts === "object" ? state.value.weeklyBossAttempts : {};
+      return normalize(row.bossKey) === WEEKLY_BOSS_ATTEMPT_GROUP_KEY && normalize(row.date) === localDateKey() ? clamp(Math.floor(Number(row.bought) || 0), 0, WEEKLY_BOSS_EXTRA_ATTEMPT_MAX) : 0;
+    });
+    const weeklyBossAttemptsTotal = computed(() => WEEKLY_BOSS_CONFIG.dailyAttempts + weeklyBossExtraAttemptsBought.value);
+    const weeklyBossAttemptsLeft = computed(() => Math.max(0, weeklyBossAttemptsTotal.value - weeklyBossAttemptsUsed.value));
+    const weeklyBossCanBuyAttempt = computed(() => weeklyBossExtraAttemptsBought.value < WEEKLY_BOSS_EXTRA_ATTEMPT_MAX && Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) >= WEEKLY_BOSS_EXTRA_ATTEMPT_COST);
     const weeklyBossCleared = computed(() => {
       const rewards = state.value.weeklyBossHonorRewards && typeof state.value.weeklyBossHonorRewards === "object" ? state.value.weeklyBossHonorRewards : {};
-      return !!rewards[WEEKLY_BOSS_CONFIG.key];
+      return !!rewards[selectedWeeklyBossConfig.value.key];
     });
     const weeklyBossDifficultyOptions = WEEKLY_BOSS_DIFFICULTY_OPTIONS;
     const selectedWeeklyBossDifficultyOption = computed(() => WEEKLY_BOSS_DIFFICULTY_BY_KEY.get(selectedWeeklyBossDifficulty.value) || WEEKLY_BOSS_DIFFICULTY_OPTIONS[0]);
-    const weeklyBossDivineKeyClaimed = computed(() => Boolean(ensureWeeklyBossRewardState().divinePetKeyClaimed));
-    const weeklyBossEggExchanged = computed(() => Boolean(ensureWeeklyBossRewardState().exchangedEgg));
+    const weeklyBossDivineKeyClaimed = computed(() => Boolean(ensureWeeklyBossRewardState(selectedWeeklyBossConfig.value.key).claimedRewardDates[selectedWeeklyBossDifficultyOption.value.key]));
+    const weeklyBossEggExchanged = computed(() => Boolean(ensureWeeklyBossRewardState(selectedWeeklyBossConfig.value.key).exchangedEgg));
     const weeklyBossChallengeText = computed(() => {
+      const config = selectedWeeklyBossConfig.value;
       const option = selectedWeeklyBossDifficultyOption.value;
+      const rule = (config.difficultyRules && config.difficultyRules[option.key]) || {};
       const medalRange = Array.isArray(option.rewardMedals) ? option.rewardMedals : [0, 0];
       const medalText = medalRange[0] === medalRange[1] ? `${medalRange[0]}个` : `${medalRange[0]}-${medalRange[1]}个`;
       const keyText = `神宠之匙×${option.divinePetKeyCount}`;
-      const badgeText = option.blackgoldBadge ? `，首次通关噩梦额外获得${WEEKLY_BOSS_CONFIG.honorBadgeName}` : "";
-      return `当周BOSS：${WEEKLY_BOSS_CONFIG.name} ${option.label}难度，体力${option.fixedHp}，自带${Math.round(option.damageReductionRatio * 100)}%减伤，能力数值提升${Math.round((Number(option.statBoostRatio) || 0) * 100)}%；每4回合融入黑暗，必定闪避攻击技能1回合并随机降低对面${option.randomStageDelta}级属性。低于50%体力后伤害提升${Math.round(((Number(option.lowHpDamageBoostFactor) || 1) - 1) * 100)}%、伤害抗性提升${Math.round((Number(option.lowHpDamageReductionRatio) || 0) * 100)}%。胜利获得${medalText}当周BOSS勋章、${option.rewardHCoins}H币、${keyText}${badgeText}。勋章上限${WEEKLY_BOSS_MEDAL_MAX}个，${WEEKLY_BOSS_EGG_EXCHANGE_COST}个可兑换${WEEKLY_BOSS_CONFIG.name}亚比蛋。`;
+      const badgeText = option.blackgoldBadge ? `，首次通关噩梦额外获得${config.honorBadgeName}` : "";
+      const periodicText = config.lowHpKind === "darkflame"
+        ? `每${rule.periodicInterval || 3}回合恢复自身${Math.round((Number(rule.periodicHealRatio) || 0) * 100)}%最大体力并附加${Math.max(1, Math.floor(Number(rule.periodicStatusCount) || 1))}种异常。`
+        : `每${rule.periodicInterval || 5}回合令对手麻痹1-3回合。`;
+      const lowHpText = config.lowHpKind === "darkflame"
+        ? `首次低于30%体力时暴击提升3级，之后攻击附加${rule.lowHpFixedDamage || 0}点固伤。`
+        : `首次低于30%体力时恢复自身${Math.round((Number(rule.lowHpHealRatio) || 0) * 100)}%最大体力，之后攻击附加${rule.lowHpFixedDamage || 0}点固伤。`;
+      const forbiddenText = NORMAL_HARD_CHALLENGE_FORBIDDEN_DIFFICULTY_KEYS.has(option.key) ? NORMAL_HARD_CHALLENGE_FORBIDDEN_TEXT : "";
+      return `当周BOSS：${config.name} ${option.label}难度，体力${option.fixedHp}，自带${Math.round(option.damageReductionRatio * 100)}%减伤；${periodicText}${lowHpText}出战${config.counterName}可获得全属性+2、伤害+20%、抗性+10%、免疫异常，并无效固伤效果。${forbiddenText}胜利获得${medalText}当周BOSS勋章、${option.rewardHCoins}H币、${keyText}${badgeText}。勋章上限${WEEKLY_BOSS_MEDAL_MAX}个，${WEEKLY_BOSS_EGG_EXCHANGE_COST}个可兑换${config.name}亚比蛋。`;
     });
     const timeEnvViewportStyle = computed(() => {
       const designW = 1700;
@@ -13078,7 +13633,8 @@ createApp({
       const reward = BOSS_DIFFICULTY_FIRST_WIN_REWARDS[option.key] || BOSS_DIFFICULTY_FIRST_WIN_REWARDS.normal;
       const medalText = reward ? `该 BOSS ${reward.medalSuffix}` : "该 BOSS 勋章";
       const itemText = reward && Array.isArray(reward.items) ? reward.items.map((item) => `${item.label} x${item.count}`).join("、") : "";
-      return `BOSS挑战（${option.label}）：Lv.100 单阶段，体力值固定为${fixedHp}，普通/特殊攻击造成的伤害减少${damageReductionPct}%，天赋值均为60，除体力外学习力均为102，在现有基础上所有能力值再提升${boostPct}%${moraleText}。击败后获得对应亚比蛋和 2000 H币；首次通过当前难度额外获得${medalText}${itemText ? `、${itemText}` : ""}。`;
+      const forbiddenText = NORMAL_HARD_CHALLENGE_FORBIDDEN_DIFFICULTY_KEYS.has(option.key) ? NORMAL_HARD_CHALLENGE_FORBIDDEN_TEXT : "";
+      return `BOSS挑战（${option.label}）：Lv.100 单阶段，体力值固定为${fixedHp}，普通/特殊攻击造成的伤害减少${damageReductionPct}%，天赋值均为60，除体力外学习力均为102，在现有基础上所有能力值再提升${boostPct}%${moraleText}。${forbiddenText}击败后获得对应亚比蛋和 2000 H币；首次通过当前难度额外获得${medalText}${itemText ? `、${itemText}` : ""}。`;
     });
     const challengeLockMessage = (entry) => {
       if (!entry) return "该亚比暂不可挑战。";
@@ -15266,6 +15822,16 @@ createApp({
       });
       return target;
     };
+    const applyEquipmentDungeonTargetSkills = (target, entry, skillNames) => {
+      if (!target || !entry || !Array.isArray(skillNames) || skillNames.length === 0) return target;
+      const species = speciesByDexMap.get(Number(entry.dexId) || 0) || {};
+      const skills = skillNames
+        .map((name) => pickBossPoolSkillSource(entry.dexId, name, species))
+        .filter(Boolean)
+        .map((skill) => normalizeTargetSkill(skill, entry));
+      if (skills.length > 0) target.skills = skills;
+      return target;
+    };
 const applyTimeTunnelFloor20TargetBuff = (scene) => {
   if (!scene || scene.mode !== "timeTunnel") return false;
   const meta = scene.timeTunnelMeta || {};
@@ -15419,7 +15985,10 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const setupBattleScene = ({ targetEntry, targetLevel, forceTargetHpRace500 = false, targetHpRaceOverride = null, targetHpRaceMultiplier = null, targetTalentOverride = null, targetStudyOverride = null, mode = "normal", guardianMeta = null, autoBattleMeta = null, timeTunnelMeta = null }) => {
       battlePrepareTrace("setup-start", { mode, targetDexId: Number(targetEntry && targetEntry.dexId) || 0, targetLevel });
-      const team = bagPets.value.map((pet) => buildBattleUnitFromPet(pet)).filter(Boolean);
+      const battleSourcePets = mode === "equipmentDungeon"
+        ? bagSlots.value.slice(0, 3).map((slot) => slot && slot.pet).filter((pet) => pet && pet.id)
+        : bagPets.value;
+      const team = battleSourcePets.map((pet) => buildBattleUnitFromPet(pet)).filter(Boolean);
       battlePrepareTrace("team-built", {
         count: team.length,
         firstDexId: Number(team[0] && team[0].dexId) || 0,
@@ -15461,10 +16030,13 @@ const applyBossChainFinalBuff = (scene) => {
       if (mode === "timeTunnel" && timeTunnelMeta && timeTunnelMeta.environmentElement) {
         applyTimeTunnelEnvironmentBuffToUnit(target, timeTunnelMeta.environmentElement);
       }
+      if (guardianMeta && guardianMeta.equipmentDungeon) {
+        applyEquipmentDungeonTargetSkills(target, effectiveTargetEntry, guardianMeta.equipmentDungeonSkillNames);
+      }
       if (guardianMeta && guardianMeta.weeklyBoss) {
         target.battleItemId = QIXING_SEAL_ITEM_ID;
       }
-      const fixedTargetMaxHp = (mode === "boss" || mode === "weeklyBoss") ? Math.max(0, Math.floor(Number(guardianMeta && guardianMeta.fixedHp) || 0)) : 0;
+      const fixedTargetMaxHp = (mode === "boss" || mode === "weeklyBoss" || mode === "equipmentDungeon") ? Math.max(0, Math.floor(Number(guardianMeta && guardianMeta.fixedHp) || 0)) : 0;
       if (fixedTargetMaxHp > 0) {
         target.ability = { ...(target.ability || {}), hp: fixedTargetMaxHp };
         target.ability.total = calcAbilityTotal(target.ability);
@@ -15530,7 +16102,8 @@ const applyBossChainFinalBuff = (scene) => {
         targetBattleItemId: normalize(target.battleItemId),
         targetQixingSealLevel: normalize(target.battleItemId) === QIXING_SEAL_ITEM_ID ? clamp(Math.floor(Number(guardianMeta && guardianMeta.qixingSealLevel) || WEEKLY_BOSS_CONFIG.qixingSealLevel || 1), 1, QIXING_SEAL_MAX_LEVEL) : 1,
         targetQixingSealTraitKey: QIXING_TRAIT_KEYS.LEGACY,
-        targetChallengeDamageReductionRatio: (mode === "boss" || mode === "weeklyBoss") ? clamp(Number(guardianMeta && guardianMeta.damageReductionRatio) || 0, 0, 0.95) : 0,
+        targetChallengeDamageReductionRatio: (mode === "boss" || mode === "weeklyBoss" || mode === "equipmentDungeon") ? clamp(Number(guardianMeta && guardianMeta.damageReductionRatio) || 0, 0, 0.95) : 0,
+        targetCounteredDamageReductionRatio: mode === "equipmentDungeon" ? clamp(Number(guardianMeta && guardianMeta.counteredDamageReductionRatio) || 0, 0, 0.95) : 0,
         targetAbility: target.ability,
         targetHp: target.hp,
         targetMaxHp: target.maxHp,
@@ -15621,8 +16194,13 @@ const applyBossChainFinalBuff = (scene) => {
         attackerImage: battleScene.value.attackerImage,
         targetImage: battleScene.value.targetImage
       });
-      const startLog = mode === "guardian" ? "守护者挑战开始。按速度和技能优先度决定先手。" : (mode === "boss" ? "BOSS挑战开始。按速度和技能优先度决定先手。" : (mode === "timeTunnel" ? `时空隧道第${timeTunnelMeta && timeTunnelMeta.floor ? timeTunnelMeta.floor : 1}层开始。击败本层全部亚比才能开启下一层。` : (mode === "study" ? `${guardianMeta && guardianMeta.label ? guardianMeta.label : ""}学习力战场开始。按速度和技能优先度决定先手。` : "对战开始。按速度和技能优先度决定先手。")));
+      const startLog = mode === "guardian" ? "守护者挑战开始。按速度和技能优先度决定先手。" : (mode === "boss" ? "BOSS挑战开始。按速度和技能优先度决定先手。" : (mode === "equipmentDungeon" ? `装备秘境${guardianMeta && guardianMeta.equipmentDungeonDifficultyLabel ? guardianMeta.equipmentDungeonDifficultyLabel : ""}难度开始。仅背包前3只亚比可出战。` : (mode === "timeTunnel" ? `时空隧道第${timeTunnelMeta && timeTunnelMeta.floor ? timeTunnelMeta.floor : 1}层开始。击败本层全部亚比才能开启下一层。` : (mode === "study" ? `${guardianMeta && guardianMeta.label ? guardianMeta.label : ""}学习力战场开始。按速度和技能优先度决定先手。` : "对战开始。按速度和技能优先度决定先手。"))));
       pushBattleLog(battleScene.value, startLog);
+      applyWeeklyBossCounterPetBuff(battleScene.value);
+      if (mode === "equipmentDungeon" && guardianMeta && guardianMeta.immuneStatus) {
+        addTimedEffect(battleScene.value, "target", { kind: "statusShield", turns: 999, data: { status: "all" } });
+        pushBattleLog(battleScene.value, `${battleScene.value.targetName}免疫异常状态。`);
+      }
       pushQixingSealBattleEntryLog(battleScene.value, "attacker");
       pushQixingSealBattleEntryLog(battleScene.value, "target");
       if (deviceExpMultiplier > 1) pushBattleLog(battleScene.value, "双倍经验器生效，本场胜利经验翻倍。");
@@ -15633,8 +16211,9 @@ const applyBossChainFinalBuff = (scene) => {
       }
       if (mode === "timeTunnel") applyTimeTunnelFloor20TargetBuff(battleScene.value);
       if (mode === "timeTunnel") applyTimeTunnelFloor25TargetBuff(battleScene.value);
-      if ((mode === "boss" || mode === "weeklyBoss") && battleScene.value.targetChallengeDamageReductionRatio > 0) {
-        pushBattleLog(battleScene.value, `${battleScene.value.targetName}获得挑战减伤：普通/特殊攻击造成的伤害减少${Math.round(battleScene.value.targetChallengeDamageReductionRatio * 100)}%。`);
+      if ((mode === "boss" || mode === "weeklyBoss" || mode === "equipmentDungeon") && battleScene.value.targetChallengeDamageReductionRatio > 0) {
+        const counteredText = battleScene.value.targetCounteredDamageReductionRatio > 0 ? `，受到克制伤害时额外减伤${Math.round(battleScene.value.targetCounteredDamageReductionRatio * 100)}%` : "";
+        pushBattleLog(battleScene.value, `${battleScene.value.targetName}获得挑战减伤：普通/特殊攻击造成的伤害减少${Math.round(battleScene.value.targetChallengeDamageReductionRatio * 100)}%${counteredText}。`);
       }
       pushBattleLog(battleScene.value, "第1回合开始。");
       playBattleBgm();
@@ -15702,17 +16281,45 @@ const applyBossChainFinalBuff = (scene) => {
       if (!scene || scene.ended || scene.pendingFinish) return false;
       const turn = Math.max(1, Math.floor(Number(scene.turnCount) || 1));
       if (scene.mode === "weeklyBoss") {
-        if (turn <= 1 || turn % 4 !== 0) return false;
         const meta = scene.guardianMeta && typeof scene.guardianMeta === "object" ? scene.guardianMeta : {};
-        const delta = Math.max(0, Math.floor(Number(meta.weeklyBossRandomStageDelta) || 0));
-        if (delta <= 0) return false;
-        const keys = ALL_ABILITY_STAGE_KEYS.slice();
-        const picked = keys[Math.floor(Math.random() * keys.length)] || keys[0];
-        const changed = applyStageDelta(scene, "attacker", [picked], -delta);
-        addTimedEffect(scene, "target", { kind: "attackImmunity", turns: 1, data: { attackKind: "all", chance: 1, weeklyBossDarkness: true } });
-        scene.actionNoticeOnTarget = "融入黑暗";
-        showBattleMoraleStatusFx(scene, "target", "融入黑暗");
-        pushBattleLog(scene, `第${turn}回合，${scene.targetName}融入黑暗，本回合必定闪避攻击技能，并随机降低${scene.attackerName}${delta}级属性：${changed.map((k) => battleStatLabel(k)).join("、") || battleStatLabel(picked)}。`);
+        const config = getWeeklyBossConfigByKey(meta.weeklyBossKey);
+        const difficultyKey = normalize(meta.weeklyBossDifficulty) || "normal";
+        const rule = (config.difficultyRules && config.difficultyRules[difficultyKey]) || {};
+        const interval = Math.max(1, Math.floor(Number(rule.periodicInterval) || 0));
+        if (turn <= 1 || !interval || turn % interval !== 0) return false;
+        if (config.lowHpKind === "darkflame") {
+          const ratio = clamp(Number(rule.periodicHealRatio) || 0, 0, 1);
+          const before = Math.max(0, Number(scene.targetHp) || 0);
+          const maxHp = Math.max(1, Number(scene.targetMaxHp) || 1);
+          const healed = ratio > 0 ? Math.max(0, Math.min(Math.floor(maxHp * ratio), maxHp - before)) : 0;
+          if (healed > 0) {
+            scene.targetHp = clamp(before + healed, 0, maxHp);
+            scene.healOnTarget = `+${healed}`;
+            syncBattleUiHpForSide(scene, "target");
+            markBattleFloatText(scene);
+          }
+          const statusPool = ["poison", "burn", "paralyze", "freeze", "sleep", "confuse", "fear", "weak", "bind"].filter((status) => !isStatusImmuneByElement(scene, "attacker", status) && !hasStatusShield(scene, "attacker", status));
+          const statusCount = Math.max(1, Math.floor(Number(rule.periodicStatusCount) || 1));
+          const applied = [];
+          while (statusPool.length > 0 && applied.length < statusCount) {
+            const index = Math.floor(Math.random() * statusPool.length);
+            const status = statusPool.splice(index, 1)[0];
+            applyStatusTurns(scene.attackerState, status, defaultStatusTurns(status));
+            applied.push(statusLabel(status));
+          }
+          scene.actionNoticeOnTarget = "龙焰复苏";
+          showBattleMoraleStatusFx(scene, "target", "龙焰复苏");
+          pushBattleLog(scene, `第${turn}回合，${scene.targetName}恢复${healed}点体力${applied.length ? `，并令${scene.attackerName}陷入${applied.join("、")}` : ""}。`);
+          return true;
+        }
+        const turns = 1 + Math.floor(Math.random() * 3);
+        if (!isStatusImmuneByElement(scene, "attacker", "paralyze") && !hasStatusShield(scene, "attacker", "paralyze")) {
+          applyStatusTurns(scene.attackerState, "paralyze", turns);
+          scene.actionNoticeOnTarget = "风暴麻痹";
+          showBattleMoraleStatusFx(scene, "target", "风暴麻痹");
+          pushBattleLog(scene, `第${turn}回合，${scene.targetName}召来风暴，令${scene.attackerName}麻痹${turns}回合。`);
+          return true;
+        }
         return true;
       }
       if (turn <= 1 || turn % CHALLENGE_MORALE_INTERVAL_TURNS !== 0) return false;
@@ -15730,14 +16337,42 @@ const applyBossChainFinalBuff = (scene) => {
     const triggerWeeklyBossLowHpBuffIfNeeded = (scene) => {
       if (!scene || scene.mode !== "weeklyBoss" || scene.weeklyBossLowHpBuffed) return false;
       const hpRatio = Math.max(0, Number(scene.targetHp) || 0) / Math.max(1, Number(scene.targetMaxHp) || 1);
-      if (hpRatio >= 0.5) return false;
+      if (hpRatio >= 0.3) return false;
       const meta = scene.guardianMeta && typeof scene.guardianMeta === "object" ? scene.guardianMeta : {};
-      const damageFactor = Math.max(1, Number(meta.weeklyBossLowHpDamageBoostFactor) || 1);
-      const reductionRatio = clamp(Number(meta.weeklyBossLowHpDamageReductionRatio) || 0, 0, 1);
-      if (damageFactor > 1) addTimedEffect(scene, "target", { kind: "damageBoost", turns: 999, data: { factor: damageFactor, permanent: true, weeklyBossLowHp: true } });
-      if (reductionRatio > 0) addTimedEffect(scene, "target", { kind: "damageReduction", turns: 999, data: { ratio: reductionRatio, permanent: true, stackWithChallenge: true, weeklyBossLowHp: true } });
+      const config = getWeeklyBossConfigByKey(meta.weeklyBossKey);
+      const difficultyKey = normalize(meta.weeklyBossDifficulty) || "normal";
+      const rule = (config.difficultyRules && config.difficultyRules[difficultyKey]) || {};
+      const fixedDamage = Math.max(0, Math.floor(Number(rule.lowHpFixedDamage) || 0));
+      if (config.lowHpKind === "darkflame") {
+        applyStageDelta(scene, "target", ["critStage"], 3);
+      } else {
+        const before = Math.max(0, Number(scene.targetHp) || 0);
+        const maxHp = Math.max(1, Number(scene.targetMaxHp) || 1);
+        const healed = Math.max(0, Math.min(Math.floor(maxHp * clamp(Number(rule.lowHpHealRatio) || 0, 0, 1)), maxHp - before));
+        if (healed > 0) {
+          scene.targetHp = clamp(before + healed, 0, maxHp);
+          scene.healOnTarget = `+${healed}`;
+          syncBattleUiHpForSide(scene, "target");
+          markBattleFloatText(scene);
+        }
+      }
+      scene.weeklyBossLowHpFixedDamage = isWeeklyBossCounterPetActive(scene, "attacker") ? 0 : fixedDamage;
       scene.weeklyBossLowHpBuffed = true;
-      pushBattleLog(scene, `${scene.targetName}体力低于50%，念力暴走：伤害提升${Math.round((damageFactor - 1) * 100)}%，伤害抗性提升${Math.round(reductionRatio * 100)}%。`);
+      pushBattleLog(scene, `${scene.targetName}体力首次低于30%，${config.lowHpKind === "darkflame" ? "暴击提升3级" : "恢复体力"}${scene.weeklyBossLowHpFixedDamage > 0 ? `，之后攻击附加${scene.weeklyBossLowHpFixedDamage}点固伤` : `，${config.counterName}在场，固伤效果被无效`}。`);
+      return true;
+    };
+    const applyWeeklyBossCounterPetBuff = (scene) => {
+      if (!isWeeklyBossCounterPetActive(scene, "attacker")) return false;
+      const meta = scene.guardianMeta && typeof scene.guardianMeta === "object" ? scene.guardianMeta : {};
+      const key = `${normalize(scene.currentAttackerId)}::${normalize(meta.weeklyBossKey)}`;
+      if (!scene.weeklyBossCounterBuffedKeys || typeof scene.weeklyBossCounterBuffedKeys !== "object") scene.weeklyBossCounterBuffedKeys = {};
+      if (scene.weeklyBossCounterBuffedKeys[key]) return false;
+      scene.weeklyBossCounterBuffedKeys[key] = true;
+      applyStageDelta(scene, "attacker", ALL_ABILITY_STAGE_KEYS, 2);
+      addTimedEffect(scene, "attacker", { kind: "damageBoost", turns: 999, data: { factor: 1.2, permanent: true, weeklyBossCounter: true } });
+      addTimedEffect(scene, "attacker", { kind: "damageReduction", turns: 999, data: { ratio: 0.1, permanent: true, stackWithChallenge: true, weeklyBossCounter: true } });
+      addTimedEffect(scene, "attacker", { kind: "statusShield", turns: 999, data: { status: "all", weeklyBossCounter: true } });
+      pushBattleLog(scene, `${scene.attackerName}克制${scene.targetName}，上场激发龙族共鸣：全属性提升2级，伤害提升20%，伤害抗性提升10%，免疫异常。`);
       return true;
     };
     const switchTimeTunnelNextTarget = (scene) => {
@@ -15926,7 +16561,7 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const fixedBossSkillDexId = (scene) => {
       if (!scene) return 0;
-      if (scene.mode === "weeklyBoss") return Number(WEEKLY_BOSS_CONFIG.dexId) || 0;
+      if (scene.mode === "weeklyBoss") return Number(scene.guardianMeta && scene.guardianMeta.weeklyBossDexId) || Number(scene.targetDexId) || 0;
       return Number(scene.targetDexId) || 0;
     };
     const pickTargetSkill = (scene, candidates) => {
@@ -15954,6 +16589,21 @@ const applyBossChainFinalBuff = (scene) => {
         if (usablePoolSkills.length === 0) return null;
         return usablePoolSkills[Math.floor(Math.random() * usablePoolSkills.length)];
       };
+      const pickWeightedPoolSkill = (pool) => {
+        if (!Array.isArray(pool) || pool.length === 0) return null;
+        const usable = pool.map((row) => ({
+          skill: findUsableSkillByName(row && row.name, true),
+          weight: Math.max(0, Number(row && row.weight) || 0)
+        })).filter((row) => row.skill && row.weight > 0);
+        const total = usable.reduce((sum, row) => sum + row.weight, 0);
+        if (total <= 0) return null;
+        let roll = Math.random() * total;
+        for (const row of usable) {
+          roll -= row.weight;
+          if (roll <= 0) return row.skill;
+        }
+        return usable[usable.length - 1].skill;
+      };
       if (scene && scene.mode === "timeTunnel" && Number(scene.targetDexId) === 461) {
         const fixedSkillNames = TIME_TUNNEL_EXTRA_SKILLS_BY_DEX_ID[461].map((skill) => normalize(skill && skill.name));
         const preferred = list.filter((s) => fixedSkillNames.includes(normalize(s && s.name)));
@@ -15967,8 +16617,16 @@ const applyBossChainFinalBuff = (scene) => {
           if (fixed) return fixed;
         }
       }
+      if (scene && scene.mode === "equipmentDungeon") {
+        const weightedSkill = pickWeightedPoolSkill(scene.guardianMeta && scene.guardianMeta.equipmentDungeonSkillWeights);
+        if (weightedSkill) return weightedSkill;
+      }
       if (scene && (scene.mode === "boss" || scene.mode === "weeklyBoss")) {
         const targetDexId = fixedBossSkillDexId(scene);
+        if (scene.mode === "weeklyBoss") {
+          const weightedSkill = pickWeightedPoolSkill(scene.guardianMeta && scene.guardianMeta.weeklyBossSkillWeights);
+          if (weightedSkill) return weightedSkill;
+        }
         const poolSkill = pickRandomPoolSkill(BOSS_RANDOM_SKILL_POOL_BY_DEX_ID[targetDexId]);
         if (poolSkill) return poolSkill;
         const turn = Math.max(1, Number(scene.turnCount) || 1);
@@ -16128,6 +16786,88 @@ const applyBossChainFinalBuff = (scene) => {
         scheduleAutoBattlePlayerAction(battleScene.value, 500);
       }, BATTLE_FLOAT_TEXT_DURATION_MS);
     };
+    const healEquipmentDungeonTarget = (scene, amount, label = "秘境加护") => {
+      const value = Math.max(0, Math.floor(Number(amount) || 0));
+      if (!scene || value <= 0) return 0;
+      const before = Math.max(0, Number(scene.targetHp) || 0);
+      const maxHp = Math.max(1, Number(scene.targetMaxHp) || 1);
+      const healed = Math.max(0, Math.min(value, maxHp - before));
+      if (healed <= 0) return 0;
+      scene.targetHp = clamp(before + healed, 0, maxHp);
+      scene.healOnTarget = `+${healed}`;
+      syncBattleUiHpForSide(scene, "target");
+      markBattleFloatText(scene);
+      pushBattleLog(scene, `${scene.targetName}${label}回复 ${healed} 点体力。`);
+      return healed;
+    };
+    const applyEquipmentDungeonStatusToAttacker = (scene, status) => {
+      const key = normalize(status);
+      if (!scene || !key) return false;
+      if (hasStatusShield(scene, "attacker", key) || isStatusImmuneByElement(scene, "attacker", key)) {
+        pushBattleLog(scene, `${scene.attackerName}免疫${statusLabel(key)}。`);
+        return false;
+      }
+      const state = getSideState(scene, "attacker");
+      applyStatusTurns(state, key, defaultStatusTurns(key));
+      pushBattleLog(scene, `${scene.targetName}的秘境效果触发，${scene.attackerName}陷入${statusLabel(key)}${state.statuses[key]}回合。`);
+      return true;
+    };
+    const applyEquipmentDungeonStageEffect = (scene, side, keys, delta, label = "秘境效果") => {
+      const changed = applyStageDelta(scene, side, keys, delta);
+      if (changed.length <= 0) return false;
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      pushBattleLog(scene, `${who}${label}${delta > 0 ? "提升" : "降低"}${Math.abs(delta)}级：${changed.map((key) => battleStatLabel(key)).join("、")}。`);
+      return true;
+    };
+    const applyEquipmentDungeonEndTurnEffects = (scene) => {
+      if (!scene || scene.mode !== "equipmentDungeon" || Math.max(0, Number(scene.targetHp) || 0) <= 0) return;
+      const effects = Array.isArray(scene.guardianMeta && scene.guardianMeta.equipmentDungeonEndTurnEffects) ? scene.guardianMeta.equipmentDungeonEndTurnEffects : [];
+      if (effects.length === 0) return;
+      const hpRatio = Math.max(0, Number(scene.targetHp) || 0) / Math.max(1, Number(scene.targetMaxHp) || 1);
+      effects.forEach((effect) => {
+        const chance = Number.isFinite(Number(effect && effect.chance)) ? clamp(Number(effect.chance), 0, 1) : 1;
+        if (Math.random() > chance) return;
+        const kind = normalize(effect && effect.kind);
+        if (kind === "heal") return healEquipmentDungeonTarget(scene, effect.amount);
+        if (kind === "stage") return applyEquipmentDungeonStageEffect(scene, effect.side === "attacker" ? "attacker" : "target", effect.keys, effect.delta, "的秘境效果");
+        if (kind === "hpBranchStage") {
+          const above = hpRatio > clamp(Number(effect.threshold) || 0.5, 0, 1);
+          applyEquipmentDungeonStageEffect(scene, "target", above ? effect.aboveKeys : effect.belowKeys, effect.delta, "的秘境效果");
+          if (!above) healEquipmentDungeonTarget(scene, effect.belowHeal);
+          return false;
+        }
+        if (kind === "lowHpStatus") {
+          if (hpRatio < clamp(Number(effect.threshold) || 0.5, 0, 1)) applyEquipmentDungeonStatusToAttacker(scene, effect.status);
+          return false;
+        }
+        if (kind === "lowHpStage") {
+          if (hpRatio < clamp(Number(effect.threshold) || 0.5, 0, 1)) applyEquipmentDungeonStageEffect(scene, "target", effect.keys, effect.delta, "的秘境效果");
+          return false;
+        }
+        if (kind === "clearNegativeStageEvery") {
+          const interval = Math.max(1, Math.floor(Number(effect.interval) || 1));
+          if (Math.max(1, Math.floor(Number(scene.turnCount) || 1)) % interval !== 0) return false;
+          const cleared = clearStageByMode(scene, "target", "negative", ALL_ABILITY_STAGE_KEYS.slice());
+          if (cleared.length > 0) pushBattleLog(scene, `${scene.targetName}的秘境效果清除了降低的能力等级：${cleared.map((key) => battleStatLabel(key)).join("、")}。`);
+          return false;
+        }
+        if (kind === "statusThenHealIfStatus") {
+          applyEquipmentDungeonStatusToAttacker(scene, effect.status);
+          const attackerState = getSideState(scene, "attacker");
+          if (Math.max(0, Number(attackerState.statuses[normalize(effect.status)]) || 0) > 0) healEquipmentDungeonTarget(scene, effect.heal);
+          return false;
+        }
+        if (kind === "randomStatuses") {
+          const pool = (Array.isArray(effect.statuses) ? effect.statuses : []).map(normalize).filter(Boolean);
+          const count = Math.min(pool.length, Math.max(1, Math.floor(Number(effect.count) || 1)));
+          for (let i = 0; i < count && pool.length > 0; i += 1) {
+            const idx = Math.floor(Math.random() * pool.length);
+            applyEquipmentDungeonStatusToAttacker(scene, pool.splice(idx, 1)[0]);
+          }
+        }
+        return false;
+      });
+    };
     const settleBattleTurn = (turnEnd) => {
       if (!turnEnd || turnEnd.ended || turnEnd.pendingFinish) return false;
       if (turnEnd.pendingEndTurnTick) {
@@ -16142,6 +16882,7 @@ const applyBossChainFinalBuff = (scene) => {
           const targetEndFx = applyEndTurnStatus(turnEnd, "target");
           showBattleStatusEffectFx(turnEnd, "target", targetEndFx && targetEndFx.statuses);
           triggerWeeklyBossLowHpBuffIfNeeded(turnEnd);
+          applyEquipmentDungeonEndTurnEffects(turnEnd);
           if (resolveBattleDefeatIfNeeded(turnEnd)) {
             pushBattleLog(turnEnd, `${turnEnd.targetName} 倒下。`);
             return false;
@@ -16443,7 +17184,10 @@ const applyBossChainFinalBuff = (scene) => {
             ? getBattleAbilityStat(scene, targetSide, "spDef")
             : getBattleAbilityStat(scene, targetSide, "def"));
         if (powerConditionFactor > 1) pushBattleLog(scene, `${actorName}处于异常状态，激发力量威力提升为2倍。`);
-        const reduceFactor = getDamageReductionFactor(scene, targetSide, atkKind) * getElementDamageReductionFactor(scene, targetSide, skillElement);
+        let reduceFactor = getDamageReductionFactor(scene, targetSide, atkKind) * getElementDamageReductionFactor(scene, targetSide, skillElement);
+        if (scene.mode === "equipmentDungeon" && targetSide === "target" && elementFactor > 1) {
+          reduceFactor *= 1 - clamp(Number(scene.targetCounteredDamageReductionRatio) || 0, 0, 0.95);
+        }
         const mh = hardcodedMultiHit;
         const bonusFixedPerHit = mh ? parseBonusFixedDamagePerHit(skill) : null;
         const bonusFixedEffects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "bonusFixedDamage");
@@ -16699,6 +17443,14 @@ const applyBossChainFinalBuff = (scene) => {
         }
       }
       if (damage > 0) {
+        const weeklyBossFixedDamage = actorSide === "target" && scene.mode === "weeklyBoss" && !isWeeklyBossCounterPetActive(scene, "attacker")
+          ? Math.max(0, Math.floor(Number(scene.weeklyBossLowHpFixedDamage) || 0))
+          : 0;
+        if (weeklyBossFixedDamage > 0) {
+          damage += weeklyBossFixedDamage;
+          comboHitList.push(`固定-${weeklyBossFixedDamage}`);
+          pushBattleLog(scene, `${scene.targetName}的龙威余焰追加${weeklyBossFixedDamage}点固定伤害。`);
+        }
         const showDamageVisual = () => {
           const live = battleScene.value;
           if (!live || live !== scene || live.ended) return;
@@ -17075,7 +17827,9 @@ const applyBossChainFinalBuff = (scene) => {
           }
         } else {
           expGain = calcWinExp(scene.targetLevel) * expMultiplier;
-          const receivers = bagPets.value.filter((p) => p && p.id);
+          const receivers = (scene.mode === "equipmentDungeon"
+            ? bagSlots.value.slice(0, 3).map((slot) => slot && slot.pet).filter((p) => p && p.id)
+            : bagPets.value.filter((p) => p && p.id));
           if (receivers.length > 0) {
             const avg = Math.floor(expGain / receivers.length);
             const rem = expGain % receivers.length;
@@ -17190,19 +17944,21 @@ const applyBossChainFinalBuff = (scene) => {
         } else if (scene.mode === "weeklyBoss") {
           const difficultyKey = normalize(scene.guardianMeta && scene.guardianMeta.weeklyBossDifficulty) || "normal";
           const difficulty = WEEKLY_BOSS_DIFFICULTY_BY_KEY.get(difficultyKey) || WEEKLY_BOSS_DIFFICULTY_OPTIONS[0];
+          const config = getWeeklyBossConfigByKey(scene.guardianMeta && scene.guardianMeta.weeklyBossKey);
           markDefeatedDex(target.dexId);
           if (!state.value.activatedDexIds.includes(target.dexId)) state.value.activatedDexIds.push(target.dexId);
-          const weeklyRewardState = ensureWeeklyBossRewardState();
+          const weeklyRewardState = ensureWeeklyBossRewardState(config.key);
           weeklyRewardState.clearedDifficulties = {
             ...(weeklyRewardState.clearedDifficulties && typeof weeklyRewardState.clearedDifficulties === "object" ? weeklyRewardState.clearedDifficulties : {}),
             [difficulty.key]: true
           };
           const today = localDateKey();
-          const canClaimDailyReward = normalize(weeklyRewardState.lastRewardDate) !== today;
+          if (!weeklyRewardState.claimedRewardDates || typeof weeklyRewardState.claimedRewardDates !== "object") weeklyRewardState.claimedRewardDates = {};
+          const canClaimDailyReward = normalize(weeklyRewardState.claimedRewardDates[difficulty.key]) !== today;
           const rewardTexts = [];
           let medalGain = 0;
           if (canClaimDailyReward) {
-            weeklyRewardState.lastRewardDate = today;
+            weeklyRewardState.claimedRewardDates[difficulty.key] = today;
             hCoinGain = Math.max(0, Math.floor(Number(difficulty.rewardHCoins) || 0));
             const medalRoll = rollWeeklyBossMedalReward(difficulty);
             medalGain = addWeeklyBossMedals(medalRoll);
@@ -17220,25 +17976,28 @@ const applyBossChainFinalBuff = (scene) => {
             }
             if (difficulty.blackgoldBadge) {
               if (!state.value.weeklyBossHonorRewards || typeof state.value.weeklyBossHonorRewards !== "object") state.value.weeklyBossHonorRewards = {};
-              if (!state.value.weeklyBossHonorRewards[WEEKLY_BOSS_CONFIG.key]) {
-                state.value.weeklyBossHonorRewards[WEEKLY_BOSS_CONFIG.key] = {
-                  name: WEEKLY_BOSS_CONFIG.honorBadgeName,
-                  bossName: WEEKLY_BOSS_CONFIG.name,
-                  badgeId: weeklyBossHonorBadgeIdOf(WEEKLY_BOSS_CONFIG.key),
+              if (!state.value.weeklyBossHonorRewards[config.key]) {
+                state.value.weeklyBossHonorRewards[config.key] = {
+                  name: config.honorBadgeName,
+                  bossName: config.name,
+                  badgeId: weeklyBossHonorBadgeIdOf(config.key),
                   claimedAt: Date.now()
                 };
-                rewardTexts.push(WEEKLY_BOSS_CONFIG.honorBadgeName);
-                pushBattleLog(scene, `获得 ${WEEKLY_BOSS_CONFIG.honorBadgeName}。`);
+                rewardTexts.push(config.honorBadgeName);
+                pushBattleLog(scene, `获得 ${config.honorBadgeName}。`);
               }
             }
           } else {
-            pushBattleLog(scene, "今日当周BOSS首胜奖励已领取，本次不再发放H币、勋章和神宠之匙。");
+            pushBattleLog(scene, `今日${config.name}${difficulty.label}难度首胜奖励已领取，本次不再发放H币、勋章和神宠之匙。`);
           }
-          unlockText = `${WEEKLY_BOSS_CONFIG.name} 当周BOSS${difficulty.label}难度挑战成功，获得${rewardTexts.length > 0 ? rewardTexts.join("、") : "今日奖励已领取"}。`;
+          unlockText = `${config.name} 当周BOSS${difficulty.label}难度挑战成功，获得${rewardTexts.length > 0 ? rewardTexts.join("、") : "今日奖励已领取"}。`;
           scene._weeklyBossRewardFlyBase = [
             ...(medalGain > 0 ? [`获取当周BOSS勋章×${medalGain}！`] : []),
             ...rewardTexts.filter((text) => !text.startsWith("当周BOSS勋章")).map((text) => `获取${text}！`)
           ];
+        } else if (scene.mode === "equipmentDungeon") {
+          hCoinGain = 0;
+          unlockText = completeEquipmentDungeonBoss(scene);
         } else {
           hCoinGain = Math.max(0, Math.floor(Number(scene.targetLevel) || 0) * 2);
           const targetChain = getChainStageInfoByDexId(target.dexId, target.name);
@@ -17282,6 +18041,8 @@ const applyBossChainFinalBuff = (scene) => {
             scene._weeklyBossRewardFlyBase = null;
           }
         }
+      } else if (scene.mode === "equipmentDungeon") {
+        unlockText = settleEquipmentDungeonRun(scene, false);
       }
       if (scene.mode === "normal" && scene.guardianMeta && scene.guardianMeta.dexChallenge) {
         grantZongziReward(scene, 1, `${target.name}图鉴挑战${win ? "完成" : "结束"}`);
@@ -17413,6 +18174,7 @@ const applyBossChainFinalBuff = (scene) => {
         }
         pushBattleLog(scene, `${next.name}因神秘仪式满状态回复。`);
       }
+      applyWeeklyBossCounterPetBuff(scene);
       clearBattleFloatTextIfExpired(scene, true);
       resetBattleVisualHold(scene);
       scene.fxAttackerDefeated = false;
@@ -18677,13 +19439,14 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const openWeeklyBossDetail = () => {
       const entry = weeklyBossEntry.value;
+      const config = selectedWeeklyBossConfig.value;
       if (!entry) return;
       const species = speciesByDexMap.get(Number(entry.dexId));
       if (!species) {
         showToast("该当周BOSS暂无已生成的技能/种族值数据。");
         return;
       }
-      const lv = WEEKLY_BOSS_CONFIG.level;
+      const lv = config.level;
       const unlocked = (species.skills || []).filter((s) => Number(s.level) <= lv).map((s) => normalizeSkillKey(s.name)).filter(Boolean);
       detailPreviewPet.value = {
         id: `preview_weekly_boss_${entry.dexId}`,
@@ -19034,13 +19797,13 @@ const applyBossChainFinalBuff = (scene) => {
       const rootIds = ids.map((id) => Number(chainRootByDex.get(id)) || id);
       const names = [pet.speciesName, pet.fixedName, petDisplayName(pet)].map(normalize).filter(Boolean);
       return ids.concat(rootIds).some((id) => NORMAL_HARD_CHALLENGE_FORBIDDEN_DEX_IDS.has(id))
-        || names.some((name) => name.includes("上古星龙"));
+        || names.some((name) => NORMAL_HARD_CHALLENGE_FORBIDDEN_PET_NAMES.some((forbiddenName) => name.includes(forbiddenName)));
     });
     const blockNormalHardChallengeForbiddenPet = (difficultyKey) => {
       const key = normalize(difficultyKey);
-      if (key !== "normal" && key !== "hard") return false;
+      if (!NORMAL_HARD_CHALLENGE_FORBIDDEN_DIFFICULTY_KEYS.has(key)) return false;
       if (!hasNormalHardForbiddenBagPet()) return false;
-      showToast("背包中存在普通/困难难度的挑战禁用亚比！");
+      showToast(`背包中存在普通/困难难度的挑战禁用亚比：${NORMAL_HARD_CHALLENGE_FORBIDDEN_PET_NAMES.join("、")}。`);
       return true;
     };
     const startGuardianChallenge = async (dexId) => {
@@ -19144,58 +19907,318 @@ const applyBossChainFinalBuff = (scene) => {
       showWeeklyBossPanel.value = true;
     };
     const closeWeeklyBossPanel = () => { showWeeklyBossPanel.value = false; };
+    const createFreshEquipmentDungeonProgress = () => ({
+      date: localDateKey(),
+      attemptsUsed: 0,
+      score: 0,
+      active: false,
+      completedRegionKeys: [],
+      unlockedRegionKeys: ["aixi"],
+      settled: false
+    });
+    const normalizeEquipmentDungeonProgress = () => {
+      const today = localDateKey();
+      const row = state.value.equipmentDungeon && typeof state.value.equipmentDungeon === "object"
+        ? state.value.equipmentDungeon
+        : createFreshEquipmentDungeonProgress();
+      if (normalize(row.date) !== today) {
+        state.value.equipmentDungeon = createFreshEquipmentDungeonProgress();
+        return state.value.equipmentDungeon;
+      }
+      row.date = today;
+      row.attemptsUsed = clamp(Math.floor(Number(row.attemptsUsed) || 0), 0, EQUIPMENT_DUNGEON_DAILY_ATTEMPT_LIMIT);
+      row.score = Math.max(0, Math.floor(Number(row.score) || 0));
+      row.completedRegionKeys = Array.isArray(row.completedRegionKeys)
+        ? row.completedRegionKeys.filter((key, idx, arr) => EQUIPMENT_DUNGEON_ROUTE_KEYS.includes(key) && arr.indexOf(key) === idx)
+        : [];
+      const unlocked = new Set(Array.isArray(row.unlockedRegionKeys) ? row.unlockedRegionKeys.filter((key) => EQUIPMENT_DUNGEON_ROUTE_KEYS.includes(key)) : []);
+      unlocked.add("aixi");
+      row.completedRegionKeys.forEach((key) => {
+        unlocked.add(key);
+        const nextKey = EQUIPMENT_DUNGEON_ROUTE_KEYS[EQUIPMENT_DUNGEON_ROUTE_KEYS.indexOf(key) + 1];
+        if (nextKey) unlocked.add(nextKey);
+      });
+      row.unlockedRegionKeys = Array.from(unlocked);
+      row.active = Boolean(row.active);
+      row.settled = Boolean(row.settled);
+      state.value.equipmentDungeon = row;
+      return row;
+    };
+    const resetEquipmentDungeonRoute = (active = false) => {
+      const row = normalizeEquipmentDungeonProgress();
+      row.score = 0;
+      row.active = Boolean(active);
+      row.completedRegionKeys = [];
+      row.unlockedRegionKeys = ["aixi"];
+      row.settled = false;
+      return row;
+    };
+    const readEquipmentDungeonProgress = () => {
+      const row = state.value.equipmentDungeon && typeof state.value.equipmentDungeon === "object"
+        ? state.value.equipmentDungeon
+        : createFreshEquipmentDungeonProgress();
+      return normalize(row.date) === localDateKey() ? row : createFreshEquipmentDungeonProgress();
+    };
+    const equipmentDungeonProgress = computed(() => readEquipmentDungeonProgress());
+    const equipmentDungeonScore = computed(() => equipmentDungeonProgress.value.score);
+    const equipmentDungeonAttemptsLeft = computed(() => Math.max(0, EQUIPMENT_DUNGEON_DAILY_ATTEMPT_LIMIT - equipmentDungeonProgress.value.attemptsUsed));
+    const equipmentDungeonActiveRouteKey = computed(() => EQUIPMENT_DUNGEON_ROUTE_KEYS.find((key) => !equipmentDungeonProgress.value.completedRegionKeys.includes(key)) || EQUIPMENT_DUNGEON_ROUTE_KEYS[0]);
+    const isEquipmentDungeonRegionUnlocked = (region) => {
+      const key = normalize(region && region.key);
+      return Boolean(key && equipmentDungeonProgress.value.unlockedRegionKeys.includes(key));
+    };
+    const isEquipmentDungeonRegionCompleted = (region) => {
+      const key = normalize(region && region.key);
+      return Boolean(key && equipmentDungeonProgress.value.completedRegionKeys.includes(key));
+    };
+    const getEquipmentDungeonBossConfig = (regionKey) => EQUIPMENT_DUNGEON_BOSS_BY_REGION.get(normalize(regionKey)) || null;
+    const equipmentDungeonCurrentBossConfig = computed(() => getEquipmentDungeonBossConfig(equipmentDungeonSceneKey.value));
+    const equipmentDungeonCurrentBossEntry = computed(() => {
+      const config = equipmentDungeonCurrentBossConfig.value;
+      if (!config) return null;
+      return findDexByName(config.bossName) || dexEntries.find((entry) => normalize(entry && entry.name) === normalize(config.bossName)) || null;
+    });
+    const equipmentDungeonBossAnimSrc = computed(() => {
+      const entry = equipmentDungeonCurrentBossEntry.value;
+      if (!entry) return PLACEHOLDER;
+      return petBattleSvgImage(entry.dexId, "target", "idle") || entry.image || PLACEHOLDER;
+    });
+    const buildEquipmentDungeonSkillWeights = (config, difficultyKey) => {
+      const skills = Array.isArray(config && config.skills) ? config.skills.map(normalizeSkillKey).filter(Boolean) : [];
+      const overrides = config && config.skillWeights && config.skillWeights[difficultyKey] ? config.skillWeights[difficultyKey] : null;
+      if (!overrides || typeof overrides !== "object") return skills.map((name) => ({ name, weight: 1 }));
+      const fixed = new Map(Object.entries(overrides).map(([name, weight]) => [normalizeSkillKey(name), clamp(Number(weight) || 0, 0, 1)]));
+      const fixedTotal = Array.from(fixed.values()).reduce((sum, value) => sum + value, 0);
+      const freeSkills = skills.filter((name) => !fixed.has(name));
+      const freeWeight = freeSkills.length > 0 ? Math.max(0, 1 - fixedTotal) / freeSkills.length : 0;
+      return skills.map((name) => ({ name, weight: fixed.has(name) ? fixed.get(name) : freeWeight })).filter((row) => row.weight > 0);
+    };
+    const equipmentDungeonDifficultyCards = computed(() => {
+      const config = equipmentDungeonCurrentBossConfig.value;
+      return EQUIPMENT_DUNGEON_DIFFICULTIES.map((difficulty) => {
+        const extra = normalize(config && config.difficulty && config.difficulty[difficulty.key]);
+        return {
+          ...difficulty,
+          bossName: config ? config.bossName : "",
+          challengeText: `${difficulty.desc}${extra ? ` ${extra}` : ""}`
+        };
+      });
+    });
+    const equipmentDungeonBossCardsVisible = computed(() => Boolean(equipmentDungeonBossCardRegionKey.value && equipmentDungeonBossCardRegionKey.value === equipmentDungeonSceneKey.value));
+    const settleEquipmentDungeonRun = (scene, clearedAll = false) => {
+      const row = normalizeEquipmentDungeonProgress();
+      const score = Math.max(0, Math.floor(Number(row.score) || 0));
+      const reward = EQUIPMENT_DUNGEON_SCORE_REWARDS.find((item) => score >= item.min) || EQUIPMENT_DUNGEON_SCORE_REWARDS[EQUIPMENT_DUNGEON_SCORE_REWARDS.length - 1];
+      row.active = false;
+      row.settled = true;
+      row.completedRegionKeys = [];
+      row.unlockedRegionKeys = ["aixi"];
+      addItemCount(EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, reward.crystals);
+      const text = `装备秘境${clearedAll ? "全部通关" : "挑战结束"}，最终${score}分，评级${reward.rating}，获得秘境晶石×${reward.crystals}。`;
+      if (scene) pushBattleLog(scene, text);
+      queueRewardFlyToasts([`评级${reward.rating}！`, `获取秘境晶石×${reward.crystals}！`]);
+      return text;
+    };
+    const completeEquipmentDungeonBoss = (scene) => {
+      const row = normalizeEquipmentDungeonProgress();
+      const regionKey = normalize(scene && scene.guardianMeta && scene.guardianMeta.equipmentDungeonRegionKey);
+      const difficultyScore = Math.max(0, Math.floor(Number(scene && scene.guardianMeta && scene.guardianMeta.equipmentDungeonScore) || 0));
+      if (!regionKey || row.completedRegionKeys.includes(regionKey)) return "该头领已经击败，无需重新挑战！";
+      row.completedRegionKeys.push(regionKey);
+      row.score += difficultyScore;
+      const nextKey = EQUIPMENT_DUNGEON_ROUTE_KEYS[EQUIPMENT_DUNGEON_ROUTE_KEYS.indexOf(regionKey) + 1];
+      if (nextKey && !row.unlockedRegionKeys.includes(nextKey)) row.unlockedRegionKeys.push(nextKey);
+      const bossName = normalize(scene && scene.guardianMeta && scene.guardianMeta.equipmentDungeonBossName) || scene.targetName;
+      const winText = `${bossName}${scene.guardianMeta.equipmentDungeonDifficultyLabel}难度挑战成功，积分 +${difficultyScore}，当前${row.score}分。`;
+      if (scene) pushBattleLog(scene, winText);
+      if (!nextKey) return settleEquipmentDungeonRun(scene, true);
+      return `${winText} 下一地图已开启。`;
+    };
+    const hasEquipmentDungeonForbiddenPet = () => bagSlots.value.slice(0, 3).some((slot) => {
+      const pet = slot && slot.pet;
+      if (!pet) return false;
+      const ids = [
+        Number(pet.dexId) || 0,
+        Number(pet.baseDexId) || 0,
+        Number(pet.fixedDexId) || 0,
+        Number(resolvePetCurrentDexId(pet)) || 0
+      ].filter(Boolean);
+      const rootIds = ids.map((id) => Number(chainRootByDex.get(id)) || id);
+      const names = [pet.speciesName, pet.fixedName, petDisplayName(pet)].map(normalize).filter(Boolean);
+      return ids.concat(rootIds).some((id) => NORMAL_HARD_CHALLENGE_FORBIDDEN_DEX_IDS.has(id))
+        || names.some((name) => NORMAL_HARD_CHALLENGE_FORBIDDEN_PET_NAMES.some((forbiddenName) => name.includes(forbiddenName)));
+    });
+    const openEquipmentDungeonPanel = () => {
+      normalizeEquipmentDungeonProgress();
+      equipmentDungeonView.value = "map";
+      equipmentDungeonHoverRegionKey.value = "";
+      equipmentDungeonSceneSvgSrc.value = "";
+      equipmentDungeonSceneKey.value = "";
+      equipmentDungeonBossCardRegionKey.value = "";
+      showEquipmentDungeonPanel.value = true;
+    };
+    const closeEquipmentDungeonPanel = () => {
+      showEquipmentDungeonPanel.value = false;
+      equipmentDungeonView.value = "map";
+      equipmentDungeonHoverRegionKey.value = "";
+      equipmentDungeonSceneSvgSrc.value = "";
+      equipmentDungeonSceneKey.value = "";
+      equipmentDungeonBossCardRegionKey.value = "";
+    };
+    const backToEquipmentDungeonMap = () => {
+      equipmentDungeonView.value = "map";
+      equipmentDungeonHoverRegionKey.value = "";
+      equipmentDungeonSceneSvgSrc.value = "";
+      equipmentDungeonSceneKey.value = "";
+      equipmentDungeonBossCardRegionKey.value = "";
+    };
+    const enterEquipmentDungeonSceneByKey = (sceneSvgKey) => {
+      const key = normalize(sceneSvgKey);
+      const src = EQUIPMENT_DUNGEON_SCENE_SVG_SRCS[key];
+      if (!src) return;
+      equipmentDungeonSceneSvgSrc.value = src;
+      equipmentDungeonSceneKey.value = key;
+      equipmentDungeonBossCardRegionKey.value = "";
+      equipmentDungeonView.value = "scene";
+      equipmentDungeonHoverRegionKey.value = "";
+    };
+    const enterAixiEquipmentDungeonScene = () => {
+      enterEquipmentDungeonSceneByKey("aixi");
+    };
+    const setEquipmentDungeonHoverRegion = (region) => {
+      equipmentDungeonHoverRegionKey.value = region && region.key && isEquipmentDungeonRegionUnlocked(region) ? region.key : "";
+    };
+    const enterEquipmentDungeonRegion = (region) => {
+      if (!region || !region.sceneSvgKey) return;
+      if (!isEquipmentDungeonRegionUnlocked(region)) return showToast("请先击败前一地图头领。");
+      enterEquipmentDungeonSceneByKey(region.sceneSvgKey);
+    };
+    const openEquipmentDungeonBossCards = () => {
+      const key = normalize(equipmentDungeonSceneKey.value);
+      const row = normalizeEquipmentDungeonProgress();
+      if (!row.unlockedRegionKeys.includes(key)) return showToast("请先击败前一地图头领。");
+      if (row.completedRegionKeys.includes(key)) return showToast("该头领已经击败，无需重新挑战！");
+      equipmentDungeonBossCardRegionKey.value = key;
+    };
+    const startEquipmentDungeonBossChallenge = (difficultyKey) => {
+      const key = normalize(equipmentDungeonSceneKey.value);
+      const config = getEquipmentDungeonBossConfig(key);
+      const difficulty = EQUIPMENT_DUNGEON_DIFFICULTIES.find((item) => item.key === normalize(difficultyKey)) || EQUIPMENT_DUNGEON_DIFFICULTIES[0];
+      const row = normalizeEquipmentDungeonProgress();
+      if (!config) return showToast("该地图头领数据缺失。");
+      if (row.completedRegionKeys.includes(key)) return showToast("该头领已经击败，无需重新挑战！");
+      if (!row.unlockedRegionKeys.includes(key)) return showToast("请先击败前一地图头领。");
+      let shouldStartNewRun = false;
+      if (!row.active) {
+        if (key !== EQUIPMENT_DUNGEON_ROUTE_KEYS[0]) return showToast("请从艾夕区开始新的装备秘境挑战。");
+        if (equipmentDungeonAttemptsLeft.value <= 0) return showToast("今日装备秘境挑战次数已用完。");
+        shouldStartNewRun = true;
+      }
+      const firstThree = bagSlots.value.slice(0, 3).map((slot) => slot && slot.pet).filter((pet) => pet && pet.id);
+      if (firstThree.length === 0) return showToast("背包前3只亚比中没有可出战亚比。");
+      if (hasEquipmentDungeonForbiddenPet()) return showToast(`装备秘境禁用亚比：${NORMAL_HARD_CHALLENGE_FORBIDDEN_PET_NAMES.join("、")}。`);
+      const entry = findDexByName(config.bossName) || dexEntries.find((item) => normalize(item && item.name) === normalize(config.bossName));
+      if (!entry) return showToast(`${config.bossName}数据暂不可用。`);
+      if (shouldStartNewRun) {
+        resetEquipmentDungeonRoute(true);
+        normalizeEquipmentDungeonProgress().attemptsUsed += 1;
+      }
+      closeEquipmentDungeonPanel();
+      setBattleReturnContext({ panel: "equipmentDungeon" });
+      const region = EQUIPMENT_DUNGEON_MAP_REGIONS.find((item) => item.key === key);
+      startBattlePrepare(`正在进入装备秘境 ${region ? region.name : "地图"}：${config.bossName}（${difficulty.label}）...`, entry, 100, () => setupBattleScene({
+        targetEntry: entry,
+        targetLevel: 100,
+        mode: "equipmentDungeon",
+        targetHpRaceOverride: difficulty.fixedHp,
+        targetTalentOverride: difficulty.talent === 60 ? createUniformTalent60() : difficulty.talent === 50 ? createUniformTalent50() : createUniformTalent30(),
+        targetStudyOverride: createGuardianStudy(),
+        guardianMeta: {
+          equipmentDungeon: true,
+          equipmentDungeonRegionKey: key,
+          equipmentDungeonBossName: config.bossName,
+          equipmentDungeonDifficulty: difficulty.key,
+          equipmentDungeonDifficultyLabel: difficulty.label,
+          equipmentDungeonScore: difficulty.score,
+          equipmentDungeonSkillNames: config.skills,
+          equipmentDungeonSkillWeights: buildEquipmentDungeonSkillWeights(config, difficulty.key),
+          equipmentDungeonEndTurnEffects: config.endTurn && config.endTurn[difficulty.key] ? config.endTurn[difficulty.key] : [],
+          fixedHp: difficulty.fixedHp,
+          damageReductionRatio: clamp(Number(difficulty.damageReductionRatio) || 0, 0, 0.95),
+          counteredDamageReductionRatio: clamp(Number(difficulty.counteredDamageReductionRatio) || 0, 0, 0.95),
+          immuneStatus: Boolean(difficulty.immuneStatus)
+        }
+      }));
+    };
+    const ensureWeeklyBossAttemptRow = () => {
+      const today = localDateKey();
+      if (!state.value.weeklyBossAttempts || typeof state.value.weeklyBossAttempts !== "object" || normalize(state.value.weeklyBossAttempts.bossKey) !== WEEKLY_BOSS_ATTEMPT_GROUP_KEY || normalize(state.value.weeklyBossAttempts.date) !== today) {
+        state.value.weeklyBossAttempts = { bossKey: WEEKLY_BOSS_ATTEMPT_GROUP_KEY, date: today, used: 0, bought: 0 };
+      }
+      state.value.weeklyBossAttempts.used = Math.max(0, Math.floor(Number(state.value.weeklyBossAttempts.used) || 0));
+      state.value.weeklyBossAttempts.bought = clamp(Math.floor(Number(state.value.weeklyBossAttempts.bought) || 0), 0, WEEKLY_BOSS_EXTRA_ATTEMPT_MAX);
+      return state.value.weeklyBossAttempts;
+    };
+    const buyWeeklyBossAttempt = () => {
+      const row = ensureWeeklyBossAttemptRow();
+      if (row.bought >= WEEKLY_BOSS_EXTRA_ATTEMPT_MAX) return showToast("今日额外挑战次数已购买完。");
+      if (Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) < WEEKLY_BOSS_EXTRA_ATTEMPT_COST) return showToast(`H币不足，购买1次挑战需要${WEEKLY_BOSS_EXTRA_ATTEMPT_COST}H币。`);
+      state.value.hCoins = Math.max(0, Math.floor(Number(state.value.hCoins) || 0) - WEEKLY_BOSS_EXTRA_ATTEMPT_COST);
+      row.bought += 1;
+      showToast(`已购买1次当周BOSS挑战次数，今日已购买${row.bought}/${WEEKLY_BOSS_EXTRA_ATTEMPT_MAX}次。`);
+    };
     const exchangeWeeklyBossEgg = () => {
       const entry = weeklyBossEntry.value;
+      const config = selectedWeeklyBossConfig.value;
       if (!entry) return showToast("当周BOSS数据暂不可用。");
-      const rewardState = ensureWeeklyBossRewardState();
-      if (rewardState.exchangedEgg) return showToast(`${WEEKLY_BOSS_CONFIG.name}亚比蛋已兑换过，不能重复兑换。`);
+      const rewardState = ensureWeeklyBossRewardState(config.key);
+      if (rewardState.exchangedEgg) return showToast(`${config.name}亚比蛋已兑换过，不能重复兑换。`);
       if (weeklyBossMedalCount.value < WEEKLY_BOSS_EGG_EXCHANGE_COST) return showToast(`当周BOSS勋章不足，需要${WEEKLY_BOSS_EGG_EXCHANGE_COST}个。`);
-      if (!canDropEggByActionDexId(WEEKLY_BOSS_CONFIG.dexId)) return showToast(`${WEEKLY_BOSS_CONFIG.name}缺少可出战动作资源，暂不能兑换亚比蛋。`);
+      if (!canDropEggByActionDexId(config.dexId)) return showToast(`${config.name}缺少可出战动作资源，暂不能兑换亚比蛋。`);
       consumeItemCount(WEEKLY_BOSS_MEDAL_ITEM_ID, WEEKLY_BOSS_EGG_EXCHANGE_COST);
       state.value.eggs.unshift({
         id: uid(),
-        dexId: WEEKLY_BOSS_CONFIG.dexId,
-        speciesName: WEEKLY_BOSS_CONFIG.name,
+        dexId: config.dexId,
+        speciesName: config.name,
         startAt: Date.now(),
         hatchAt: Date.now() + HATCH_MS
       });
-      markObtainedEggDex(WEEKLY_BOSS_CONFIG.dexId);
+      markObtainedEggDex(config.dexId);
       rewardState.exchangedEgg = true;
-      queueRewardFlyToasts([`兑换${WEEKLY_BOSS_CONFIG.name}亚比蛋！`]);
-      showToast(`已使用${WEEKLY_BOSS_EGG_EXCHANGE_COST}个当周BOSS勋章兑换${WEEKLY_BOSS_CONFIG.name}亚比蛋。`);
+      queueRewardFlyToasts([`兑换${config.name}亚比蛋！`]);
+      showToast(`已使用${WEEKLY_BOSS_EGG_EXCHANGE_COST}个当周BOSS勋章兑换${config.name}亚比蛋。`);
     };
     const startWeeklyBossChallenge = () => {
       const entry = weeklyBossEntry.value;
+      const config = selectedWeeklyBossConfig.value;
       if (!entry) return showToast("当周BOSS数据暂不可用。");
       if (bagPets.value.length === 0) return showToast("背包中没有可出战亚比。");
       if (weeklyBossAttemptsLeft.value <= 0) return showToast("今日当周BOSS挑战次数已用完。");
       const difficulty = selectedWeeklyBossDifficultyOption.value || WEEKLY_BOSS_DIFFICULTY_OPTIONS[0];
       if (blockNormalHardChallengeForbiddenPet(difficulty.key)) return;
-      const today = localDateKey();
-      if (!state.value.weeklyBossAttempts || typeof state.value.weeklyBossAttempts !== "object" || normalize(state.value.weeklyBossAttempts.bossKey) !== WEEKLY_BOSS_CONFIG.key || normalize(state.value.weeklyBossAttempts.date) !== today) {
-        state.value.weeklyBossAttempts = { bossKey: WEEKLY_BOSS_CONFIG.key, date: today, used: 0 };
-      }
-      state.value.weeklyBossAttempts.used = Math.min(WEEKLY_BOSS_CONFIG.dailyAttempts, Math.max(0, Math.floor(Number(state.value.weeklyBossAttempts.used) || 0)) + 1);
+      const row = ensureWeeklyBossAttemptRow();
+      row.used = Math.min(weeklyBossAttemptsTotal.value, row.used + 1);
       setBattleReturnContext({ panel: "weeklyBoss" });
       closeWeeklyBossPanel();
-      startBattlePrepare(`正在进入当周BOSS挑战 ${WEEKLY_BOSS_CONFIG.name}（${difficulty.label}）...`, entry, WEEKLY_BOSS_CONFIG.level, () => setupBattleScene({
+      startBattlePrepare(`正在进入当周BOSS挑战 ${config.name}（${difficulty.label}）...`, entry, config.level, () => setupBattleScene({
         targetEntry: entry,
-        targetLevel: WEEKLY_BOSS_CONFIG.level,
+        targetLevel: config.level,
         forceTargetHpRace500: false,
-        targetHpRaceMultiplier: WEEKLY_BOSS_CONFIG.hpRaceMultiplier,
+        targetHpRaceMultiplier: config.hpRaceMultiplier,
         targetTalentOverride: createUniformTalent60(),
         targetStudyOverride: createGuardianStudy(),
         mode: "weeklyBoss",
         guardianMeta: {
-          fixedHp: Math.max(1, Math.floor(Number(difficulty.fixedHp) || WEEKLY_BOSS_CONFIG.fixedHp)),
+          fixedHp: Math.max(1, Math.floor(Number(difficulty.fixedHp) || config.fixedHp)),
           damageReductionRatio: clamp(Number(difficulty.damageReductionRatio) || 0, 0, 0.95),
-          statBoostRatio: Number(difficulty.statBoostRatio) || WEEKLY_BOSS_CONFIG.statBoostRatio,
-          qixingSealLevel: WEEKLY_BOSS_CONFIG.qixingSealLevel,
+          statBoostRatio: Number(difficulty.statBoostRatio) || config.statBoostRatio,
+          qixingSealLevel: config.qixingSealLevel,
+          weeklyBossKey: config.key,
+          weeklyBossDexId: config.dexId,
+          weeklyBossCounterDexId: config.counterDexId,
+          weeklyBossSkillWeights: config.skillWeights,
           weeklyBossDifficulty: difficulty.key,
           weeklyBossDifficultyLabel: difficulty.label,
-          weeklyBossRandomStageDelta: difficulty.randomStageDelta,
-          weeklyBossLowHpDamageBoostFactor: difficulty.lowHpDamageBoostFactor,
-          weeklyBossLowHpDamageReductionRatio: difficulty.lowHpDamageReductionRatio,
           weeklyBoss: true
         }
       }));
@@ -19604,10 +20627,15 @@ const applyBossChainFinalBuff = (scene) => {
       filteredChallengeRoadItems,
       guardianDexEntries,
       bossDexEntries,
+      weeklyBossTabs,
+      selectedWeeklyBossKey,
       weeklyBossEntry,
       weeklyBossAnimSrc,
       weeklyBossAnimStyle,
+      weeklyBossAttemptsTotal,
       weeklyBossAttemptsLeft,
+      weeklyBossExtraAttemptsBought,
+      weeklyBossCanBuyAttempt,
       weeklyBossCleared,
       weeklyBossDifficultyOptions,
       selectedWeeklyBossDifficulty,
@@ -19617,6 +20645,31 @@ const applyBossChainFinalBuff = (scene) => {
       weeklyBossEggExchanged,
       weeklyBossChallengeText,
       weeklyBossElementGroups,
+      buyWeeklyBossAttempt,
+      showEquipmentDungeonPanel,
+      equipmentDungeonView,
+      equipmentDungeonHoverRegionKey,
+      equipmentDungeonSceneSvgSrc,
+      equipmentDungeonScore,
+      equipmentDungeonAttemptsLeft,
+      equipmentDungeonBossAnimSrc,
+      equipmentDungeonDifficultyCards,
+      equipmentDungeonBossCardsVisible,
+      equipmentDungeonMapRegions: EQUIPMENT_DUNGEON_MAP_REGIONS,
+      equipmentDungeonButtonSrc: EQUIPMENT_DUNGEON_BUTTON_SRC,
+      equipmentDungeonGalaxyMapSrc: EQUIPMENT_DUNGEON_GALAXY_MAP_SRC,
+      equipmentDungeonAixiSceneSrc: EQUIPMENT_DUNGEON_AIXI_SCENE_SRC,
+      equipmentDungeonReturnHoverSrc: EQUIPMENT_DUNGEON_RETURN_HOVER_SRC,
+      openEquipmentDungeonPanel,
+      closeEquipmentDungeonPanel,
+      backToEquipmentDungeonMap,
+      enterAixiEquipmentDungeonScene,
+      setEquipmentDungeonHoverRegion,
+      enterEquipmentDungeonRegion,
+      openEquipmentDungeonBossCards,
+      startEquipmentDungeonBossChallenge,
+      isEquipmentDungeonRegionUnlocked,
+      isEquipmentDungeonRegionCompleted,
       isWeeklyBossDifficultyCleared,
       timeTunnelMaxClearedFloor,
       timeTunnelFloorRows,

@@ -18,6 +18,7 @@ const STATIC_RESOURCE_PREFIXES = [
   "resource/pet-state/",
   "resource/skill-effect/",
   "resource/skill-effect-fullscreen/",
+  "resource/scene/",
   "resource/time-tunnel-environments/",
   "resource/type/",
   "resource/type-transparent/",
