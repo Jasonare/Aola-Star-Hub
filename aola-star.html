@@ -535,20 +535,23 @@
     .equipment-map-hotspot::before {
       border: 2px solid rgba(125, 211, 252, .88);
       box-shadow: 0 0 16px rgba(34, 211, 238, .85);
-      animation: equipmentMapPulse 1.35s ease-out infinite;
+      animation: none;
     }
     .equipment-map-hotspot::after {
       width: 16%;
       background: rgba(250, 204, 21, .94);
       box-shadow: 0 0 12px rgba(250, 204, 21, .9), 0 0 24px rgba(34, 211, 238, .8);
     }
-    .equipment-map-hotspot.is-active {
+    .equipment-map-hotspot.is-clickable.is-active {
       background: radial-gradient(circle, rgba(34, 211, 238, .3) 0%, rgba(14, 165, 233, .12) 38%, rgba(14, 165, 233, 0) 72%);
       filter: brightness(1.28);
       transform: scale(1.04);
     }
-    .equipment-map-hotspot.is-active::before,
-    .equipment-map-hotspot.is-active::after {
+    .equipment-map-hotspot.is-clickable.is-active::before {
+      animation: equipmentMapPulse 1.35s ease-out infinite;
+    }
+    .equipment-map-hotspot.is-clickable.is-active::before,
+    .equipment-map-hotspot.is-clickable.is-active::after {
       opacity: 1;
     }
     .equipment-map-info {
@@ -655,6 +658,11 @@
       cursor: not-allowed;
       opacity: .35;
     }
+    .equipment-map-hotspot.is-locked::before,
+    .equipment-map-hotspot.is-locked::after {
+      opacity: 0 !important;
+      animation: none !important;
+    }
     .equipment-map-hotspot.is-completed {
       filter: drop-shadow(0 0 7px rgba(34, 197, 94, .75));
     }
@@ -699,6 +707,18 @@
       color: #e0f2fe;
       text-align: left;
     }
+    .equipment-dungeon-card.is-normal {
+      background: linear-gradient(180deg, rgba(20, 83, 45, .92), rgba(6, 78, 59, .86));
+      border-color: rgba(134, 239, 172, .42);
+    }
+    .equipment-dungeon-card.is-hard {
+      background: linear-gradient(180deg, rgba(88, 28, 135, .92), rgba(67, 56, 202, .82));
+      border-color: rgba(196, 181, 253, .44);
+    }
+    .equipment-dungeon-card.is-nightmare {
+      background: linear-gradient(180deg, rgba(127, 29, 29, .94), rgba(88, 28, 135, .82));
+      border-color: rgba(252, 165, 165, .48);
+    }
     .equipment-dungeon-card-title {
       display: flex;
       align-items: center;
@@ -719,6 +739,42 @@
       font-size: 12px;
       line-height: 1.45;
       font-weight: 800;
+    }
+    .equipment-dungeon-card-icons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+      padding: 7px 8px;
+      border-radius: 8px;
+      background: rgba(2, 6, 23, .28);
+      color: #ecfeff;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .equipment-dungeon-card-icons button {
+      width: 56px;
+      height: 56px;
+      border: 0;
+      border-radius: 7px;
+      background: rgba(14, 165, 233, .12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform .14s ease, background .14s ease;
+    }
+    .equipment-dungeon-card-icons button:hover,
+    .equipment-dungeon-card-icons button:focus-visible {
+      background: rgba(14, 165, 233, .26);
+      transform: translateY(-1px);
+      outline: none;
+    }
+    .equipment-dungeon-card-icons img {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+      filter: drop-shadow(0 3px 4px rgba(0,0,0,.35));
     }
     .equipment-dungeon-card-action {
       margin-top: 10px;
@@ -791,6 +847,9 @@
     }
     .equipment-map-return-hotspot:focus-visible {
       box-shadow: none;
+    }
+    .equipment-map-return-hotspot.is-scene-return .equipment-map-return-hover {
+      opacity: 1;
     }
     .equipment-map-return-hotspot:active .equipment-map-return-hover {
       transform: scaleX(-1) scale(.96);
@@ -1517,6 +1576,8 @@
       --battle-pet-size: clamp(14vw, 25.2vmin, 26.6vw);
     }
     .battle-skill-float { border-radius: calc(16 * var(--ui-px)); border: calc(1 * var(--ui-px)) solid rgba(125,211,252,.85); background: linear-gradient(135deg, rgba(8,47,73,.92), rgba(14,116,144,.78)); box-shadow: 0 calc(8 * var(--ui-px)) calc(24 * var(--ui-px)) rgba(34,211,238,.28), inset 0 0 calc(16 * var(--ui-px)) rgba(255,255,255,.08); padding: calc(6 * var(--ui-px)) calc(12 * var(--ui-px)); color: #e0f2fe; letter-spacing: .04em; text-shadow: 0 calc(1 * var(--ui-px)) calc(8 * var(--ui-px)) rgba(34,211,238,.55); z-index: 26; }
+    .battle-pet-skill-float { position: absolute; transform: translate(-50%, -100%); z-index: 260; max-width: min(calc(260 * var(--ui-px)), 46vw); overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+    .battle-attacker-skill-float { font-size: 200% !important; line-height: 1.15 !important; }
     .battle-pet-value-float {
       position: absolute;
       transform: translate(-50%, -100%);
@@ -6494,14 +6555,16 @@
       pointer-events: auto !important;
     }
     .battle-scene-overlay .battle-mobile-root .battle-target-skill-float {
-      left: 50% !important;
-      top: 0 !important;
-      transform: translate(-50%, -100%) !important;
       z-index: 260 !important;
       max-width: min(calc(240 * var(--ui-px)), 46vw) !important;
       overflow: hidden !important;
       text-overflow: ellipsis !important;
       pointer-events: none !important;
+    }
+    html:not(.android-webview) .battle-scene-overlay .battle-mobile-root .battle-target-skill-float {
+      font-size: 1.75rem !important;
+      line-height: 2.25rem !important;
+      padding: calc(10 * var(--ui-px)) calc(18 * var(--ui-px)) !important;
     }
     .pet-detail-overlay {
       z-index: 900 !important;
@@ -6621,7 +6684,6 @@
     </div>
     <div class="home-action-grid">
       <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./resource/ui/背景/赠礼.png" alt=""></button>
-      <button @click.stop.prevent="openDragonBoatShopPanel" class="home-action-btn home-action-dragonboat" title="端午特惠商店" aria-label="端午特惠商店"><img src="./resource/ui/端午商店/端午商店图标.png" alt=""></button>
       <button @click.stop.prevent="openLeaderboardPanel" class="home-action-btn home-action-rank" title="排行榜" aria-label="排行榜"><img src="./resource/ui/背景/排行榜.png" alt=""></button>
       <button @click="openTimeTunnelPanel" class="home-action-btn home-action-tunnel" title="时空隧道" aria-label="时空隧道"><img src="./resource/ui/背景/时空隧道.png" alt=""></button>
       <button @click="openStudyPanel" class="home-action-btn home-action-study" title="学习力战场" aria-label="学习力战场"><img src="./resource/ui/背景/学习力战场.png" alt=""></button>
@@ -8127,12 +8189,7 @@
               </button>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <button @click="openEquipmentDungeonPanel" class="h-11 w-28 shrink-0 overflow-hidden rounded-xl border border-cyan-200 bg-slate-900 shadow-lg" title="装备秘境" aria-label="装备秘境">
-              <img :src="equipmentDungeonButtonSrc" @error="withFallback" class="h-full w-full object-cover">
-            </button>
-            <button @click="startWeeklyBossChallenge" :disabled="bagPets.length===0 || weeklyBossAttemptsLeft<=0" class="h-11 flex-1 rounded-xl bg-yellow-400 text-slate-950 font-black shadow-lg disabled:opacity-50">进入{{ selectedWeeklyBossDifficultyOption.label }}挑战</button>
-          </div>
+          <button @click="startWeeklyBossChallenge" :disabled="bagPets.length===0 || weeklyBossAttemptsLeft<=0" class="h-11 w-full rounded-xl bg-yellow-400 text-slate-950 font-black shadow-lg disabled:opacity-50">进入{{ selectedWeeklyBossDifficultyOption.label }}挑战</button>
           <div class="flex items-center gap-3 pt-1">
             <button @click.stop="openBagPanel" class="time-env-tool-btn" title="亚比背包" aria-label="亚比背包">
               <svg viewBox="0 0 24 24" class="fill-none stroke-current stroke-[1.9]" stroke-linecap="round" stroke-linejoin="round">
@@ -8158,10 +8215,6 @@
   </div>
 
   <div v-if="showEquipmentDungeonPanel" class="equipment-dungeon-panel fixed inset-0 z-50 flex items-center justify-center overflow-hidden" :style="{ '--equipment-dungeon-bg': `url(${loginLoadingBgSrc})` }" @click.self="closeEquipmentDungeonPanel">
-    <div v-if="equipmentDungeonView==='scene'" class="absolute right-3 top-3 z-10 flex items-center gap-2">
-      <button @click="backToEquipmentDungeonMap" class="h-9 px-3 rounded-xl bg-white/15 border border-white/25 text-white text-sm font-black">返回地图</button>
-      <button @click="closeEquipmentDungeonPanel" class="h-9 px-3 rounded-xl bg-white/15 border border-white/25 text-white text-sm font-black">返回</button>
-    </div>
     <div v-if="equipmentDungeonView==='map'" class="relative z-[1] flex items-center justify-center" style="width:min(100vw, calc(100vh * 16 / 9)); height:min(100vh, calc(100vw * 9 / 16));">
       <img :src="equipmentDungeonGalaxyMapSrc" @error="withFallback" class="absolute inset-0 h-full w-full object-contain select-none">
       <div class="equipment-dungeon-scorebar">
@@ -8181,7 +8234,7 @@
         @mouseleave="setEquipmentDungeonHoverRegion(null)"
         @blur="setEquipmentDungeonHoverRegion(null)"
         class="equipment-map-hotspot"
-        :class="{ 'is-active': equipmentDungeonHoverRegionKey===region.key, 'is-clickable': isEquipmentDungeonRegionUnlocked(region), 'is-locked': !isEquipmentDungeonRegionUnlocked(region), 'is-completed': isEquipmentDungeonRegionCompleted(region) }"
+        :class="{ 'is-active': equipmentDungeonHoverRegionKey===region.key && isEquipmentDungeonRegionUnlocked(region), 'is-clickable': isEquipmentDungeonRegionUnlocked(region), 'is-locked': !isEquipmentDungeonRegionUnlocked(region), 'is-completed': isEquipmentDungeonRegionCompleted(region) }"
         :style="{ left: region.x+'%', top: region.y+'%', width: region.w+'%', height: region.h+'%' }"
         :title="region.name"
         :aria-label="region.name"
@@ -8203,16 +8256,28 @@
     </div>
     <div v-else-if="equipmentDungeonView==='scene'" class="equipment-scene-svg-frame">
       <img :src="equipmentDungeonSceneSvgSrc" @error="withFallback" class="equipment-scene-svg-img" alt="">
-      <button class="equipment-dungeon-leader" @click.stop="openEquipmentDungeonBossCards" aria-label="挑战头领">
+      <button @click.stop="backToEquipmentDungeonMap" class="equipment-map-return-hotspot is-scene-return" aria-label="返回地图">
+        <img :src="equipmentDungeonReturnHoverSrc" @error="withFallback" class="equipment-map-return-hover" alt="">
+      </button>
+      <button class="equipment-dungeon-leader" :style="equipmentDungeonLeaderStyle" @click.stop="openEquipmentDungeonBossCards" aria-label="挑战头领">
         <img :src="equipmentDungeonBossAnimSrc" @error="withFallback" alt="">
       </button>
       <div v-if="equipmentDungeonBossCardsVisible" class="equipment-dungeon-card-panel">
-        <div v-for="card in equipmentDungeonDifficultyCards" :key="'equipment_dungeon_card_'+card.key" class="equipment-dungeon-card">
+        <div v-for="card in equipmentDungeonDifficultyCards" :key="'equipment_dungeon_card_'+card.key" class="equipment-dungeon-card" :class="'is-'+card.key">
           <div class="equipment-dungeon-card-title">
             <span>{{ card.label }}</span>
             <span class="equipment-dungeon-card-score">+{{ card.score }}分</span>
           </div>
           <div class="equipment-dungeon-card-desc">{{ card.challengeText }}</div>
+          <div class="equipment-dungeon-card-icons">
+            <button type="button" @click.stop="openBagPanel" title="亚比背包" aria-label="亚比背包">
+              <img src="./resource/ui/背景/亚比背包.png" @error="withFallback" alt="">
+            </button>
+            <button type="button" @click.stop="openWarehousePanel" title="亚比仓库" aria-label="亚比仓库">
+              <img src="./resource/ui/背景/亚比仓库.png" @error="withFallback" alt="">
+            </button>
+            <span>仅背包前3只亚比出战，仓库亚比不参与本轮挑战</span>
+          </div>
           <button class="equipment-dungeon-card-action" @click="startEquipmentDungeonBossChallenge(card.key)">挑战</button>
         </div>
       </div>
@@ -8576,8 +8641,8 @@
                 :class="row.value > 0 ? 'stage-up' : (row.value < 0 ? 'stage-down' : 'stage-zero')"
               >{{ row.text }}</span>
             </div>
-            <div v-if="battleScene.fxTargetSkillText" class="absolute top-[18%] left-[calc(50%+72px)] text-sm font-black whitespace-nowrap battle-skill-float battle-target-skill-float">{{ battleScene.fxTargetSkillText }}</div>
             <div :class="['battle-pet-visual-anchor', battleScene.fxTargetDefeated ? 'battle-defeated-exit' : '']">
+              <div v-if="battleScene.fxTargetSkillText" class="text-sm font-black whitespace-nowrap battle-skill-float battle-pet-skill-float battle-target-skill-float" :style="battlePetSkillFloatStyle('target')">{{ battleScene.fxTargetSkillText }}</div>
               <img :key="'battle_target_pet_' + battleScene.targetImage" :src="battleScene.targetImage" :style="battlePetImageStyle('target')" @error="(event) => withBattlePetFallback(event, 'target')" class="battle-pet-img battle-target-pet-img drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
               <img v-if="battleVisualReady && battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'target'" :key="'skill_fx_target_' + battleScene.skillEffectFx.seq" :src="battleScene.skillEffectFx.src" class="battle-skill-effect-gif" :style="battleSkillEffectStyle('target')" alt="">
               <img v-if="battleVisualReady && battleScene.statusEffectFx && battleScene.statusEffectFx.side === 'target'" :key="'status_fx_target_' + battleScene.statusEffectFx.seq" :src="battleScene.statusEffectFx.src" class="battle-status-effect-gif" :style="battleStatusEffectStyle('target')" alt="">
@@ -8749,6 +8814,7 @@
           >{{ row.text }}</span>
         </div>
         <div :class="['battle-pet-visual-anchor', battleScene.fxAttackerDefeated ? 'battle-defeated-exit' : '']">
+          <div v-if="battleScene.fxAttackerSkillText" class="text-sm font-black whitespace-nowrap battle-skill-float battle-pet-skill-float battle-attacker-skill-float" :style="battlePetSkillFloatStyle('attacker')">{{ battleScene.fxAttackerSkillText }}</div>
           <img :key="'battle_attacker_pet_' + battleScene.attackerImage" :src="battleScene.attackerImage" :style="battlePetImageStyle('attacker')" @error="(event) => withBattlePetFallback(event, 'attacker')" class="battle-pet-img battle-attacker-pet-img drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
           <img v-if="battleVisualReady && battleScene.attackerTransformFx" :key="'transform_fx_attacker_' + battleScene.attackerTransformSeq" :src="battleScene.attackerTransformFx" class="battle-transform-effect-gif" :style="battleTransformEffectStyle('attacker')" alt="">
           <img v-if="battleVisualReady && battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'attacker'" :key="'skill_fx_attacker_' + battleScene.skillEffectFx.seq" :src="battleScene.skillEffectFx.src" class="battle-skill-effect-gif" :style="battleSkillEffectStyle('attacker')" alt="">
@@ -8769,7 +8835,6 @@
         <div v-for="(hit, idx) in (battleScene.comboHitsOnAttacker || [])" :key="'combo_atk_'+idx+'_'+hit" class="battle-pet-value-float text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="[battlePetValueFloatStyle('attacker', 'damage'), { animationDelay: (idx*250)+'ms' }]">{{ hit }}</div>
         <div v-if="battleScene.comboTotalOnAttacker" class="battle-pet-value-float text-5xl font-black text-amber-300 [text-shadow:0_3px_16px_rgba(0,0,0,.5)] combo-total-pop" :style="battlePetValueFloatStyle('attacker', 'total')">{{ battleScene.comboTotalOnAttacker }}</div>
         </div>
-        <div v-if="battleScene.fxAttackerSkillText" class="absolute top-[-14px] left-1/2 -translate-x-1/2 text-sm font-black whitespace-nowrap battle-skill-float">{{ battleScene.fxAttackerSkillText }}</div>
         <div v-if="battleScene.actionNoticeOnAttacker" class="absolute top-20 left-1/2 -translate-x-1/2 inline-flex items-center justify-center rounded-xl border border-amber-200/80 bg-slate-950/80 px-3 py-1.5 text-lg font-black text-amber-200 shadow-lg battle-damage-pop whitespace-nowrap pointer-events-none">{{ battleScene.actionNoticeOnAttacker }}</div>
         <div v-if="battleScene.ppOnAttacker" class="absolute top-16 left-[66%] text-2xl font-black text-sky-300 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] battle-damage-pop">{{ battleScene.ppOnAttacker }}</div>
       </div>

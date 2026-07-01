@@ -82,7 +82,7 @@ const TEST_USERNAME = "test";
 const TEST_PASSWORD = "test123456";
 const LEADERBOARD_MAX_OPEN_DEX_ID = 2049;
 const LEADERBOARD_MAX_HCOINS = 100000000;
-const LEADERBOARD_METRICS = new Set(["battlePower", "activatedDexCount", "hCoins", "timeTunnelMaxClearedFloor"]);
+const LEADERBOARD_METRICS = new Set(["battlePower", "activatedDexCount", "hCoins", "timeTunnelMaxClearedFloor", "equipmentDungeonBestScore"]);
 const LEADERBOARD_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 const TEST_MAX_DEX_ID = 1960;
 const HATCH_MS = 5 * 60 * 1000;
@@ -555,6 +555,13 @@ const readLeaderboardTimeTunnelFloor = (save) => {
   return Math.max(0, ...direct, ...claimedFloors);
 };
 
+const readLeaderboardEquipmentDungeonBestScore = (save) => Math.max(
+  0,
+  safeNonNegInt(save && save.equipmentDungeonBestScore, 0),
+  safeNonNegInt(save && save.equipmentDungeonHighScore, 0),
+  safeNonNegInt(save && save.equipmentDungeon && save.equipmentDungeon.score, 0)
+);
+
 const buildLeaderboardRows = () => {
   const db = usersDb();
   const speciesByDex = loadWindowDataScript("aola-species-data.js", "AOLA_SPECIES_DATA_BY_DEX") || {};
@@ -578,6 +585,7 @@ const buildLeaderboardRows = () => {
       activatedDexCount: new Set(Array.isArray(save.activatedDexIds) ? save.activatedDexIds.map((id) => Number(id) || 0).filter(Boolean) : []).size,
       hCoins: Math.max(0, Math.floor(Number(save.hCoins) || 0)),
       timeTunnelMaxClearedFloor: readLeaderboardTimeTunnelFloor(save),
+      equipmentDungeonBestScore: readLeaderboardEquipmentDungeonBestScore(save),
       savedAt: payload && payload.savedAt ? payload.savedAt : ""
     };
   });
