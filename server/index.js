@@ -85,6 +85,8 @@ const LEADERBOARD_MAX_HCOINS = 100000000;
 const LEADERBOARD_METRICS = new Set(["battlePower", "activatedDexCount", "hCoins", "timeTunnelMaxClearedFloor", "equipmentDungeonBestScore"]);
 const LEADERBOARD_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 const TEST_MAX_DEX_ID = 1960;
+const TEST_DEFAULT_WEEKLY_REWARD_STATE_VERSION = "wunian_2020_exchange_reset_v2";
+const TEST_DEFAULT_WEEKLY_MEDAL_ITEM_ID = "weekly_boss_medal_wunian_2020";
 const HATCH_MS = 5 * 60 * 1000;
 const SHOP_REDEEM_CODE_ALHUB666 = "ALHUB666";
 const SHOP_REDEEM_CODE_ALHUB666_DEX_ID = 1782;
@@ -122,6 +124,67 @@ const loadWindowDataScript = (fileName, globalName) => {
   const wrapped = new Function("window", `${text}\nreturn window[${JSON.stringify(globalName)}];`);
   return wrapped(sandbox.window);
 };
+
+const readAppSourceText = (() => {
+  let cached = null;
+  return () => {
+    if (cached == null) cached = fs.readFileSync(path.join(ROOT_DIR, "aola-star-app.js"), "utf8");
+    return cached;
+  };
+})();
+
+const extractSourceBlock = (source, startToken, endToken) => {
+  const start = source.indexOf(startToken);
+  if (start < 0) return "";
+  const end = source.indexOf(endToken, start);
+  return end < 0 ? source.slice(start) : source.slice(start, end);
+};
+
+const extractQuotedStrings = (text) => Array.from(text.matchAll(/"([^"]+)"/g)).map((match) => match[1]);
+
+const extractConstArrayStrings = (source, name) => {
+  const match = source.match(new RegExp(`const ${name} = \\[(.*?)\\];`, "s"));
+  return match ? extractQuotedStrings(match[1]) : [];
+};
+
+const loadTestProgressionMeta = (() => {
+  let cached = null;
+  return () => {
+    if (cached) return cached;
+    const source = readAppSourceText();
+    const challengeBlock = extractSourceBlock(source, "const BASE_GUARDIAN_NAMES", "const QIXING_SEAL_ITEM_ID");
+    const guardianNames = Array.from(new Set(
+      extractConstArrayStrings(challengeBlock, "BASE_GUARDIAN_NAMES")
+        .concat(extractConstArrayStrings(challengeBlock, "EXTRA_GUARDIAN_NAMES"))
+    ));
+    const bossNames = Array.from(new Set(
+      Array.from(challengeBlock.matchAll(/bossNames:\s*\[(.*?)\]/gs)).flatMap((match) => extractQuotedStrings(match[1]))
+    ));
+    const bossRewardBlock = extractSourceBlock(source, "const BOSS_DIFFICULTY_FIRST_WIN_REWARDS = {", "const SUPER_DICE_BOMB_SKILL_STONE_ITEM_ID");
+    const bossDifficulties = Array.from(new Set(
+      Array.from(bossRewardBlock.matchAll(/^\s*([a-zA-Z0-9_]+):\s*\{/gm)).map((match) => match[1])
+    ));
+    const weeklyConfigBlock = extractSourceBlock(source, "const WEEKLY_BOSS_CONFIG = {", "const WEEKLY_BOSS_MEDAL_ITEM_ID");
+    const weeklyConfigs = [];
+    Array.from(weeklyConfigBlock.matchAll(/key:\s*"([^"]+)",[\s\S]*?name:\s*"([^"]+)",[\s\S]*?honorBadgeId:\s*"([^"]+)",[\s\S]*?honorBadgeName:\s*"([^"]+)"/g))
+      .forEach((match) => {
+        const row = { key: match[1], name: match[2], badgeId: match[3], badgeName: match[4] };
+        if (!weeklyConfigs.some((item) => item.key === row.key)) weeklyConfigs.push(row);
+      });
+    const rewardStateVersionMatch = source.match(/const WEEKLY_BOSS_REWARD_STATE_VERSION = "([^"]+)"/);
+    const weeklyMedalItemIdMatch = source.match(/const WEEKLY_BOSS_MEDAL_ITEM_ID = "([^"]+)"/);
+    cached = {
+      guardianNames,
+      bossNames,
+      bossDifficulties: bossDifficulties.length > 0 ? bossDifficulties : ["normal", "hard", "nightmare"],
+      weeklyConfigs,
+      currentWeeklyBossKey: weeklyConfigs.some((item) => item.key === "wunian_2020") ? "wunian_2020" : ((weeklyConfigs[0] && weeklyConfigs[0].key) || "wunian_2020"),
+      weeklyRewardStateVersion: rewardStateVersionMatch ? rewardStateVersionMatch[1] : TEST_DEFAULT_WEEKLY_REWARD_STATE_VERSION,
+      weeklyMedalItemId: weeklyMedalItemIdMatch ? weeklyMedalItemIdMatch[1] : TEST_DEFAULT_WEEKLY_MEDAL_ITEM_ID
+    };
+    return cached;
+  };
+})();
 
 const buildFinalFormDexRows = (dexRows, evolutionData) => {
   const rows = Array.isArray(dexRows) ? dexRows : [];
@@ -239,6 +302,163 @@ const createTestSaveState = () => {
   };
 };
 
+const createFullTestSaveState = () => {
+  const dexRows = loadWindowDataScript("aola-dex-1-100.js", "AOLA_DEX_1_100");
+  const speciesByDex = loadWindowDataScript("aola-species-data.js", "AOLA_SPECIES_DATA_BY_DEX") || {};
+  const evolutionData = loadWindowDataScript("aola-evolution-chains.js", "AOLA_EVOLUTION_CHAINS") || {};
+  const progressionMeta = loadTestProgressionMeta();
+  const zeroStats = () => ({ hp: 0, atk: 0, def: 0, spAtk: 0, spDef: 0, speed: 0 });
+  const maxTalent = () => ({ hp: 62, atk: 62, def: 62, spAtk: 62, spDef: 62, speed: 62 });
+  const clean = (s) => String(s || "").replace(/[\u200b\u00a0]/g, "").trim();
+  const now = Date.now();
+  const rows = (Array.isArray(dexRows) ? dexRows : []).filter((d) => Number(d && d.dexId) >= 1 && Number(d && d.dexId) <= TEST_MAX_DEX_ID);
+  const stageByDexId = new Map();
+  (Array.isArray(evolutionData && evolutionData.chains) ? evolutionData.chains : []).forEach((chain) => {
+    const members = Array.isArray(chain && chain.members) ? chain.members : [];
+    const rootDexId = Number(members[0] && members[0].race_id) || 0;
+    members.forEach((member, stageIndex) => {
+      const dexId = Number(member && member.race_id) || 0;
+      if (dexId >= 1 && dexId <= TEST_MAX_DEX_ID) stageByDexId.set(dexId, { rootDexId: rootDexId || dexId, stageIndex });
+    });
+  });
+  const activePets = rows.map((row, idx) => {
+    const dexId = Number(row.dexId) || 0;
+    const species = speciesByDex[String(dexId)] || {};
+    const stageInfo = stageByDexId.get(dexId) || { rootDexId: dexId, stageIndex: 0 };
+    const equippedSkills = (Array.isArray(species.skills) ? species.skills : [])
+      .filter((s) => Number(s && s.level) <= 100)
+      .sort((a, b) => Number(b.level || 0) - Number(a.level || 0))
+      .slice(0, 4)
+      .map((s) => clean(s && s.name))
+      .filter(Boolean)
+      .reverse();
+    return {
+      id: `test_pet_${String(dexId).padStart(4, "0")}`,
+      dexId,
+      baseDexId: stageInfo.rootDexId || dexId,
+      speciesName: clean(row.name) || clean(species.name) || `test_pet_${dexId}`,
+      element: clean(species.element) || clean(row.element) || "unknown",
+      subElement: clean(species.subElement || row.subElement),
+      level: 100,
+      exp: 0,
+      totalExp: 0,
+      talent: maxTalent(),
+      study: zeroStats(),
+      equippedSkills,
+      createdAt: now + idx,
+      fixedStageIndex: Math.max(0, Number(stageInfo.stageIndex) || 0),
+      keepEquippedSkillsAboveLevel: true
+    };
+  });
+  const activatedDexIds = rows.map((row) => Number(row.dexId)).filter((id) => id > 0);
+  const bagPetIds = activePets.slice(0, 6).map((pet) => pet.id);
+  while (bagPetIds.length < 6) bagPetIds.push("");
+  const guardianWinCounts = progressionMeta.guardianNames.reduce((acc, name) => {
+    if (name) acc[name] = 100;
+    return acc;
+  }, {});
+  const bossDifficultyFirstWinRewards = {};
+  progressionMeta.bossNames.forEach((bossName, bossIndex) => {
+    progressionMeta.bossDifficulties.forEach((difficulty, difficultyIndex) => {
+      if (!bossName || !difficulty) return;
+      bossDifficultyFirstWinRewards[`${bossName}::${difficulty}`] = {
+        bossName,
+        difficulty,
+        claimedAt: now + bossIndex * 10 + difficultyIndex
+      };
+    });
+  });
+  const weeklyBossHonorRewards = progressionMeta.weeklyConfigs.reduce((acc, row, index) => {
+    if (!row || !row.key || !row.name || !row.badgeId || !row.badgeName) return acc;
+    acc[row.key] = {
+      name: row.badgeName,
+      bossName: row.name,
+      badgeId: row.badgeId,
+      claimedAt: now + index
+    };
+    return acc;
+  }, {});
+  const weeklyClearedDifficulties = progressionMeta.bossDifficulties.reduce((acc, difficulty) => {
+    if (difficulty) acc[difficulty] = true;
+    return acc;
+  }, {});
+  const items = { level_40_fruit: 1, divine_pet_key: 10000 };
+  if (progressionMeta.weeklyMedalItemId) items[progressionMeta.weeklyMedalItemId] = 50;
+  return {
+    activatedDexIds,
+    defeatedDexIds: activatedDexIds.slice(),
+    obtainedEggDexIds: [],
+    activePets,
+    bagPetIds,
+    eggs: [],
+    selectedDexId: null,
+    challengeFormIndex: 0,
+    selectedAttackerId: bagPetIds[0] || "",
+    selectedPetId: activePets[0] ? activePets[0].id : "",
+    items,
+    hCoins: 100000,
+    guardianWinCounts,
+    bossFirstWinRewardV1: progressionMeta.bossNames[0] ? { bossName: progressionMeta.bossNames[0] } : null,
+    bossDifficultyFirstWinRewards,
+    weeklyBossAttempts: { bossKey: progressionMeta.currentWeeklyBossKey, date: "", used: 0 },
+    weeklyBossHonorRewards,
+    weeklyBossRewardState: {
+      bossKey: progressionMeta.currentWeeklyBossKey,
+      rewardStateVersion: progressionMeta.weeklyRewardStateVersion,
+      divinePetKeyClaimed: false,
+      exchangedEgg: false,
+      lastRewardDate: "",
+      clearedDifficulties: weeklyClearedDifficulties
+    },
+    equippedBadgeId: "guardian_all_nightmare",
+    targetLevel: 10,
+    battleLog: [],
+    showDexPanel: false
+  };
+};
+
+const normalizeFullTestSavePayload = (payload) => {
+  const fullSeed = createFullTestSaveState();
+  const save = payload && typeof payload.save === "object" && !Array.isArray(payload.save) ? payload.save : null;
+  if (!save) return fullSeed;
+  const savedPetById = new Map((Array.isArray(save.activePets) ? save.activePets : []).map((pet) => [String(pet && pet.id || ""), pet]));
+  const activePets = fullSeed.activePets.map((pet) => ({
+    ...pet,
+    ...(savedPetById.get(pet.id) || {}),
+    id: pet.id,
+    dexId: pet.dexId,
+    baseDexId: pet.baseDexId,
+    speciesName: pet.speciesName,
+    element: pet.element,
+    subElement: pet.subElement,
+    fixedStageIndex: pet.fixedStageIndex,
+    keepEquippedSkillsAboveLevel: true
+  }));
+  const bagPetIds = activePets.slice(0, 6).map((pet) => pet.id);
+  while (bagPetIds.length < 6) bagPetIds.push("");
+  return {
+    ...fullSeed,
+    ...save,
+    activatedDexIds: fullSeed.activatedDexIds,
+    defeatedDexIds: fullSeed.defeatedDexIds,
+    activePets,
+    bagPetIds,
+    selectedAttackerId: bagPetIds[0] || "",
+    selectedPetId: activePets[0] ? activePets[0].id : "",
+    guardianWinCounts: fullSeed.guardianWinCounts,
+    bossFirstWinRewardV1: fullSeed.bossFirstWinRewardV1,
+    bossDifficultyFirstWinRewards: fullSeed.bossDifficultyFirstWinRewards,
+    weeklyBossAttempts: fullSeed.weeklyBossAttempts,
+    weeklyBossHonorRewards: fullSeed.weeklyBossHonorRewards,
+    weeklyBossRewardState: fullSeed.weeklyBossRewardState,
+    equippedBadgeId: fullSeed.equippedBadgeId,
+    items: {
+      ...(save.items && typeof save.items === "object" ? save.items : {}),
+      ...(fullSeed.items && typeof fullSeed.items === "object" ? fullSeed.items : {})
+    }
+  };
+};
+
 const normalizeTestSavePayload = (payload) => {
   const seed = createTestSaveState();
   const save = payload && typeof payload.save === "object" && !Array.isArray(payload.save) ? payload.save : null;
@@ -335,7 +555,7 @@ const normalizeSaveForUser = (user, payload) => {
     ? backfilledPayload.save
     : save;
   if (!user || user.id !== TEST_USER_ID) return backfilledPayload;
-  const normalizedSave = normalizeTestSavePayload(backfilledPayload);
+  const normalizedSave = normalizeFullTestSavePayload(backfilledPayload);
   if (normalizedSave === backfilledSave) return backfilledPayload;
   return {
     ...(payload && typeof payload === "object" ? payload : {}),
@@ -363,7 +583,7 @@ const ensureTestAccount = () => {
   const currentSaveFile = userSaveFile(user.id);
   if (fs.existsSync(currentSaveFile)) {
     const current = readJsonFile(currentSaveFile, null);
-    const normalizedSave = normalizeTestSavePayload(current);
+    const normalizedSave = normalizeFullTestSavePayload(current);
     if (normalizedSave !== (current && current.save)) {
       writeJsonFile(currentSaveFile, {
         userId: user.id,
@@ -383,7 +603,7 @@ const ensureTestAccount = () => {
         userId: user.id,
         username: user.username,
         savedAt: new Date().toISOString(),
-        save: normalizeTestSavePayload(legacy)
+        save: normalizeFullTestSavePayload(legacy)
       });
       return;
     }
@@ -392,7 +612,7 @@ const ensureTestAccount = () => {
     userId: user.id,
     username: user.username,
     savedAt: new Date().toISOString(),
-    save: createTestSaveState()
+    save: createFullTestSaveState()
   });
 };
 
