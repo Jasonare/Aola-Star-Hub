@@ -10870,6 +10870,7 @@ createApp({
     const showElementPanel = ref(false);
     const showBagPanel = ref(false);
     const showBag2Panel = ref(false);
+    const showInfoCardPanel = ref(false);
     const bag2Loading = ref(false);
     const bag2TopTab = ref("info");
     const bag2InfoTab = ref("skills");
@@ -18915,6 +18916,19 @@ const applyBossChainFinalBuff = (scene) => {
     const closeBagPanel = () => {
       showBag2Panel.value = false;
     };
+    const openInfoCardPanel = () => {
+      showInfoCardPanel.value = true;
+    };
+    const closeInfoCardPanel = () => {
+      showInfoCardPanel.value = false;
+    };
+    const showStrongRoadPanel = ref(false);
+    const openStrongRoadPanel = () => {
+      showStrongRoadPanel.value = true;
+    };
+    const closeStrongRoadPanel = () => {
+      showStrongRoadPanel.value = false;
+    };
     const openBag2Panel = () => {
       if (!bagPets.value.some((pet) => pet && petId(pet) === petId(selectedPet.value))) {
         state.value.selectedPetId = petId(firstPet.value) || "";
@@ -20971,6 +20985,12 @@ const applyBossChainFinalBuff = (scene) => {
       showBagPanel,
       showBag2Panel,
       bag2Loading,
+      showInfoCardPanel,
+      openInfoCardPanel,
+      closeInfoCardPanel,
+      showStrongRoadPanel,
+      openStrongRoadPanel,
+      closeStrongRoadPanel,
       bag2TopTab,
       bag2InfoTab,
       bag2EnhanceTab,
