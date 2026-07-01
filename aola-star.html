@@ -272,15 +272,17 @@
     }
     .home-action-gift { --x: 1.2%; --y: 83.4%; --w: 7.1%; }
     .home-action-dragonboat { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
-    .home-action-rank { --x: 25.6%; --y: 86.0%; --w: 8.0%; }
+    .home-action-rank { --x: 22%; --y: 86.2%; --w: 7.8%; }
     .home-action-tunnel { --x: 34.0%; --y: 86.0%; --w: 8.4%; }
     .home-action-study { --x: 42.5%; --y: 85.5%; --w: 8.0%; }
-    .home-action-badge { --x: 52.2%; --y: 87.4%; --w: 5.8%; }
-    .home-action-egg { --x: 59.2%; --y: 87.6%; --w: 5.8%; }
-    .home-action-warehouse { --x: 66.6%; --y: 87.2%; --w: 6.0%; }
-    .home-action-dex { --x: 73.5%; --y: 86.5%; --w: 6.3%; }
-    .home-action-bag { --x: 80.7%; --y: 86.2%; --w: 6.2%; }
-    .home-action-shop { --x: 87.0%; --y: 71.8%; --w: 11.5%; }
+    .home-action-strong-road { --x: 33%; --y: 86.5%; --w: 7.4%; }
+    .home-action-info-card { --x: 56.5%; --y: 88%; --w: 5.6%; }
+    .home-action-badge { --x: 41.2%; --y: 84.3%; --w: 6.7%; }
+    .home-action-egg { --x: 48.6%; --y: 84.0%; --w: 7%; }
+    .home-action-warehouse { --x: 64.6%; --y: 86.5%; --w: 6.5%; }
+    .home-action-dex { --x: 72.4%; --y: 86.8%; --w: 6.4%; }
+    .home-action-bag { --x: 80%; --y: 83.4%; --w: 6.4%; }
+    .home-action-shop { --x: 90%; --y: 70%; --w: 11%; }
     .home-action-challenge { --x: 91.8%; --y: 10.8%; --w: 7.4%; }
     .home-action-weekly { --x: 91.6%; --y: 29.5%; --w: 7.0%; }
     .home-action-gacha { --x: 91.6%; --y: 51.2%; --w: 7.0%; }
@@ -587,6 +589,240 @@
       color: #1e3a8a;
       font-size: 16px;
       font-weight: bold;
+    }
+    .info-card-panel {
+      position: relative;
+      width: min(85vw, 400px);
+      background: linear-gradient(180deg, rgba(56,189,248,0.95) 0%, rgba(14,165,233,0.95) 50%, rgba(6,182,212,0.95) 100%);
+      border-radius: 24px;
+      border: 3px solid rgba(255,255,255,0.3);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .info-card-close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    .info-card-close-btn:hover {
+      background: rgba(255,255,255,0.4);
+    }
+    .info-card-content {
+      padding: 16px;
+    }
+    .info-card-title {
+      text-align: center;
+      font-size: 20px;
+      font-weight: black;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      margin-bottom: 10px;
+    }
+    .info-card-account {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .info-card-account-label {
+      font-size: 11px;
+      font-weight: bold;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 2px;
+    }
+    .info-card-account-value {
+      font-size: 16px;
+      font-weight: black;
+      color: white;
+    }
+    .info-card-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .info-card-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 8px;
+    }
+    .info-card-stat-label {
+      font-size: 12px;
+      font-weight: bold;
+      color: rgba(255,255,255,0.9);
+    }
+    .info-card-stat-value {
+      font-size: 14px;
+      font-weight: black;
+      color: white;
+    }
+    .info-card-badge-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+    .info-card-badge-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      border: 3px solid rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .info-card-badge-image {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+    }
+    .info-card-badge-text {
+      font-size: 12px;
+      font-weight: bold;
+      text-align: center;
+      color: white;
+      padding: 8px;
+    }
+    .info-card-badge-text.is-amber { color: #fbbf24; }
+    .info-card-badge-text.is-blue { color: #60a5fa; }
+    .info-card-badge-text.is-green { color: #4ade80; }
+    .info-card-badge-text.is-red { color: #f87171; }
+    .info-card-badge-text.is-purple { color: #c084fc; }
+    .info-card-badge-empty {
+      font-size: 12px;
+      font-weight: bold;
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+    }
+    .info-card-badge-name {
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: black;
+      color: white;
+      text-align: center;
+    }
+    .info-card-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .info-card-action-btn {
+      flex: 1;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: black;
+      cursor: pointer;
+      transition: transform 0.14s ease, filter 0.14s ease;
+    }
+    .info-card-action-btn:active {
+      transform: scale(0.96);
+    }
+    .info-card-import-btn {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+    }
+    .info-card-export-btn {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+    }
+    .info-card-logout-btn {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+    .strong-road-panel {
+      position: relative;
+      width: min(90vw, 500px);
+      background: linear-gradient(180deg, rgba(56,189,248,0.95) 0%, rgba(14,165,233,0.95) 50%, rgba(6,182,212,0.95) 100%);
+      border-radius: 24px;
+      border: 3px solid rgba(255,255,255,0.3);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .strong-road-close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      font-weight: bold;
+    }
+    .strong-road-close-btn:hover {
+      background: rgba(255,255,255,0.4);
+    }
+    .strong-road-content {
+      padding: 20px;
+    }
+    .strong-road-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: black;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      margin-bottom: 16px;
+    }
+    .strong-road-items {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .strong-road-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+      transition: transform 0.14s ease, filter 0.14s ease;
+      gap: 8px;
+    }
+    .strong-road-item:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+    .strong-road-item:active {
+      transform: scale(0.98);
+    }
+    .strong-road-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+    }
+    .strong-road-item-img-tunnel {
+      transform: translate(4px, 4px);
+    }
+    .strong-road-item-label {
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
     .bag2-top-tabs {
       position: absolute;
@@ -4523,15 +4759,17 @@
     }
     html.android-webview.android-landscape header.home-hub-scene .home-action-gift { --x: 1.2%; --y: 68.8%; --w: 6.5%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-dragonboat { --x: 8.5%; --y: 67.6%; --w: 7.3%; }
-    html.android-webview.android-landscape header.home-hub-scene .home-action-rank { --x: 25.6%; --y: 71.8%; --w: 7.2%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-rank { --x: 6.2%; --y: 70.3%; --w: 6.1%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-tunnel { --x: 33.8%; --y: 71.8%; --w: 7.6%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-study { --x: 42.2%; --y: 71.4%; --w: 7.2%; }
-    html.android-webview.android-landscape header.home-hub-scene .home-action-badge { --x: 52.2%; --y: 73.0%; --w: 5.3%; }
-    html.android-webview.android-landscape header.home-hub-scene .home-action-egg { --x: 59.2%; --y: 73.2%; --w: 5.3%; }
-    html.android-webview.android-landscape header.home-hub-scene .home-action-warehouse { --x: 66.6%; --y: 72.8%; --w: 5.5%; }
-    html.android-webview.android-landscape header.home-hub-scene .home-action-dex { --x: 73.5%; --y: 72.3%; --w: 5.8%; }
-    html.android-webview.android-landscape header.home-hub-scene .home-action-bag { --x: 80.7%; --y: 72.0%; --w: 5.7%; }
-    html.android-webview.android-landscape header.home-hub-scene .home-action-shop { --x: 87.0%; --y: 71.8%; --w: 11.5%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-strong-road { --x: 13.6%; --y: 70.0%; --w: 6.8%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-info-card { --x: 37.8%; --y: 70.4%; --w: 5.3%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-badge { --x: 22.1%; --y: 69.8%; --w: 5.2%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-egg { --x: 28.7%; --y: 69.6%; --w: 5.3%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-warehouse { --x: 49.0%; --y: 69.9%; --w: 5.5%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-dex { --x: 56.8%; --y: 69.5%; --w: 5.7%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-bag { --x: 64.8%; --y: 69.2%; --w: 5.9%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-shop { --x: 83.8%; --y: 59.9%; --w: 9.6%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-challenge { --x: 91.8%; --y: 18.5%; --w: 7.4%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-weekly { --x: 91.6%; --y: 34%; --w: 7.0%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-gacha { --x: 91.6%; --y: 51.2%; --w: 7.0%; }
@@ -7365,53 +7603,7 @@
 
   <div v-else class="home-shell">
   <header class="home-hub-scene">
-    <div class="home-status-panel">
-      <div class="home-save-panel">
-        <template v-if="authUser">
-          <div class="min-w-0">
-            <div class="text-[10px] font-black text-slate-500">当前用户</div>
-            <div class="text-sm font-black text-slate-900 truncate">{{ authUser.username }}｜{{ authUser.id }}</div>
-            <div class="text-[10px] font-bold text-slate-500 truncate">{{ lastServerSavedAt ? ('上次存档：' + lastServerSavedAt) : authUser.saveDir }}</div>
-          </div>
-          <div class="home-save-actions mt-2">
-            <input ref="userImportInput" type="file" accept="application/json,.json" class="hidden" @change="importUserLocalSave">
-            <button @click="triggerUserLocalSaveImport" :disabled="saveLoading" class="is-import disabled:opacity-50">导入</button>
-            <button @click="exportLocalSave" :disabled="saveLoading" class="is-export disabled:opacity-50">导出</button>
-            <button @click="logoutUser" :disabled="saveLoading" class="is-logout disabled:opacity-50">退出</button>
-          </div>
-        </template>
-        <template v-else>
-          <div class="min-w-0">
-            <div class="text-[10px] font-black text-slate-500">当前模式</div>
-            <div class="text-sm font-black text-slate-900 truncate">游客登录｜本机进度</div>
-            <div class="text-[10px] font-bold text-slate-500 truncate">localStorage：{{ playMode === 'guest' ? '启用' : '未启用' }}</div>
-          </div>
-          <div class="home-save-actions mt-2">
-            <button @click="triggerLocalSaveImport" class="is-import">导入</button>
-            <button @click="exportLocalSave" class="is-export">导出</button>
-            <button @click="logoutGuest" class="is-logout">退出</button>
-          </div>
-        </template>
-      </div>
-      <div class="home-status-grid">
-        <div class="home-status-card">
-          <div class="home-status-label">激活图鉴</div>
-          <div class="home-status-value">{{ activatedDexCount }}/{{ dexTotal }}</div>
-        </div>
-        <div class="home-status-card">
-          <div class="home-status-label">亚比仓库</div>
-          <div class="home-status-value">{{ warehouseCount }}</div>
-        </div>
-        <div class="home-status-card">
-          <div class="home-status-label">最大战斗力</div>
-          <div class="home-status-value">{{ maxBagBattlePower }}</div>
-        </div>
-      </div>
-    </div>
-    <div class="home-status-badge-slot" :class="equippedBadge && equippedBadge.special === 'weeklyHonor' ? 'badge-honor-blackgold' : ''" title="当前徽章">
-      <img v-if="equippedBadge && equippedBadge.imageSrc" class="guardian-badge-thumb" :src="equippedBadge.imageSrc" :alt="equippedBadge.name" :title="equippedBadge.name" @error="withFallback" />
-      <div v-else-if="equippedBadge" class="guardian-badge-thumb guardian-badge-text-mark" :class="'is-' + (equippedBadge.tone || 'amber')" :title="equippedBadge.name">{{ equippedBadge.name }}</div>
-    </div>
+
     <div v-if="isDoubleRewardTime" class="double-reward-marquee home-double-reward" aria-live="polite">
       <div class="double-reward-marquee-track">
         <span class="double-reward-marquee-text">{{ doubleRewardNotice }}</span>
@@ -7421,13 +7613,13 @@
       <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./resource/ui/背景/赠礼.png" alt=""></button>
       <button @click.stop.prevent="openDragonBoatShopPanel" class="home-action-btn home-action-dragonboat" title="端午特惠商店" aria-label="端午特惠商店"><img src="./resource/ui/端午商店/端午商店图标.png" alt=""></button>
       <button @click.stop.prevent="openLeaderboardPanel" class="home-action-btn home-action-rank" title="排行榜" aria-label="排行榜"><img src="./resource/ui/背景/排行榜.png" alt=""></button>
-      <button @click="openTimeTunnelPanel" class="home-action-btn home-action-tunnel" title="时空隧道" aria-label="时空隧道"><img src="./resource/ui/背景/时空隧道.png" alt=""></button>
-      <button @click="openStudyPanel" class="home-action-btn home-action-study" title="学习力战场" aria-label="学习力战场"><img src="./resource/ui/背景/学习力战场.png" alt=""></button>
-      <button @click="openBadgePanel" class="home-action-btn home-action-badge" title="徽章" aria-label="徽章"><img src="./resource/ui/背景/徽章.png" alt=""></button>
-      <button @click="openEggHatchPanel" class="home-action-btn home-action-egg" title="亚比蛋孵化" aria-label="亚比蛋孵化"><img src="./resource/ui/背景/亚比蛋孵化.png" alt=""></button>
-      <button @click="openWarehousePanel" class="home-action-btn home-action-warehouse" title="亚比仓库" aria-label="亚比仓库"><img src="./resource/ui/背景/亚比仓库.png" alt=""></button>
-      <button @click="openDexPanel" class="home-action-btn home-action-dex" title="亚比图鉴" aria-label="亚比图鉴"><img src="./resource/ui/背景/亚比图鉴.png" alt=""></button>
-      <button @click="openBagPanel" class="home-action-btn home-action-bag" title="亚比背包" aria-label="亚比背包"><img src="./resource/ui/背景/亚比背包.png" alt=""></button>
+      <button @click="openStrongRoadPanel" class="home-action-btn home-action-strong-road" title="变强之路" aria-label="变强之路"><img src="./resource-v7/界面ui/变强之路.png" alt=""></button>
+      <button @click="openInfoCardPanel" class="home-action-btn home-action-info-card" title="信息卡" aria-label="信息卡"><img src="./resource-v7/界面ui/信息卡_.png" alt=""></button>
+      <button @click="openBadgePanel" class="home-action-btn home-action-badge" title="徽章" aria-label="徽章"><img src="./resource-v7/界面ui/徽章.png" alt=""></button>
+      <button @click="openEggHatchPanel" class="home-action-btn home-action-egg" title="亚比蛋孵化" aria-label="亚比蛋孵化"><img src="./resource-v7/界面ui/孵化.png" alt=""></button>
+      <button @click="openWarehousePanel" class="home-action-btn home-action-warehouse" title="亚比仓库" aria-label="亚比仓库"><img src="./resource-v7/界面ui/亚比仓库.png" alt=""></button>
+      <button @click="openDexPanel" class="home-action-btn home-action-dex" title="亚比图鉴" aria-label="亚比图鉴"><img src="./resource-v7/界面ui/亚比图鉴.png" alt=""></button>
+      <button @click="openBagPanel" class="home-action-btn home-action-bag" title="亚比背包" aria-label="亚比背包"><img src="./resource-v7/界面ui/亚比背包.png" alt=""></button>
       <button @click="openShopPanel" class="home-action-btn home-action-shop" title="亚比商店" aria-label="亚比商店"><img src="./resource/ui/背景/道具商城.png" alt=""></button>
       <button @click="openChallengeRoadPanel" class="home-action-btn home-action-challenge" title="挑战之路" aria-label="挑战之路"><img src="./resource/ui/背景/boss挑战.png" alt=""></button>
       <button @click="openWeeklyBossPanel" class="home-action-btn home-action-weekly" title="每周BOSS" aria-label="每周BOSS"><img src="./resource/ui/背景/每周boss.png" alt=""></button>
@@ -7880,6 +8072,8 @@
       </div>
     </div>
   </div>
+
+
 
   <div v-if="showBag2Panel" class="fixed inset-0 z-[132] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeBag2Panel">
     <div class="bag2-panel" @click.stop>
@@ -8546,6 +8740,73 @@
             ]"
           >
             {{ egg.hatchAt <= nowTs ? '立即孵化' : '孵化中' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showInfoCardPanel" class="fixed inset-0 z-[132] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeInfoCardPanel">
+    <div class="info-card-panel" @click.stop>
+      <button @click="closeInfoCardPanel" class="info-card-close-btn" title="关闭">X</button>
+      <div class="info-card-content">
+        <div class="info-card-title">信息卡</div>
+        <div class="info-card-account">
+          <div class="info-card-account-label">当前用户</div>
+          <div class="info-card-account-value">{{ authUsername || '游客' }}</div>
+        </div>
+        <div class="info-card-stats">
+          <div class="info-card-stat">
+            <div class="info-card-stat-label">图鉴激活</div>
+            <div class="info-card-stat-value">{{ activatedDexCount }}</div>
+          </div>
+          <div class="info-card-stat">
+            <div class="info-card-stat-label">仓库亚比</div>
+            <div class="info-card-stat-value">{{ warehouseCount }}</div>
+          </div>
+          <div class="info-card-stat">
+            <div class="info-card-stat-label">最大战力</div>
+            <div class="info-card-stat-value">{{ maxBagBattlePower }}</div>
+          </div>
+          <div class="info-card-stat">
+            <div class="info-card-stat-label">H币</div>
+            <div class="info-card-stat-value">{{ state && state.hCoins || 0 }}</div>
+          </div>
+        </div>
+        <div class="info-card-badge-section">
+          <div class="info-card-badge-circle">
+            <img v-if="equippedBadge && equippedBadge.imageSrc" :src="equippedBadge.imageSrc" :alt="equippedBadge.name" class="info-card-badge-image" @error="withFallback" />
+            <div v-else-if="equippedBadge" class="info-card-badge-text" :class="'is-' + (equippedBadge.tone || 'amber')">{{ equippedBadge.name }}</div>
+            <div v-else class="info-card-badge-empty">未佩戴徽章</div>
+          </div>
+          <div class="info-card-badge-name" v-if="equippedBadge">{{ equippedBadge.name }}</div>
+        </div>
+        <div class="info-card-actions">
+          <button @click="triggerLocalSaveImport" class="info-card-action-btn info-card-import-btn">导入</button>
+          <button @click="exportLocalSave" class="info-card-action-btn info-card-export-btn">导出</button>
+          <button @click="authUser ? logoutUser() : logoutGuest()" class="info-card-action-btn info-card-logout-btn">退出</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showStrongRoadPanel" class="fixed inset-0 z-[132] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeStrongRoadPanel">
+    <div class="strong-road-panel" @click.stop>
+      <button @click="closeStrongRoadPanel" class="strong-road-close-btn" title="关闭">X</button>
+      <div class="strong-road-content">
+        <div class="strong-road-title">变强之路</div>
+        <div class="strong-road-items">
+          <button @click="openStudyPanel(); closeStrongRoadPanel()" class="strong-road-item">
+            <img src="./resource-v7/界面ui/学习力战场.png" alt="学习力战场">
+            <div class="strong-road-item-label">学习力战场</div>
+          </button>
+          <button @click="openTimeTunnelPanel(); closeStrongRoadPanel()" class="strong-road-item">
+            <img src="./resource/ui/背景/时空隧道.png" alt="时空隧道" class="strong-road-item-img-tunnel">
+            <div class="strong-road-item-label">时空隧道</div>
+          </button>
+          <button class="strong-road-item" title="功能开发中">
+            <img src="./resource-v7/界面ui/装备秘境.png" alt="装备秘境">
+            <div class="strong-road-item-label">装备秘境</div>
           </button>
         </div>
       </div>
