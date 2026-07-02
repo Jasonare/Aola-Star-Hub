@@ -338,7 +338,7 @@
       aspect-ratio: 2524 / 1315;
       border-radius: 18px;
       overflow: hidden;
-      background-image: url("./resource-v7/背包ui/界面大背景ui 拷贝.png");
+      background-image: url("./resource/背包ui/界面大背景ui 拷贝.png");
       background-size: 100% 100%;
       background-position: center;
       background-repeat: no-repeat;
@@ -429,10 +429,10 @@
     .home-status-badge-slot {
       position: absolute;
       z-index: 6;
-      left: 82.4%;
-      top: 1.25%;
-      width: 7.9%;
-      height: 14.4%;
+      left: 70.4%;
+      top: 2.7%;
+      width: 15.7%;
+      height: 27.5%;
       min-height: 0;
       display: flex;
       align-items: center;
@@ -455,6 +455,13 @@
       border-radius: 12px;
       font-size: clamp(14px, 1.1vw, 20px);
       line-height: 1.15;
+    }
+    .home-status-badge-slot .guardian-badge-thumb.guardian-badge-text-mark {
+      width: 100% !important;
+      height: 100% !important;
+      min-width: 0;
+      min-height: 0;
+      font-size: clamp(13px, 1.15vw, 20px);
     }
     .home-action-grid {
       position: absolute;
@@ -505,9 +512,10 @@
     .home-action-bag { --x: 80%; --y: 83.4%; --w: 6.4%; }
     .home-action-shop { --x: 90%; --y: 70%; --w: 11%; }
     .home-action-challenge { --x: 91.8%; --y: 10.8%; --w: 7.4%; }
-    .home-action-equipment { --x: 83.7%; --y: 29.8%; --w: 7.4%; }
     .home-action-weekly { --x: 91.6%; --y: 29.5%; --w: 7.0%; }
     .home-action-gacha { --x: 91.6%; --y: 51.2%; --w: 7.0%; }
+    .home-action-record { --x: 2.2%; --y: 18.2%; --w: 5.2%; }
+    .home-action-element { --x: 2.2%; --y: 30.4%; --w: 5.2%; }
     .equipment-map-hotspot {
       position: absolute;
       border: 0;
@@ -909,10 +917,10 @@
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
       .home-status-badge-slot {
-        left: 76%;
-        top: 2%;
-        width: 16.5%;
-        height: 28%;
+        left: 68%;
+        top: 3%;
+        width: 18%;
+        height: 29%;
       }
       .home-save-panel {
         width: min(520px, calc(100vw - 32px));
@@ -929,9 +937,10 @@
       .home-action-bag { --x: 27%; --y: 62%; --w: 16%; }
       .home-action-shop { --x: 70%; --y: 61%; --w: 26%; }
       .home-action-challenge { --x: 76%; --y: 32%; --w: 20%; }
-      .home-action-equipment { --x: 55%; --y: 45%; --w: 19%; }
       .home-action-weekly { --x: 76%; --y: 45%; --w: 19%; }
       .home-action-gacha { --x: 76%; --y: 53%; --w: 19%; }
+      .home-action-record { --x: 3%; --y: 24%; --w: 13%; }
+      .home-action-element { --x: 3%; --y: 37%; --w: 13%; }
       .home-double-reward {
         left: 3%;
         right: 3%;
@@ -1020,13 +1029,33 @@
       position: relative;
     }
     .bag-info-scroll { height: var(--bag-info-h); }
+    .app-top-overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 9999 !important;
+      isolation: isolate;
+      transform: translateZ(0);
+    }
+    .app-top-dialog-overlay,
+    .bag-item-use-overlay.app-top-dialog-overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 10010 !important;
+      isolation: isolate;
+      transform: translateZ(0);
+    }
+    .app-layer-under-modal {
+      z-index: 1 !important;
+      pointer-events: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
     .bag-item-use-overlay {
-      z-index: 330 !important;
       align-items: flex-start;
       padding-top: clamp(1rem, 8vh, 4rem);
     }
     .pet-detail-overlay {
-      z-index: 320 !important;
+      z-index: 1010 !important;
     }
     .bag-item-use-actions {
       display: flex;
@@ -1146,7 +1175,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 100;
+      z-index: 1020;
     }
     .bag2-spinner {
       width: 60px;
@@ -1321,6 +1350,87 @@
       background: linear-gradient(135deg, #ef4444, #dc2626);
       color: white;
     }
+    @media (max-width: 760px) {
+      .bag2-panel {
+        width: min(88vw, 560px);
+      }
+      .bag-mobile-panel {
+        width: min(88vw, 760px) !important;
+        max-width: min(88vw, 760px) !important;
+        height: min(84vh, 640px) !important;
+        padding: 12px !important;
+        border-radius: 18px !important;
+      }
+      .info-card-panel {
+        width: min(76vw, 320px);
+        max-height: 82vh;
+        overflow-y: auto;
+        border-radius: 18px;
+        border-width: 2px;
+      }
+      .info-card-content {
+        padding: 12px;
+      }
+      .info-card-title {
+        font-size: 17px;
+        margin-bottom: 7px;
+      }
+      .info-card-account {
+        margin-bottom: 7px;
+      }
+      .info-card-stats {
+        gap: 4px;
+        margin-bottom: 8px;
+      }
+      .info-card-stat {
+        padding: 5px 9px;
+        border-radius: 7px;
+      }
+      .info-card-badge-section {
+        padding: 8px;
+        margin-bottom: 8px;
+      }
+      .info-card-badge-circle {
+        width: 60px;
+        height: 60px;
+        border-width: 2px;
+      }
+      .info-card-actions {
+        gap: 6px;
+      }
+      .info-card-action-btn {
+        height: 28px;
+      }
+      .info-card-close-btn {
+        top: 8px;
+        right: 8px;
+        width: 30px;
+        height: 30px;
+      }
+    }
+    html.android-webview.android-landscape .bag2-panel {
+      width: min(82vw, calc(84vh * 1848 / 1137), calc(720 * var(--ui-px)));
+      max-height: 84vh;
+    }
+    html.android-webview.android-landscape .bag-mobile-panel {
+      width: min(86vw, calc(820 * var(--ui-px))) !important;
+      max-width: min(86vw, calc(820 * var(--ui-px))) !important;
+      height: min(82vh, calc(600 * var(--ui-px))) !important;
+      padding: calc(10 * var(--ui-px)) !important;
+    }
+    html.android-webview.android-landscape .info-card-panel {
+      width: min(64vw, calc(320 * var(--ui-px)));
+      max-height: 78vh;
+      overflow-y: auto;
+      border-radius: calc(18 * var(--ui-px));
+    }
+    html.android-webview.android-landscape .info-card-content {
+      padding: calc(11 * var(--ui-px));
+    }
+    html.android-webview.android-landscape .info-card-badge-circle {
+      width: calc(58 * var(--ui-px));
+      height: calc(58 * var(--ui-px));
+    }
     .strong-road-panel {
       position: relative;
       width: min(90vw, 500px);
@@ -1474,6 +1584,26 @@
       height: 76%;
       object-fit: contain;
       filter: drop-shadow(0 2px 4px rgba(15,23,42,.28));
+    }
+    .bag2-pet-gear-slots {
+      position: absolute;
+      inset: 0;
+      z-index: 7;
+      pointer-events: none;
+    }
+    .bag2-pet-gear-slot {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 7px;
+    }
+    .bag2-pet-gear-slot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: drop-shadow(0 2px 3px rgba(15,23,42,.25));
     }
     .bag2-pet-element-grid {
       position: absolute;
@@ -1835,7 +1965,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 100;
+      z-index: 1020;
     }
     .bag2-modal {
       background: linear-gradient(180deg, #f0f9ff, #e0f2fe);
@@ -2437,6 +2567,12 @@
       font-weight: 800;
       line-height: 1.1;
     }
+    .bag2-enhance-chip.is-active {
+      background: #0284c7;
+      border-color: #0284c7;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(2,132,199,.18);
+    }
     .bag2-enhance-seals {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2526,6 +2662,17 @@
       font-weight: 700;
       color: #64748b;
       line-height: 1.2;
+    }
+    .bag2-gear-list-owner {
+      margin-top: 3px;
+      font-size: clamp(8px, 0.8vw, 9px);
+      font-weight: 800;
+      color: #0369a1;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
     }
     .bag2-gear-list-actions {
       display: flex;
@@ -4296,7 +4443,7 @@
       align-items: center;
       min-width: 100%;
       white-space: nowrap;
-      animation: doubleRewardMarquee 13s linear infinite;
+      animation: doubleRewardMarquee 24s linear infinite;
     }
     .double-reward-marquee-text {
       padding-inline: 40px;
@@ -5259,6 +5406,8 @@
     html.android-webview.android-landscape header .home-action-grid > button:nth-child(12) { grid-column: 6; grid-row: 2; }
     html.android-webview.android-landscape header .home-action-grid > button:nth-child(13) { grid-column: 7; grid-row: 2; }
     html.android-webview.android-landscape header .home-action-grid > button:nth-child(14) { grid-column: 8; grid-row: 2; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(15) { grid-column: 1; grid-row: 3; }
+    html.android-webview.android-landscape header .home-action-grid > button:nth-child(16) { grid-column: 2; grid-row: 3; }
     html.android-webview.android-landscape header .home-action-grid > button.h-9:not(.home-settings-btn) {
       height: calc(34 * var(--ui-px)) !important;
       min-height: calc(34 * var(--ui-px)) !important;
@@ -5362,17 +5511,18 @@
     html.android-webview.android-landscape header.home-hub-scene .home-action-bag { --x: 64.8%; --y: 69.2%; --w: 5.9%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-shop { --x: 83.8%; --y: 59.9%; --w: 9.6%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-challenge { --x: 91.8%; --y: 18.5%; --w: 7.4%; }
-    html.android-webview.android-landscape header.home-hub-scene .home-action-equipment { --x: 83.7%; --y: 34%; --w: 7.4%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-weekly { --x: 91.6%; --y: 34%; --w: 7.0%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-gacha { --x: 91.6%; --y: 51.2%; --w: 7.0%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-record { --x: 2.2%; --y: 18.2%; --w: 5.2%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-element { --x: 2.2%; --y: 30.4%; --w: 5.2%; }
     html.android-webview.android-landscape header.home-hub-scene .home-status-value {
       font-size: clamp(10px, min(1.05vw, 3.3vh), 15px);
     }
     html.android-webview.android-landscape header.home-hub-scene .home-status-badge-slot {
-      left: 79.6%;
-      top: 1%;
-      width: 16%;
-      height: 28%;
+      left: 70.4%;
+      top: 2.7%;
+      width: 15.7%;
+      height: 27.5%;
     }
     html.android-webview.android-landscape .qixing-gacha-layout {
       grid-template-columns: minmax(0, 1.05fr) minmax(calc(260 * var(--ui-px)), .95fr) !important;
@@ -5443,8 +5593,29 @@
       min-width: 0 !important;
       white-space: nowrap !important;
     }
+    html.android-webview.android-landscape .app-top-overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 9999 !important;
+      transform: translateZ(0) !important;
+      isolation: isolate;
+    }
+    html.android-webview.android-landscape .app-top-dialog-overlay,
+    html.android-webview.android-landscape .bag-item-use-overlay.app-top-dialog-overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 10010 !important;
+      transform: translateZ(0) !important;
+      isolation: isolate;
+    }
+    html.android-webview.android-landscape .app-layer-under-modal {
+      z-index: 1 !important;
+      pointer-events: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
     html.android-webview.android-landscape .pet-detail-overlay {
-      z-index: 320 !important;
+      z-index: 1010 !important;
       align-items: flex-start !important;
       padding-top: calc(10 * var(--ui-px)) !important;
     }
@@ -5453,7 +5624,7 @@
       overflow-y: auto !important;
       -webkit-overflow-scrolling: touch !important;
     }
-    html.android-webview.android-landscape .bag-item-use-overlay {
+    html.android-webview.android-landscape .bag-item-use-overlay:not(.app-top-dialog-overlay) {
       z-index: 330 !important;
       align-items: flex-start !important;
       padding-top: calc(10 * var(--ui-px)) !important;
@@ -8170,7 +8341,7 @@
       padding: calc(10 * var(--ui-px)) calc(18 * var(--ui-px)) !important;
     }
     .pet-detail-overlay {
-      z-index: 900 !important;
+      z-index: 1010 !important;
     }
 
   </style>
@@ -8239,21 +8410,33 @@
         <span class="double-reward-marquee-text">{{ doubleRewardNotice }}</span>
       </div>
     </div>
+    <div v-else class="double-reward-marquee home-double-reward" aria-live="polite">
+      <div class="double-reward-marquee-track">
+        <span class="double-reward-marquee-text">{{ sponsorThanksNotice }}</span>
+      </div>
+    </div>
+    <div v-if="homeDisplayBadge" class="home-status-badge-slot" :title="homeDisplayBadge.name">
+      <img v-if="homeDisplayBadge.imageSrc" class="guardian-badge-thumb" :src="homeDisplayBadge.imageSrc" :alt="homeDisplayBadge.name" @error="withFallback">
+      <div v-else class="guardian-badge-thumb guardian-badge-text-mark" :class="'is-' + (homeDisplayBadge.tone || 'blue')">
+        {{ homeDisplayBadge.name }}
+      </div>
+    </div>
     <div class="home-action-grid">
       <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./resource/ui/背景/赠礼.png" alt=""></button>
       <button @click.stop.prevent="openLeaderboardPanel" class="home-action-btn home-action-rank" title="排行榜" aria-label="排行榜"><img src="./resource/ui/背景/排行榜.png" alt=""></button>
-      <button @click="openStrongRoadPanel" class="home-action-btn home-action-strong-road" title="变强之路" aria-label="变强之路"><img src="./resource-v7/界面ui/变强之路.png" alt=""></button>
-      <button @click="openInfoCardPanel" class="home-action-btn home-action-info-card" title="信息卡" aria-label="信息卡"><img src="./resource-v7/界面ui/信息卡_.png" alt=""></button>
-      <button @click="openBadgePanel" class="home-action-btn home-action-badge" title="徽章" aria-label="徽章"><img src="./resource-v7/界面ui/徽章.png" alt=""></button>
-      <button @click="openEggHatchPanel" class="home-action-btn home-action-egg" title="亚比蛋孵化" aria-label="亚比蛋孵化"><img src="./resource-v7/界面ui/孵化.png" alt=""></button>
-      <button @click="openWarehousePanel" class="home-action-btn home-action-warehouse" title="亚比仓库" aria-label="亚比仓库"><img src="./resource-v7/界面ui/亚比仓库.png" alt=""></button>
-      <button @click="openDexPanel" class="home-action-btn home-action-dex" title="亚比图鉴" aria-label="亚比图鉴"><img src="./resource-v7/界面ui/亚比图鉴.png" alt=""></button>
-      <button @click="openBagPanel" class="home-action-btn home-action-bag" title="亚比背包" aria-label="亚比背包"><img src="./resource-v7/界面ui/亚比背包.png" alt=""></button>
+      <button @click="openStrongRoadPanel" class="home-action-btn home-action-strong-road" title="变强之路" aria-label="变强之路"><img src="./resource/界面ui/变强之路.png" alt=""></button>
+      <button @click="openInfoCardPanel" class="home-action-btn home-action-info-card" title="信息卡" aria-label="信息卡"><img src="./resource/界面ui/信息卡.png" alt=""></button>
+      <button @click="openBadgePanel" class="home-action-btn home-action-badge" title="徽章" aria-label="徽章"><img src="./resource/界面ui/徽章.png" alt=""></button>
+      <button @click="openEggHatchPanel" class="home-action-btn home-action-egg" title="亚比蛋孵化" aria-label="亚比蛋孵化"><img src="./resource/界面ui/孵化.png" alt=""></button>
+      <button @click="openWarehousePanel" class="home-action-btn home-action-warehouse" title="亚比仓库" aria-label="亚比仓库"><img src="./resource/界面ui/亚比仓库.png" alt=""></button>
+      <button @click="openDexPanel" class="home-action-btn home-action-dex" title="亚比图鉴" aria-label="亚比图鉴"><img src="./resource/界面ui/亚比图鉴.png" alt=""></button>
+      <button @click="openBagPanel" class="home-action-btn home-action-bag" title="亚比背包" aria-label="亚比背包"><img src="./resource/界面ui/亚比背包.png" alt=""></button>
       <button @click="openShopPanel" class="home-action-btn home-action-shop" title="亚比商店" aria-label="亚比商店"><img src="./resource/ui/背景/道具商城.png" alt=""></button>
       <button @click="openChallengeRoadPanel" class="home-action-btn home-action-challenge" title="挑战之路" aria-label="挑战之路"><img src="./resource/ui/背景/boss挑战.png" alt=""></button>
-      <button @click="openEquipmentDungeonPanel" class="home-action-btn home-action-equipment" title="装备秘境" aria-label="装备秘境"><img :src="equipmentDungeonButtonSrc" @error="withFallback" alt=""></button>
       <button @click="openWeeklyBossPanel" class="home-action-btn home-action-weekly" title="每周BOSS" aria-label="每周BOSS"><img src="./resource/ui/背景/每周boss.png" alt=""></button>
       <button @click="openQixingGachaPanel" class="home-action-btn home-action-gacha" title="启星转盘" aria-label="启星转盘"><img src="./resource/ui/背景/转盘.png" alt=""></button>
+      <button @click="openChallengeRecordPanel" class="home-action-btn home-action-record" title="挑战录像" aria-label="挑战录像"><img src="./resource/界面ui/录像.png" alt=""></button>
+      <button @click="openElementPanel" class="home-action-btn home-action-element" title="属性克制" aria-label="属性克制"><img src="./resource/界面ui/属性.png" alt=""></button>
       <button
         @click="showGlobalSettingsPanel = true"
         class="home-settings-btn"
@@ -8394,18 +8577,17 @@
                     <button @click="upgradeQixingSeal" :disabled="!selectedQixingSeal || selectedQixingSealLevel>=4" class="h-8 px-3 rounded-lg bg-amber-400 text-slate-950 font-black disabled:opacity-50">升级</button>
                     <button @click="decomposeQixingSeal" :disabled="!canDecomposeSelectedQixingSeal" class="h-8 px-3 rounded-lg bg-slate-100 text-slate-700 font-black disabled:opacity-50">分解</button>
                   </div>
-                  <div class="pet-gear-card mt-3 rounded-xl p-3 flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3 min-w-0">
-                      <img :src="dragonBoatBladeImageSrc" @error="withFallback" class="w-14 h-14 rounded-lg object-cover border border-sky-200" alt="">
-                      <div class="min-w-0">
-                        <div class="text-sm font-black text-sky-950">装备</div>
-                        <div class="mt-1 text-xs font-black text-slate-700">{{ selectedPetEquippedGear ? selectedPetEquippedGear.name : '未装备' }}</div>
-                        <div class="mt-1 text-[11px] font-bold text-sky-700">端午竞技战刃：攻击+100、特攻+100</div>
+                  <div class="pet-gear-card mt-3 rounded-xl p-3">
+                    <div class="text-sm font-black text-sky-950 mb-2">装备</div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <div v-for="slot in selectedPetGearSlotRows" :key="'selected_pet_gear_'+slot.slot" class="rounded-lg border border-sky-100 bg-white/75 px-2 py-2 flex items-center gap-2 min-w-0">
+                        <img v-if="slot.gear" :src="slot.gear.image" @error="withFallback" class="w-8 h-8 rounded object-contain border border-sky-100 bg-white" :alt="slot.gear.name">
+                        <div v-else class="w-8 h-8 rounded border border-sky-100 bg-sky-50 flex items-center justify-center text-sky-500 font-black">{{ slot.mark }}</div>
+                        <div class="min-w-0">
+                          <div class="text-[11px] font-black text-sky-900 truncate">{{ slot.label }}</div>
+                          <div class="text-[10px] font-bold text-slate-600 truncate">{{ slot.gear ? slot.gear.name : '未装配' }}</div>
+                        </div>
                       </div>
-                    </div>
-                    <div class="flex flex-wrap justify-end gap-2">
-                      <button v-if="!selectedPetEquippedGear" @click="equipDragonBoatBladeToSelectedPet(petId(selectedPet))" :disabled="getItemCount('dragon_boat_battle_blade') <= 0" class="h-8 px-3 rounded-lg bg-sky-600 text-white font-black disabled:opacity-50">装备</button>
-                      <button v-else @click="unequipSelectedPetGear(petId(selectedPet))" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
                     </div>
                   </div>
                 </div>
@@ -8744,27 +8926,33 @@
 
 
 
-  <div v-if="showBag2Panel" class="fixed inset-0 z-[132] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeBag2Panel">
+  <div v-if="showBag2Panel" class="app-top-overlay fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeBag2Panel">
     <div class="bag2-panel" @click.stop>
-      <img src="./resource-v7/背包ui/背包ui底图.png" class="bag2-bg" alt="">
+      <img src="./resource/背包ui/背包ui底图.png" class="bag2-bg" alt="">
       <div v-if="bag2Loading" class="bag2-loading-mask">
         <div class="bag2-spinner"></div>
         <div class="bag2-loading-text">正在加载...</div>
       </div>
       <button @click="closeBag2Panel" class="bag2-close-btn" title="关闭">
-        <img src="./resource-v7/背包ui/退出.png" alt="关闭">
+        <img src="./resource/背包ui/退出.png" alt="关闭">
       </button>
 
       <div class="bag2-top-tabs">
         <button @click="setBag2TopTab('info')" class="bag2-top-btn" :class="{ active: bag2TopTab === 'info' }">
-          <img src="./resource-v7/背包ui/信息.png" alt="信息">
+          <img src="./resource/背包ui/信息.png" alt="信息">
         </button>
         <button @click="setBag2TopTab('items')" class="bag2-top-btn bag2-items-btn" :class="{ active: bag2TopTab === 'items' }">
-          <img src="./resource-v7/背包ui/物品.png" alt="物品">
+          <img src="./resource/背包ui/物品.png" alt="物品">
         </button>
         <button @click="setBag2TopTab('enhance')" class="bag2-top-btn" :class="{ active: bag2TopTab === 'enhance' }">
-          <img src="./resource-v7/背包ui/强化.png" alt="强化">
+          <img src="./resource/背包ui/强化.png" alt="强化">
         </button>
+      </div>
+
+      <div v-if="bag2DisplayPet" class="bag2-pet-gear-slots">
+        <div v-for="slot in bag2GearSlotRows" :key="'bag2_pet_gear_slot_'+slot.slot" class="bag2-pet-gear-slot" :style="slot.style" :title="slot.gear ? `${slot.label}：${slot.gear.name}` : slot.label">
+          <img v-if="slot.gear" :src="slot.gear.image" @error="withFallback" :alt="slot.gear.name">
+        </div>
       </div>
 
       <div class="bag2-pet-display">
@@ -8789,21 +8977,21 @@
       <div class="bag2-side-tabs" :class="{ 'bag2-side-tabs-enhance': bag2TopTab === 'enhance' }" v-if="bag2DisplayPet && (bag2TopTab === 'info' || bag2TopTab === 'enhance')">
         <template v-if="bag2TopTab === 'info'">
           <button @click="setBag2InfoTab('skills')" class="bag2-side-btn" :class="{ active: bag2InfoTab === 'skills' }">
-            <img src="./resource-v7/背包ui/技能按钮 拷贝.png" alt="技能">
+            <img src="./resource/背包ui/技能按钮 拷贝.png" alt="技能">
           </button>
           <button @click="setBag2InfoTab('talent')" class="bag2-side-btn" :class="{ active: bag2InfoTab === 'talent' }">
-            <img src="./resource-v7/背包ui/天赋按钮 拷贝.png" alt="天赋">
+            <img src="./resource/背包ui/天赋按钮 拷贝.png" alt="天赋">
           </button>
           <button @click="setBag2InfoTab('ability')" class="bag2-side-btn" :class="{ active: bag2InfoTab === 'ability' }">
-            <img src="./resource-v7/背包ui/能力按钮 拷贝.png" alt="能力">
+            <img src="./resource/背包ui/能力按钮 拷贝.png" alt="能力">
           </button>
         </template>
         <template v-else>
           <button @click="setBag2EnhanceTab('traits')" class="bag2-side-btn" :class="{ active: bag2EnhanceTab === 'traits' }">
-            <img src="./resource-v7/背包ui/特性.png" alt="特性">
+            <img src="./resource/背包ui/特性.png" alt="特性">
           </button>
           <button @click="setBag2EnhanceTab('gear')" class="bag2-side-btn bag2-gear-btn" :class="{ active: bag2EnhanceTab === 'gear' }">
-            <img src="./resource-v7/背包ui/装备.png" alt="装备">
+            <img src="./resource/背包ui/装备.png" alt="装备">
           </button>
         </template>
       </div>
@@ -8932,32 +9120,27 @@
               </div>
             </template>
             <template v-else>
-              <div class="bag2-enhance-section-title">当前装备</div>
-              <div class="bag2-gear-card" :class="{ 'is-empty': !bag2DisplayPetEquippedGear }">
-                <div class="bag2-gear-card-media">
-                  <img v-if="bag2DisplayPetEquippedGear" :src="dragonBoatBladeImageSrc" @error="withFallback" class="bag2-gear-card-img" alt="当前装备">
-                  <div v-else class="bag2-gear-card-empty">未装配装备</div>
-                </div>
-                <div>
-                  <div class="bag2-gear-card-name">{{ bag2DisplayPetEquippedGear ? bag2DisplayPetEquippedGear.name : '当前亚比未装备' }}</div>
-                  <div class="bag2-gear-card-desc">{{ bag2DisplayPetEquippedGear ? bag2DisplayPetEquippedGear.effectText : '装配装备后会替换当前亚比的装备栏。' }}</div>
-                  <div class="bag2-gear-card-extra">{{ dragonBoatBladeEquippedPetName ? `当前由 ${dragonBoatBladeEquippedPetName} 装备` : '当前没有亚比装备该武器。' }}</div>
-                </div>
-              </div>
               <div class="bag2-enhance-section-title">装备仓库</div>
+              <div class="bag2-enhance-toolbar">
+                <button @click="bag2GearFilter='all'" class="bag2-enhance-chip" :class="{ 'is-active': bag2GearFilter === 'all' }">全部</button>
+                <button @click="bag2GearFilter='equipped'" class="bag2-enhance-chip" :class="{ 'is-active': bag2GearFilter === 'equipped' }">已装配</button>
+                <button @click="bag2GearFilter='unequipped'" class="bag2-enhance-chip" :class="{ 'is-active': bag2GearFilter === 'unequipped' }">未装配</button>
+              </div>
               <div class="bag2-gear-list">
-                <div class="bag2-gear-list-card">
-                  <img :src="dragonBoatBladeImageSrc" @error="withFallback" class="bag2-gear-list-img" alt="端午竞技战刃">
+                <div v-for="gear in filteredGearInventoryRows" :key="'bag2_gear_'+gear.id" class="bag2-gear-list-card">
+                  <img :src="gear.image" @error="withFallback" class="bag2-gear-list-img" :alt="gear.name">
                   <div>
-                    <div class="bag2-gear-list-name">端午竞技战刃</div>
-                    <div class="bag2-gear-list-desc">攻击 +100，特攻 +100</div>
-                    <div class="bag2-gear-list-meta">库存 {{ getItemCount('dragon_boat_battle_blade') }}{{ dragonBoatBladeEquippedPetName ? `｜${dragonBoatBladeEquippedPetName}已装备` : '｜未装配' }}</div>
+                    <div class="bag2-gear-list-name">{{ gear.name }}</div>
+                    <div class="bag2-gear-list-desc">{{ gear.effectText }}</div>
+                    <div class="bag2-gear-list-meta">库存 {{ gear.count }}</div>
+                    <div class="bag2-gear-list-owner">{{ gear.equippedPetName ? `装配：${gear.equippedPetName}` : '未装配' }}</div>
                   </div>
                   <div class="bag2-gear-list-actions">
-                    <button v-if="!bag2DisplayPetEquippedGear" @click="equipDragonBoatBladeToSelectedPet(petId(bag2DisplayPet))" :disabled="getItemCount('dragon_boat_battle_blade') <= 0" class="h-8 px-3 rounded-lg bg-sky-600 text-white font-black disabled:opacity-50">装备</button>
-                    <button v-else @click="unequipSelectedPetGear(petId(bag2DisplayPet))" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
+                    <button v-if="gear.equippedOnBag2Pet" @click="unequipSelectedPetGear(petId(bag2DisplayPet), gear.slot)" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
+                    <button v-else @click="equipGearToSelectedPet(gear.id, petId(bag2DisplayPet))" :disabled="!gear.canEquip || !bag2DisplayPet" class="h-8 px-3 rounded-lg bg-sky-600 text-white font-black disabled:opacity-50">装备</button>
                   </div>
                 </div>
+                <div v-if="filteredGearInventoryRows.length <= 0" class="text-center text-xs font-black text-sky-700 py-3">当前筛选下没有装备。</div>
               </div>
             </template>
           </div>
@@ -8965,21 +9148,21 @@
       </div>
 
       <button v-if="bag2TopTab === 'info' && bag2InfoTab === 'skills' && bag2DisplayPet" @click="toggleBag2SkillReplacePanel" class="bag2-skill-replace-btn" :class="{ active: showBag2SkillReplacePanel }">
-        <img src="./resource-v7/背包ui/技能替换 拷贝 2.png" alt="技能替换">
+        <img src="./resource/背包ui/技能替换 拷贝 2.png" alt="技能替换">
       </button>
 
       <div class="bag2-action-btns">
         <button @click="bag2SetFirstPet" class="bag2-action-btn" :class="{ disabled: !bag2DisplayPet }" title="设为首宠">
-          <img src="./resource-v7/背包ui/首发.png" alt="设为首宠">
+          <img src="./resource/背包ui/首发.png" alt="设为首宠">
         </button>
         <button @click="bag2ReturnToWarehouse" class="bag2-action-btn" :class="{ disabled: !bag2DisplayPet }" title="回仓">
-          <img src="./resource-v7/背包ui/回仓.png" alt="回仓">
+          <img src="./resource/背包ui/回仓.png" alt="回仓">
         </button>
         <button @click="openWarehousePanel" class="bag2-action-btn" title="仓库">
-          <img src="./resource-v7/背包ui/仓库.png" alt="仓库">
+          <img src="./resource/背包ui/仓库.png" alt="仓库">
         </button>
         <button @click="toggleBag2SortMode" class="bag2-action-btn bag2-sort-btn" :class="{ active: bag2SortMode }" title="排序">
-          <img src="./resource-v7/背包ui/排序.png" alt="排序">
+          <img src="./resource/背包ui/排序.png" alt="排序">
         </button>
       </div>
 
@@ -8990,7 +9173,7 @@
 
       <div class="bag2-slots">
         <button v-for="slot in bagSlots" :key="'bag2_slot_'+slot.idx" @click="handleBag2SlotClick(slot)" class="bag2-slot-btn" :class="{ active: slot.pet && petId(selectedPet)===petId(slot.pet), 'is-sorting': bag2SortMode, 'is-sorting-first': bag2SortMode && slot.idx === bag2SortFirstSlotIdx }">
-          <img src="./resource-v7/背包ui/球.png" class="bag2-slot-bg" alt="">
+          <img src="./resource/背包ui/球.png" class="bag2-slot-bg" alt="">
           <template v-if="slot.pet">
             <div class="bag2-slot-pet-name">{{ petDisplayName(slot.pet) }}</div>
             <div class="bag2-slot-pet-stage pet-anim-frame">
@@ -9191,8 +9374,8 @@
     </div>
   </div>
 
-  <div v-show="showBagPanel" style="display:none" class="fixed inset-0 z-[90] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBagPanel">
-    <div class="w-full max-w-6xl h-[90vh] md:h-[780px] rounded-3xl border border-white bg-sky-50 p-3 md:p-4 shadow-2xl app-panel-modal overflow-hidden" @click.stop>
+  <div v-show="showBagPanel" style="display:none" class="app-top-overlay fixed inset-0 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBagPanel">
+    <div class="w-full max-w-6xl h-[90vh] md:h-[780px] rounded-3xl border border-white bg-sky-50 p-3 md:p-4 shadow-2xl app-panel-modal bag-mobile-panel overflow-hidden" @click.stop>
       <div class="flex items-center justify-between gap-3 mb-3">
         <div class="flex items-center gap-3 min-w-0">
           <h3 class="text-lg font-black text-sky-950">亚比背包（6格）</h3>
@@ -9320,18 +9503,17 @@
                     <button @click="upgradeQixingSeal" :disabled="!selectedQixingSeal || selectedQixingSealLevel>=4" class="h-8 px-3 rounded-lg bg-amber-400 text-slate-950 font-black disabled:opacity-50">升级</button>
                     <button @click="decomposeQixingSeal" :disabled="!canDecomposeSelectedQixingSeal" class="h-8 px-3 rounded-lg bg-slate-100 text-slate-700 font-black disabled:opacity-50">分解</button>
                   </div>
-                  <div class="pet-gear-card mt-3 rounded-xl p-3 flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3 min-w-0">
-                      <img :src="dragonBoatBladeImageSrc" @error="withFallback" class="w-14 h-14 rounded-lg object-cover border border-sky-200" alt="">
-                      <div class="min-w-0">
-                        <div class="text-sm font-black text-sky-950">装备</div>
-                        <div class="mt-1 text-xs font-black text-slate-700">{{ selectedPetEquippedGear ? selectedPetEquippedGear.name : '未装备' }}</div>
-                        <div class="mt-1 text-[11px] font-bold text-sky-700">端午竞技战刃：攻击+100、特攻+100</div>
+                  <div class="pet-gear-card mt-3 rounded-xl p-3">
+                    <div class="text-sm font-black text-sky-950 mb-2">装备</div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <div v-for="slot in selectedPetGearSlotRows" :key="'selected_pet_modal_gear_'+slot.slot" class="rounded-lg border border-sky-100 bg-white/75 px-2 py-2 flex items-center gap-2 min-w-0">
+                        <img v-if="slot.gear" :src="slot.gear.image" @error="withFallback" class="w-8 h-8 rounded object-contain border border-sky-100 bg-white" :alt="slot.gear.name">
+                        <div v-else class="w-8 h-8 rounded border border-sky-100 bg-sky-50 flex items-center justify-center text-sky-500 font-black">{{ slot.mark }}</div>
+                        <div class="min-w-0">
+                          <div class="text-[11px] font-black text-sky-900 truncate">{{ slot.label }}</div>
+                          <div class="text-[10px] font-bold text-slate-600 truncate">{{ slot.gear ? slot.gear.name : '未装配' }}</div>
+                        </div>
                       </div>
-                    </div>
-                    <div class="flex flex-wrap justify-end gap-2">
-                      <button v-if="!selectedPetEquippedGear" @click="equipDragonBoatBladeToSelectedPet(petId(selectedPet))" :disabled="getItemCount('dragon_boat_battle_blade') <= 0" class="h-8 px-3 rounded-lg bg-sky-600 text-white font-black disabled:opacity-50">装备</button>
-                      <button v-else @click="unequipSelectedPetGear(petId(selectedPet))" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
                     </div>
                   </div>
                 </div>
@@ -9466,23 +9648,94 @@
         <div class="strong-road-title">变强之路</div>
         <div class="strong-road-items">
           <button @click="openStudyPanel(); closeStrongRoadPanel()" class="strong-road-item">
-            <img src="./resource-v7/界面ui/学习力战场.png" alt="学习力战场">
+            <img src="./resource/界面ui/学习力战场.png" alt="学习力战场">
             <div class="strong-road-item-label">学习力战场</div>
           </button>
           <button @click="openTimeTunnelPanel(); closeStrongRoadPanel()" class="strong-road-item">
             <img src="./resource/ui/背景/时空隧道.png" alt="时空隧道" class="strong-road-item-img-tunnel">
             <div class="strong-road-item-label">时空隧道</div>
           </button>
-          <button class="strong-road-item" title="功能开发中">
-            <img src="./resource-v7/界面ui/装备秘境.png" alt="装备秘境">
+          <button @click="openEquipmentDungeonPanel(); closeStrongRoadPanel()" class="strong-road-item">
+            <img src="./resource/界面ui/装备秘境.png" alt="装备秘境">
             <div class="strong-road-item-label">装备秘境</div>
+          </button>
+          <button @click="openAbilityBreakthroughPanel(); closeStrongRoadPanel()" class="strong-road-item">
+            <img src="./resource/界面ui/能力突破机.png" alt="能力突破机">
+            <div class="strong-road-item-label">能力突破机</div>
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <div v-show="showWarehousePanel" style="display:none" class="fixed inset-0 z-[90] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeWarehousePanel">
+  <div v-if="showAbilityBreakthroughPanel" class="app-top-overlay fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeAbilityBreakthroughPanel">
+    <div class="w-full max-w-5xl max-h-[92vh] overflow-hidden rounded-2xl border border-cyan-200 bg-white shadow-2xl flex flex-col" @click.stop>
+      <div class="flex items-center justify-between gap-3 border-b border-cyan-100 bg-cyan-50 px-4 py-3">
+        <div class="min-w-0">
+          <div class="text-lg font-black text-cyan-950">能力突破机</div>
+          <div class="text-xs font-bold text-cyan-700">消耗XXX能量核心生成对应亚比图片，点击图片后分配能力值。</div>
+        </div>
+        <button @click="closeAbilityBreakthroughPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-3 overflow-y-auto p-4 scrollbar">
+        <section class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+          <div class="text-sm font-black text-slate-900 mb-2">拥有的能量核心</div>
+          <div v-if="abilityBreakthroughRows.length" class="space-y-2">
+            <div v-for="core in abilityBreakthroughRows" :key="'ability_core_'+core.id" class="rounded-xl border border-white bg-white p-3 shadow-sm">
+              <div class="flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="text-sm font-black text-slate-900 truncate">{{ core.name }}</div>
+                  <div class="text-[11px] font-bold text-slate-500">持有 {{ core.count }}，目标亚比：{{ core.petName }}</div>
+                </div>
+                <button @click="startAbilityBreakthrough(core.id)" :disabled="!core.usable" class="h-9 px-3 rounded-xl bg-cyan-600 text-white text-xs font-black disabled:opacity-40">转化</button>
+              </div>
+              <div v-if="core.pets.length > 1" class="mt-2 grid grid-cols-2 gap-2">
+                <button v-for="pet in core.pets" :key="'ability_core_pet_'+core.id+'_'+pet.id" @click="startAbilityBreakthrough(core.id, pet.id)" :disabled="core.count <= 0" class="h-8 rounded-lg bg-cyan-50 text-cyan-800 text-[11px] font-black disabled:opacity-40 truncate px-2">{{ petDisplayName(pet) }}</button>
+              </div>
+              <div v-else-if="core.count > 0 && !core.pets.length" class="mt-2 text-[11px] font-black text-rose-500">当前仓库/背包中没有对应亚比。</div>
+            </div>
+          </div>
+          <div v-else class="rounded-xl border border-dashed border-slate-300 bg-white p-4 text-center text-xs font-black text-slate-500">当前没有XXX能量核心。</div>
+        </section>
+        <section class="rounded-2xl border border-slate-200 bg-white p-3">
+          <div class="text-sm font-black text-slate-900 mb-2">突破影像</div>
+          <div v-if="abilityBreakthroughEntryRows.length" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
+            <button v-for="entry in abilityBreakthroughEntryRows" :key="'ability_entry_'+entry.id" @click="openAbilityBreakthroughAllocation(entry.id)" class="rounded-2xl border border-cyan-100 bg-cyan-50 p-3 hover:border-cyan-400 text-center">
+              <img :src="entry.image" @error="withFallback" class="mx-auto h-24 w-24 object-contain">
+              <div class="mt-2 text-xs font-black text-cyan-950 truncate">{{ entry.petName }}</div>
+              <div class="text-[11px] font-bold text-cyan-700">剩余 {{ entry.remaining }}/350</div>
+            </button>
+          </div>
+          <div v-else class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-center text-xs font-black text-slate-500 mb-3">消耗能量核心后，会在这里生成亚比图片。</div>
+          <div v-if="abilityBreakthroughSession && abilityBreakthroughSelectedPet" class="rounded-2xl border border-indigo-100 bg-indigo-50 p-3">
+            <div class="flex items-center justify-between gap-3 mb-3">
+              <div>
+                <div class="text-sm font-black text-indigo-950">{{ abilityBreakthroughSession.petName }}</div>
+                <div class="text-[11px] font-bold text-indigo-700">当前已分配 {{ abilityBreakthroughCurrentTotal }}，本次已分配 {{ abilityBreakthroughSessionUsed }}，剩余 {{ abilityBreakthroughSessionRemaining }}</div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div v-for="row in abilityBreakthroughStatRows" :key="'ability_break_'+row.key" class="rounded-xl border border-white bg-white p-2">
+                <div class="flex items-center justify-between gap-2">
+                  <div>
+                    <div class="text-xs font-black text-slate-900">{{ row.label }}</div>
+                    <div class="text-[11px] font-bold text-slate-500">已加 {{ row.value }}</div>
+                  </div>
+                  <div class="flex flex-wrap justify-end gap-1">
+                    <button @click="addAbilityBreakthroughPoint(row.key, 10)" :disabled="abilityBreakthroughSessionRemaining <= 0" class="h-8 min-w-[3.5rem] rounded-lg bg-indigo-600 px-3 text-white text-xs font-black disabled:opacity-40">+10</button>
+                    <button @click="addAbilityBreakthroughPoint(row.key, abilityBreakthroughSessionRemaining)" :disabled="abilityBreakthroughSessionRemaining <= 0" class="h-8 min-w-[3.5rem] rounded-lg bg-indigo-500 px-3 text-white text-xs font-black disabled:opacity-40">全部</button>
+                    <button @click="addAbilityBreakthroughPoint(row.key, 1)" :disabled="abilityBreakthroughSessionRemaining <= 0" class="h-8 min-w-[2.75rem] rounded-lg bg-indigo-100 px-2 text-indigo-700 text-xs font-black disabled:opacity-40">+1</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div v-show="showWarehousePanel" style="display:none" class="app-top-overlay fixed inset-0 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeWarehousePanel">
     <div class="w-full max-w-6xl h-[90vh] md:h-[760px] rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl flex flex-col app-panel-modal" @click.stop>
       <div class="flex items-center gap-2 mb-3">
         <input v-model="warehouseSearch" placeholder="搜索仓库亚比" class="flex-1 h-9 rounded-lg border border-slate-300 px-3 text-sm font-bold">
@@ -9524,7 +9777,7 @@
 
   <div
     v-if="showWarehouseActionModal && selectedWarehouseActionPet"
-    class="fixed inset-0 z-[90] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+    class="app-top-dialog-overlay fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
     @click="closeWarehouseActionModal"
   >
     <div class="w-full max-w-sm rounded-2xl border border-white bg-white p-4 shadow-2xl app-modal" @click.stop>
@@ -9694,8 +9947,10 @@
             <button @click="shopTab='shop'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='shop' ? 'bg-emerald-600 text-white' : 'text-slate-600'">亚比商店</button>
             <button @click="shopTab='eggs'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='eggs' ? 'bg-violet-600 text-white' : 'text-slate-600'">亚比蛋购买</button>
             <button @click="shopTab='skillStones'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='skillStones' ? 'bg-amber-500 text-slate-950' : 'text-slate-600'">&#25216;&#33021;&#30707;&#21830;&#24215;</button>
+            <button @click="shopTab='gear'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='gear' ? 'bg-sky-600 text-white' : 'text-slate-600'">装备商店</button>
           </div>
           <div class="panel-stat-chip">H币 {{ state.hCoins || 0 }}</div>
+          <div class="panel-stat-chip">秘境晶石 {{ equipmentDungeonCrystalCount }}</div>
         </div>
         <button @click="closeShopPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
@@ -9738,6 +9993,29 @@
               class="w-20 h-9 rounded-xl border border-amber-200 bg-white px-2 text-sm font-black text-amber-950"
             >
             <button @click="buySkillShopItem(it.id)" :disabled="!shopItemCanBuy(it)" class="h-9 px-4 rounded-xl bg-amber-500 text-slate-950 text-sm font-black disabled:opacity-45">&#36141;&#20080;</button>
+          </div>
+        </div>
+      </div>
+      <div v-else-if="shopTab==='gear'" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
+        <div v-for="it in gearShopItems" :key="'gear_shop_item_'+it.id" class="rounded-2xl border border-sky-100 bg-sky-50 p-3 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <img :src="it.image" @error="withFallback" class="w-14 h-14 object-contain rounded-xl bg-white/75 border border-sky-100">
+            <div class="min-w-0">
+              <div class="text-sm font-black text-sky-950 truncate">{{ it.name }}</div>
+              <div class="text-[11px] font-bold text-sky-800">{{ it.desc }}</div>
+              <div class="text-[11px] font-black text-cyan-700 mt-1">{{ it.price }} 秘境晶石</div>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-2 shrink-0">
+            <input
+              type="number"
+              min="1"
+              :max="Math.max(1, gearShopItemMaxBuyQuantity(it))"
+              :value="shopBuyQuantity(it.id)"
+              @input="setShopBuyQuantity(it.id, $event.target.value)"
+              class="w-20 h-9 rounded-xl border border-sky-200 bg-white px-2 text-sm font-black text-sky-950"
+            >
+            <button @click="buyGearShopItem(it.id)" :disabled="!gearShopItemCanBuy(it)" class="h-9 px-4 rounded-xl bg-sky-600 text-white text-sm font-black disabled:opacity-45">购买</button>
           </div>
         </div>
       </div>
@@ -10175,7 +10453,7 @@
     </div>
   </div>
 
-  <div v-if="showEquipmentDungeonPanel" class="equipment-dungeon-panel fixed inset-0 z-50 flex items-center justify-center overflow-hidden" :style="{ '--equipment-dungeon-bg': `url(${loginLoadingBgSrc})` }" @click.self="closeEquipmentDungeonPanel">
+  <div v-if="showEquipmentDungeonPanel" class="equipment-dungeon-panel fixed inset-0 z-50 flex items-center justify-center overflow-hidden" :class="{ 'app-layer-under-modal': showBag2Panel || showBagPanel || showWarehousePanel }" :style="{ '--equipment-dungeon-bg': `url(${loginLoadingBgSrc})` }" @click.self="closeEquipmentDungeonPanel">
     <div v-if="equipmentDungeonView==='map'" class="relative z-[1] flex items-center justify-center" style="width:min(100vw, calc(100vh * 16 / 9)); height:min(100vh, calc(100vw * 9 / 16));">
       <img :src="equipmentDungeonGalaxyMapSrc" @error="withFallback" class="absolute inset-0 h-full w-full object-contain select-none">
       <div class="equipment-dungeon-scorebar">
@@ -10286,8 +10564,8 @@
         <div class="rounded-2xl border border-cyan-200/25 bg-white/10 p-3 md:p-4 space-y-3">
           <div class="grid grid-cols-2 gap-2">
             <div class="rounded-xl border border-cyan-200/25 bg-slate-950/35 p-3">
-              <div class="text-[10px] font-black text-cyan-200">神宠之匙</div>
-              <div class="text-2xl font-black">{{ getItemCount('divine_pet_key') }}</div>
+              <div class="text-[10px] font-black text-cyan-200">{{ qixingGachaPhaseCurrencyLabel }}</div>
+              <div class="text-2xl font-black">{{ qixingGachaPhaseCurrencyCount }}</div>
             </div>
             <div class="rounded-xl border border-sky-200/35 bg-slate-950/35 p-3">
               <div class="text-[10px] font-black text-sky-200">{{ qixingGachaCurrentPityLabel }}</div>
@@ -10295,21 +10573,21 @@
             </div>
           </div>
           <div class="rounded-xl border border-cyan-200/20 bg-slate-950/35 p-3 text-xs font-bold text-cyan-50 leading-5">
-            第一阶段在通关挑战之路第一梯度后解锁，寒冰公主亚比蛋150抽保底且本阶段只可获取一次，获取后奖池卡片置灰，后续抽到会自动转为启星碎片。第二阶段在拥有第五梯度任意BOSS亚比或亚比蛋后解锁，未来计划·黯帝修罗皮肤500抽保底且只可获取一次；第二阶段寒冰公主亚比蛋同样只可获取一次。
+            第一阶段在通关挑战之路第一梯度后解锁，寒冰公主亚比蛋150抽保底且本阶段只可获取一次，获取后奖池卡片置灰，后续抽到会自动转为启星碎片。第二阶段在拥有第五梯度任意BOSS亚比或亚比蛋后解锁，未来计划·黯帝修罗皮肤500抽保底且只可获取一次；第二阶段寒冰公主亚比蛋同样只可获取一次。能量核心转盘消耗H币，单抽2000H币，十连18000H币；200抽保底一个未获取能量核心，获得后置灰且不再重复获取，再200抽保底另一个未获取能量核心。
           </div>
           <div v-if="!selectedQixingGachaPhaseUnlocked" class="rounded-xl border border-amber-200/35 bg-amber-300/10 p-3 text-xs font-black text-amber-100 leading-5">
             {{ qixingGachaPhaseLockText }}
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <button @click="drawQixingGacha(1)" :disabled="qixingGachaDrawing || !selectedQixingGachaPhaseUnlocked || getItemCount('divine_pet_key')<1" class="h-11 rounded-xl bg-cyan-400 text-slate-950 font-black disabled:opacity-50">单抽</button>
-            <button @click="drawQixingGacha(10)" :disabled="qixingGachaDrawing || !selectedQixingGachaPhaseUnlocked || getItemCount('divine_pet_key')<10" class="h-11 rounded-xl bg-amber-300 text-slate-950 font-black disabled:opacity-50">十连</button>
+            <button @click="drawQixingGacha(1)" :disabled="qixingGachaDrawing || !canDrawQixingGacha(1)" class="h-11 rounded-xl bg-cyan-400 text-slate-950 font-black disabled:opacity-50">单抽 {{ qixingGachaDrawCostText(1) }}</button>
+            <button @click="drawQixingGacha(10)" :disabled="qixingGachaDrawing || !canDrawQixingGacha(10)" class="h-11 rounded-xl bg-amber-300 text-slate-950 font-black disabled:opacity-50">十连 {{ qixingGachaDrawCostText(10) }}</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div v-if="showTimeTunnelPanel" class="fixed inset-0 z-40 time-tunnel-bg text-white overflow-hidden" @click="closeTimeTunnelPanel">
+  <div v-if="showTimeTunnelPanel" class="fixed inset-0 z-40 time-tunnel-bg text-white overflow-hidden" :class="{ 'app-layer-under-modal': showBag2Panel || showBagPanel || showWarehousePanel }" @click="closeTimeTunnelPanel">
     <div class="absolute inset-0 bg-slate-950/15"></div>
     <div class="relative z-10 h-full p-3 md:p-5 flex flex-col" @click.stop>
       <div class="h-12 flex items-center justify-between gap-3">
@@ -10375,7 +10653,7 @@
     </div>
   </div>
 
-  <div v-if="showTimeTunnelEnvironmentPanel && timeTunnelEnvironmentScene" class="fixed inset-0 z-50 text-white overflow-hidden">
+  <div v-if="showTimeTunnelEnvironmentPanel && timeTunnelEnvironmentScene" class="fixed inset-0 z-50 text-white overflow-hidden" :class="{ 'app-layer-under-modal': showBag2Panel || showBagPanel || showWarehousePanel }">
     <div class="absolute inset-0 time-env-bg" :style="{ backgroundImage: `url(${timeTunnelEnvironmentScene.environment.image})` }"></div>
     <div class="absolute inset-0 bg-slate-950/82"></div>
     <div class="time-env-viewport" :style="timeEnvViewportStyle">
@@ -10489,7 +10767,7 @@
         <button @click="closeElementPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
       <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-        <img src="./属性克制.jpg" alt="属性克制关系" class="w-full h-auto object-contain rounded-xl border border-slate-200 bg-white">
+        <img :src="elementRelationImage" alt="属性克制关系" class="w-full h-auto object-contain rounded-xl border border-slate-200 bg-white">
       </div>
     </div>
   </div>
@@ -10822,7 +11100,7 @@
   </div>
 </div>
 
-<div v-cloak v-if="bagItemUseCtx" class="bag-item-use-overlay fixed inset-0 z-[221] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" @click="cancelBagItemUseDialog">
+<div v-cloak v-if="bagItemUseCtx" class="bag-item-use-overlay app-top-dialog-overlay fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" @click="cancelBagItemUseDialog">
   <div class="w-full max-w-sm rounded-3xl border border-white bg-white p-4 shadow-2xl app-modal" @click.stop>
     <div class="text-lg font-black text-slate-900">使用道具</div>
     <div class="mt-1 text-sm font-black text-sky-800">{{ bagItemUseCtx.name }}</div>
@@ -10844,7 +11122,7 @@
   </div>
 </div>
 
-<div v-cloak v-if="bagReplaceCtx" class="fixed inset-0 z-[220] bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4" @click="cancelReplaceBag">
+<div v-cloak v-if="bagReplaceCtx" class="app-top-dialog-overlay fixed inset-0 bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4" @click="cancelReplaceBag">
   <div class="w-full max-w-3xl rounded-3xl border border-white bg-white p-4 shadow-2xl app-modal" @click.stop>
     <div class="text-lg font-black text-slate-900 mb-1">背包已满，选择替换亚比</div>
     <div class="text-xs font-bold text-slate-500 mb-3">将要放入：{{ petDisplayName(state.activePets.find(p => p && p.id === bagReplaceCtx.incomingPetId) || {}) }}</div>
