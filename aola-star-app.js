@@ -11187,6 +11187,130 @@ createApp({
     const replaceSkillCtx = ref(null);
     const bagReplaceCtx = ref(null);
     const showElementPanel = ref(false);
+    const showTeamPanel = ref(false);
+    const teamLoading = ref(false);
+    const showTeamModal = ref(false);
+    const showCreateTeamModal = ref(false);
+    const showTeamInfo = ref(false);
+    const isViewingOwnTeam = ref(true);
+    const showTeamRank = ref(false);
+    const showTeamRecruit = ref(false);
+    const showTeamButler = ref(false);
+    const showTeamTask = ref(false);
+    const showTeamShop = ref(false);
+    const showTeamRecord = ref(false);
+    const showJoinTeamList = ref(false);
+    const teamRecordTab = ref("applications");
+    const isTeamLeader = ref(true);
+    const searchTeamId = ref("");
+    const newTeamName = ref("");
+    const newTeamSlogan = ref("");
+    const hasTeam = ref(false);
+    const editingSlogan = ref(false);
+    const editingSloganText = ref("");
+    const myTeam = ref({
+      id: "8888",
+      name: "星辰战队",
+      leader: "玩家名称",
+      members: "5/10",
+      level: 5,
+      score: 2850,
+      rank: 6,
+      slogan: "团结一心，共创辉煌！",
+      honor: 1580,
+      funds: 5200,
+      activity: 98
+    });
+    const currentTeam = ref({
+      id: "",
+      name: "",
+      leader: "",
+      members: "",
+      level: 0,
+      score: 0,
+      rank: 0,
+      slogan: "",
+      honor: 0,
+      funds: 0,
+      activity: 0
+    });
+    const teamRankList = ref([
+      { name: "永恒之星", leader: "星辰", level: 50, honor: 15800, members: "10/10", activity: 98, id: "0001", slogan: "团结一心，共创辉煌！", funds: 50000 },
+      { name: "圣光联盟", leader: "圣光", level: 45, honor: 14200, members: "9/10", activity: 92, id: "0002", slogan: "圣光指引我们前进！", funds: 45000 },
+      { name: "暗影军团", leader: "暗影", level: 42, honor: 12500, members: "10/10", activity: 88, id: "0003", slogan: "在黑暗中绽放光芒！", funds: 40000 },
+      { name: "雷霆战队", leader: "雷霆", level: 40, honor: 11800, members: "8/10", activity: 85, id: "0004", slogan: "雷霆万钧，势不可挡！", funds: 38000 },
+      { name: "烈焰风暴", leader: "烈焰", level: 38, honor: 10900, members: "9/10", activity: 82, id: "0005", slogan: "燃烧吧，青春之火！", funds: 35000 },
+      { name: "冰霜守护", leader: "冰霜", level: 35, honor: 9800, members: "7/10", activity: 78, id: "0006", slogan: "冰封一切邪恶！", funds: 32000 },
+      { name: "星辰战队", leader: "玩家名称", level: 5, honor: 9200, members: "5/10", activity: 75, id: "0007", slogan: "我是宇宙第一大王", funds: 30000 },
+      { name: "暗夜行者", leader: "暗夜", level: 30, honor: 8500, members: "6/10", activity: 70, id: "0008", slogan: "潜行于暗夜之中！", funds: 28000 },
+      { name: "彩虹小队", leader: "彩虹", level: 28, honor: 7800, members: "7/10", activity: 65, id: "0009", slogan: "七色光芒照耀大地！", funds: 26000 },
+      { name: "荣耀战团", leader: "荣耀", level: 25, honor: 7200, members: "5/10", activity: 60, id: "0010", slogan: "为了荣耀而战！", funds: 24000 },
+      { name: "无敌战队", leader: "无敌", level: 24, honor: 6800, members: "6/10", activity: 58, id: "0011", slogan: "无敌是多么寂寞！", funds: 22000 },
+      { name: "王者归来", leader: "王者", level: 23, honor: 6500, members: "7/10", activity: 55, id: "0012", slogan: "王者归来，谁与争锋！", funds: 21000 },
+      { name: "天下无双", leader: "无双", level: 22, honor: 6200, members: "5/10", activity: 52, id: "0013", slogan: "天下无双，唯我独尊！", funds: 20000 },
+      { name: "神龙战队", leader: "神龙", level: 21, honor: 5900, members: "8/10", activity: 50, id: "0014", slogan: "神龙摆尾，威力无穷！", funds: 19000 },
+      { name: "凤凰涅槃", leader: "凤凰", level: 20, honor: 5600, members: "6/10", activity: 48, id: "0015", slogan: "凤凰涅槃，浴火重生！", funds: 18000 },
+      { name: "麒麟战队", leader: "麒麟", level: 19, honor: 5300, members: "7/10", activity: 45, id: "0016", slogan: "麒麟降临，祥瑞四方！", funds: 17000 },
+      { name: "青龙偃月", leader: "青龙", level: 18, honor: 5000, members: "8/10", activity: 42, id: "0017", slogan: "青龙出海，乘风破浪！", funds: 16000 },
+      { name: "白虎咆哮", leader: "白虎", level: 17, honor: 4700, members: "5/10", activity: 40, id: "0018", slogan: "白虎咆哮，威震八方！", funds: 15000 },
+      { name: "朱雀烈焰", leader: "朱雀", level: 16, honor: 4400, members: "6/10", activity: 38, id: "0019", slogan: "朱雀焚天，烈焰燎原！", funds: 14000 },
+      { name: "玄武守护", leader: "玄武", level: 15, honor: 4100, members: "9/10", activity: 35, id: "0020", slogan: "玄武坐镇，固若金汤！", funds: 13000 },
+      { name: "战狼中队", leader: "战狼", level: 14, honor: 3800, members: "5/10", activity: 32, id: "0021", slogan: "战狼出击，所向披靡！", funds: 12000 },
+      { name: "雄鹰展翅", leader: "雄鹰", level: 13, honor: 3500, members: "7/10", activity: 30, id: "0022", slogan: "雄鹰展翅，翱翔天际！", funds: 11000 },
+      { name: "猛虎下山", leader: "猛虎", level: 12, honor: 3200, members: "6/10", activity: 28, id: "0023", slogan: "猛虎下山，势不可挡！", funds: 10000 },
+      { name: "猎豹突击队", leader: "猎豹", level: 11, honor: 2900, members: "4/10", activity: 25, id: "0024", slogan: "猎豹出击，神速无比！", funds: 9000 },
+      { name: "野狼战队", leader: "野狼", level: 10, honor: 2600, members: "5/10", activity: 22, id: "0025", slogan: "野狼嚎叫，响彻山谷！", funds: 8000 },
+      { name: "飞虎队", leader: "飞虎", level: 9, honor: 2300, members: "3/10", activity: 20, id: "0026", slogan: "飞虎腾空，威震九州！", funds: 7000 },
+      { name: "铁血军团", leader: "铁血", level: 8, honor: 2000, members: "4/10", activity: 18, id: "0027", slogan: "铁血丹心，至死不渝！", funds: 6000 },
+      { name: "钢铁雄心", leader: "钢铁", level: 7, honor: 1700, members: "3/10", activity: 15, id: "0028", slogan: "钢铁意志，永不屈服！", funds: 5000 },
+      { name: "勇者无畏", leader: "勇者", level: 6, honor: 1400, members: "2/10", activity: 12, id: "0029", slogan: "勇者无畏，勇往直前！", funds: 4000 },
+      { name: "新手战队", leader: "新手", level: 1, honor: 1000, members: "1/10", activity: 10, id: "0030", slogan: "欢迎加入我们！", funds: 3000 }
+    ]);
+    const recruitPlayerList = ref([
+      { name: "战神阿瑞斯", level: 95, power: 15800 },
+      { name: "暗夜猎手", level: 92, power: 14200 },
+      { name: "圣光守护者", level: 90, power: 13500 },
+      { name: "雷霆使者", level: 88, power: 12800 },
+      { name: "冰霜法师", level: 85, power: 11900 },
+      { name: "烈焰战神", level: 82, power: 11200 },
+      { name: "星辰术士", level: 80, power: 10500 },
+      { name: "暗影刺客", level: 78, power: 9800 }
+    ]);
+    const teamApplications = ref([
+      { name: "暗夜猎手", level: 92 },
+      { name: "圣光守护者", level: 90 },
+      { name: "雷霆使者", level: 88 }
+    ]);
+    const teamHistory = ref([
+      { name: "暗夜猎手", action: "申请加入战队", time: "2分钟前" },
+      { name: "圣光守护者", action: "申请加入战队", time: "5分钟前" },
+      { name: "雷霆使者", action: "申请加入战队", time: "10分钟前" },
+      { name: "烈焰战神", action: "已退出战队", time: "1小时前" },
+      { name: "星辰术士", action: "已加入战队", time: "2小时前" }
+    ]);
+    const joinTeamList = computed(() => {
+      return teamRankList.value.slice(0, 10).map((team, index) => ({
+        ...team,
+        rank: index + 1
+      }));
+    });
+    const searchTeamById = () => {
+      if (!searchTeamId.value.trim()) {
+        showToast("请输入战队序号！");
+        return;
+      }
+      const team = teamRankList.value.find(t => t.id === searchTeamId.value.trim());
+      if (team) {
+        viewTeamInfo(team);
+        searchTeamId.value = "";
+      } else {
+        showToast("未找到该战队！");
+      }
+    };
+    const recruitPlayer = (player) => {
+      showTeamRecruit.value = false;
+      showToast(`已向 ${player.name} 发送招募邀请！`);
+    };
     const showBagPanel = ref(false);
     const showBag2Panel = ref(false);
     const showInfoCardPanel = ref(false);
@@ -20766,6 +20890,200 @@ const applyBossChainFinalBuff = (scene) => {
     });
     const openElementPanel = () => { showElementPanel.value = true; };
     const closeElementPanel = () => { showElementPanel.value = false; };
+    const openTeamPanel = () => {
+      showTeamPanel.value = true;
+      teamLoading.value = true;
+      setTimeout(() => {
+        teamLoading.value = false;
+      }, 1500);
+    };
+    const closeTeamPanel = () => {
+      showTeamPanel.value = false;
+      teamLoading.value = false;
+      showTeamModal.value = false;
+      showCreateTeamModal.value = false;
+      showTeamInfo.value = false;
+      showTeamRank.value = false;
+      showTeamRecruit.value = false;
+      showTeamButler.value = false;
+      showTeamTask.value = false;
+      showTeamShop.value = false;
+    };
+    const closeTeamModals = () => {
+      showTeamModal.value = false;
+      showCreateTeamModal.value = false;
+      showTeamInfo.value = false;
+      showTeamRank.value = false;
+      showTeamRecruit.value = false;
+      showTeamButler.value = false;
+      showTeamTask.value = false;
+      showTeamShop.value = false;
+    };
+    const openTeamButler = () => {
+      showTeamButler.value = true;
+    };
+    const confirmExitTeam = () => {
+      if (confirm("确定要退出当前战队吗？")) {
+        exitTeam();
+      }
+    };
+    const exitTeam = () => {
+      hasTeam.value = false;
+      isTeamLeader.value = false;
+      isViewingOwnTeam.value = false;
+      showTeamInfo.value = false;
+      showTeamModal.value = false;
+      showCreateTeamModal.value = false;
+      showTeamRank.value = false;
+      showTeamRecruit.value = false;
+      showTeamButler.value = false;
+      showTeamTask.value = false;
+      showTeamShop.value = false;
+      showTeamRecord.value = false;
+      showJoinTeamList.value = false;
+      newTeamName.value = "";
+      newTeamSlogan.value = "";
+      currentTeam.value = {};
+      myTeam.value = {};
+      showToast("已退出战队！");
+    };
+    const openTeamRecord = () => {
+      showTeamRecord.value = true;
+    };
+    const approveApplication = (index) => {
+      const app = teamApplications.value[index];
+      teamApplications.value.splice(index, 1);
+      teamHistory.value.unshift({ name: app.name, action: "已批准加入", time: "刚刚" });
+      showToast(`已批准 ${app.name} 加入战队！`);
+    };
+    const rejectApplication = (index) => {
+      const app = teamApplications.value[index];
+      teamApplications.value.splice(index, 1);
+      teamHistory.value.unshift({ name: app.name, action: "已拒绝加入", time: "刚刚" });
+      showToast(`已拒绝 ${app.name} 的申请！`);
+    };
+    const onCommanderClick = () => {
+      if (hasTeam.value) {
+        isViewingOwnTeam.value = true;
+        currentTeam.value = { ...myTeam.value };
+        showTeamInfo.value = true;
+      } else {
+        showTeamModal.value = true;
+      }
+    };
+    const onRecruitClick = () => {
+      if (!hasTeam.value) {
+        showToast("请先创建或加入战队！");
+        return;
+      }
+      showTeamRecruit.value = true;
+    };
+    const handleCreateTeam = () => {
+      showTeamModal.value = false;
+      showToast("战队创建成功！");
+      hasTeam.value = true;
+      isViewingOwnTeam.value = true;
+      myTeam.value = {
+        name: "星辰战队",
+        leader: "玩家名称",
+        members: "1/10",
+        level: 1,
+        score: 0,
+        rank: 999,
+        slogan: "欢迎加入我们的战队！",
+        honor: 0,
+        funds: 0,
+        activity: 0
+      };
+      currentTeam.value = { ...myTeam.value };
+      showTeamInfo.value = true;
+    };
+    const submitCreateTeam = () => {
+      if (!newTeamName.value.trim()) {
+        showToast("请输入战队名称！");
+        return;
+      }
+      showCreateTeamModal.value = false;
+      showToast("战队创建成功！");
+      hasTeam.value = true;
+      isViewingOwnTeam.value = true;
+      myTeam.value = {
+        name: newTeamName.value.trim(),
+        leader: "玩家名称",
+        members: "1/10",
+        level: 1,
+        score: 0,
+        rank: 999,
+        slogan: newTeamSlogan.value.trim() || "欢迎加入我们的战队！",
+        honor: 0,
+        funds: 0,
+        activity: 0
+      };
+      currentTeam.value = { ...myTeam.value };
+      newTeamName.value = "";
+      newTeamSlogan.value = "";
+      showTeamInfo.value = true;
+    };
+    const joinTeam = () => {
+      showTeamModal.value = false;
+      showToast("加入战队成功！");
+      hasTeam.value = true;
+      isViewingOwnTeam.value = true;
+      myTeam.value = {
+        name: "星辰战队",
+        leader: "队长名称",
+        members: "8/10",
+        level: 10,
+        score: 15000,
+        rank: 5,
+        slogan: "团结一心，共创辉煌！",
+        honor: 3200,
+        funds: 8500,
+        activity: 88
+      };
+      currentTeam.value = { ...myTeam.value };
+      showTeamInfo.value = true;
+    };
+    const viewTeamInfo = (team) => {
+      isViewingOwnTeam.value = false;
+      currentTeam.value = {
+        name: team.name,
+        leader: team.leader,
+        members: team.members,
+        level: team.level,
+        score: team.honor,
+        rank: teamRankList.value.findIndex(t => t.name === team.name) + 1,
+        slogan: team.slogan || "暂无战队口号",
+        honor: team.honor,
+        funds: team.funds || 0,
+        activity: team.activity,
+        id: team.id || ""
+      };
+      showTeamInfo.value = true;
+    };
+    const applyJoinTeam = () => {
+      showToast("申请已发送！等待队长审核。");
+      showTeamInfo.value = false;
+    };
+    const startEditSlogan = () => {
+      editingSlogan.value = true;
+      editingSloganText.value = currentTeam.value.slogan || "";
+    };
+    const saveSlogan = () => {
+      currentTeam.value.slogan = editingSloganText.value.trim();
+      editingSlogan.value = false;
+      showToast("战队口号已更新！");
+    };
+    const cancelEditSlogan = () => {
+      editingSlogan.value = false;
+      editingSloganText.value = "";
+    };
+    const openTeamRank = () => {
+      showTeamRank.value = true;
+    };
+    const applyToTeam = (team) => {
+      showToast(`已向「${team.name}」发送加入申请！等待队长审核。`);
+    };
 
     const startChallenge = () => {
       const target = selectedDexEntry.value;
@@ -21673,6 +21991,56 @@ const applyBossChainFinalBuff = (scene) => {
       selectedWarehouseActionPet,
       switchPanelMode,
       showElementPanel,
+      showTeamPanel,
+      teamLoading,
+      showTeamModal,
+      showCreateTeamModal,
+      showTeamInfo,
+      isViewingOwnTeam,
+      showTeamRank,
+      showTeamRecruit,
+      showTeamButler,
+      showTeamTask,
+      showTeamShop,
+      showTeamRecord,
+      showJoinTeamList,
+      teamRecordTab,
+      isTeamLeader,
+      teamApplications,
+      teamHistory,
+      newTeamName,
+      newTeamSlogan,
+      hasTeam,
+      searchTeamId,
+      editingSlogan,
+      editingSloganText,
+      currentTeam,
+      myTeam,
+      teamRankList,
+      recruitPlayerList,
+      recruitPlayer,
+      openTeamPanel,
+      closeTeamPanel,
+      submitCreateTeam,
+      handleCreateTeam,
+      closeTeamModals,
+      onCommanderClick,
+      onRecruitClick,
+      joinTeam,
+      viewTeamInfo,
+      applyJoinTeam,
+      applyToTeam,
+      searchTeamById,
+      joinTeamList,
+      startEditSlogan,
+      saveSlogan,
+      cancelEditSlogan,
+      openTeamRank,
+      openTeamButler,
+      confirmExitTeam,
+      openTeamRecord,
+      approveApplication,
+      rejectApplication,
       showBagPanel,
       showBag2Panel,
       bag2Loading,

@@ -516,6 +516,7 @@
     .home-action-gacha { --x: 91.6%; --y: 51.2%; --w: 7.0%; }
     .home-action-record { --x: 2.2%; --y: 18.2%; --w: 5.2%; }
     .home-action-element { --x: 2.2%; --y: 30.4%; --w: 5.2%; }
+    .home-action-team { --x: 2.2%; --y: 42.6%; --w: 5.2%; }
     .equipment-map-hotspot {
       position: absolute;
       border: 0;
@@ -941,6 +942,7 @@
       .home-action-gacha { --x: 76%; --y: 53%; --w: 19%; }
       .home-action-record { --x: 3%; --y: 24%; --w: 13%; }
       .home-action-element { --x: 3%; --y: 37%; --w: 13%; }
+      .home-action-team { --x: 3%; --y: 50%; --w: 13%; }
       .home-double-reward {
         left: 3%;
         right: 3%;
@@ -1193,6 +1195,1052 @@
       color: #1e3a8a;
       font-size: 16px;
       font-weight: bold;
+    }
+    .team-panel {
+      position: relative;
+      width: min(calc(100vw - 24px), calc((100vh - 24px) * 2524 / 1315));
+      aspect-ratio: 2524 / 1315;
+      border-radius: 18px;
+      box-shadow: 0 18px 44px rgba(15, 23, 42, .24);
+    }
+    .team-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .team-bg-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+    .team-close-btn {
+      position: absolute;
+      top: 2%;
+      right: 2%;
+      width: 5%;
+      height: 5%;
+      border: none;
+      background: rgba(0,0,0,0.3);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .team-close-btn:hover {
+      background: rgba(0,0,0,0.5);
+      transform: scale(1.1);
+    }
+    .team-close-btn:active {
+      transform: scale(0.95);
+    }
+    .team-commander {
+      position: absolute;
+      left: 88%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 15%;
+      height: auto;
+      cursor: pointer;
+      z-index: 5;
+      transition: transform 0.15s ease;
+    }
+    .team-commander:hover {
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+    .team-commander img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+    }
+    .team-recruit-btn {
+      position: absolute;
+      left: 8%;
+      top: 60%;
+      transform: translate(-50%, -50%);
+      width: 15%;
+      height: auto;
+      cursor: pointer;
+      z-index: 5;
+      transition: transform 0.15s ease;
+    }
+    .team-recruit-btn:hover {
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+    .team-recruit-btn img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+    }
+    .team-leave-btn {
+      position: absolute;
+      left: 25%;
+      top: 3%;
+      transform: translateX(-50%);
+      width: 16%;
+      height: auto;
+      cursor: pointer;
+      z-index: 5;
+      transition: transform 0.15s ease;
+    }
+    .team-leave-btn:hover {
+      transform: translateX(-50%) scale(1.05);
+    }
+    .team-leave-btn img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+    }
+    .team-rank-btn {
+      position: absolute;
+      right: 18%;
+      top: 2%;
+      width: 20%;
+      height: auto;
+      cursor: pointer;
+      z-index: 5;
+      transition: transform 0.15s ease;
+    }
+    .team-rank-btn:hover {
+      transform: scale(1.05);
+    }
+    .team-rank-btn img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+    }
+    .team-butler-btn {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 18%;
+      height: auto;
+      cursor: pointer;
+      z-index: 5;
+      transition: transform 0.15s ease;
+    }
+    .team-butler-btn:hover {
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+    .team-butler-btn img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+    }
+    .team-loading-mask {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1020;
+      background: rgba(0,0,0,0.8);
+    }
+    .team-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+    }
+    .team-modal {
+      background: linear-gradient(180deg, #f0f9ff, #e0f2fe);
+      border: 2px solid #38bdf8;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      min-width: 300px;
+      max-width: 80%;
+      text-align: center;
+    }
+    .team-modal-title {
+      font-size: 20px;
+      font-weight: 950;
+      color: #0c4a6e;
+      margin-bottom: 20px;
+    }
+    .team-modal-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .team-modal-btn {
+      height: 44px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .team-modal-btn:active {
+      transform: scale(0.98);
+    }
+    .team-modal-btn.create {
+      background: linear-gradient(180deg, #fbbf24, #f59e0b);
+      color: #1f1300;
+      box-shadow: 0 6px 16px rgba(251, 191, 36, 0.3);
+    }
+    .team-modal-btn.join {
+      background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+      color: white;
+      box-shadow: 0 6px 16px rgba(56, 189, 248, 0.3);
+    }
+    .team-modal-btn.cancel {
+      background: linear-gradient(180deg, #94a3b8, #64748b);
+      color: white;
+    }
+    .team-create-modal {
+      background: linear-gradient(180deg, #f0f9ff, #e0f2fe);
+      border: 2px solid #38bdf8;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      min-width: 320px;
+      max-width: 80%;
+      text-align: center;
+      z-index: 1050 !important;
+      pointer-events: auto !important;
+      position: relative !important;
+      touch-action: auto !important;
+    }
+    .team-butler-modal {
+      background: linear-gradient(180deg, #fef3c7, #fde68a);
+      border: 2px solid #f59e0b;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      min-width: 300px;
+      max-width: 80%;
+      text-align: center;
+    }
+    .team-butler-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #92400e;
+      margin-bottom: 20px;
+    }
+    .team-butler-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .team-butler-btn-item {
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .team-butler-btn-item:hover {
+      transform: scale(1.02);
+    }
+    .team-butler-btn-item:active {
+      transform: scale(0.98);
+    }
+    .team-butler-btn-item.task {
+      background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+      color: white;
+      box-shadow: 0 6px 16px rgba(56, 189, 248, 0.3);
+    }
+    .team-butler-btn-item.shop {
+      background: linear-gradient(180deg, #22c55e, #16a34a);
+      color: white;
+      box-shadow: 0 6px 16px rgba(34, 197, 94, 0.3);
+    }
+    .team-butler-btn-item.cancel {
+      background: linear-gradient(180deg, #94a3b8, #64748b);
+      color: white;
+    }
+    .team-butler-btn-item img {
+      width: 24px;
+      height: 24px;
+    }
+    .team-task-panel {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(1.5);
+      z-index: 25;
+      width: min(95%, 95vmin);
+      text-align: center;
+    }
+    .team-task-bg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .team-task-close-btn {
+      position: absolute;
+      right: 2%;
+      top: 2%;
+      width: 6%;
+      cursor: pointer;
+      z-index: 10;
+    }
+    .team-task-close-btn img {
+      width: 100%;
+      height: auto;
+    }
+    .team-shop-panel {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(1.5);
+      z-index: 25;
+      width: min(95%, 95vmin);
+      text-align: center;
+    }
+    .team-shop-bg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .team-shop-close-btn {
+      position: absolute;
+      right: 2%;
+      top: 2%;
+      width: 6%;
+      cursor: pointer;
+      z-index: 10;
+    }
+    .team-shop-close-btn img {
+      width: 100%;
+      height: auto;
+    }
+    .team-create-form {
+      margin: 16px 0;
+      text-align: left;
+    }
+    .team-create-item {
+      margin-bottom: 14px;
+    }
+    .team-create-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 900;
+      color: #0c4a6e;
+      margin-bottom: 6px;
+    }
+    .team-create-input {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      border: 2px solid #7dd3fc;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0c4a6e;
+      background: rgba(255,255,255,0.9);
+      box-sizing: border-box;
+      z-index: 10030 !important;
+      pointer-events: auto !important;
+      position: relative !important;
+    }
+    .team-create-input:focus {
+      outline: none;
+      border-color: #0ea5e9;
+    }
+    .team-create-textarea {
+      width: 100%;
+      height: 80px;
+      padding: 10px 12px;
+      border: 2px solid #7dd3fc;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0c4a6e;
+      background: rgba(255,255,255,0.9);
+      resize: none;
+      box-sizing: border-box;
+      z-index: 10030 !important;
+      pointer-events: auto !important;
+      position: relative !important;
+    }
+    .team-create-textarea:focus {
+      outline: none;
+      border-color: #0ea5e9;
+    }
+    .team-info-panel {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(1.5);
+      z-index: 30;
+      width: min(95%, 95vmin);
+      text-align: center;
+    }
+    .team-info-join-btn {
+      position: absolute;
+      right: 8%;
+      top: 28%;
+      width: 15%;
+      cursor: pointer;
+    }
+    .team-info-join-btn img {
+      width: 100%;
+      height: auto;
+    }
+    .team-info-bg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .team-info-slogan-panel {
+      position: absolute;
+      left: 8%;
+      bottom: 25%;
+      width: 28%;
+      height: 15%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4%;
+    }
+    .team-info-slogan-text {
+      font-size: clamp(10px, 0.9vw, 14px);
+      color: #ffffff;
+      text-align: center;
+      word-break: break-all;
+      line-height: 1.4;
+      cursor: pointer;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
+    .team-info-slogan-edit {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 4%;
+    }
+    .team-info-slogan-input {
+      width: 100%;
+      font-size: clamp(10px, 0.8vw, 12px);
+      padding: 2%;
+      background: rgba(0,0,0,0.7);
+      color: #ffffff;
+      border: 1px solid #3b82f6;
+      border-radius: 4px;
+    }
+    .team-info-slogan-save, .team-info-slogan-cancel {
+      font-size: clamp(8px, 0.7vw, 10px);
+      padding: 2% 6%;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .team-info-slogan-save {
+      background: #22c55e;
+      color: #ffffff;
+    }
+    .team-info-slogan-cancel {
+      background: #ef4444;
+      color: #ffffff;
+    }
+    .team-info-top-panel {
+      position: absolute;
+      right: 8%;
+      top: 20%;
+      width: 50%;
+      height: 12%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 8%;
+    }
+    .team-info-top-name {
+      font-size: clamp(14px, 1.5vw, 20px);
+      font-weight: 950;
+      color: #ffffff;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    }
+    .team-info-top-rank {
+      font-size: clamp(10px, 0.9vw, 14px);
+      font-weight: 900;
+      color: #facc15;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
+    .team-info-bottom-panel {
+      position: absolute;
+      right: 16%;
+      top: 38%;
+      width: 46%;
+      height: 35%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3%;
+      gap: 6%;
+    }
+    .team-info-row-center {
+      font-size: clamp(14px, 1.4vw, 18px);
+      font-weight: 950;
+      color: #facc15;
+      text-align: center;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    }
+    .team-info-row {
+      display: flex;
+      justify-content: space-around;
+      font-size: clamp(10px, 0.9vw, 14px);
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
+    .team-info-name {
+      position: absolute;
+      left: 50%;
+      top: 33%;
+      transform: translateX(-50%);
+      font-size: clamp(16px, 2vw, 24px);
+      font-weight: 950;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 40%;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
+    .team-info-rank {
+      position: absolute;
+      right: 22%;
+      top: 32%;
+      font-size: clamp(12px, 1vw, 16px);
+      font-weight: 900;
+      color: #1e293b;
+      text-shadow: none;
+    }
+    .team-info-slogan {
+      position: absolute;
+      left: 11%;
+      top: 78%;
+      font-size: clamp(12px, 1vw, 16px);
+      font-weight: 900;
+      color: #e2e8f0;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      max-width: 22%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .team-info-stat-level {
+      position: absolute;
+      right: 20%;
+      top: 45%;
+      font-size: clamp(14px, 1.2vw, 18px);
+      font-weight: 950;
+      color: #f1f5f9;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .team-info-stat-members {
+      position: absolute;
+      right: 20%;
+      top: 52%;
+      font-size: clamp(12px, 1vw, 16px);
+      font-weight: 950;
+      color: #f1f5f9;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .team-info-stat-leader {
+      position: absolute;
+      right: 20%;
+      top: 59%;
+      font-size: clamp(12px, 1vw, 16px);
+      font-weight: 950;
+      color: #f1f5f9;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      max-width: 25%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .team-info-stat-honor {
+      position: absolute;
+      right: 20%;
+      top: 66%;
+      font-size: clamp(12px, 1vw, 16px);
+      font-weight: 950;
+      color: #f1f5f9;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .team-info-stat-funds {
+      position: absolute;
+      right: 20%;
+      top: 73%;
+      font-size: clamp(12px, 1vw, 16px);
+      font-weight: 950;
+      color: #f1f5f9;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .team-info-stat-activity {
+      position: absolute;
+      right: 20%;
+      top: 80%;
+      font-size: clamp(12px, 1vw, 16px);
+      font-weight: 950;
+      color: #f1f5f9;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .team-info-buttons {
+      position: absolute;
+      left: 50%;
+      bottom: 6%;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8%;
+      width: 80%;
+    }
+    .team-info-exit-btn {
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      width: 22%;
+      max-width: 100px;
+    }
+    .team-info-exit-btn:hover {
+      transform: scale(1.08);
+    }
+    .team-info-exit-btn img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    .team-info-close-btn {
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      width: 22%;
+      max-width: 100px;
+    }
+    .team-info-close-btn:hover {
+      transform: scale(1.08);
+    }
+    .team-info-close-btn img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    .team-info-record-btn {
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      width: 22%;
+      max-width: 100px;
+    }
+    .team-info-record-btn:hover {
+      transform: scale(1.08);
+    }
+    .team-info-record-btn img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    .team-record-panel {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(1.3);
+      z-index: 35;
+      width: min(90%, 85vmin);
+      background: linear-gradient(180deg, #1e293b, #0f172a);
+      border: 2px solid #38bdf8;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+    .team-record-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+      border-bottom: 2px solid #0284c7;
+    }
+    .team-record-tabs {
+      display: flex;
+      gap: 8px;
+    }
+    .team-record-tab {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+    .team-record-tab:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    .team-record-tab.active {
+      background: white;
+      color: #0c4a6e;
+    }
+    .team-record-close-btn {
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .team-record-close-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .team-record-content {
+      padding: 16px;
+      max-height: 40vh;
+      overflow-y: auto;
+    }
+    .team-record-applications, .team-record-history {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .team-record-application-item, .team-record-history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+    .team-record-app-name, .team-record-history-name {
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      flex: 1;
+    }
+    .team-record-app-level {
+      font-size: 13px;
+      color: #facc15;
+      font-weight: bold;
+      margin-right: 12px;
+    }
+    .team-record-app-approve {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      background: linear-gradient(180deg, #22c55e, #16a34a);
+      color: white;
+      margin-right: 8px;
+    }
+    .team-record-app-approve:hover {
+      transform: scale(1.05);
+    }
+    .team-record-app-reject {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      background: linear-gradient(180deg, #ef4444, #dc2626);
+      color: white;
+    }
+    .team-record-app-reject:hover {
+      transform: scale(1.05);
+    }
+    .team-record-history-action {
+      font-size: 13px;
+      color: #facc15;
+      font-weight: bold;
+      flex: 1;
+      text-align: center;
+    }
+    .team-record-history-time {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .team-record-empty {
+      text-align: center;
+      padding: 30px;
+      color: #64748b;
+      font-size: 14px;
+    }
+    .team-join-list-modal {
+      position: relative;
+      width: min(90%, 700px);
+      max-height: 70vh;
+      background: linear-gradient(180deg, #1e293b, #0f172a);
+      border: 2px solid #38bdf8;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+    .team-join-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+      border-bottom: 2px solid #0284c7;
+    }
+    .team-join-list-close {
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .team-join-list-close img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .team-join-list-search {
+      display: flex;
+      gap: 10px;
+      padding: 12px 16px;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+    }
+    .team-join-list-search input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #38bdf8;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 14px;
+    }
+    .team-join-list-search input::placeholder {
+      color: #94a3b8;
+    }
+    .team-join-list-search button {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+      color: white;
+    }
+    .team-join-list-content {
+      padding: 12px;
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+    .team-join-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      font-size: 13px;
+    }
+    .team-join-list-num {
+      width: 35px;
+      font-weight: bold;
+      color: #facc15;
+      text-align: center;
+    }
+    .team-join-list-name {
+      flex: 1;
+      font-weight: bold;
+      color: white;
+      margin-left: 10px;
+    }
+    .team-join-list-leader {
+      width: 60px;
+      color: #94a3b8;
+      text-align: center;
+    }
+    .team-join-list-honor {
+      width: 70px;
+      color: #38bdf8;
+      text-align: right;
+    }
+    .team-join-list-members {
+      width: 50px;
+      color: #22c55e;
+      text-align: right;
+      margin-right: 10px;
+    }
+    .team-join-list-view {
+      padding: 5px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+      color: white;
+      margin-right: 8px;
+    }
+    .team-join-list-apply {
+      padding: 5px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      background: linear-gradient(180deg, #22c55e, #16a34a);
+      color: white;
+    }
+    .team-rank-panel {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(1.5);
+      z-index: 20;
+      width: min(60%, 60vmin);
+      text-align: center;
+    }
+    .team-rank-bg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .team-rank-close-btn {
+      position: absolute;
+      right: 6%;
+      top: 6%;
+      width: 8%;
+      cursor: pointer;
+    }
+    .team-rank-close-btn img {
+      width: 100%;
+      height: auto;
+    }
+    .team-rank-list {
+      position: absolute;
+      left: 10%;
+      top: 26%;
+      right: 10%;
+      bottom: 14%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5%;
+      overflow-y: auto;
+    }
+    .team-rank-item {
+      display: flex;
+      align-items: center;
+      font-size: clamp(7px, 0.6vw, 11px);
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      padding: 0.5% 1%;
+      background: rgba(0,0,0,0.3);
+      border-radius: 3px;
+    }
+    .team-rank-num {
+      width: 5%;
+      text-align: center;
+      color: #facc15;
+    }
+    .team-rank-name {
+      width: 18%;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .team-rank-leader {
+      width: 13%;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-left: 8%;
+    }
+    .team-rank-level {
+      width: 10%;
+      text-align: center;
+      color: #facc15;
+    }
+    .team-rank-honor {
+      width: 14%;
+      text-align: right;
+      color: #facc15;
+    }
+    .team-rank-members {
+      width: 9%;
+      text-align: right;
+    }
+    .team-rank-activity {
+      width: 9%;
+      text-align: right;
+    }
+    .team-rank-view {
+      width: 8%;
+      text-align: right;
+      cursor: pointer;
+    }
+    .team-rank-view img {
+      width: 100%;
+      height: auto;
+    }
+    .team-rank-apply {
+      width: 10%;
+      text-align: right;
+      cursor: pointer;
+    }
+    .team-rank-apply img {
+      width: 100%;
+      height: auto;
+    }
+    .team-rank-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .team-rank-name {
+      font-size: 11px;
+      font-weight: 900;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .team-rank-score {
+      font-size: 12px;
+      font-weight: 800;
+      color: #67e8f9;
+    }
+    .team-rank-close {
+      margin-top: 16px;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #fbbf24, #f59e0b);
+      color: #1f1300;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
     }
     .info-card-panel {
       position: relative;
@@ -5515,6 +6563,7 @@
     html.android-webview.android-landscape header.home-hub-scene .home-action-gacha { --x: 91.6%; --y: 51.2%; --w: 7.0%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-record { --x: 2.2%; --y: 18.2%; --w: 5.2%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-element { --x: 2.2%; --y: 30.4%; --w: 5.2%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-team { --x: 2.2%; --y: 42.6%; --w: 5.2%; }
     html.android-webview.android-landscape header.home-hub-scene .home-status-value {
       font-size: clamp(10px, min(1.05vw, 3.3vh), 15px);
     }
@@ -8437,6 +9486,7 @@
       <button @click="openQixingGachaPanel" class="home-action-btn home-action-gacha" title="启星转盘" aria-label="启星转盘"><img src="./resource/ui/背景/转盘.png" alt=""></button>
       <button @click="openChallengeRecordPanel" class="home-action-btn home-action-record" title="挑战录像" aria-label="挑战录像"><img src="./resource/界面ui/录像.png" alt=""></button>
       <button @click="openElementPanel" class="home-action-btn home-action-element" title="属性克制" aria-label="属性克制"><img src="./resource/界面ui/属性.png" alt=""></button>
+      <button @click="openTeamPanel" class="home-action-btn home-action-team" title="战队" aria-label="战队"><img src="./resource-v8/创建战队.png" alt=""></button>
       <button
         @click="showGlobalSettingsPanel = true"
         class="home-settings-btn"
@@ -10768,6 +11818,250 @@
       </div>
       <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
         <img :src="elementRelationImage" alt="属性克制关系" class="w-full h-auto object-contain rounded-xl border border-slate-200 bg-white">
+      </div>
+    </div>
+  </div>
+
+  <div v-show="showTeamPanel" class="fixed inset-0 z-[95] bg-black flex items-center justify-center">
+    <div v-if="teamLoading" class="team-loading-mask">
+      <div class="bag2-spinner"></div>
+      <div class="bag2-loading-text">加载中...</div>
+    </div>
+    <div v-else class="team-panel" @click.stop>
+      <div class="team-bg">
+        <img src="./resource-v8/战队底图.png" alt="战队背景" class="team-bg-img">
+      </div>
+      <button @click="closeTeamModals" class="team-close-btn" title="关闭弹窗">
+        <svg viewBox="0 0 24 24" class="w-6 h-6 fill-none stroke-white stroke-width-2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+
+      <div class="team-commander" @click="onCommanderClick">
+        <img src="./resource-v8/指挥官_.png" alt="指挥官">
+      </div>
+
+      <div class="team-recruit-btn" @click="onRecruitClick">
+        <img src="./resource-v8/战队招募.png" alt="战队招募">
+      </div>
+
+      <div class="team-leave-btn" @click="closeTeamPanel">
+        <img src="./resource-v8/离开要塞.png" alt="离开要塞">
+      </div>
+
+      <div class="team-rank-btn" @click="openTeamRank">
+        <img src="./resource-v8/风云榜_.png" alt="风云榜">
+      </div>
+
+      <div class="team-butler-btn" @click="openTeamButler">
+        <img src="./resource-v8/战队管家.png" alt="战队管家">
+      </div>
+    </div>
+
+    <div v-show="showJoinTeamList" class="team-modal-overlay">
+      <div class="team-join-list-modal">
+        <div class="team-join-list-header">
+          <div class="team-modal-title">申请加入战队</div>
+          <div class="team-join-list-close" @click="showJoinTeamList = false">
+            <img src="./resource-v8/荣誉榜关闭按钮.png" alt="关闭">
+          </div>
+        </div>
+        <div class="team-join-list-search">
+          <input type="text" v-model="searchTeamId" placeholder="搜索战队序号..." @keyup.enter="searchTeamById">
+          <button @click="searchTeamById">搜索</button>
+        </div>
+        <div class="team-join-list-content">
+          <div v-for="(team, index) in joinTeamList" :key="index" class="team-join-list-item">
+            <span class="team-join-list-num">{{ team.rank }}</span>
+            <span class="team-join-list-name">{{ team.name }}</span>
+            <span class="team-join-list-leader">{{ team.leader }}</span>
+            <span class="team-join-list-honor">{{ team.honor }}</span>
+            <span class="team-join-list-members">{{ team.members }}</span>
+            <button class="team-join-list-view" @click="viewTeamInfo(team)">查看</button>
+            <button class="team-join-list-apply" @click="applyToTeam(team)">申请</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+
+    <div v-show="showTeamInfo" class="team-info-panel">
+      <img src="./resource-v8/战队信息底图.png?v=3" class="team-info-bg" alt="战队信息">
+      <div v-if="!hasTeam && !isViewingOwnTeam" class="team-info-join-btn" @click="applyJoinTeam">
+        <img src="./resource-v8/申请加入按钮.png" alt="申请加入">
+      </div>
+      <div class="team-info-slogan-panel">
+        <div v-if="!editingSlogan" class="team-info-slogan-text" @click="startEditSlogan">
+          {{ currentTeam.slogan || '暂无战队口号' }}
+        </div>
+        <div v-else class="team-info-slogan-edit">
+          <input type="text" v-model="editingSloganText" class="team-info-slogan-input" @keyup.enter="saveSlogan">
+          <button class="team-info-slogan-save" @click="saveSlogan">保存</button>
+          <button class="team-info-slogan-cancel" @click="cancelEditSlogan">取消</button>
+        </div>
+      </div>
+      <div class="team-info-top-panel">
+        <div class="team-info-top-name">{{ currentTeam.name }}</div>
+        <div class="team-info-top-rank">排名: {{ currentTeam.rank }}</div>
+      </div>
+      <div class="team-info-bottom-panel">
+        <div class="team-info-row-center">Lv.{{ currentTeam.level }}</div>
+        <div class="team-info-row">
+          <span>ID: {{ currentTeam.id || '0000' }}</span>
+          <span>荣誉: {{ currentTeam.honor }}</span>
+        </div>
+        <div class="team-info-row">
+          <span>成员: {{ currentTeam.members }}</span>
+          <span>资金: {{ currentTeam.funds }}</span>
+        </div>
+        <div class="team-info-row">
+          <span>队长: {{ currentTeam.leader }}</span>
+          <span>活跃: {{ currentTeam.activity }}%</span>
+        </div>
+      </div>
+      <div class="team-info-buttons">
+        <div v-if="hasTeam && isViewingOwnTeam" class="team-info-exit-btn" @click="confirmExitTeam">
+          <img src="./resource-v8/退出战队.png" alt="退出战队">
+        </div>
+        <div class="team-info-close-btn" @click="showTeamInfo = false">
+          <img src="./resource-v8/关闭.png" alt="关闭">
+        </div>
+        <div v-if="hasTeam && isViewingOwnTeam && isTeamLeader" class="team-info-record-btn" @click="openTeamRecord">
+          <img src="./resource-v8/战队记录.png" alt="战队记录">
+        </div>
+      </div>
+    </div>
+
+    <div v-show="showTeamButler" class="team-modal-overlay">
+      <div class="team-butler-modal">
+        <div class="team-butler-title">战队管家</div>
+        <div class="team-butler-buttons">
+          <button class="team-butler-btn-item task" @click="showTeamButler = false; showTeamTask = true">
+            <img src="./resource-v8/战队任务.png" alt="战队任务">
+            <span>战队任务</span>
+          </button>
+          <button class="team-butler-btn-item shop" @click="showTeamButler = false; showTeamShop = true">
+            <img src="./resource-v8/战队商店.png" alt="战队商店">
+            <span>战队商店</span>
+          </button>
+          <button class="team-butler-btn-item cancel" @click="showTeamButler = false">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <div v-show="showTeamTask" class="team-task-panel">
+      <img src="./resource-v8/战队任务.png" class="team-task-bg" alt="战队任务">
+      <div class="team-task-close-btn" @click="showTeamTask = false">
+        <img src="./resource-v8/荣誉榜关闭按钮.png" alt="关闭">
+      </div>
+    </div>
+
+    <div v-show="showTeamShop" class="team-shop-panel">
+      <img src="./resource-v8/战队商店.png" class="team-shop-bg" alt="战队商店">
+      <div class="team-shop-close-btn" @click="showTeamShop = false">
+        <img src="./resource-v8/荣誉榜关闭按钮.png" alt="关闭">
+      </div>
+    </div>
+
+    <div v-show="showTeamRecord" class="team-record-panel">
+      <div class="team-record-header">
+        <div class="team-record-tabs">
+          <button class="team-record-tab" :class="{ active: teamRecordTab === 'applications' }" @click="teamRecordTab = 'applications'">申请列表</button>
+          <button class="team-record-tab" :class="{ active: teamRecordTab === 'history' }" @click="teamRecordTab = 'history'">成员动态</button>
+        </div>
+        <div class="team-record-close-btn" @click="showTeamRecord = false">
+          <img src="./resource-v8/荣誉榜关闭按钮.png" alt="关闭">
+        </div>
+      </div>
+      <div class="team-record-content">
+        <div v-if="teamRecordTab === 'applications'" class="team-record-applications">
+          <div v-if="teamApplications.length === 0" class="team-record-empty">暂无申请</div>
+          <div v-for="(app, index) in teamApplications" :key="index" class="team-record-application-item">
+            <span class="team-record-app-name">{{ app.name }}</span>
+            <span class="team-record-app-level">Lv.{{ app.level }}</span>
+            <button class="team-record-app-approve" @click="approveApplication(index)">批准</button>
+            <button class="team-record-app-reject" @click="rejectApplication(index)">拒绝</button>
+          </div>
+        </div>
+        <div v-if="teamRecordTab === 'history'" class="team-record-history">
+          <div v-if="teamHistory.length === 0" class="team-record-empty">暂无记录</div>
+          <div v-for="(record, index) in teamHistory" :key="index" class="team-record-history-item">
+            <span class="team-record-history-name">{{ record.name }}</span>
+            <span class="team-record-history-action">{{ record.action }}</span>
+            <span class="team-record-history-time">{{ record.time }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-show="showTeamRank" class="team-rank-panel">
+      <img src="./resource-v8/荣誉榜底图.png" class="team-rank-bg" alt="荣誉榜">
+      <div class="team-rank-close-btn" @click="showTeamRank = false">
+        <img src="./resource-v8/荣誉榜关闭按钮.png" alt="关闭">
+      </div>
+      <div class="team-rank-list">
+        <div v-for="(item, index) in teamRankList" :key="index" class="team-rank-item">
+          <span class="team-rank-num">{{ index + 1 }}</span>
+          <span class="team-rank-name">{{ item.name }}</span>
+          <span class="team-rank-leader">{{ item.leader }}</span>
+          <span class="team-rank-level">Lv.{{ item.level }}</span>
+          <span class="team-rank-honor">{{ item.honor }}</span>
+          <span class="team-rank-members">{{ item.members }}</span>
+          <span class="team-rank-activity">{{ item.activity }}%</span>
+          <span class="team-rank-view" @click="viewTeamInfo(item)">
+            <img src="./resource-v8/查看.png" alt="查看">
+          </span>
+          <span v-if="!hasTeam" class="team-rank-apply" @click="applyToTeam(item)">
+            <img src="./resource-v8/加入.png" alt="申请加入">
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div v-show="showTeamRecruit" class="team-recruit-panel">
+      <div class="team-recruit-title">战队招募</div>
+      <div class="team-recruit-list">
+        <div v-for="(player, index) in recruitPlayerList" :key="index" class="team-recruit-item">
+          <div class="team-recruit-avatar">
+            <div class="team-recruit-level">Lv.{{ player.level }}</div>
+          </div>
+          <div class="team-recruit-info">
+            <div class="team-recruit-name">{{ player.name }}</div>
+            <div class="team-recruit-power">战力: {{ player.power }}</div>
+          </div>
+          <button class="team-recruit-btn" @click="recruitPlayer(player)">招募</button>
+        </div>
+      </div>
+      <button class="team-recruit-close" @click="showTeamRecruit = false">关闭</button>
+    </div>
+  </div>
+
+  <div v-show="showTeamModal" class="team-modal-overlay">
+    <div class="team-modal">
+      <div class="team-modal-title">选择操作</div>
+      <div class="team-modal-buttons">
+        <button class="team-modal-btn create" @click="showTeamModal = false; showCreateTeamModal = true">创建战队</button>
+        <button class="team-modal-btn join" @click="showTeamModal = false; showJoinTeamList = true">申请加入</button>
+        <button class="team-modal-btn cancel" @click="showTeamModal = false">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-show="showCreateTeamModal" class="team-modal-overlay">
+    <div class="team-create-modal">
+      <div class="team-modal-title">创建战队</div>
+      <div class="team-create-form">
+        <div class="team-create-item">
+          <label class="team-create-label">战队名称</label>
+          <input type="text" v-model="newTeamName" class="team-create-input" placeholder="请输入战队名称" maxlength="12">
+        </div>
+        <div class="team-create-item">
+          <label class="team-create-label">战队宣言</label>
+          <textarea v-model="newTeamSlogan" class="team-create-textarea" placeholder="请输入战队宣言" maxlength="50"></textarea>
+        </div>
+      </div>
+      <div class="team-modal-buttons">
+        <button class="team-modal-btn create" @click="submitCreateTeam">确认创建</button>
+        <button class="team-modal-btn cancel" @click="showCreateTeamModal = false">取消</button>
       </div>
     </div>
   </div>
