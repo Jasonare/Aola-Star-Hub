@@ -41,13 +41,24 @@ const readJsonFile = (file, fallback) => {
     if (!fs.existsSync(file)) return fallback;
     return JSON.parse(fs.readFileSync(file, "utf8"));
   } catch {
+    try {
+      const backup = `${file}.bak`;
+      if (fs.existsSync(backup)) return JSON.parse(fs.readFileSync(backup, "utf8"));
+    } catch {}
     return fallback;
   }
 };
 
 const writeJsonFile = (file, data) => {
   ensureDir(path.dirname(file));
-  fs.writeFileSync(file, JSON.stringify(data, null, 2), "utf8");
+  const text = JSON.stringify(data, null, 2);
+  const tmpFile = `${file}.${process.pid}.${Date.now()}.tmp`;
+  const backupFile = `${file}.bak`;
+  fs.writeFileSync(tmpFile, text, "utf8");
+  if (fs.existsSync(file)) {
+    try { fs.copyFileSync(file, backupFile); } catch {}
+  }
+  fs.renameSync(tmpFile, file);
 };
 
 const toPosixPath = (value) => String(value || "").replace(/\\/g, "/");
@@ -80,7 +91,7 @@ const TEST_USER_ID = "test-account-all-pets-1-1960";
 const LEGACY_TEST_USER_IDS = ["test-account-all-pets-1-1928", "test-account-all-pets-1-796"];
 const TEST_USERNAME = "test";
 const TEST_PASSWORD = "test123456";
-const LEADERBOARD_MAX_OPEN_DEX_ID = 2049;
+const LEADERBOARD_MAX_OPEN_DEX_ID = 2050;
 const LEADERBOARD_MAX_HCOINS = 100000000;
 const LEADERBOARD_METRICS = new Set(["battlePower", "activatedDexCount", "hCoins", "timeTunnelMaxClearedFloor", "equipmentDungeonBestScore"]);
 const LEADERBOARD_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];

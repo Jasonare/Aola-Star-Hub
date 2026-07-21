@@ -498,6 +498,11 @@
       user-select: none;
       -webkit-user-drag: none;
     }
+    .home-action-monthly {
+      --x: 1.25%;
+      --y: 73.0%;
+      --w: 7.4%;
+    }
     .home-action-gift { --x: 1.2%; --y: 83.4%; --w: 7.1%; }
     .home-action-dragonboat { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
     .home-action-rank { --x: 22%; --y: 86.2%; --w: 7.8%; }
@@ -516,6 +521,11 @@
     .home-action-gacha { --x: 91.6%; --y: 51.2%; --w: 7.0%; }
     .home-action-record { --x: 2.2%; --y: 18.2%; --w: 5.2%; }
     .home-action-element { --x: 2.2%; --y: 30.4%; --w: 5.2%; }
+    .monthly-sign-card {
+      background: linear-gradient(180deg, rgba(240, 249, 255, .96), rgba(224, 242, 254, .96));
+      border: 1px solid rgba(14, 165, 233, .28);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.72), 0 14px 30px rgba(14, 116, 144, .16);
+    }
     .equipment-map-hotspot {
       position: absolute;
       border: 0;
@@ -926,6 +936,7 @@
         width: min(520px, calc(100vw - 32px));
       }
       .home-action-gift { --x: 2%; --y: 76%; --w: 18%; }
+      .home-action-monthly { --x: 2%; --y: 60.5%; --w: 18%; }
       .home-action-dragonboat { --x: 2%; --y: 60%; --w: 18%; }
       .home-action-rank { --x: 18%; --y: 82%; --w: 18%; }
       .home-action-tunnel { --x: 34%; --y: 82%; --w: 18%; }
@@ -1035,6 +1046,39 @@
       z-index: 9999 !important;
       isolation: isolate;
       transform: translateZ(0);
+    }
+    .gear-shop-tab-active {
+      background: #0284c7 !important;
+      color: #fff !important;
+    }
+    .gear-shop-card {
+      border-color: #e0f2fe !important;
+      background: #f0f9ff !important;
+    }
+    .gear-shop-icon {
+      border-color: #e0f2fe !important;
+      background: rgba(255, 255, 255, .75) !important;
+    }
+    .gear-shop-name {
+      color: #082f49 !important;
+    }
+    .gear-shop-desc {
+      color: #075985 !important;
+    }
+    .gear-shop-price {
+      color: #0e7490 !important;
+    }
+    .gear-shop-input {
+      border-color: #bae6fd !important;
+      background: #fff !important;
+      color: #082f49 !important;
+    }
+    .gear-shop-buy {
+      background: #0284c7 !important;
+      color: #fff !important;
+    }
+    .gear-shop-buy:disabled {
+      opacity: .45;
     }
     .app-top-dialog-overlay,
     .bag-item-use-overlay.app-top-dialog-overlay {
@@ -1406,6 +1450,20 @@
         right: 8px;
         width: 30px;
         height: 30px;
+      }
+    }
+    .bag-responsive-modal {
+      aspect-ratio: 1848 / 1137;
+      width: min(96vw, calc(1152 * var(--ui-px))) !important;
+      max-width: min(96vw, calc(1152 * var(--ui-px))) !important;
+      height: min(90vh, calc(min(96vw, calc(1152 * var(--ui-px))) * 1137 / 1848)) !important;
+      max-height: min(90vh, calc(760 * var(--ui-px))) !important;
+    }
+    @media (max-aspect-ratio: 4/3) {
+      .bag-responsive-modal {
+        width: min(98vw, calc(90vh * 1848 / 1137)) !important;
+        max-width: min(98vw, calc(90vh * 1848 / 1137)) !important;
+        height: min(90vh, calc(98vw * 1137 / 1848)) !important;
       }
     }
     html.android-webview.android-landscape .bag2-panel {
@@ -3373,6 +3431,24 @@
       background-size: cover;
       background-repeat: no-repeat;
       z-index: 0;
+    }
+    .battle-shengyu-bg-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      background: #020617;
+    }
+    .battle-shengyu-bg-layer > object {
+      width: 100%;
+      height: 100%;
+      max-width: none !important;
+      max-height: none !important;
+      object-fit: cover;
+      display: block;
+      border: 0;
+      pointer-events: none;
     }
     .battle-bg-shade {
       position: absolute;
@@ -5498,6 +5574,7 @@
       background-repeat: no-repeat !important;
     }
     html.android-webview.android-landscape header.home-hub-scene .home-action-gift { --x: 1.2%; --y: 68.8%; --w: 6.5%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-monthly { --x: 1.2%; --y: 57.0%; --w: 6.8%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-dragonboat { --x: 8.5%; --y: 67.6%; --w: 7.3%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-rank { --x: 6.2%; --y: 70.3%; --w: 6.1%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-tunnel { --x: 33.8%; --y: 71.8%; --w: 7.6%; }
@@ -8423,6 +8500,7 @@
     </div>
     <div class="home-action-grid">
       <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./resource/ui/背景/赠礼.png" alt=""></button>
+      <button @click="openMonthlySignPanel" class="home-action-btn home-action-monthly" title="月签到" aria-label="月签到"><img src="./resource/button/签到.png" alt=""></button>
       <button @click.stop.prevent="openLeaderboardPanel" class="home-action-btn home-action-rank" title="排行榜" aria-label="排行榜"><img src="./resource/ui/背景/排行榜.png" alt=""></button>
       <button @click="openStrongRoadPanel" class="home-action-btn home-action-strong-road" title="变强之路" aria-label="变强之路"><img src="./resource/界面ui/变强之路.png" alt=""></button>
       <button @click="openInfoCardPanel" class="home-action-btn home-action-info-card" title="信息卡" aria-label="信息卡"><img src="./resource/界面ui/信息卡.png" alt=""></button>
@@ -8560,6 +8638,10 @@
                 <div class="rounded-xl border border-sky-200 bg-white p-3 text-xs font-bold text-slate-700">
                   <div class="text-sm font-black text-sky-950">当前特性</div>
                   <div class="mt-1">{{ selectedPetFeatureText }}</div>
+                  <div v-if="selectedPetSkinEquipped" class="mt-2 flex flex-wrap items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-2 py-2 text-[11px] font-black text-violet-700">
+                    <span>已装配未来计划·神秘战无炎皮肤</span>
+                    <button @click="unequipPetSkin(petId(selectedPet))" class="h-7 px-3 rounded-lg bg-white text-violet-700 border border-violet-200 font-black">卸下皮肤</button>
+                  </div>
                   <div class="mt-3 grid grid-cols-3 md:grid-cols-6 gap-2">
                     <button v-for="seal in qixingSealRows" :key="'bag_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
                       <img :src="seal.image" @error="withFallback" class="qixing-seal-grid-img mx-auto" :class="{ 'is-legacy': seal.isLegacy }">
@@ -8927,7 +9009,7 @@
 
 
   <div v-if="showBag2Panel" class="app-top-overlay fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeBag2Panel">
-    <div class="bag2-panel" @click.stop>
+    <div class="bag2-panel bag-responsive-modal" @click.stop>
       <img src="./resource/背包ui/背包ui底图.png" class="bag2-bg" alt="">
       <div v-if="bag2Loading" class="bag2-loading-mask">
         <div class="bag2-spinner"></div>
@@ -9132,7 +9214,7 @@
                   <div>
                     <div class="bag2-gear-list-name">{{ gear.name }}</div>
                     <div class="bag2-gear-list-desc">{{ gear.effectText }}</div>
-                    <div class="bag2-gear-list-meta">库存 {{ gear.count }}</div>
+                    <div class="bag2-gear-list-meta">库存 {{ gear.count }}｜已装配 {{ gear.equippedCount }}｜可用 {{ gear.availableCount }}</div>
                     <div class="bag2-gear-list-owner">{{ gear.equippedPetName ? `装配：${gear.equippedPetName}` : '未装配' }}</div>
                   </div>
                   <div class="bag2-gear-list-actions">
@@ -9375,7 +9457,7 @@
   </div>
 
   <div v-show="showBagPanel" style="display:none" class="app-top-overlay fixed inset-0 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBagPanel">
-    <div class="w-full max-w-6xl h-[90vh] md:h-[780px] rounded-3xl border border-white bg-sky-50 p-3 md:p-4 shadow-2xl app-panel-modal bag-mobile-panel overflow-hidden" @click.stop>
+    <div class="w-full max-w-6xl h-[90vh] md:h-[780px] rounded-3xl border border-white bg-sky-50 p-3 md:p-4 shadow-2xl app-panel-modal bag-mobile-panel bag-responsive-modal overflow-hidden" @click.stop>
       <div class="flex items-center justify-between gap-3 mb-3">
         <div class="flex items-center gap-3 min-w-0">
           <h3 class="text-lg font-black text-sky-950">亚比背包（6格）</h3>
@@ -9486,6 +9568,10 @@
                 <div class="rounded-xl border border-sky-200 bg-white p-3 text-xs font-bold text-slate-700">
                   <div class="text-sm font-black text-sky-950">当前特性</div>
                   <div class="mt-1">{{ selectedPetFeatureText }}</div>
+                  <div v-if="selectedPetSkinEquipped" class="mt-2 flex flex-wrap items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-2 py-2 text-[11px] font-black text-violet-700">
+                    <span>已装配未来计划·神秘战无炎皮肤</span>
+                    <button @click="unequipPetSkin(petId(selectedPet))" class="h-7 px-3 rounded-lg bg-white text-violet-700 border border-violet-200 font-black">卸下皮肤</button>
+                  </div>
                   <div class="mt-3 grid grid-cols-3 md:grid-cols-6 gap-2">
                     <button v-for="seal in qixingSealRows" :key="'bag_modal_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
                       <img :src="seal.image" @error="withFallback" class="qixing-seal-grid-img mx-auto" :class="{ 'is-legacy': seal.isLegacy }">
@@ -9947,7 +10033,8 @@
             <button @click="shopTab='shop'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='shop' ? 'bg-emerald-600 text-white' : 'text-slate-600'">亚比商店</button>
             <button @click="shopTab='eggs'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='eggs' ? 'bg-violet-600 text-white' : 'text-slate-600'">亚比蛋购买</button>
             <button @click="shopTab='skillStones'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='skillStones' ? 'bg-amber-500 text-slate-950' : 'text-slate-600'">&#25216;&#33021;&#30707;&#21830;&#24215;</button>
-            <button @click="shopTab='gear'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='gear' ? 'bg-sky-600 text-white' : 'text-slate-600'">装备商店</button>
+            <button @click="shopTab='bundles'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='bundles' ? 'bg-cyan-500 text-slate-950' : 'text-slate-600'">道具礼包</button>
+            <button @click="shopTab='gear'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='gear' ? 'gear-shop-tab-active bg-sky-600 text-white' : 'text-slate-600'">装备商店</button>
           </div>
           <div class="panel-stat-chip">H币 {{ state.hCoins || 0 }}</div>
           <div class="panel-stat-chip">秘境晶石 {{ equipmentDungeonCrystalCount }}</div>
@@ -9996,14 +10083,36 @@
           </div>
         </div>
       </div>
+      <div v-else-if="shopTab==='bundles'" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
+        <div v-for="it in bundleShopItems" :key="'bundle_shop_item_'+it.id" class="rounded-2xl border border-cyan-100 bg-cyan-50 p-3 flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-sm font-black text-cyan-950 truncate">{{ it.name }}</div>
+            <div class="text-[11px] font-bold text-cyan-800">{{ it.desc }}</div>
+            <div class="text-[11px] font-black text-amber-700 mt-1">{{ it.price }} H币</div>
+            <div v-if="it.purchaseLimit" class="text-[11px] font-black text-rose-600 mt-1">限购剩余 {{ shopItemRemainingLimited(it) }}/{{ it.purchaseLimit }}</div>
+            <div v-else class="text-[11px] font-black text-emerald-700 mt-1">不限购</div>
+          </div>
+          <div class="flex flex-col items-end gap-2 shrink-0">
+            <input
+              type="number"
+              min="1"
+              :max="Math.max(1, shopItemMaxBuyQuantity(it))"
+              :value="shopBuyQuantity(it.id)"
+              @input="setShopBuyQuantity(it.id, $event.target.value)"
+              class="w-20 h-9 rounded-xl border border-cyan-200 bg-white px-2 text-sm font-black text-cyan-950"
+            >
+            <button @click="buyBundleShopItem(it.id)" :disabled="!shopItemCanBuy(it)" class="h-9 px-4 rounded-xl bg-cyan-500 text-slate-950 text-sm font-black disabled:opacity-45">购买</button>
+          </div>
+        </div>
+      </div>
       <div v-else-if="shopTab==='gear'" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
-        <div v-for="it in gearShopItems" :key="'gear_shop_item_'+it.id" class="rounded-2xl border border-sky-100 bg-sky-50 p-3 flex items-center justify-between gap-3">
+        <div v-for="it in gearShopItems" :key="'gear_shop_item_'+it.id" class="gear-shop-card rounded-2xl border border-sky-100 bg-sky-50 p-3 flex items-center justify-between gap-3">
           <div class="flex items-center gap-3 min-w-0">
-            <img :src="it.image" @error="withFallback" class="w-14 h-14 object-contain rounded-xl bg-white/75 border border-sky-100">
+            <img :src="it.image" @error="withFallback" class="gear-shop-icon w-14 h-14 object-contain rounded-xl bg-white/75 border border-sky-100">
             <div class="min-w-0">
-              <div class="text-sm font-black text-sky-950 truncate">{{ it.name }}</div>
-              <div class="text-[11px] font-bold text-sky-800">{{ it.desc }}</div>
-              <div class="text-[11px] font-black text-cyan-700 mt-1">{{ it.price }} 秘境晶石</div>
+              <div class="gear-shop-name text-sm font-black text-sky-950 truncate">{{ it.name }}</div>
+              <div class="gear-shop-desc text-[11px] font-bold text-sky-800">{{ it.desc }}</div>
+              <div class="gear-shop-price text-[11px] font-black text-cyan-700 mt-1">{{ it.price }} 秘境晶石</div>
             </div>
           </div>
           <div class="flex flex-col items-end gap-2 shrink-0">
@@ -10013,9 +10122,9 @@
               :max="Math.max(1, gearShopItemMaxBuyQuantity(it))"
               :value="shopBuyQuantity(it.id)"
               @input="setShopBuyQuantity(it.id, $event.target.value)"
-              class="w-20 h-9 rounded-xl border border-sky-200 bg-white px-2 text-sm font-black text-sky-950"
+              class="gear-shop-input w-20 h-9 rounded-xl border border-sky-200 bg-white px-2 text-sm font-black text-sky-950"
             >
-            <button @click="buyGearShopItem(it.id)" :disabled="!gearShopItemCanBuy(it)" class="h-9 px-4 rounded-xl bg-sky-600 text-white text-sm font-black disabled:opacity-45">购买</button>
+            <button @click="buyGearShopItem(it.id)" :disabled="!gearShopItemCanBuy(it)" class="gear-shop-buy h-9 px-4 rounded-xl bg-sky-600 text-white text-sm font-black disabled:opacity-45">购买</button>
           </div>
         </div>
       </div>
@@ -10345,6 +10454,83 @@
     </div>
   </template>
 
+  <div v-if="showMonthlySignPanel" class="fixed inset-0 z-[70] bg-slate-950/35 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeMonthlySignPanel">
+    <div class="w-[98vw] max-w-[1500px] max-h-[92vh] overflow-y-auto rounded-3xl border border-sky-100 p-4 shadow-2xl app-modal" style="background: linear-gradient(180deg, #38bdf8 0%, #0ea5e9 100%);" @click.stop>
+      <div class="flex flex-wrap items-center justify-between gap-3 text-slate-900">
+        <div>
+          <div class="text-[11px] font-black text-sky-700">月签到</div>
+          <h3 class="text-2xl font-black leading-7">累计签到 {{ monthlySignSignedCount }}/28 天</h3>
+          <div class="mt-1 text-xs font-bold text-slate-500">今日：{{ monthlySignTodayDay }}号 · 至尊月签到：{{ monthlySignSupremeExpireText }}</div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button @click="activateMonthlySupreme" :disabled="monthlySignSupremeActive || state.hCoins < 3000000" class="h-10 px-4 rounded-xl text-white text-sm font-black shadow-lg ring-2 ring-white/25" style="background: linear-gradient(180deg, #a855f7 0%, #7e22ce 100%); box-shadow: 0 10px 24px rgba(126,34,206,.32);">300万H币激活至尊</button>
+          <button v-if="monthlySignTab==='normal'" @click="signMonthlyToday" class="h-10 px-4 rounded-xl bg-amber-300 text-slate-950 text-sm font-black shadow-lg shadow-amber-500/30 ring-2 ring-white/25">今日签到</button>
+          <button v-else @click="signMonthlySupremeToday" :disabled="!monthlySignSupremeActive" class="h-10 px-4 rounded-xl bg-amber-300 text-slate-950 text-sm font-black shadow-lg shadow-amber-500/30 ring-2 ring-white/25 disabled:opacity-50">今日签到</button>
+          <button @click="closeMonthlySignPanel" class="h-10 px-4 rounded-xl bg-white border border-sky-200 text-slate-700 text-sm font-black">关闭</button>
+        </div>
+      </div>
+      <div class="mt-4 rounded-2xl border border-sky-200 bg-white/75 p-3">
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <div class="text-sm font-black text-sky-900">累计签到里程碑</div>
+          <div class="text-[11px] font-bold text-slate-500">达到天数后点击领取</div>
+        </div>
+        <div class="grid grid-cols-4 gap-2">
+          <button
+            v-for="entry in monthlySignMilestones"
+            :key="'monthly_sign_milestone_'+entry.days"
+            @click="claimMonthlySignMilestone(entry.days)"
+            :disabled="!entry.reached || entry.claimed"
+            class="relative overflow-hidden rounded-2xl border p-3 text-left transition disabled:opacity-55"
+            :class="entry.claimed ? 'border-emerald-300 bg-emerald-50 text-emerald-950' : (entry.reached ? 'border-yellow-300 bg-yellow-100 text-slate-950 shadow-lg shadow-yellow-500/15' : 'border-sky-100 bg-white/70 text-slate-600')"
+          >
+            <div class="flex items-center justify-between gap-2">
+              <div class="text-base font-black">满{{ entry.days }}天</div>
+              <div class="h-7 w-7 rounded-full grid place-items-center text-[11px] font-black" :class="entry.claimed ? 'bg-emerald-300 text-emerald-950' : (entry.reached ? 'bg-yellow-300 text-slate-950' : 'bg-white/10 text-slate-300')">{{ entry.days }}</div>
+            </div>
+            <div class="mt-2 min-h-8 text-xs font-bold leading-4">{{ entry.rewardLabel }}</div>
+            <div class="mt-2 text-[11px] font-black">{{ entry.claimed ? '已领取' : (entry.reached ? '可领取' : '未达成') }}</div>
+          </button>
+        </div>
+      </div>
+      <div class="mt-4 inline-flex rounded-2xl border border-sky-200 bg-white/70 p-1">
+        <button @click="monthlySignTab='normal'" class="h-10 px-5 rounded-xl text-sm font-black" :class="monthlySignTab==='normal' ? 'bg-amber-300 text-slate-950 shadow-lg shadow-amber-500/20' : 'text-slate-600'">普通月签到</button>
+        <button @click="monthlySignTab='supreme'" class="h-10 px-5 rounded-xl text-sm font-black" :class="monthlySignTab==='supreme' ? 'bg-fuchsia-400 text-slate-950 shadow-lg shadow-fuchsia-500/20' : 'text-slate-600'">至尊月签到</button>
+      </div>
+      <div v-if="monthlySignTab==='supreme'" class="mt-3 rounded-2xl border border-fuchsia-200 bg-fuchsia-50 p-3 text-xs font-bold text-fuchsia-900">
+        至尊月签到有效期30天，激活后可领取已签到且非补签日期的至尊奖励；过期后需要重新激活。
+      </div>
+      <div class="mt-4 pb-1">
+        <div class="grid gap-2" style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));">
+        <div v-for="row in monthlySignRows" :key="'monthly_sign_day_'+row.day" class="monthly-sign-card rounded-2xl p-3 text-slate-900">
+          <div class="flex items-center justify-between gap-2">
+            <div class="text-lg font-black text-sky-900">{{ row.day }}号</div>
+            <div class="text-[10px] font-black" :class="row.signed ? 'text-emerald-300' : 'text-slate-400'">{{ row.signed ? (row.makeup ? '已补签' : '已签到') : '未签到' }}</div>
+          </div>
+          <div v-if="monthlySignTab==='normal'" class="mt-2 rounded-xl bg-white/10 p-2">
+            <div class="text-[10px] font-black text-slate-500">普通奖励</div>
+            <div class="mt-1 min-h-8 text-xs font-black text-slate-800 leading-4">{{ row.normalLabel }}</div>
+          </div>
+          <div v-else class="mt-2 rounded-xl bg-fuchsia-300/10 border border-fuchsia-300/20 p-2">
+            <div class="text-[10px] font-black text-yellow-200">至尊奖励</div>
+            <div class="mt-1 min-h-8 text-xs font-black text-slate-800 leading-4">{{ row.supremeLabel }}</div>
+          </div>
+          <template v-if="monthlySignTab==='normal'">
+            <button v-if="row.canSign" @click="signMonthlyToday" class="mt-3 h-8 w-full rounded-lg bg-amber-300 text-slate-950 text-xs font-black shadow ring-1 ring-white/30">签到</button>
+            <button v-else-if="row.canMakeup" @click="makeupMonthlySign(row.day)" class="mt-3 h-8 w-full rounded-lg bg-cyan-300 text-slate-950 text-xs font-black shadow ring-1 ring-white/30">10000H币补签</button>
+            <div v-else class="mt-3 h-8 grid place-items-center rounded-lg bg-white/10 text-[11px] font-black text-slate-400">{{ row.signed ? '已完成' : '未开放' }}</div>
+          </template>
+          <template v-else>
+            <button v-if="row.canClaimSupreme" @click="claimMonthlySignSupreme(row.day)" class="mt-3 h-8 w-full rounded-lg bg-fuchsia-400 text-slate-950 text-xs font-black shadow ring-1 ring-white/30">领取至尊</button>
+            <button v-else-if="row.canSign && monthlySignSupremeActive" @click="signMonthlySupremeToday" class="mt-3 h-8 w-full rounded-lg bg-amber-300 text-slate-950 text-xs font-black shadow ring-1 ring-white/30">今日签到</button>
+            <button v-else-if="!monthlySignSupremeActive" @click="activateMonthlySupreme" :disabled="state.hCoins < 3000000" class="mt-3 h-8 w-full rounded-lg bg-fuchsia-400 text-slate-950 text-xs font-black shadow ring-1 ring-white/30 disabled:opacity-50">激活</button>
+            <div v-else class="mt-3 h-8 grid place-items-center rounded-lg bg-white/10 text-[11px] font-black text-slate-400">{{ row.supremeClaimed ? '至尊已领' : (row.signed ? (row.makeup ? '补签不领' : '已完成') : '未签到') }}</div>
+          </template>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div v-if="showWeeklyBossPanel && weeklyBossEntry" class="fixed inset-0 z-40 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeWeeklyBossPanel">
     <div class="weekly-boss-modal w-full max-w-5xl rounded-3xl border border-yellow-200/60 p-3 md:p-4 shadow-2xl max-h-[92vh] overflow-y-auto app-modal" @click.stop>
       <div class="flex items-center justify-between mb-3 text-white">
@@ -10459,6 +10645,11 @@
       <div class="equipment-dungeon-scorebar">
         <span>当前累积分数：{{ equipmentDungeonScore }}</span>
         <span>今日机会：{{ equipmentDungeonAttemptsLeft }}/6</span>
+        <div v-if="equipmentDungeonCanSweep" class="mt-2 flex flex-wrap gap-2">
+          <button @click.stop="sweepEquipmentDungeon(1)" class="h-7 rounded-lg bg-cyan-400 px-3 text-[11px] font-black text-slate-950 shadow">扫荡1次</button>
+          <button @click.stop="sweepEquipmentDungeon(equipmentDungeonAttemptsLeft)" class="h-7 rounded-lg bg-amber-300 px-3 text-[11px] font-black text-slate-950 shadow">扫荡剩余</button>
+        </div>
+        <span v-else-if="equipmentDungeonSweepScore > 0" class="text-[11px] text-cyan-200">上次分数：{{ equipmentDungeonSweepScore }}</span>
       </div>
       <button @click.stop="closeEquipmentDungeonPanel" class="equipment-map-return-hotspot" aria-label="返回">
         <img :src="equipmentDungeonReturnHoverSrc" @error="withFallback" class="equipment-map-return-hover" alt="">
@@ -10573,7 +10764,7 @@
             </div>
           </div>
           <div class="rounded-xl border border-cyan-200/20 bg-slate-950/35 p-3 text-xs font-bold text-cyan-50 leading-5">
-            第一阶段在通关挑战之路第一梯度后解锁，寒冰公主亚比蛋150抽保底且本阶段只可获取一次，获取后奖池卡片置灰，后续抽到会自动转为启星碎片。第二阶段在拥有第五梯度任意BOSS亚比或亚比蛋后解锁，未来计划·黯帝修罗皮肤500抽保底且只可获取一次；第二阶段寒冰公主亚比蛋同样只可获取一次。能量核心转盘消耗H币，单抽2000H币，十连18000H币；200抽保底一个未获取能量核心，获得后置灰且不再重复获取，再200抽保底另一个未获取能量核心。
+            第一阶段在通关挑战之路第一梯度后解锁，寒冰公主亚比蛋150抽保底且本阶段只可获取一次，获取后奖池卡片置灰，后续抽到会自动转为启星碎片。第二阶段在拥有第五梯度任意BOSS亚比或亚比蛋后解锁，未来计划·神秘战无炎皮肤500抽保底且只可获取一次；第二阶段寒冰公主亚比蛋同样只可获取一次。能量核心转盘消耗H币，单抽2000H币，十连18000H币；200抽保底一个未获取能量核心，获得后置灰且不再重复获取，再200抽保底另一个未获取能量核心。
           </div>
           <div v-if="!selectedQixingGachaPhaseUnlocked" class="rounded-xl border border-amber-200/35 bg-amber-300/10 p-3 text-xs font-black text-amber-100 leading-5">
             {{ qixingGachaPhaseLockText }}
@@ -10811,6 +11002,9 @@
 <div v-cloak v-if="battleScene && battleScene.open" class="battle-scene-overlay battle-render-safe fixed inset-0 z-[110] bg-slate-950/90 backdrop-blur-sm" @click="closeBattleScene">
   <div class="relative w-full h-full overflow-hidden bg-slate-950 battle-mobile-root" @click.stop>
     <div class="battle-bg-layer" :style="{ backgroundImage: `url(${battleBackground.src})` }"></div>
+    <div v-if="battleScene.shengyuBackground" :key="'shengyu_bg_' + battleScene.shengyuBackground.seq" class="battle-shengyu-bg-layer" :style="battleShengyuBackgroundStyle()">
+      <object :data="battleScene.shengyuBackground.src" type="image/svg+xml" aria-label=""></object>
+    </div>
     <div class="battle-bg-shade"></div>
     <div class="battle-speed-floating">
       <div class="battle-speed-panel">

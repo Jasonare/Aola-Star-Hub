@@ -3,7 +3,6 @@ const net = require("net");
 const path = require("path");
 
 let localServer = null;
-let isQuitting = false;
 
 const DEFAULT_BACKEND_PORT = 3030;
 const MAX_PORT_ATTEMPTS = 50;
@@ -84,7 +83,7 @@ const createWindow = (targetUrl) => {
   configureDisplayMediaCapture(win);
   win.__allowCloseAfterSave = false;
   win.on("close", (event) => {
-    if (isQuitting || win.__allowCloseAfterSave || win.isDestroyed()) return;
+    if (win.__allowCloseAfterSave || win.isDestroyed()) return;
     event.preventDefault();
     let finished = false;
     const finishClose = () => {
@@ -131,7 +130,6 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
 
-app.on("before-quit", () => {
-  isQuitting = true;
+app.on("will-quit", () => {
   if (localServer) localServer.close();
 });

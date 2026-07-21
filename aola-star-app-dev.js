@@ -192,6 +192,7 @@ const SHOP_REDEEM_CODE_ALHUB666_BACKFILL_MIGRATION_KEY = "redeem_alhub666_mist_d
 const SHOP_REDEEM_CODE_HUBDWAK = "HUBDWAK";
 const SHOP_REDEEM_CODE_EQUIPMENT_DUNGEON_STRONG_ROAD = "装备秘境在变强之路";
 const SHOP_REDEEM_CODE_HUB_TOGETHER = "与HUB同辉";
+const SHOP_REDEEM_CODE_SERVER_RECOVERY = "服务器恢复";
 const HUB_TOGETHER_SPONSOR_BADGE_ID = "hub_together_sponsor_badge";
 const HUB_TOGETHER_SPONSOR_BADGE_NAME = "Hub同辉赞助徽章";
 const STARTER_DEX_IDS = [1, 4, 7];
@@ -268,6 +269,7 @@ const BOSS_DEX_ENTRIES = [
   { dexId: 2037, name: "天辉侠X" }, { dexId: 2039, name: "帝夜奇纳" }, { dexId: 2043, name: "司马懿" },
   { dexId: 2044, name: "达力戈" }, { dexId: 2049, name: "艾恩" }
 ];
+BOSS_DEX_ENTRIES.push({ dexId: 1953, name: "帝皇圣龙" });
 const BOSS_DEX_ID_TO_NAME = new Map(BOSS_DEX_ENTRIES.map((entry) => [entry.dexId, entry.name]));
 const CHALLENGE_ROAD_COVER_SRC_1 = encodeAssetSrc("./resource/boss-level/1-first.png");
 const CHALLENGE_ROAD_COVER_SRC_2 = encodeAssetSrc("./resource/boss-level/2-second.png");
@@ -375,7 +377,7 @@ const CHALLENGE_ROAD_TIERS = [
     subtitle: "终阶BOSS挑战",
     cover: CHALLENGE_ROAD_COVER_SRC_5,
     guardianNames: [],
-    bossNames: ["真苍炎", "真噬月武神", "真烈焰凤凰", "龙炎王", "真赤色梦魇", "圣王麒麟", "圣天伊", "冰罗皇", "奥天", "创世星灵", "星宇侠X", "龙·帝卡"]
+    bossNames: ["真苍炎", "真噬月武神", "真烈焰凤凰", "龙炎王", "真赤色梦魇", "帝皇圣龙", "圣王麒麟", "圣天伊", "冰罗皇", "奥天", "创世星灵", "星宇侠X", "龙·帝卡"]
   }
 ];
 const QIXING_SEAL_ITEM_ID = "qixing_seal";
@@ -720,11 +722,16 @@ const EQUIPMENT_DUNGEON_BOSS_CONFIGS = [
     regionKey: "suolide",
     bossName: "法老王",
     leaderPosition: { x: 78, y: 31 },
-    skills: ["秽土转生", "灭沙瀑葬", "沙缚柩", "污秽"],
+    skills: ["秽土转生", "沙缚柩", "污秽"],
     difficulty: {
       normal: "无额外buff。",
       hard: "减伤20%，对克制伤害额外减伤40%，每回合末10%概率降低对方全属性1级。",
       nightmare: "减伤30%，对克制伤害额外减伤60%，每回合末20%概率降低对方全属性1级。"
+    },
+    skillWeights: {
+      normal: { "秽土转生": 0.15, "沙缚柩": 0.5, "污秽": 0.35 },
+      hard: { "秽土转生": 0.15, "沙缚柩": 0.5, "污秽": 0.35 },
+      nightmare: { "秽土转生": 0.15, "沙缚柩": 0.5, "污秽": 0.35 }
     },
     endTurn: {
       hard: [{ kind: "stage", side: "attacker", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: -1, chance: 0.1 }],
@@ -838,12 +845,12 @@ const EQUIPMENT_DUNGEON_BOSS_CONFIGS = [
     skills: ["光之耀", "刀剑如梦", "光之剑", "八门遁甲", "光明漩涡", "狂暴碎裂击", "圣光气功波"],
     difficulty: {
       normal: "无额外buff。",
-      hard: "减伤20%，对克制伤害额外减伤40%，每回合末降低对方防御、特防1级。",
-      nightmare: "减伤30%，对克制伤害额外减伤60%，每回合末降低对方全属性1级。"
+      hard: "减伤20%，对克制伤害额外减伤40%，每次释放技能有40%概率保护自身属性2回合。",
+      nightmare: "减伤30%，对克制伤害额外减伤60%，每次释放技能有80%概率保护自身属性2回合。"
     },
-    endTurn: {
-      hard: [{ kind: "stage", side: "attacker", keys: ["def", "spDef"], delta: -1, chance: 1 }],
-      nightmare: [{ kind: "stage", side: "attacker", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: -1, chance: 1 }]
+    onSkill: {
+      hard: [{ kind: "stageGuard", chance: 0.4, turns: 2, mode: "debuff" }],
+      nightmare: [{ kind: "stageGuard", chance: 0.8, turns: 2, mode: "debuff" }]
     }
   },
   {
@@ -955,13 +962,52 @@ const QIXING_GACHA_ENERGY_CORE_PITY_LIMIT = 200;
 const QIANKUN_XIULUOSHEN_SKIN_ITEM_ID = "qiankun_xiuluoshen_skin";
 const QIANKUN_XIULUOSHEN_SKIN_KEY = "qiankun_xiuluoshen";
 const QIANKUN_XIULUOSHEN_SKIN_NAME = "未来计划·黯帝修罗皮肤";
-const MECHA_WARRIOR_ENERGY_CORE_ITEM_ID = "mecha_warrior_energy_core";
-const GLARE_IRON_FIST_MOUSE_ENERGY_CORE_ITEM_ID = "glare_iron_fist_mouse_energy_core";
 const QIANKUN_XIULUOSHEN_SKIN_DEX_ID = 4036;
 const QIANKUN_XIULUOSHEN_SKIN_ALLOWED_DEX_IDS = new Set([1639, 731]);
+const QIANKUN_XIULUOSHEN_SKIN_ALLOWED_NAMES = ["圣光修罗", "修罗"];
+const QIANKUN_XIULUOSHEN_SKIN_ALLOWED_TEXT = "圣光修罗/修罗";
+const ZHANWUYAN_SKIN_ITEM_ID = "future_mystery_zhanwuyan_skin";
+const ZHANWUYAN_SKIN_KEY = "future_mystery_zhanwuyan";
+const ZHANWUYAN_SKIN_NAME = "未来计划·神秘战无炎皮肤";
+const ZHANWUYAN_SKIN_DEX_ID = 4057;
+const ZHANWUYAN_SKIN_ALLOWED_DEX_IDS = new Set([111, 1461, 1915, 2050]);
+const ZHANWUYAN_SKIN_ALLOWED_NAMES = ["战无炎", "苍炎战神", "真·苍炎战神", "真苍炎战神", "煌炎战神"];
+const ZHANWUYAN_SKIN_ALLOWED_TEXT = "战无炎/苍炎战神/真·苍炎战神/煌炎战神";
+const DRAGON_MAGE_ENERGY_CORE_ITEM_ID = "dragon_mage_energy_core";
+const NIAN_BEAST_ENERGY_CORE_ITEM_ID = "nian_beast_energy_core";
 const QIANKUN_XIULUOSHEN_SKIN_DAMAGE_BONUS = 0.1;
 const QIANKUN_XIULUOSHEN_SKIN_RESISTANCE_BONUS = 0.1;
 const QIANKUN_XIULUOSHEN_SKIN_BATTLE_BONUS_TEXT = "造成伤害+10%，受到普通/特殊攻击伤害-10%";
+const PET_SKIN_CONFIGS = [
+  {
+    itemId: QIANKUN_XIULUOSHEN_SKIN_ITEM_ID,
+    skinKey: QIANKUN_XIULUOSHEN_SKIN_KEY,
+    name: QIANKUN_XIULUOSHEN_SKIN_NAME,
+    dexId: QIANKUN_XIULUOSHEN_SKIN_DEX_ID,
+    allowedDexIds: QIANKUN_XIULUOSHEN_SKIN_ALLOWED_DEX_IDS,
+    allowedNames: QIANKUN_XIULUOSHEN_SKIN_ALLOWED_NAMES,
+    allowedText: QIANKUN_XIULUOSHEN_SKIN_ALLOWED_TEXT,
+    limitedKey: "phase2_qiankun_skin",
+    damageBonus: QIANKUN_XIULUOSHEN_SKIN_DAMAGE_BONUS,
+    resistanceBonus: QIANKUN_XIULUOSHEN_SKIN_RESISTANCE_BONUS,
+    battleBonusText: QIANKUN_XIULUOSHEN_SKIN_BATTLE_BONUS_TEXT
+  },
+  {
+    itemId: ZHANWUYAN_SKIN_ITEM_ID,
+    skinKey: ZHANWUYAN_SKIN_KEY,
+    name: ZHANWUYAN_SKIN_NAME,
+    dexId: ZHANWUYAN_SKIN_DEX_ID,
+    allowedDexIds: ZHANWUYAN_SKIN_ALLOWED_DEX_IDS,
+    allowedNames: ZHANWUYAN_SKIN_ALLOWED_NAMES,
+    allowedText: ZHANWUYAN_SKIN_ALLOWED_TEXT,
+    limitedKey: "phase2_zhanwuyan_skin",
+    damageBonus: QIANKUN_XIULUOSHEN_SKIN_DAMAGE_BONUS,
+    resistanceBonus: QIANKUN_XIULUOSHEN_SKIN_RESISTANCE_BONUS,
+    battleBonusText: QIANKUN_XIULUOSHEN_SKIN_BATTLE_BONUS_TEXT
+  }
+];
+const PET_SKIN_CONFIG_BY_KEY = new Map(PET_SKIN_CONFIGS.map((config) => [config.skinKey, config]));
+const PET_SKIN_CONFIG_BY_ITEM_ID = new Map(PET_SKIN_CONFIGS.map((config) => [config.itemId, config]));
 const QIXING_ANCIENT_STAR_DRAGON_DEX = {
   dexId: 2387,
   rootDexId: 2386,
@@ -975,6 +1021,9 @@ const NORMAL_HARD_CHALLENGE_FORBIDDEN_DEX_IDS = new Set([QIXING_ANCIENT_STAR_DRA
 const NORMAL_HARD_CHALLENGE_FORBIDDEN_PET_NAMES = ["上古星龙"];
 const NORMAL_HARD_CHALLENGE_FORBIDDEN_DIFFICULTY_KEYS = new Set(["normal", "hard"]);
 const NORMAL_HARD_CHALLENGE_FORBIDDEN_TEXT = `普通/困难挑战禁用亚比：${NORMAL_HARD_CHALLENGE_FORBIDDEN_PET_NAMES.join("、")}。`;
+const EQUIPMENT_DUNGEON_FORBIDDEN_DEX_IDS = new Set([QIXING_ANCIENT_STAR_DRAGON_DEX.rootDexId, QIXING_ANCIENT_STAR_DRAGON_DEX.dexId]);
+const EQUIPMENT_DUNGEON_FORBIDDEN_PET_NAMES = ["上古星龙", "梅卡"];
+const EQUIPMENT_DUNGEON_FORBIDDEN_TEXT = `禁用亚比：${EQUIPMENT_DUNGEON_FORBIDDEN_PET_NAMES.join("、")}。`;
 const QIXING_GACHA_PHASES = [
   {
     key: "phase1",
@@ -1003,12 +1052,12 @@ const QIXING_GACHA_PHASES = [
     key: "phase2",
     label: "第二阶段",
     unlockText: "拥有第五梯度任意一个BOSS亚比或亚比蛋后解锁",
-    pityKey: "phase2_qiankun_skin",
-    pityLabel: `${QIANKUN_XIULUOSHEN_SKIN_NAME}保底`,
+    pityKey: "phase2_zhanwuyan_skin",
+    pityLabel: `${ZHANWUYAN_SKIN_NAME}保底`,
     pityLimit: QIXING_GACHA_QIANKUN_SKIN_PITY_LIMIT,
-    pityPrizeKey: "qiankun_xiuluoshen_skin",
+    pityPrizeKey: "future_mystery_zhanwuyan_skin",
     pityPrizes: [
-      { pityKey: "phase2_qiankun_skin", pityLabel: `${QIANKUN_XIULUOSHEN_SKIN_NAME}保底`, pityLimit: QIXING_GACHA_QIANKUN_SKIN_PITY_LIMIT, prizeKey: "qiankun_xiuluoshen_skin" }
+      { pityKey: "phase2_zhanwuyan_skin", pityLabel: `${ZHANWUYAN_SKIN_NAME}保底`, pityLimit: QIXING_GACHA_QIANKUN_SKIN_PITY_LIMIT, prizeKey: "future_mystery_zhanwuyan_skin" }
     ],
     pool: [
       { key: "hcoin_500", type: "hcoin", label: "500H币", amount: 500, probability: 29.5 },
@@ -1019,7 +1068,7 @@ const QIXING_GACHA_PHASES = [
       { key: "fragment_10", type: "item", itemId: QIXING_FRAGMENT_ITEM_ID, label: "启星碎片10个", amount: 10, probability: 5 },
       { key: "jilan", type: "trait", traitKey: QIXING_TRAIT_KEYS.JILAN, label: "疾岚之瞳", amount: 1, probability: 0.2 },
       { key: "ice_princess_egg", type: "egg", dexId: 505, label: "寒冰公主亚比蛋", amount: 1, probability: 0.2, limitedKey: "phase2_ice_princess" },
-      { key: "qiankun_xiuluoshen_skin", type: "item", itemId: QIANKUN_XIULUOSHEN_SKIN_ITEM_ID, label: QIANKUN_XIULUOSHEN_SKIN_NAME, amount: 1, probability: 0.1, limitedKey: "phase2_qiankun_skin" }
+      { key: "future_mystery_zhanwuyan_skin", type: "item", itemId: ZHANWUYAN_SKIN_ITEM_ID, label: ZHANWUYAN_SKIN_NAME, amount: 1, probability: 0.1, limitedKey: "phase2_zhanwuyan_skin" }
     ]
   },
   {
@@ -1031,13 +1080,13 @@ const QIXING_GACHA_PHASES = [
     tenCost: 18000,
     sequentialLimitedPity: true,
     filterObtainedLimitedPool: true,
-    pityKey: "energy_core_mecha",
+    pityKey: "energy_core_dragon_mage",
     pityLabel: "能量核心保底",
     pityLimit: QIXING_GACHA_ENERGY_CORE_PITY_LIMIT,
-    pityPrizeKey: "mecha_warrior_energy_core",
+    pityPrizeKey: "dragon_mage_energy_core",
     pityPrizes: [
-      { pityKey: "energy_core_mecha", pityLabel: "机甲勇士能量核心保底", pityLimit: QIXING_GACHA_ENERGY_CORE_PITY_LIMIT, prizeKey: "mecha_warrior_energy_core" },
-      { pityKey: "energy_core_mouse", pityLabel: "炫光铁拳鼠能量核心保底", pityLimit: QIXING_GACHA_ENERGY_CORE_PITY_LIMIT, prizeKey: "glare_iron_fist_mouse_energy_core" }
+      { pityKey: "energy_core_dragon_mage", pityLabel: "龙族大法师能量核心保底", pityLimit: QIXING_GACHA_ENERGY_CORE_PITY_LIMIT, prizeKey: "dragon_mage_energy_core" },
+      { pityKey: "energy_core_nian", pityLabel: "年兽能量核心保底", pityLimit: QIXING_GACHA_ENERGY_CORE_PITY_LIMIT, prizeKey: "nian_beast_energy_core" }
     ],
     pool: [
       { key: "hp_candy_m", type: "item", itemId: "hp_candy_m", label: "中级体力糖", amount: 1, probability: 24.9 },
@@ -1047,16 +1096,16 @@ const QIXING_GACHA_PHASES = [
       { key: "auto_battle_device", type: "item", itemId: "auto_battle_device", label: "自动战斗仪", amount: 1, probability: 10 },
       { key: "talent_grade_wanzhong_fruit", type: "item", itemId: "talent_grade_wanzhong_fruit", label: "万众瞩目果实", amount: 1, probability: 10 },
       { key: "divine_pet_key", type: "item", itemId: "divine_pet_key", label: "神宠之匙", amount: 1, probability: 4 },
-      { key: "mecha_warrior_energy_core", type: "item", itemId: MECHA_WARRIOR_ENERGY_CORE_ITEM_ID, label: "机甲勇士能量核心", amount: 1, probability: 0.2, limitedKey: "energy_core_mecha" },
-      { key: "glare_iron_fist_mouse_energy_core", type: "item", itemId: GLARE_IRON_FIST_MOUSE_ENERGY_CORE_ITEM_ID, label: "炫光铁拳鼠能量核心", amount: 1, probability: 0.2, limitedKey: "energy_core_mouse" }
+      { key: "dragon_mage_energy_core", type: "item", itemId: DRAGON_MAGE_ENERGY_CORE_ITEM_ID, label: "龙族大法师能量核心", amount: 1, probability: 0.2, limitedKey: "energy_core_dragon_mage" },
+      { key: "nian_beast_energy_core", type: "item", itemId: NIAN_BEAST_ENERGY_CORE_ITEM_ID, label: "年兽能量核心", amount: 1, probability: 0.2, limitedKey: "energy_core_nian" }
     ]
   }
 ];
 const QIXING_GACHA_PHASE_BY_KEY = new Map(QIXING_GACHA_PHASES.map((phase) => [phase.key, phase]));
 const WEEKLY_BOSS_CONFIG = {
-  key: "darkflame_dragon_2036",
-  dexId: 2036,
-  name: "暗焰天龙",
+  key: "huangyan_war_god_2050",
+  dexId: 2050,
+  name: "煌炎战神",
   level: 100,
   hpRaceMultiplier: 15,
   statBoostRatio: 0,
@@ -1066,55 +1115,25 @@ const WEEKLY_BOSS_CONFIG = {
   fixedHp: 10000,
   damageReductionRatio: 0.15,
   qixingSealLevel: 4,
-  honorBadgeId: "weekly_boss_darkflame_dragon_2036_honor",
-  honorBadgeName: "暗焰天龙专属黑金徽章"
+  honorBadgeId: "weekly_boss_huangyan_war_god_2050_honor",
+  honorBadgeName: "煌炎战神专属黑金徽章"
 };
 const WEEKLY_BOSS_CONFIGS = [
   {
     ...WEEKLY_BOSS_CONFIG,
     lowHpKind: "darkflame",
-    counterDexId: 2033,
-    counterName: "风暴龙",
+    counterDexId: 0,
+    counterName: "",
     skillWeights: [
-      { name: "紫·炎", weight: 40 },
-      { name: "天焰灭世", weight: 40 },
-      { name: "三重影狱", weight: 15 },
-      { name: "炽龙伐罪", weight: 5 }
+      { name: "炎魂破碎", weight: 25 },
+      { name: "超钢圣星", weight: 25 },
+      { name: "真芒无双", weight: 25 },
+      { name: "古阳之力", weight: 25 }
     ],
     difficultyRules: {
       normal: { periodicInterval: 3, periodicHealRatio: 0.05, periodicStatusCount: 1, lowHpFixedDamage: 40 },
       hard: { periodicInterval: 3, periodicHealRatio: 0.1, periodicStatusCount: 1, lowHpFixedDamage: 60 },
       nightmare: { periodicInterval: 3, periodicHealRatio: 0.15, periodicStatusCount: 2, lowHpFixedDamage: 80 }
-    }
-  },
-  {
-    key: "storm_dragon_2033",
-    dexId: 2033,
-    name: "风暴龙",
-    level: 100,
-    hpRaceMultiplier: 15,
-    statBoostRatio: 0,
-    dailyAttempts: 5,
-    itemId: QIXING_SEAL_ITEM_ID,
-    itemName: "启星之印",
-    fixedHp: 10000,
-    damageReductionRatio: 0.15,
-    qixingSealLevel: 4,
-    honorBadgeId: "weekly_boss_storm_dragon_2033_honor",
-    honorBadgeName: "风暴龙专属黑金徽章",
-    lowHpKind: "storm",
-    counterDexId: 2036,
-    counterName: "暗焰天龙",
-    skillWeights: [
-      { name: "破宇风暴", weight: 40 },
-      { name: "雷龙之怒", weight: 40 },
-      { name: "星系神力", weight: 15 },
-      { name: "磁爆漩涡", weight: 5 }
-    ],
-    difficultyRules: {
-      normal: { periodicInterval: 7, lowHpHealRatio: 0.15, lowHpFixedDamage: 40 },
-      hard: { periodicInterval: 6, lowHpHealRatio: 0.25, lowHpFixedDamage: 60 },
-      nightmare: { periodicInterval: 5, lowHpHealRatio: 0.35, lowHpFixedDamage: 80 }
     }
   }
 ];
@@ -1122,7 +1141,7 @@ const normalizeWeeklyBossConstKey = (value) => String(value || "").replace(/[\u2
 const WEEKLY_BOSS_CONFIG_BY_KEY = new Map(WEEKLY_BOSS_CONFIGS.map((config) => [config.key, config]));
 const WEEKLY_BOSS_DEX_IDS = new Set(WEEKLY_BOSS_CONFIGS.map((config) => Number(config.dexId) || 0));
 const WEEKLY_BOSS_NAME_SET = new Set(WEEKLY_BOSS_CONFIGS.map((config) => normalizeWeeklyBossConstKey(config.name)).filter(Boolean));
-const WEEKLY_BOSS_ATTEMPT_GROUP_KEY = "weekly_boss_darkflame_storm_202606";
+const WEEKLY_BOSS_ATTEMPT_GROUP_KEY = "weekly_boss_huangyan_2050_202607";
 const WEEKLY_BOSS_EXTRA_ATTEMPT_MAX = 3;
 const WEEKLY_BOSS_EXTRA_ATTEMPT_COST = 10000;
 const getWeeklyBossConfigByKey = (key) => WEEKLY_BOSS_CONFIG_BY_KEY.get(normalizeWeeklyBossConstKey(key)) || WEEKLY_BOSS_CONFIG;
@@ -1149,6 +1168,13 @@ const WEEKLY_BOSS_HISTORY_CONFIGS = [
     honorBadgeName: "无念专属黑金徽章"
   },
   {
+    key: "darkflame_dragon_2036",
+    dexId: 2036,
+    name: "暗焰天龙",
+    honorBadgeId: "weekly_boss_darkflame_dragon_2036_honor",
+    honorBadgeName: "暗焰天龙专属黑金徽章"
+  },
+  {
     key: WEEKLY_BOSS_CONFIG.key,
     dexId: WEEKLY_BOSS_CONFIG.dexId,
     name: WEEKLY_BOSS_CONFIG.name,
@@ -1163,16 +1189,88 @@ const WEEKLY_BOSS_HISTORY_CONFIGS = [
     honorBadgeName: "风暴龙专属黑金徽章"
   }
 ];
-const WEEKLY_BOSS_MEDAL_ITEM_ID = "weekly_boss_medal_darkflame_storm_202606";
+const WEEKLY_BOSS_MEDAL_ITEM_ID = "weekly_boss_medal_huangyan_2050_202607";
 const WEEKLY_BOSS_MEDAL_MAX = 100;
 const WEEKLY_BOSS_EGG_EXCHANGE_COST = 50;
-const WEEKLY_BOSS_REWARD_STATE_VERSION = "darkflame_storm_202606_reset_v1";
+const WEEKLY_BOSS_REWARD_STATE_VERSION = "huangyan_2050_reset_v1";
 const WEEKLY_BOSS_DIFFICULTY_OPTIONS = [
   { key: "normal", label: "普通", tone: "normal", fixedHp: 10000, damageReductionRatio: 0.15, statBoostRatio: 0, rewardMedals: [5, 15], rewardHCoins: 2000, divinePetKeyCount: 5, blackgoldBadge: false },
   { key: "hard", label: "困难", tone: "hard", fixedHp: 20000, damageReductionRatio: 0.2, statBoostRatio: 0, rewardMedals: [15, 25], rewardHCoins: 5000, divinePetKeyCount: 10, blackgoldBadge: false },
   { key: "nightmare", label: "噩梦", tone: "nightmare", fixedHp: 30000, damageReductionRatio: 0.3, statBoostRatio: 0, rewardMedals: [50, 50], rewardHCoins: 8000, divinePetKeyCount: 15, blackgoldBadge: true }
 ];
 const WEEKLY_BOSS_DIFFICULTY_BY_KEY = new Map(WEEKLY_BOSS_DIFFICULTY_OPTIONS.map((option) => [option.key, option]));
+const MONTHLY_SIGN_DAYS = 28;
+const MONTHLY_SIGN_MAKEUP_COST = 10000;
+const MONTHLY_SIGN_SUPREME_COST = 3000000;
+const MONTHLY_SIGN_SUPREME_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
+const MONTHLY_SIGN_NORMAL_REWARDS = [
+  { type: "hCoins", amount: 2000, label: "2000H币" },
+  { type: "item", itemId: "double_exp_device", amount: 1, label: "双倍经验器" },
+  { type: "hCoins", amount: 2000, label: "2000H币" },
+  { type: "item", itemId: "talent_boost_capsule", amount: 1, label: "天赋增强胶囊" },
+  { type: "hCoins", amount: 2000, label: "2000H币" },
+  { type: "item", itemId: "auto_battle_device", amount: 1, label: "自动战斗仪" },
+  { type: "item", itemId: "talent_grade_wanzhong_fruit", amount: 1, label: "万众瞩目果实" },
+  { type: "hCoins", amount: 2000, label: "2000H币" },
+  { type: "item", itemId: "double_exp_device", amount: 1, label: "双倍经验器" },
+  { type: "hCoins", amount: 2000, label: "2000H币" },
+  { type: "item", itemId: "talent_boost_capsule", amount: 1, label: "天赋增强胶囊" },
+  { type: "hCoins", amount: 2000, label: "2000H币" },
+  { type: "item", itemId: "auto_battle_device", amount: 1, label: "自动战斗仪" },
+  { type: "item", itemId: "divine_pet_key", amount: 10, label: "神宠之匙×10" },
+  { type: "hCoins", amount: 2000, label: "2000H币" },
+  { type: "item", itemId: "double_exp_device", amount: 1, label: "双倍经验器" },
+  { type: "hCoins", amount: 2000, label: "2000H币" },
+  { type: "item", itemId: "talent_boost_capsule", amount: 1, label: "天赋增强胶囊" },
+  { type: "hCoins", amount: 2000, label: "2000H币" },
+  { type: "item", itemId: "auto_battle_device", amount: 1, label: "自动战斗仪" },
+  { type: "item", itemId: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, amount: 10, label: "秘境晶石×10" },
+  { type: "hCoins", amount: 2000, label: "2000H币" },
+  { type: "item", itemId: "double_exp_device", amount: 1, label: "双倍经验器" },
+  { type: "hCoins", amount: 2000, label: "2000H币" },
+  { type: "item", itemId: "talent_boost_capsule", amount: 1, label: "天赋增强胶囊" },
+  { type: "hCoins", amount: 2000, label: "2000H币" },
+  { type: "item", itemId: "auto_battle_device", amount: 1, label: "自动战斗仪" },
+  { type: "item", itemId: "talent_grade_wangzhe_fruit", amount: 1, label: "王者无敌果实" }
+];
+const MONTHLY_SIGN_SUPREME_REWARDS = [
+  { type: "hCoins", amount: 10000, label: "10000H币" },
+  { type: "item", itemId: "double_hcoin_device", amount: 10, label: "双倍H币器×10次" },
+  { type: "hCoins", amount: 10000, label: "10000H币" },
+  { type: "trait", traitKey: QIXING_TRAIT_KEYS.LIANGYI, amount: 1, label: "两仪之印" },
+  { type: "hCoins", amount: 10000, label: "10000H币" },
+  { type: "item", itemId: "talent_grade_wangzhe_fruit", amount: 1, label: "王者无敌果实" },
+  { type: "item", itemId: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, amount: 20, label: "秘境晶石×20" },
+  { type: "hCoins", amount: 10000, label: "10000H币" },
+  { type: "item", itemId: "double_hcoin_device", amount: 10, label: "双倍H币器×10次" },
+  { type: "hCoins", amount: 10000, label: "10000H币" },
+  { type: "item", itemId: "divine_pet_key", amount: 20, label: "神宠之匙×20" },
+  { type: "hCoins", amount: 10000, label: "10000H币" },
+  { type: "item", itemId: "talent_grade_wangzhe_fruit", amount: 1, label: "王者无敌果实" },
+  { type: "item", itemId: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, amount: 20, label: "秘境晶石×20" },
+  { type: "hCoins", amount: 10000, label: "10000H币" },
+  { type: "item", itemId: "double_hcoin_device", amount: 10, label: "双倍H币器×10次" },
+  { type: "hCoins", amount: 10000, label: "10000H币" },
+  { type: "item", itemId: "divine_pet_key", amount: 20, label: "神宠之匙×20" },
+  { type: "hCoins", amount: 10000, label: "10000H币" },
+  { type: "item", itemId: "talent_grade_wangzhe_fruit", amount: 1, label: "王者无敌果实" },
+  { type: "item", itemId: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, amount: 20, label: "秘境晶石×20" },
+  { type: "hCoins", amount: 10000, label: "10000H币" },
+  { type: "item", itemId: "double_hcoin_device", amount: 10, label: "双倍H币器×10次" },
+  { type: "hCoins", amount: 10000, label: "10000H币" },
+  { type: "item", itemId: "divine_pet_key", amount: 20, label: "神宠之匙×20" },
+  { type: "hCoins", amount: 10000, label: "10000H币" },
+  { type: "item", itemId: "talent_grade_wangzhe_fruit", amount: 1, label: "王者无敌果实" },
+  { type: "egg", dexId: 2064, label: "斗士豪达亚比蛋" }
+];
+const MONTHLY_SIGN_MILESTONE_REWARDS = [
+  { days: 7, reward: { type: "hCoins", amount: 20000, label: "20000H币" } },
+  { days: 15, reward: { type: "item", itemId: "talent_grade_tianxia_fruit", amount: 1, label: "天下无双果实" } },
+  { days: 21, reward: { type: "item", itemId: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, amount: 40, label: "秘境晶石×40" } },
+  { days: 28, reward: { type: "trait", traitKey: QIXING_TRAIT_KEYS.JILAN, amount: 1, label: "疾岚之瞳" } }
+];
+const monthlySignMonthKeyOf = (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+const monthlySignDayOf = (date = new Date()) => clamp(date.getDate(), 1, MONTHLY_SIGN_DAYS);
 const EXCLUDED_BOSS_DEX_IDS = new Set([1808, 1898]);
 const BOSS_FIXED_SKILL_BY_TURN = {
   624: { 1: "寒冰之镜" },
@@ -1222,7 +1320,8 @@ const BOSS_RANDOM_SKILL_POOL_BY_DEX_ID = {
   2039: ["逆转炎天", "暗夜帝影", "夜火之拥", "怒火焚夜"],
   2043: ["灵爆", "吞日", "叠耀", "界灵业火"],
   2044: ["刀剑如梦", "攻守兼备", "混森难搜", "大力奇迹"],
-  2049: ["王之降临", "剑芒之歌", "王之剑"]
+  2049: ["王之降临", "剑芒之歌", "王之剑"],
+  2050: ["炎魂破碎", "超钢圣星", "真芒无双", "古阳之力"]
 };
 const BOSS_CHAIN_CHALLENGE_BY_FINAL_DEX_ID = {
   1915: { firstDexId: 1461, firstName: "苍炎战神", finalName: "真·苍炎战神", finalDamageReduction: 0.3, finalDamageReductionTurns: 3 },
@@ -1239,8 +1338,8 @@ const BOSS_LOW_HP_FORBIDDEN_SKILLS = {
 const BOSS_WEIGHTED_PREFERRED_SKILL = {
   1927: { skillName: "真·血印", weightMultiplier: 12 }
 };
-const LEGACY_BOSS_DEX_IDS = new Set([1953, 1977, 2020]);
-const LEGACY_BOSS_NAMES = new Set(["帝皇圣龙", "源", "无念"]);
+const LEGACY_BOSS_DEX_IDS = new Set([1977, 2020, 2033, 2036]);
+const LEGACY_BOSS_NAMES = new Set(["源", "无念", "风暴龙", "暗焰天龙"]);
 const EXCLUDED_GUARDIAN_NAMES = ["魔灯鬼王"];
 const EXCLUDED_BOSS_NAMES = ["冰山修罗", "神照修罗王", "黯天凯撒皇"];
 const SHOP_EGG_NAMES = [
@@ -1403,7 +1502,25 @@ const DEFAULT_BATTLE_BG_SRC = encodeAssetSrc("./resource/ui/aola-battle-backgrou
 const STAR_DOMAIN_BATTLE_BG_SRC = encodeAssetSrc("./resource/ui/star_domain.png");
 const GUARDIAN_LEVELS = [30, 40, 50, 60, 70, 80, 90, 100];
 const EXTRA_GUARDIAN_LEVELS = [100];
-const MAX_OPEN_CHALLENGE_DEX_ID = 2049;
+const MAX_OPEN_CHALLENGE_DEX_ID = 2050;
+const SHENGYU_ENTRY_ANIMATION_DURATION_MS = 4800;
+const SHENGYU_PET_CONFIGS = [
+  { dexId: 2050, name: "煌炎战神", animationSrc: encodeAssetSrc("./resource/shengyu/阳炎.svg"), backgroundSrc: encodeAssetSrc("./resource/shengyu/阳炎-battle-bg.svg"), durationMs: SHENGYU_ENTRY_ANIMATION_DURATION_MS }
+];
+const SHENGYU_PET_CONFIG_BY_DEX_ID = new Map(SHENGYU_PET_CONFIGS.map((config) => [Number(config.dexId) || 0, config]));
+const shengyuPetConfigByDexId = (dexId) => SHENGYU_PET_CONFIG_BY_DEX_ID.get(Number(dexId) || 0) || null;
+const SHENGYU_DOMAIN_YANGYAN = "yangyan";
+const SHENGYU_YANZHUO_BAHUANG_FX_SRC = encodeAssetSrc("./resource-v8/shengyu/skill/炎灼八荒.gif");
+const SHENGYU_PASSIVE_CONFIG_BY_DEX_ID = {
+  2050: {
+    domain: SHENGYU_DOMAIN_YANGYAN,
+    domainLabel: "阳炎",
+    passives: [
+      { key: "yangyan", label: "阳炎" },
+      { key: "yanzhuoBahuang", label: "炎灼八荒" }
+    ]
+  }
+};
 const EXTRA_PERSIST_DEX_IDS = new Set([QIXING_ANCIENT_STAR_DRAGON_DEX.rootDexId, QIXING_ANCIENT_STAR_DRAGON_DEX.dexId]);
 const canPersistPetDexId = (dexId) => {
   const id = Number(dexId) || 0;
@@ -1642,16 +1759,24 @@ const petCroppedStaticImage = (dexId) => {
   return id > 0 ? encodeAssetSrc(`./resource/pet-img/pet${id}_1_1_cropped.png`) : encodeAssetSrc(STATIC_PET_IMAGE_FALLBACK);
 };
 const PET_ACTION_SVG_ROOT = "./resource/pet-action";
+const STATIC_BATTLE_ACTION_DEX_IDS = new Set([]);
+const hasPetBattleActionResource = (dexId) => {
+  const id = Math.max(0, Math.floor(Number(dexId) || 0));
+  return id > 0 && !STATIC_BATTLE_ACTION_DEX_IDS.has(id);
+};
 const petBattleStateCodeByKey = (stateKey) => (
   stateKey === "idle" ? "1" : (stateKey === "hit" ? "2" : (stateKey === "status" ? "6" : "4"))
 );
 const petBattleSvgImage = (dexId, side = "target", stateKey = "idle") => {
   const id = Math.max(0, Math.floor(Number(dexId) || 0));
-  if (id <= 0) return "";
+  if (id <= 0 || !hasPetBattleActionResource(id)) return "";
   const sideCode = side === "attacker" || side === "2" ? "2" : "1";
   const stateCode = /^\d+$/.test(String(stateKey || "")) ? String(stateKey) : petBattleStateCodeByKey(stateKey);
   return encodeAssetSrc(`${PET_ACTION_SVG_ROOT}/${id}/pet${id}_${sideCode}_${stateCode}.svg`);
 };
+const petBattleIdleImage = (dexId, side = "target", fallback = "") => (
+  petBattleSvgImage(dexId, side, "idle") || normalize(fallback) || petCroppedStaticImage(dexId)
+);
 const WEEKLY_BOSS_HISTORY_BY_KEY = new Map(WEEKLY_BOSS_HISTORY_CONFIGS.map((config) => [normalize(config.key), config]));
 const WEEKLY_BOSS_HISTORY_BY_NAME = new Map(WEEKLY_BOSS_HISTORY_CONFIGS.map((config) => [normalize(config.name), config]));
 const resolveWeeklyBossHistoryConfig = (rawKey = "", rawRow = null) => {
@@ -1702,7 +1827,7 @@ const randomTimeTunnelEnvironment = () => {
 };
 const getTimeTunnelBattleAnimSrc = (dexId) => {
   const id = Number(dexId) || 0;
-  return id > 0 ? petBattleSvgImage(id, "target", "idle") : PLACEHOLDER;
+  return id > 0 ? petBattleIdleImage(id, "target", PLACEHOLDER) : PLACEHOLDER;
 };
 const clearBattleFloatTextIfExpired = (scene, force = false) => {
   if (!scene) return false;
@@ -2696,7 +2821,7 @@ const parseFixedDamageAmount = (skill, actorLevel = 1) => {
     let m = null;
     while ((m = re.exec(desc))) {
       const ctx = desc.slice(Math.max(0, (m.index || 0) - 12), (m.index || 0) + m[0].length + 4);
-      if (/(附加|额外|追加|另加|并附带)/.test(ctx)) continue;
+      if (/(附加|附带|额外|追加|另加|并附带)/.test(ctx)) continue;
       return Math.max(1, Math.floor(Number(m[1]) || 0));
     }
   }
@@ -2754,6 +2879,12 @@ const calcBattleFixedDamageAmount = (scene, actorSide, skill, actorLevel = 1, de
     const defenderStat = getBattleAbilityStat(scene, defenderSide, statKey);
     const factor = Math.max(1, Number(statRatioEffect.factor) || 500);
     return Math.max(1, Math.floor((actorStat / Math.max(1, defenderStat)) * factor));
+  }
+  const selfMaxHpRatioEffect = effects.find((e) => normalize(e && e.kind) === "fixedDamageBySelfMaxHpRatio");
+  if (selfMaxHpRatioEffect) {
+    const maxHp = Math.max(1, Number(actorSide === "target" ? scene.targetMaxHp : scene.attackerMaxHp) || 1);
+    const ratio = clamp(Number(selfMaxHpRatioEffect.ratio) || 0.35, 0.01, 2);
+    return Math.max(1, Math.floor(maxHp * ratio));
   }
   const baseFixed = parseFixedDamageAmount(skill, actorLevel);
   if (baseFixed > 0) {
@@ -3156,23 +3287,22 @@ const battleUnitBattleImage = (unit) => (
 const battleUnitIdleBattleImage = (unit) => {
   if (!unit) return "";
   if (unit.skinActivated && Number(unit.skinBattleVisualDexId) > 0) {
-    return petBattleSvgImage(unit.skinBattleVisualDexId, "attacker", "idle") || battleUnitSkinBattleImage(unit);
+    return petBattleIdleImage(unit.skinBattleVisualDexId, "attacker", battleUnitSkinBattleImage(unit));
   }
   const visualDexId = Number(unit.battleVisualDexId) || Number(unit.originalBattleVisualDexId) || Number(unit.dexId) || Number(unit.baseDexId) || 0;
-  return petBattleSvgImage(visualDexId, "attacker", "idle") || battleUnitBattleImage(unit);
+  return petBattleIdleImage(visualDexId, "attacker", battleUnitBattleImage(unit));
 };
-const isQiankunXiuluoshenSkinBattleActive = (scene, side) => {
-  if (!scene) return false;
+const battleSkinConfigForSide = (scene, side) => {
+  if (!scene) return null;
   const safeSide = side === "target" ? "target" : "attacker";
   const activeKey = safeSide === "target" ? "targetSkinActivated" : "attackerSkinActivated";
   const skinKey = safeSide === "target" ? "targetSkinKey" : "attackerSkinKey";
   const visualKey = safeSide === "target" ? "targetSkinBattleVisualDexId" : "attackerSkinBattleVisualDexId";
-  return Boolean(
-    scene[activeKey]
-    && normalize(scene[skinKey]) === QIANKUN_XIULUOSHEN_SKIN_KEY
-    && Number(scene[visualKey]) === QIANKUN_XIULUOSHEN_SKIN_DEX_ID
-  );
+  const config = PET_SKIN_CONFIG_BY_KEY.get(normalize(scene[skinKey])) || null;
+  if (!scene[activeKey] || !config || Number(scene[visualKey]) !== Number(config.dexId)) return null;
+  return config;
 };
+const isQiankunXiuluoshenSkinBattleActive = (scene, side) => Boolean(battleSkinConfigForSide(scene, side));
 const applyBattleUnitToAttackerSide = (scene, unit) => {
   if (!scene || !unit) return false;
   if (scene._attackerTransformTimer) {
@@ -3226,9 +3356,9 @@ const resetBattleAnimIdle = (scene) => {
   const current = Array.isArray(scene.team)
     ? scene.team.find((u) => u && String(u.id || "") === curId)
     : null;
-  const attackerIdle = current ? battleUnitIdleBattleImage(current) : (petBattleSvgImage(scene.attackerBattleVisualDexId || scene.attackerDexId || scene.attackerBaseDexId, "attacker", "idle") || scene.attackerImage || scene.attackerStaticImage);
+  const attackerIdle = current ? battleUnitIdleBattleImage(current) : petBattleIdleImage(scene.attackerBattleVisualDexId || scene.attackerDexId || scene.attackerBaseDexId, "attacker", scene.attackerImage || scene.attackerStaticImage);
   if (attackerIdle) scene.attackerImage = attackerIdle;
-  const targetIdle = petBattleSvgImage(scene.targetDexId, "target", "idle") || scene.targetImage || scene.targetStaticImage;
+  const targetIdle = petBattleIdleImage(scene.targetDexId, "target", scene.targetImage || scene.targetStaticImage);
   if (targetIdle) scene.targetImage = targetIdle;
 };
 const forceRandomBattleSwitch = (scene, side) => {
@@ -3524,6 +3654,10 @@ const isElementSide = (scene, side, elementName) => {
   return main === target || sub === target;
 };
 const isStatusImmuneByElement = (scene, side, status) => {
+  if (status === "burn") {
+    const state = getSideState(scene, side);
+    if ((state.timedEffects || []).some((e) => normalize(e && e.kind) === "shengyuYanzhuoState" && Math.max(0, Number(e && e.turns) || 0) > 0)) return true;
+  }
   if (status === "burn") return isElementSide(scene, side, "火系");
   if (status === "freeze") return isElementSide(scene, side, "冰系");
   if (status === "poison") return isElementSide(scene, side, "机械系");
@@ -3611,6 +3745,11 @@ const timedEffectBadgeMeta = (e) => {
   if (kind === "endTurnHealFlat") {
     const amount = Math.max(1, Math.floor(Number(d.amount) || 1));
     return { key: `flat_hot_${amount}`, label: `回血${amount}`, turns, desc: `回合结束回复${amount}点体力，剩余${turns}回合`, tone: "buff" };
+  }
+  if (kind === "endTurnHealByMaxHpRatio") {
+    const ratio = clamp(Number(d.ratio) || 0.125, 0.01, 1);
+    const pct = Math.max(1, Math.round(ratio * 100));
+    return { key: `max_hp_hot_${pct}`, label: `回血${pct}%`, turns, desc: `回合结束回复最大体力${pct}%，剩余${turns}回合`, tone: "buff" };
   }
   if (kind === "endTurnHealFlatRange") {
     const min = Math.max(1, Math.floor(Number(d.min) || 1));
@@ -3766,6 +3905,15 @@ const timedEffectBadgeMeta = (e) => {
   if (kind === "battleBackgroundOverride") {
     const label = normalize(d.label) || "星神之域";
     return { key: "battle_background_override", label, turns, desc: `${label}改变战斗背景，剩余${turns}回合`, tone: "buff" };
+  }
+  if (kind === "shengyuPassiveYangyan") {
+    return { key: "shengyu_passive_yangyan", label: "阳炎", turns, durationLabel: "圣域被动", desc: "每回合末，上古系和火系以外的亚比有25%概率烧伤", tone: "buff" };
+  }
+  if (kind === "shengyuPassiveYanzhuoBahuang") {
+    return { key: "shengyu_passive_yanzhuo_bahuang", label: "炎灼八荒", turns, durationLabel: "圣域被动", desc: "阳炎圣域中，每回合初30%概率进入灼炎状态", tone: "buff" };
+  }
+  if (kind === "shengyuYanzhuoState") {
+    return { key: "shengyu_yanzhuo_state", label: "灼炎", turns, desc: `免疫烧伤；攻击时20%概率削弱目标全属性1级，剩余${turns}回合`, tone: "buff" };
   }
   if (kind === "turnSequenceAttack") {
     const skill = d.skill && typeof d.skill === "object" ? d.skill : {};
@@ -3964,9 +4112,8 @@ const getDamageReductionFactor = (scene, side, atkKind = "all") => {
   const traitResistance = normalize(side === "attacker" ? scene && scene.attackerBattleItemId : scene && scene.targetBattleItemId) === QIXING_SEAL_ITEM_ID
     ? clamp(Number(traitRule.resistance) || 0, 0, 0.95)
     : 0;
-  const skinResistance = isQiankunXiuluoshenSkinBattleActive(scene, side)
-    ? clamp(QIANKUN_XIULUOSHEN_SKIN_RESISTANCE_BONUS, 0, 0.95)
-    : 0;
+  const skinConfig = battleSkinConfigForSide(scene, side);
+  const skinResistance = skinConfig ? clamp(Number(skinConfig.resistanceBonus) || 0, 0, 0.95) : 0;
   let regularRatio = 0;
   let stackRatio = traitResistance + skinResistance;
   (state.timedEffects || []).forEach((e) => {
@@ -4095,6 +4242,100 @@ const getEffectiveBattleElements = (scene, side) => {
   return side === "attacker"
     ? getElementList(scene.attackerElement, scene.attackerSubElement)
     : getElementList(scene.targetElement, scene.targetSubElement);
+};
+const getBattleSidePassiveShengyuConfig = (scene, side) => {
+  const ids = side === "attacker"
+    ? [
+      scene && scene.attackerDexId,
+      scene && scene.attackerBaseDexId,
+      scene && scene.attackerBattleVisualDexId,
+      scene && scene.attackerOriginalBattleVisualDexId,
+      scene && scene.attackerSkinBattleVisualDexId
+    ]
+    : [
+      scene && scene.targetDexId,
+      scene && scene.targetBaseDexId,
+      scene && scene.targetBattleVisualDexId,
+      scene && scene.targetOriginalBattleVisualDexId
+    ];
+  return ids.map((id) => SHENGYU_PASSIVE_CONFIG_BY_DEX_ID[Number(id) || 0]).find(Boolean) || null;
+};
+const hasBattleTimedEffectKind = (scene, side, kind) => {
+  const expected = normalize(kind);
+  if (!expected) return false;
+  const state = getSideState(scene, side);
+  return (state.timedEffects || []).some((e) => normalize(e && e.kind) === expected && Math.max(0, Number(e && e.turns) || 0) > 0);
+};
+const isBattleShengyuDomainActive = (scene, domain = SHENGYU_DOMAIN_YANGYAN) => {
+  const expected = normalize(domain);
+  if (!scene || !expected) return false;
+  return normalize(scene.shengyuDomain) === expected || ["attacker", "target"].some((side) => {
+    const config = getBattleSidePassiveShengyuConfig(scene, side);
+    return normalize(config && config.domain) === expected;
+  });
+};
+const applyShengyuEntryPassives = (scene) => {
+  if (!scene) return [];
+  const fxList = [];
+  ["attacker", "target"].forEach((side) => {
+    const config = getBattleSidePassiveShengyuConfig(scene, side);
+    if (!config) return;
+    if (!scene.shengyuDomain) scene.shengyuDomain = normalize(config.domain);
+    const state = getSideState(scene, side);
+    if (!state.shengyuPassiveKeys || typeof state.shengyuPassiveKeys !== "object") state.shengyuPassiveKeys = {};
+    (config.passives || []).forEach((passive) => {
+      const key = normalize(passive && passive.key);
+      if (!key || state.shengyuPassiveKeys[key]) return;
+      state.shengyuPassiveKeys[key] = true;
+      if (key === "yangyan") addTimedEffect(scene, side, { kind: "shengyuPassiveYangyan", turns: 999, data: { label: passive.label || "阳炎", permanent: true } });
+      if (key === "yanzhuoBahuang") addTimedEffect(scene, side, { kind: "shengyuPassiveYanzhuoBahuang", turns: 999, data: { label: passive.label || "炎灼八荒", permanent: true } });
+    });
+  });
+  return fxList;
+};
+const isYangyanBurnEligibleSide = (scene, side) => {
+  const elements = getEffectiveBattleElements(scene, side).map(normalizeElementName).filter(Boolean);
+  return !elements.includes("上古系") && !elements.includes("火系");
+};
+const triggerShengyuTurnStartPassives = (scene) => {
+  if (!isBattleShengyuDomainActive(scene, SHENGYU_DOMAIN_YANGYAN)) return [];
+  const fxList = [];
+  ["attacker", "target"].forEach((side) => {
+    const config = getBattleSidePassiveShengyuConfig(scene, side);
+    const hasPassive = (config && (config.passives || []).some((p) => normalize(p && p.key) === "yanzhuoBahuang"))
+      || hasBattleTimedEffectKind(scene, side, "shengyuPassiveYanzhuoBahuang");
+    if (!hasPassive || Math.max(0, Number(side === "attacker" ? scene.attackerHp : scene.targetHp) || 0) <= 0) return;
+    if (Math.random() > 0.3) return;
+    addTimedEffect(scene, side, { kind: "shengyuYanzhuoState", turns: 3, data: { label: "灼炎", status: "burn" } });
+    const who = side === "attacker" ? scene.attackerName : scene.targetName;
+    pushBattleLog(scene, `${who}触发炎灼八荒，进入灼炎状态3回合。`);
+    fxList.push({ side, status: "shengyuYanzhuoState", label: "炎灼八荒", src: SHENGYU_YANZHUO_BAHUANG_FX_SRC });
+  });
+  return fxList;
+};
+const applyShengyuEndTurnPassives = (scene) => {
+  if (!isBattleShengyuDomainActive(scene, SHENGYU_DOMAIN_YANGYAN)) return [];
+  const fxList = [];
+  ["attacker", "target"].forEach((side) => {
+    if (Math.max(0, Number(side === "attacker" ? scene.attackerHp : scene.targetHp) || 0) <= 0) return;
+    if (!isYangyanBurnEligibleSide(scene, side)) return;
+    if (hasStatusShield(scene, side, "burn") || isStatusImmuneByElement(scene, side, "burn")) return;
+    if (Math.random() > 0.25) return;
+    const st = getSideState(scene, side);
+    applyStatusTurns(st, "burn", defaultStatusTurns("burn"));
+    const who = side === "attacker" ? scene.attackerName : scene.targetName;
+    pushBattleLog(scene, `阳炎圣域触发，${who}陷入烧伤${st.statuses.burn}回合。`);
+    fxList.push({ side, status: "burn", label: "烧伤" });
+  });
+  return fxList;
+};
+const applyShengyuOnAttackPassives = (scene, actorSide, targetSide, didHit) => {
+  if (!scene || !didHit || !hasBattleTimedEffectKind(scene, actorSide, "shengyuYanzhuoState")) return false;
+  if (Math.random() > 0.2) return false;
+  const changed = applyStageDelta(scene, targetSide, ALL_ABILITY_STAGE_KEYS.slice(), -1);
+  if (changed.length <= 0) return false;
+  pushBattleLog(scene, `${actorSide === "attacker" ? scene.attackerName : scene.targetName}的灼炎状态触发，${targetSide === "attacker" ? scene.attackerName : scene.targetName}全属性降低1级。`);
+  return true;
 };
 const getBattleElementFactor = (scene, skillElement, defenderSide) => (
   getElementFactorAgainstElements(skillElement, getEffectiveBattleElements(scene, defenderSide))
@@ -4250,8 +4491,9 @@ const getElementPowerFactor = (scene, side, skillElement) => {
 const getDamageBoostFactor = (scene, side) => {
   const state = getSideState(scene, side);
   let mul = 1;
-  if (isQiankunXiuluoshenSkinBattleActive(scene, side)) {
-    mul *= 1 + clamp(QIANKUN_XIULUOSHEN_SKIN_DAMAGE_BONUS, 0, 9);
+  const skinConfig = battleSkinConfigForSide(scene, side);
+  if (skinConfig) {
+    mul *= 1 + clamp(Number(skinConfig.damageBonus) || 0, 0, 9);
   }
   (state && Array.isArray(state.timedEffects) ? state.timedEffects : []).forEach((e) => {
     if (normalize(e && e.kind) !== "damageBoost") return;
@@ -4635,17 +4877,20 @@ const isFatalOnlyGuardianBossProtectedEffect = (effect) => {
 const isEffectBlockedByGuardianBoss = (scene, actor, effect) => {
   if (!isGuardianBossProtectedEffect(effect)) return false;
   const side = effect.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
-  return isGuardianBossProtectedTarget(scene, side);
+  if (scene && scene.mode === "equipmentDungeon" && side === "target" && normalize(effect.kind) === "instantKo") {
+    return Boolean(scene.guardianMeta && scene.guardianMeta.instantKoImmune);
+  }
+  return isBossLikeProtectedTarget(scene, side);
 };
 const isSkillBlockedByGuardianBoss = (scene, actor, skill) => {
-  if (!scene || actor !== "attacker" || !isGuardianBossProtectedTarget(scene, "target")) return false;
+  if (!scene || actor !== "attacker" || !isBossLikeProtectedTarget(scene, "target")) return false;
   const isPureProtectedEffect = (effect) => {
     if (!effect) return false;
     const kind = normalize(effect.kind);
     if (kind === "chanceExclusive") {
       return isPureProtectedEffect(effect.success) || isPureProtectedEffect(effect.fail);
     }
-    return isGuardianBossProtectedEffect(effect) && !isFatalOnlyGuardianBossProtectedEffect(effect) && isEffectBlockedByGuardianBoss(scene, actor, effect);
+      return isGuardianBossProtectedEffect(effect) && !isFatalOnlyGuardianBossProtectedEffect(effect) && isEffectBlockedByGuardianBoss(scene, actor, effect);
   };
   return parseSkillEffects(skill).some((e) => isPureProtectedEffect(e));
 };
@@ -4770,6 +5015,56 @@ const manualHardcodedSkillEffects = (skill) => {
       { kind: "mustHit", target: "self" },
       { kind: "stage", target: "opponent", keys: ["atk", "spAtk", "spDef", "accuracy", "speed"], delta: -1, chance: 1, requireHit: true },
       { kind: "stageGuard", target: "opponent", mode: "buff", turns: 2, requireHit: true }
+    ];
+  }
+  if (skillId === 5251 || name === "圣诞礼物") {
+    return [
+      { kind: "selfKo", target: "self" },
+      { kind: "nextPetStageBoost", target: "self", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: 1, label: "圣诞礼物" }
+    ];
+  }
+  if (skillId === 15291 || name === "冰封三界") {
+    return [
+      { kind: "fixedDamageBySelfMaxHpRatio", ratio: 0.35 },
+      { kind: "status", target: "opponent", status: "freeze", turns: 3, chance: 0.3, requireHit: true }
+    ];
+  }
+  if (skillId === 1758 || name === "夜之域") {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "damageBoost", target: "self", factor: 1.3, turns: 3 },
+      { kind: "attackImmunity", target: "self", attackKind: "all", chance: 0.5, turns: 3 }
+    ];
+  }
+  if (skillId === 8296 || name === "炎魂破碎") {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "stage", target: "opponent", keys: ["atk", "spAtk", "speed"], delta: -1, chance: 1, requireHit: true },
+      { kind: "lifesteal", target: "self", ratio: 1, requireHit: true },
+      { kind: "stage", target: "opponent", keys: ["def", "spDef"], delta: -1, chance: 1, requireHit: true, shengyuDomain: SHENGYU_DOMAIN_YANGYAN }
+    ];
+  }
+  if (skillId === 9298 || name === "超钢圣星") {
+    return [
+      { kind: "status", target: "opponent", status: "bind", turns: 5, chance: 1, requireHit: true },
+      { kind: "status", target: "opponent", status: "confuse", turns: 3, chance: 0.4, requireHit: true },
+      { kind: "healByMaxHpRatio", target: "self", ratio: 0.25, requireHit: true, shengyuDomain: SHENGYU_DOMAIN_YANGYAN }
+    ];
+  }
+  if (skillId === 16324 || name === "真芒无双") {
+    return [
+      { kind: "multiHit", target: "opponent", min: 2, max: 3 },
+      { kind: "perHitStage", target: "self", keys: ["spAtk", "critStage"], delta: 1, chance: 0.5, requireHit: true },
+      { kind: "stage", target: "self", keys: ["spAtk", "critStage"], delta: 1, chance: 1, requireHit: true, shengyuDomain: SHENGYU_DOMAIN_YANGYAN }
+    ];
+  }
+  if (skillId === 16323 || name === "古阳之力") {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "recoilFlat", target: "self", amount: 200 },
+      { kind: "stage", target: "self", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: 1, chance: 1, requireHit: false },
+      { kind: "endTurnHealFlat", target: "self", amount: 200, turns: 2, chance: 0.5 },
+      { kind: "stageGuard", target: "self", mode: "debuff", turns: 2, requireHit: false, shengyuDomain: SHENGYU_DOMAIN_YANGYAN }
     ];
   }
   if (skillId === 1050) {
@@ -5308,7 +5603,7 @@ const manualHardcodedSkillEffects = (skill) => {
     { kind: "ignoreDefense", target: "opponent", attackKind: "physical", ratio: 1 }
   ];
   if (name === "腐蚀酸云") return [{ kind: "mutualEndTurnDamageFlat", target: "both", turns: 5, amount: skillId === 2213 ? 300 : 200 }];
-  if (name === "一击必杀") return [{ kind: "fixedPowerOverride", power: 1 + Math.floor(Math.random() * 500) }];
+  if (name === "一击必杀") return [{ kind: "dynamicPower", target: "self", mode: "randomRange", minPower: 100, maxPower: 400 }];
   if (name === "火之净化" || name === "★火之净化") {
     const out = [{ kind: "ppChange", target: "opponent", amount: -5, chance: 1, requireHit: true }];
     if (name === "★火之净化") out.push({ kind: "damageReduction", target: "self", ratio: 0.2, turns: 3 });
@@ -5655,6 +5950,12 @@ const parseSkillEffectsFromDesc = (skill) => {
   }
   if (/(?:PP|pp)[^。；，\n]{0,18}(?:越少|减少|降低)[^。；，\n]{0,24}(?:威力|伤害)|(?:威力|伤害)[^。；，\n]{0,24}(?:随着|随)[^。；，\n]{0,8}(?:PP|pp)[^。；，\n]{0,12}(?:减少|降低)/.test(desc)) {
     addEffectOnce({ kind: "dynamicPower", target: "self", mode: "ppLow" });
+  }
+  if (/随机[^。；，\n]{0,16}(?:扣除|减少|损失)[^。；，\n]{0,16}(?:体力值?|生命值?|HP|hp)|(?:扣除|减少|损失)[^。；，\n]{0,16}随机[^。；，\n]{0,16}(?:体力值?|生命值?|HP|hp)/.test(desc)) {
+    addEffectOnce({ kind: "randomFlatHpDamage", target: "opponent", min: 50, max: 400, requireHit: /命中|攻击/.test(desc) });
+  }
+  if (/随机[^。；，\n]{0,12}(?:爆发|发动|产生|获得)?[^。；，\n]{0,12}(?:\d+\s*[~～-]\s*\d+[^。；，\n]{0,6})?威力|威力[^。；，\n]{0,12}随机/.test(desc)) {
+    addEffectOnce({ kind: "dynamicPower", target: "self", mode: "randomRange", minPower: 100, maxPower: 400 });
   }
   const damageShieldByDamageMatch = desc.match(/(?:伤害|伤害值|造成伤害)(?:的)?\s*((?:\d+\s*\/\s*\d+)|(?:\d+(?:\.\d+)?\s*%)|一半|三分之一|四分之一|五分之一|六分之一|八分之一|十六分之一)[^。；，\n]{0,18}(?:作为|转化为|形成|制造)[^。；，\n]{0,12}(?:护盾)|(?:护盾)[^。；，\n]{0,18}(?:吸收|抵抗)[^。；，\n]{0,18}(?:伤害|伤害值)(?:的)?\s*((?:\d+\s*\/\s*\d+)|(?:\d+(?:\.\d+)?\s*%)|一半|三分之一|四分之一|五分之一|六分之一|八分之一|十六分之一)/);
   if (damageShieldByDamageMatch) {
@@ -6267,8 +6568,7 @@ const parseSkillEffectsFromDesc = (skill) => {
     const chance = statusChanceFromDesc(desc, x.key, 1);
     add({ kind: "status", target, status: x.status, turns, chance });
   });
-  const hasHalfDamageReduction = /(受到|承受)[^。；，\n]{0,8}(?:攻击|伤害)?[^。；，\n]{0,8}(?:则|时|后)?[^。；，\n]{0,8}(?:伤害)?减半|(?:伤害抗性|伤害抵抗|抗性)[^。；，\n]{0,12}(?:提升|提高|增加)?[^。；，\n]{0,6}50\s*%/.test(desc);
-  if (name === "玄灵甲" || name === "玄雷甲" || name === "玄王甲" || hasHalfDamageReduction) {
+  if (name === "玄灵甲" || name === "玄雷甲" || name === "玄王甲") {
     const turns = parseTurns(3);
     add({ kind: "damageReduction", target: "self", ratio: 0.5, turns });
     // 兜底：仅当通用解析未识别“受击后全属性下降”时再补，避免双触发
@@ -6454,6 +6754,88 @@ const correctedKnownSkillEffects = (skill, effects = []) => {
       { kind: "perHitStage", target: "self", keys: ["critStage"], delta: 1, chance: 0.06 }
     ];
   }
+  if (skillId === 20076 || name === "雷龙之怒") {
+    return [
+      { kind: "multiHit", target: "opponent", min: 4, max: 8 },
+      { kind: "perHitStatus", target: "opponent", status: "paralyze", turns: 3, chance: 0.1 },
+      { kind: "bonusFixedDamageOnStatus", target: "opponent", status: "paralyze", amount: 50, requireHit: true }
+    ];
+  }
+  if (skillId === 19079 || name === "迷失乐园") {
+    return [
+      { kind: "stage", target: "self", keys: ["spAtk", "def", "spDef"], delta: 1, chance: 1, requireHit: false },
+      { kind: "stage", target: "self", keys: ["speed"], delta: 2, chance: 1, requireHit: false },
+      { kind: "status", target: "opponent", status: "confuse", turns: 3, chance: 0.15, requireHit: false }
+    ];
+  }
+  if (skillId === 3304 || name === "迷幻羽翼") {
+    return [
+      { kind: "stage", target: "self", keys: ["spAtk", "evasion"], delta: 1, chance: 1, requireHit: false },
+      { kind: "stage", target: "self", keys: ["speed"], delta: 2, chance: 1, requireHit: false }
+    ];
+  }
+  if (skillId === 21013 || name === "破灵碎无双") {
+    return [
+      { kind: "multiHit", target: "opponent", min: 4, max: 8 },
+      { kind: "perHitStatus", target: "opponent", status: "random", turns: 3, chance: 0.1 }
+    ];
+  }
+  if (skillId === 6208 || name === "狂暴之血") {
+    return [{ kind: "dynamicPower", target: "self", mode: "selfHpHigh", minPower: 50, maxPower: 300 }];
+  }
+  if (skillId === 10212 || name === "凤舞九天") {
+    return [
+      { kind: "recoilByMaxHp", target: "self", ratio: 0.25, requireHit: false },
+      { kind: "attackImmunity", target: "self", turns: 1, attackKind: "all", chance: 1, requireHit: false },
+      { kind: "dynamicPower", target: "self", mode: "selfHpHigh", minPower: 80, maxPower: 360 }
+    ];
+  }
+  if (skillId === 10306 || name === "狱火炼魂") {
+    return [
+      { kind: "status", target: "self", status: "bind", turns: 5, chance: 1, requireHit: false },
+      { kind: "endTurnHealFlat", target: "self", amount: 250, turns: 5 },
+      { kind: "healByTargetBurnDamage", target: "opponent", ratio: 1 / 8, requireHit: false }
+    ];
+  }
+  if (skillId === 12235 || name === "奥特霸体") {
+    return [
+      { kind: "stage", target: "self", keys: ["def"], delta: 1, chance: 1, requireHit: false },
+      { kind: "endTurnHealByMaxHpRatio", target: "self", ratio: 1 / 8, turns: 5, label: "奥特霸体" }
+    ];
+  }
+  if (skillId === 13306 || name === "磁爆漩涡") {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "clearStage", target: "self", mode: "all", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 1, requireHit: false },
+      { kind: "clearStage", target: "opponent", mode: "all", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 1, requireHit: false },
+      { kind: "status", target: "self", status: "bind", turns: 5, chance: 1, requireHit: false },
+      { kind: "status", target: "opponent", status: "bind", turns: 5, chance: 1, requireHit: false },
+      { kind: "status", target: "opponent", status: "paralyze", turns: 3, chance: 0.5, requireHit: false }
+    ];
+  }
+  if (skillId === 14327 || name === "归心") {
+    return [
+      { kind: "recoilFlat", target: "self", amount: 200, chance: 1, requireHit: false },
+      { kind: "stealStage", target: "opponent", keys: ["atk", "spAtk", "def", "spDef", "speed"], delta: 1, chance: 1, requireHit: false },
+      { kind: "skip", target: "self", turns: 1, chance: 1, requireHit: false }
+    ];
+  }
+  if (skillId === 30256 || name === "光之意志") {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "damageBoost", target: "self", factor: 1.4, turns: 5 },
+      { kind: "damageReduction", target: "self", ratio: 0.4, turns: 5 },
+      { kind: "endTurnStageChance", target: "self", turns: 5, chance: 0.3, changes: [{ keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: 1 }] }
+    ];
+  }
+  if (skillId === 30258 || name === "光·魂耀" || name === "光魂耀") {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "clearStage", target: "opponent", mode: "positive", keys: ALL_ABILITY_STAGE_KEYS.slice(), chance: 1, requireHit: true },
+      { kind: "statusShield", target: "self", status: "all", turns: 5, requireHit: false },
+      { kind: "stageGuard", target: "self", mode: "debuff", turns: 5, requireHit: false }
+    ];
+  }
   if (skillId === 21038 || name === "天堂契约") {
     return [
       { kind: "stage", target: "opponent", keys: ["def", "evasion", "speed"], delta: -1, chance: 1, requireHit: false },
@@ -6580,7 +6962,7 @@ const correctedKnownSkillEffects = (skill, effects = []) => {
   }
   if (skillId === 2276 || name === "光之斩魄") {
     return [
-      { kind: "randomFlatHpDamage", target: "opponent", min: 1, max: 500, requireHit: false },
+      { kind: "randomFlatHpDamage", target: "opponent", min: 50, max: 400, requireHit: false },
       { kind: "ppChange", target: "opponent", amount: -9999, chance: 0.15, requireHit: false }
     ];
   }
@@ -6610,7 +6992,7 @@ const correctedKnownSkillEffects = (skill, effects = []) => {
   }
   if (skillId === 19068 || name === "神圣光暴" || name === "神圣光爆") {
     return [
-      { kind: "dynamicPower", target: "self", mode: "randomRange", minPower: 220, maxPower: 280 },
+      { kind: "dynamicPower", target: "self", mode: "randomRange", minPower: 100, maxPower: 400 },
       { kind: "stage", target: "self", keys: ["critStage"], delta: 1, chance: 1, requireHit: true },
       { kind: "overrideElement", element: "光明系" }
     ];
@@ -6949,6 +7331,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
   const chanceFailKeys = new Set();
   effects.forEach((e) => {
     if (!shouldApplySkillEffectByCondition(scene, actor, e)) return;
+    if (normalize(e && e.shengyuDomain) && !isBattleShengyuDomainActive(scene, e.shengyuDomain)) return;
     if (normalize(e && e.kind) === "diminishingSuccessGate") {
       if (!diminishingGateChecked) {
         const gate = rollDiminishingSkillSuccess(scene, actor, skill);
@@ -7153,6 +7536,10 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       const toSide = actor;
       const keys = Array.isArray(e.keys) && e.keys.length > 0 ? e.keys : ["def"];
       let delta = Math.abs(Math.floor(Number(e.delta) || 1));
+      if (isStageChangeBlocked(scene, fromSide, -delta)) {
+        logs.push(`${fromSide === "attacker" ? scene.attackerName : scene.targetName}的属性保护生效，${skill.name}未能吸取能力等级。`);
+        return;
+      }
       if (e.doubleWhenSelfHpBelowHalf) {
         const selfHpKey = actor === "attacker" ? "attackerHp" : "targetHp";
         const selfMaxHpKey = actor === "attacker" ? "attackerMaxHp" : "targetMaxHp";
@@ -7793,6 +8180,22 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       logs.push(`${who}回复了 ${amount} 点体力（实际恢复 ${healed}）`);
       return;
     }
+    if (e.kind === "healByTargetBurnDamage") {
+      if (e.requireHit && !didHit) return;
+      const targetSideForBurn = sideByTarget(e.target || "opponent");
+      const targetState = getSideState(scene, targetSideForBurn);
+      if (Math.max(0, Number(targetState.statuses && targetState.statuses.burn) || 0) <= 0) return;
+      const burnMaxHp = Math.max(1, Number(targetSideForBurn === "attacker" ? scene.attackerMaxHp : scene.targetMaxHp) || 1);
+      const ratio = clamp(Number(e.ratio) || 1 / 8, 0.01, 1);
+      const amount = Math.max(1, Math.floor(burnMaxHp * ratio));
+      const healSide = actor;
+      const { actual: healed } = healSideByFlatAmount(scene, healSide, amount);
+      if (healSide === "attacker") scene.healOnAttacker = `+${healed}`;
+      else scene.healOnTarget = `+${healed}`;
+      markBattleFloatText(scene);
+      logs.push(`${skill.name}将${targetSideForBurn === "attacker" ? scene.attackerName : scene.targetName}的烧伤伤害转为回复，${healSide === "attacker" ? scene.attackerName : scene.targetName}回复 ${healed} 点体力。`);
+      return;
+    }
     if (e.kind === "recoilFlat") {
       const chance = clamp(Number(e.chance) || 1, 0, 1);
       if (Math.random() > chance) return;
@@ -7819,6 +8222,29 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       else scene.healOnTarget = `+${val}`;
       markBattleFloatText(scene);
       logs.push(`${who}回复了 ${val} 点体力（实际恢复 ${healed}）`);
+      return;
+    }
+    if (e.kind === "healByMaxHpRatio") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const who = side === "attacker" ? scene.attackerName : scene.targetName;
+      const maxHp = Math.max(1, Number(side === "attacker" ? scene.attackerMaxHp : scene.targetMaxHp) || 1);
+      const ratio = clamp(Number(e.ratio) || 0.25, 0.01, 1);
+      const amount = Math.max(1, Math.floor(maxHp * ratio));
+      const { actual: healed } = healSideByFlatAmount(scene, side, amount);
+      if (side === "attacker") scene.healOnAttacker = `+${healed}`;
+      else scene.healOnTarget = `+${healed}`;
+      markBattleFloatText(scene);
+      logs.push(`${who}回复最大体力${Math.round(ratio * 100)}%，恢复 ${healed} 点体力。`);
+      return;
+    }
+    if (e.kind === "recoilFlat") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const amount = Math.max(1, Math.floor(Number(e.amount) || 1));
+      const actual = applyDirectHpDamage(scene, side, amount);
+      if (side === "attacker") scene.damageOnAttacker = `-${actual}`;
+      else scene.damageOnTarget = `-${actual}`;
+      markBattleFloatText(scene);
+      logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}消耗 ${actual} 点体力。`);
       return;
     }
     if (e.kind === "healFlatOnDiminishingFail") {
@@ -8240,6 +8666,12 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       logs.push(`${actorName}的下一只出场亚比将满状态回复。`);
       return;
     }
+    if (e.kind === "nextPetStageBoost") {
+      const keys = (Array.isArray(e.keys) ? e.keys : ALL_ABILITY_STAGE_KEYS.slice()).map((k) => normalize(k)).filter((k, idx, arr) => ALL_ABILITY_STAGE_KEYS.includes(k) && arr.indexOf(k) === idx);
+      scene.nextPetStageBoost = { keys, delta: Math.floor(Number(e.delta) || 1), label: normalize(e.label) || skill.name };
+      logs.push(`${actorName}的下一只出场亚比将获得${normalize(e.label) || skill.name}强化。`);
+      return;
+    }
     if (e.kind === "damageShield") {
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
       const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
@@ -8378,6 +8810,15 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       addTimedEffect(scene, side, { kind: "healOverTime", turns: e.turns, data: { ratio: e.ratio } });
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       logs.push(`${who}获得持续回血效果，持续${e.turns}回合`);
+      return;
+    }
+    if (e.kind === "endTurnHealByMaxHpRatio") {
+      const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
+      const ratio = clamp(Number(e.ratio) || 0.125, 0.01, 1);
+      const turns = Math.max(1, Math.floor(Number(e.turns) || 1));
+      const label = normalize(e.label) || normalize(skill.name);
+      addTimedEffect(scene, side, { kind: "endTurnHealByMaxHpRatio", turns, data: { ratio, label } });
+      logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}获得${label}回血效果，持续${turns}回合。`);
       return;
     }
     if (e.kind === "endTurnHealFlat") {
@@ -9033,6 +9474,16 @@ const applyEndTurnStatus = (scene, side) => {
     if (actual > 0) {
       totalHealSelf += actual;
       pushBattleLog(scene, `${actorName}持续回复 ${actual}`);
+    }
+  });
+  (state.timedEffects || []).forEach((e) => {
+    if (normalize(e.kind) !== "endTurnHealByMaxHpRatio") return;
+    const ratio = clamp(Number(e.data && e.data.ratio) || 0.125, 0.01, 1);
+    const amount = Math.max(1, Math.floor(maxHp * ratio));
+    const { actual } = healSideByFlatAmount(scene, side, amount);
+    if (actual > 0) {
+      totalHealSelf += actual;
+      pushBattleLog(scene, `${normalize(e.data && e.data.label) || "持续回血"}：${actorName}回复 ${actual} 点体力。`);
     }
   });
   (state.timedEffects || []).forEach((e) => {
@@ -10544,14 +10995,15 @@ createApp({
         weeklyBossHonorRewards: {},
         weeklyBossRewardState: { bossKey: WEEKLY_BOSS_CONFIG.key, rewardStateVersion: WEEKLY_BOSS_REWARD_STATE_VERSION, divinePetKeyClaimed: false, exchangedEgg: false, lastRewardDate: "", clearedDifficulties: {} },
         weeklyBossRewardStates: {},
-        equipmentDungeon: { date: "", attemptsUsed: 0, score: 0, active: false, completedRegionKeys: [], unlockedRegionKeys: ["aixi"], settled: false },
+        equipmentDungeon: { date: "", attemptsUsed: 0, score: 0, sweepScore: 0, sweepUnlocked: false, active: false, completedRegionKeys: [], unlockedRegionKeys: ["aixi"], settled: false },
         equipmentDungeonBestScore: 0,
+        monthlySignIn: { monthKey: monthlySignMonthKeyOf(), signedDays: [], makeupDays: [], normalClaimedDays: [], supremeClaimedDays: [], milestonesClaimed: {}, supremeActivatedAt: 0, supremeExpiresAt: 0, supremeStartDay: 0 },
         abilityBreakthroughEntries: [],
         shopDailyPurchases: { date: "", counts: {} },
         shopLimitedPurchases: {},
         dragonBoatShopPurchases: {},
         qixingSeals: [],
-        qixingGacha: { pity: 0, pityByKey: { phase1_ice_princess: 0, phase2_qiankun_skin: 0, energy_core_mecha: 0, energy_core_mouse: 0 }, limitedEggs: {} },
+        qixingGacha: { pity: 0, pityByKey: { phase1_ice_princess: 0, phase2_qiankun_skin: 0, phase2_zhanwuyan_skin: 0, energy_core_dragon_mage: 0, energy_core_nian: 0 }, limitedEggs: {} },
         equippedBadgeId: "",
         targetLevel: 10,
         timeTunnelMaxClearedFloor: 0,
@@ -10586,6 +11038,40 @@ createApp({
         ? loaded.timeTunnelRewardClaimedFloors.map((n) => Math.max(0, Math.floor(Number(n) || 0)))
         : [];
       return clamp(Math.max(0, ...direct, ...claimedFloors), 0, TIME_TUNNEL_OPEN_MAX_FLOOR);
+    };
+    const sanitizeMonthlySignInState = (source) => {
+      const raw = source && typeof source === "object" ? source : {};
+      const currentMonthKey = monthlySignMonthKeyOf();
+      const sourceMonthKey = normalize(raw.monthKey);
+      const sameMonth = sourceMonthKey === currentMonthKey;
+      const dayList = (list) => Array.from(new Set((Array.isArray(list) ? list : [])
+        .map((n) => clamp(Math.floor(Number(n) || 0), 1, MONTHLY_SIGN_DAYS))
+        .filter((n) => n >= 1 && n <= MONTHLY_SIGN_DAYS))).sort((a, b) => a - b);
+      const signedDays = sameMonth ? dayList(raw.signedDays) : [];
+      const makeupDays = sameMonth ? dayList(raw.makeupDays).filter((day) => signedDays.includes(day)) : [];
+      const normalClaimedDays = sameMonth ? dayList(raw.normalClaimedDays).filter((day) => signedDays.includes(day)) : [];
+      const supremeClaimedDays = sameMonth ? dayList(raw.supremeClaimedDays).filter((day) => signedDays.includes(day) && !makeupDays.includes(day)) : [];
+      const rawMilestones = sameMonth && raw.milestonesClaimed && typeof raw.milestonesClaimed === "object" ? raw.milestonesClaimed : {};
+      const milestonesClaimed = {};
+      MONTHLY_SIGN_MILESTONE_REWARDS.forEach((entry) => {
+        if (rawMilestones[entry.days]) milestonesClaimed[entry.days] = true;
+      });
+      const activatedAt = Math.max(0, Math.floor(Number(raw.supremeActivatedAt) || 0));
+      const expiresAt = Math.max(0, Math.floor(Number(raw.supremeExpiresAt) || 0));
+      const now = Date.now();
+      const supremeActive = expiresAt > now;
+      const supremeStartDay = supremeActive ? clamp(Math.floor(Number(raw.supremeStartDay) || MONTHLY_SIGN_DAYS + 1), 1, MONTHLY_SIGN_DAYS + 1) : 0;
+      return {
+        monthKey: currentMonthKey,
+        signedDays,
+        makeupDays,
+        normalClaimedDays,
+        supremeClaimedDays: supremeClaimedDays.filter((day) => !supremeStartDay || day >= supremeStartDay),
+        milestonesClaimed,
+        supremeActivatedAt: supremeActive ? activatedAt : 0,
+        supremeExpiresAt: supremeActive ? expiresAt : 0,
+        supremeStartDay
+      };
     };
 
     const sanitizeState = (loaded) => {
@@ -10648,7 +11134,7 @@ createApp({
           equippedItemInstanceId: normalize(p.equippedItemInstanceId),
           equippedGearId: legacyGearId,
           equippedGearIds,
-          skinKey: normalize(p.skinKey) === QIANKUN_XIULUOSHEN_SKIN_KEY ? QIANKUN_XIULUOSHEN_SKIN_KEY : "",
+          skinKey: PET_SKIN_CONFIG_BY_KEY.has(normalize(p.skinKey)) ? normalize(p.skinKey) : "",
           source: normalize(p.source),
           createdAt: Number(p.createdAt) || Date.now()
         };
@@ -10760,6 +11246,8 @@ createApp({
           date: normalize(source.date),
           attemptsUsed: clamp(Math.floor(Number(source.attemptsUsed) || 0), 0, EQUIPMENT_DUNGEON_DAILY_ATTEMPT_LIMIT),
           score: Math.max(0, Math.floor(Number(source.score) || 0)),
+          sweepScore: Math.max(0, Math.floor(Number(source.sweepScore ?? source.lastScore ?? source.bestTodayScore) || 0)),
+          sweepUnlocked: Boolean(source.sweepUnlocked || source.settled),
           active: Boolean(source.active),
           completedRegionKeys: Array.from(new Set(completedRegionKeys)),
           unlockedRegionKeys: Array.from(unlocked),
@@ -10853,6 +11341,7 @@ createApp({
           Math.floor(Number(loaded.equipmentDungeonHighScore) || 0),
           Math.floor(Number(equipmentDungeon.score) || 0)
         ),
+        monthlySignIn: sanitizeMonthlySignInState(loaded.monthlySignIn),
         weeklyBossAttempts: (() => {
           const source = loaded.weeklyBossAttempts && typeof loaded.weeklyBossAttempts === "object" ? loaded.weeklyBossAttempts : {};
           const bossKey = normalize(source.bossKey);
@@ -10977,8 +11466,9 @@ createApp({
               phase1_ice_princess: Math.max(0, Math.floor(Number(pityByKey.phase1_ice_princess ?? pityByKey.ice_princess ?? legacyPity) || 0)),
               phase2_ancient_star_dragon: Math.max(0, Math.floor(Number(pityByKey.phase2_ancient_star_dragon ?? pityByKey.ancient_star_dragon ?? legacyPity) || 0)),
               phase2_qiankun_skin: Math.max(0, Math.floor(Number(pityByKey.phase2_qiankun_skin ?? pityByKey.phase2_ancient_star_dragon ?? pityByKey.ancient_star_dragon ?? legacyPity) || 0)),
-              energy_core_mecha: Math.max(0, Math.floor(Number(pityByKey.energy_core_mecha) || 0)),
-              energy_core_mouse: Math.max(0, Math.floor(Number(pityByKey.energy_core_mouse) || 0))
+              phase2_zhanwuyan_skin: Math.max(0, Math.floor(Number(pityByKey.phase2_zhanwuyan_skin) || 0)),
+              energy_core_dragon_mage: Math.max(0, Math.floor(Number(pityByKey.energy_core_dragon_mage ?? pityByKey.energy_core_mecha) || 0)),
+              energy_core_nian: Math.max(0, Math.floor(Number(pityByKey.energy_core_nian ?? pityByKey.energy_core_mouse) || 0))
             },
             limitedEggs: {
               ice_princess: Boolean(limitedEggs.ice_princess),
@@ -10989,9 +11479,10 @@ createApp({
               phase1_ice_princess: Boolean(limitedEggs.phase1_ice_princess || limitedEggs.ice_princess),
               phase2_ice_princess: Boolean(limitedEggs.phase2_ice_princess),
               phase2_ancient_star_dragon: Boolean(limitedEggs.phase2_ancient_star_dragon || limitedEggs.ancient_star_dragon),
-              phase2_qiankun_skin: Boolean(limitedEggs.phase2_qiankun_skin || activePets.some((pet) => normalize(pet && pet.skinKey) === QIANKUN_XIULUOSHEN_SKIN_KEY)),
-              energy_core_mecha: Boolean(limitedEggs.energy_core_mecha || Math.max(0, Math.floor(Number(items[MECHA_WARRIOR_ENERGY_CORE_ITEM_ID]) || 0)) > 0),
-              energy_core_mouse: Boolean(limitedEggs.energy_core_mouse || Math.max(0, Math.floor(Number(items[GLARE_IRON_FIST_MOUSE_ENERGY_CORE_ITEM_ID]) || 0)) > 0)
+              phase2_qiankun_skin: Boolean(limitedEggs.phase2_qiankun_skin || activePets.some((pet) => normalize(pet && pet.skinKey) === QIANKUN_XIULUOSHEN_SKIN_KEY) || Math.max(0, Math.floor(Number(items[QIANKUN_XIULUOSHEN_SKIN_ITEM_ID]) || 0)) > 0),
+              phase2_zhanwuyan_skin: Boolean(limitedEggs.phase2_zhanwuyan_skin || activePets.some((pet) => normalize(pet && pet.skinKey) === ZHANWUYAN_SKIN_KEY) || Math.max(0, Math.floor(Number(items[ZHANWUYAN_SKIN_ITEM_ID]) || 0)) > 0),
+              energy_core_dragon_mage: Boolean(limitedEggs.energy_core_dragon_mage || Math.max(0, Math.floor(Number(items[DRAGON_MAGE_ENERGY_CORE_ITEM_ID]) || 0)) > 0),
+              energy_core_nian: Boolean(limitedEggs.energy_core_nian || Math.max(0, Math.floor(Number(items[NIAN_BEAST_ENERGY_CORE_ITEM_ID]) || 0)) > 0)
             }
           };
         })(),
@@ -11283,6 +11774,8 @@ createApp({
     const showBadgePanel = ref(false);
     const showEggHatchPanel = ref(false);
     const showLeaderboardPanel = ref(false);
+    const showMonthlySignPanel = ref(false);
+    const monthlySignTab = ref("normal");
     const showDragonBoatShopPanel = ref(false);
     const leaderboardMetric = ref("battlePower");
     const leaderboardPage = ref(1);
@@ -11388,6 +11881,12 @@ createApp({
         desc: "用于启星转盘抽奖"
       },
       {
+        id: "double_hcoin_device",
+        name: "双倍H币器",
+        price: 0,
+        desc: "后续10场可获得H币的战斗中自动消耗，使本场H币收益翻倍"
+      },
+      {
         id: ZONGZI_ITEM_ID,
         name: "粽子",
         price: 0,
@@ -11422,19 +11921,25 @@ createApp({
         id: QIANKUN_XIULUOSHEN_SKIN_ITEM_ID,
         name: QIANKUN_XIULUOSHEN_SKIN_NAME,
         price: 0,
-        desc: `限圣光修罗/修罗使用：对战动画替换为${QIANKUN_XIULUOSHEN_SKIN_NAME.replace(/皮肤$/, "")}，并提升战斗能力`
+        desc: `限${QIANKUN_XIULUOSHEN_SKIN_ALLOWED_TEXT}使用：对战动画替换为${QIANKUN_XIULUOSHEN_SKIN_NAME.replace(/皮肤$/, "")}，并提升战斗能力`
       },
       {
-        id: MECHA_WARRIOR_ENERGY_CORE_ITEM_ID,
-        name: "机甲勇士能量核心",
+        id: ZHANWUYAN_SKIN_ITEM_ID,
+        name: ZHANWUYAN_SKIN_NAME,
         price: 0,
-        desc: "能力突破机材料：消耗后生成机甲勇士突破影像，可额外分配350点能力值"
+        desc: `限${ZHANWUYAN_SKIN_ALLOWED_TEXT}使用：对战动画替换为${ZHANWUYAN_SKIN_NAME.replace(/皮肤$/, "")}，并提升战斗能力`
       },
       {
-        id: GLARE_IRON_FIST_MOUSE_ENERGY_CORE_ITEM_ID,
-        name: "炫光铁拳鼠能量核心",
+        id: DRAGON_MAGE_ENERGY_CORE_ITEM_ID,
+        name: "龙族大法师能量核心",
         price: 0,
-        desc: "能力突破机材料：消耗后生成炫光铁拳鼠突破影像，可额外分配350点能力值"
+        desc: "能力突破机材料：消耗后生成龙族大法师突破影像，可额外分配350点能力值"
+      },
+      {
+        id: NIAN_BEAST_ENERGY_CORE_ITEM_ID,
+        name: "年兽能量核心",
+        price: 0,
+        desc: "能力突破机材料：消耗后生成年兽突破影像，可额外分配350点能力值"
       },
       {
         id: SUPER_DICE_BOMB_SKILL_STONE_ITEM_ID,
@@ -11468,6 +11973,13 @@ createApp({
       image: gear.image,
       desc: gearStatsText(gear)
     })));
+    const bundleShopItems = ref([
+      { id: "divine_pet_key_bundle_s", name: "神宠之匙小礼包", price: 300000, grantItemId: "divine_pet_key", grantCount: 50, purchaseLimit: 5, desc: "打开后获得50个神宠之匙，限购5个" },
+      { id: "divine_pet_key_bundle_m", name: "神宠之匙中礼包", price: 680000, grantItemId: "divine_pet_key", grantCount: 100, purchaseLimit: 3, desc: "打开后获得100个神宠之匙，限购3个" },
+      { id: "divine_pet_key_bundle_l", name: "神宠之匙大礼包", price: 1280000, grantItemId: "divine_pet_key", grantCount: 200, purchaseLimit: 2, desc: "打开后获得200个神宠之匙，限购2个" },
+      { id: "divine_pet_key_bundle_xl", name: "神宠之匙大礼包", price: 3280000, grantItemId: "divine_pet_key", grantCount: 500, purchaseLimit: 1, desc: "打开后获得500个神宠之匙，限购1个" },
+      { id: "divine_pet_key_bundle_ultimate", name: "神宠之匙究极大礼包", price: 6480000, grantItemId: "divine_pet_key", grantCount: 1000, purchaseLimit: 0, desc: "打开后获得1000个神宠之匙，不限购" }
+    ]);
     const shopItems = ref([
       {
         id: "pp_bean_s",
@@ -11522,6 +12034,12 @@ createApp({
         name: "自动战斗仪",
         price: 1000,
         desc: "购买后获得 10 次图鉴自动挑战次数，可连续挑战同一图鉴目标"
+      },
+      {
+        id: "double_hcoin_device",
+        name: "双倍H币器",
+        price: 20000,
+        desc: "购买后获得10次双倍H币次数，可在后续10场战斗中获取的H币翻倍"
       },
       {
         id: "study_reset_fruit",
@@ -11627,7 +12145,7 @@ createApp({
         desc: "使指定亚比天赋总值直接达到天下无双"
       }
     ]);
-    const allHcoinShopItems = computed(() => shopItems.value.concat(skillShopItems.value));
+    const allHcoinShopItems = computed(() => shopItems.value.concat(skillShopItems.value, bundleShopItems.value));
     const itemCatalog = computed(() => initialOnlyItems.concat(shopItems.value, skillShopItems.value, gearShopItems.value));
     const equipmentDungeonCrystalCount = computed(() => getItemCount(EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID));
     const getTimeTunnelRewardInfo = (floor) => {
@@ -12243,13 +12761,18 @@ createApp({
         || getItemCount(QIANKUN_XIULUOSHEN_SKIN_ITEM_ID) > 0
         || (Array.isArray(state.value.activePets) ? state.value.activePets : []).some((pet) => normalize(pet && pet.skinKey) === QIANKUN_XIULUOSHEN_SKIN_KEY)
       );
-      state.value.qixingGacha.limitedEggs.energy_core_mecha = Boolean(
-        state.value.qixingGacha.limitedEggs.energy_core_mecha
-        || getItemCount(MECHA_WARRIOR_ENERGY_CORE_ITEM_ID) > 0
+      state.value.qixingGacha.limitedEggs.phase2_zhanwuyan_skin = Boolean(
+        state.value.qixingGacha.limitedEggs.phase2_zhanwuyan_skin
+        || getItemCount(ZHANWUYAN_SKIN_ITEM_ID) > 0
+        || (Array.isArray(state.value.activePets) ? state.value.activePets : []).some((pet) => normalize(pet && pet.skinKey) === ZHANWUYAN_SKIN_KEY)
       );
-      state.value.qixingGacha.limitedEggs.energy_core_mouse = Boolean(
-        state.value.qixingGacha.limitedEggs.energy_core_mouse
-        || getItemCount(GLARE_IRON_FIST_MOUSE_ENERGY_CORE_ITEM_ID) > 0
+      state.value.qixingGacha.limitedEggs.energy_core_dragon_mage = Boolean(
+        state.value.qixingGacha.limitedEggs.energy_core_dragon_mage
+        || getItemCount(DRAGON_MAGE_ENERGY_CORE_ITEM_ID) > 0
+      );
+      state.value.qixingGacha.limitedEggs.energy_core_nian = Boolean(
+        state.value.qixingGacha.limitedEggs.energy_core_nian
+        || getItemCount(NIAN_BEAST_ENERGY_CORE_ITEM_ID) > 0
       );
       if (hasObtainedEggDex(QIXING_ANCIENT_STAR_DRAGON_DEX.dexId) || hasObtainedEggDex(QIXING_ANCIENT_STAR_DRAGON_DEX.rootDexId)) {
         state.value.qixingGacha.limitedEggs.phase2_ancient_star_dragon = true;
@@ -12261,8 +12784,9 @@ createApp({
       state.value.qixingGacha.pityByKey.phase1_ice_princess = Math.max(0, Math.floor(Number(state.value.qixingGacha.pityByKey.phase1_ice_princess ?? state.value.qixingGacha.pityByKey.ice_princess ?? legacyPity) || 0));
       state.value.qixingGacha.pityByKey.phase2_ancient_star_dragon = Math.max(0, Math.floor(Number(state.value.qixingGacha.pityByKey.phase2_ancient_star_dragon ?? state.value.qixingGacha.pityByKey.ancient_star_dragon ?? legacyPity) || 0));
       state.value.qixingGacha.pityByKey.phase2_qiankun_skin = Math.max(0, Math.floor(Number(state.value.qixingGacha.pityByKey.phase2_qiankun_skin ?? state.value.qixingGacha.pityByKey.phase2_ancient_star_dragon ?? legacyPity) || 0));
-      state.value.qixingGacha.pityByKey.energy_core_mecha = Math.max(0, Math.floor(Number(state.value.qixingGacha.pityByKey.energy_core_mecha) || 0));
-      state.value.qixingGacha.pityByKey.energy_core_mouse = Math.max(0, Math.floor(Number(state.value.qixingGacha.pityByKey.energy_core_mouse) || 0));
+      state.value.qixingGacha.pityByKey.phase2_zhanwuyan_skin = Math.max(0, Math.floor(Number(state.value.qixingGacha.pityByKey.phase2_zhanwuyan_skin) || 0));
+      state.value.qixingGacha.pityByKey.energy_core_dragon_mage = Math.max(0, Math.floor(Number(state.value.qixingGacha.pityByKey.energy_core_dragon_mage ?? state.value.qixingGacha.pityByKey.energy_core_mecha) || 0));
+      state.value.qixingGacha.pityByKey.energy_core_nian = Math.max(0, Math.floor(Number(state.value.qixingGacha.pityByKey.energy_core_nian ?? state.value.qixingGacha.pityByKey.energy_core_mouse) || 0));
       return state.value.qixingGacha;
     };
     const isQixingGachaPhaseUnlocked = (phaseKey) => {
@@ -12359,14 +12883,19 @@ createApp({
       .filter((it) => ![QIXING_SEAL_ITEM_ID, QIXING_FRAGMENT_ITEM_ID].includes(normalize(it.id)))
       .map((it) => {
         const count = getItemCount(it.id);
+        const skinConfig = PET_SKIN_CONFIG_BY_ITEM_ID.get(normalize(it.id)) || null;
+        const isSkinUnlock = Boolean(skinConfig
+          && state.value.qixingGacha
+          && state.value.qixingGacha.limitedEggs
+          && state.value.qixingGacha.limitedEggs[skinConfig.limitedKey]);
         return {
           ...it,
           count,
           useQuantity: Math.min(itemUseQuantity(it.id), bagItemMaxUseQuantity(it.id)),
           maxUseQuantity: bagItemMaxUseQuantity(it.id),
           supportsUseQuantity: supportsBagItemUseQuantity(it.id),
-          canUse: count > 0,
-          countLabel: it.id === "double_exp_device" || it.id === "auto_battle_device" ? `${count} 次` : `× ${count}`,
+          canUse: count > 0 || isSkinUnlock,
+          countLabel: isSkinUnlock ? "已解锁" : (it.id === "double_exp_device" || it.id === "auto_battle_device" || it.id === "double_hcoin_device" ? `${count} 次` : `× ${count}`),
           equipped: safeActivePets.value.filter((pet) => normalize(pet && pet.equippedItemId) === normalize(it.id)).length
         };
       }));
@@ -12567,13 +13096,7 @@ createApp({
       state.value.items[id] = Math.max(0, cur + (Number(delta) || 0));
     };
     const grantZongziReward = (scene, amount, sourceLabel) => {
-      const count = Math.max(0, Math.floor(Number(amount) || 0));
-      if (count <= 0) return "";
-      addItemCount(ZONGZI_ITEM_ID, count);
-      const text = `${sourceLabel || "挑战成功"}，获得粽子×${count}。`;
-      if (scene) pushBattleLog(scene, text);
-      queueRewardFlyToasts(`获取粽子×${count}！`);
-      return text;
+      return "";
     };
     const ensureWeeklyBossRewardState = (bossKey = selectedWeeklyBossKey.value) => {
       const config = getWeeklyBossConfigByKey(bossKey);
@@ -12611,6 +13134,180 @@ createApp({
       if (!id || getItemCount(id) < need) return false;
       addItemCount(id, -need);
       return true;
+    };
+    const ensureMonthlySignInState = () => {
+      const next = sanitizeMonthlySignInState(state.value.monthlySignIn);
+      const current = state.value.monthlySignIn && typeof state.value.monthlySignIn === "object" ? state.value.monthlySignIn : null;
+      if (!current || JSON.stringify(current) !== JSON.stringify(next)) state.value.monthlySignIn = next;
+      return state.value.monthlySignIn;
+    };
+    const monthlySignSignedCount = computed(() => ensureMonthlySignInState().signedDays.length);
+    const monthlySignTodayDay = computed(() => monthlySignDayOf());
+    const monthlySignTodayOpen = computed(() => new Date().getDate() <= MONTHLY_SIGN_DAYS);
+    const monthlySignSupremeActive = computed(() => Math.max(0, Math.floor(Number(ensureMonthlySignInState().supremeExpiresAt) || 0)) > Date.now());
+    const monthlySignSupremeExpireText = computed(() => {
+      const expiresAt = Math.max(0, Math.floor(Number(ensureMonthlySignInState().supremeExpiresAt) || 0));
+      if (expiresAt <= Date.now()) return "未激活";
+      return `剩余${Math.max(1, Math.ceil((expiresAt - Date.now()) / (24 * 60 * 60 * 1000)))}天`;
+    });
+    const monthlySignRewardLabel = (reward) => normalize(reward && reward.label) || "奖励";
+    const grantMonthlySignReward = (reward) => {
+      if (!reward || typeof reward !== "object") return "";
+      const amount = Math.max(1, Math.floor(Number(reward.amount) || 1));
+      if (reward.type === "hCoins") {
+        state.value.hCoins = Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) + Math.max(0, Math.floor(Number(reward.amount) || 0));
+      } else if (reward.type === "item") {
+        addItemCount(reward.itemId, amount);
+      } else if (reward.type === "trait") {
+        grantQixingSeal(reward.traitKey, amount);
+      } else if (reward.type === "egg") {
+        const dex = dexById.get(Number(reward.dexId) || 0) || null;
+        if (!dex) return `${monthlySignRewardLabel(reward)}缺少图鉴数据`;
+        if (!hasObtainedEggDex(dex.dexId)) {
+          state.value.eggs.unshift({ id: uid(), dexId: dex.dexId, speciesName: dex.name, startAt: Date.now(), hatchAt: Date.now() + HATCH_MS });
+          markObtainedEggDex(dex.dexId);
+        }
+      }
+      return monthlySignRewardLabel(reward);
+    };
+    const claimMonthlySignNormalReward = (day) => {
+      const row = ensureMonthlySignInState();
+      const safeDay = clamp(Math.floor(Number(day) || 0), 1, MONTHLY_SIGN_DAYS);
+      if (!row.signedDays.includes(safeDay) || row.normalClaimedDays.includes(safeDay)) return "";
+      const label = grantMonthlySignReward(MONTHLY_SIGN_NORMAL_REWARDS[safeDay - 1]);
+      row.normalClaimedDays.push(safeDay);
+      row.normalClaimedDays.sort((a, b) => a - b);
+      return label;
+    };
+    const claimMonthlySignSupremeReward = (day) => {
+      const row = ensureMonthlySignInState();
+      const safeDay = clamp(Math.floor(Number(day) || 0), 1, MONTHLY_SIGN_DAYS);
+      const startDay = clamp(Math.floor(Number(row.supremeStartDay) || MONTHLY_SIGN_DAYS + 1), 1, MONTHLY_SIGN_DAYS + 1);
+      if (!monthlySignSupremeActive.value || safeDay < startDay || !row.signedDays.includes(safeDay) || row.makeupDays.includes(safeDay) || row.supremeClaimedDays.includes(safeDay)) return "";
+      const label = grantMonthlySignReward(MONTHLY_SIGN_SUPREME_REWARDS[safeDay - 1]);
+      row.supremeClaimedDays.push(safeDay);
+      row.supremeClaimedDays.sort((a, b) => a - b);
+      return label;
+    };
+    const monthlySignRows = computed(() => {
+      const row = ensureMonthlySignInState();
+      const realDay = new Date().getDate();
+      return Array.from({ length: MONTHLY_SIGN_DAYS }, (_, index) => {
+        const day = index + 1;
+        const signed = row.signedDays.includes(day);
+        const makeup = row.makeupDays.includes(day);
+        const supremeClaimed = row.supremeClaimedDays.includes(day);
+        const supremeStartDay = clamp(Math.floor(Number(row.supremeStartDay) || MONTHLY_SIGN_DAYS + 1), 1, MONTHLY_SIGN_DAYS + 1);
+        return {
+          day,
+          signed,
+          makeup,
+          canSign: monthlySignTodayOpen.value && day === monthlySignTodayDay.value && !signed,
+          canMakeup: !signed && (day < realDay || realDay > MONTHLY_SIGN_DAYS),
+          canClaimSupreme: monthlySignSupremeActive.value && day >= supremeStartDay && signed && !makeup && !supremeClaimed,
+          normalLabel: monthlySignRewardLabel(MONTHLY_SIGN_NORMAL_REWARDS[index]),
+          supremeLabel: monthlySignRewardLabel(MONTHLY_SIGN_SUPREME_REWARDS[index]),
+          normalClaimed: row.normalClaimedDays.includes(day),
+          supremeClaimed
+        };
+      });
+    });
+    const monthlySignMilestones = computed(() => {
+      const row = ensureMonthlySignInState();
+      return MONTHLY_SIGN_MILESTONE_REWARDS.map((entry) => ({
+        ...entry,
+        rewardLabel: monthlySignRewardLabel(entry.reward),
+        reached: row.signedDays.length >= entry.days,
+        claimed: Boolean(row.milestonesClaimed && row.milestonesClaimed[entry.days])
+      }));
+    });
+    const openMonthlySignPanel = () => {
+      ensureMonthlySignInState();
+      monthlySignTab.value = "normal";
+      showWeeklyBossPanel.value = false;
+      showQixingGachaPanel.value = false;
+      showLeaderboardPanel.value = false;
+      showShopPanel.value = false;
+      showDragonBoatShopPanel.value = false;
+      showMonthlySignPanel.value = true;
+    };
+    const closeMonthlySignPanel = () => { showMonthlySignPanel.value = false; };
+    const signMonthlyToday = () => {
+      const row = ensureMonthlySignInState();
+      if (!monthlySignTodayOpen.value) return showToast("本月28天签到已结束，可补签未签到日期。");
+      const day = monthlySignTodayDay.value;
+      if (row.signedDays.includes(day)) return showToast("今日已经签到。");
+      row.signedDays.push(day);
+      row.signedDays.sort((a, b) => a - b);
+      const labels = [claimMonthlySignNormalReward(day)].filter(Boolean);
+      if (labels.length) queueRewardFlyToasts(labels.map((label) => `获得${label}！`));
+      showToast("签到成功，奖励已发放。");
+    };
+    const signMonthlySupremeToday = () => {
+      const row = ensureMonthlySignInState();
+      if (!monthlySignSupremeActive.value) return showToast("请先激活至尊月签到。");
+      if (!monthlySignTodayOpen.value) return showToast("本月28天签到已结束。");
+      const day = monthlySignTodayDay.value;
+      const labels = [];
+      if (!row.signedDays.includes(day)) {
+        row.signedDays.push(day);
+        row.signedDays.sort((a, b) => a - b);
+        const normalLabel = claimMonthlySignNormalReward(day);
+        if (normalLabel) labels.push(normalLabel);
+      }
+      const supremeLabel = claimMonthlySignSupremeReward(day);
+      if (supremeLabel) labels.push(supremeLabel);
+      if (labels.length) {
+        queueRewardFlyToasts(labels.map((label) => `获得${label}！`));
+        return showToast("至尊今日签到成功，奖励已发放。");
+      }
+      showToast(row.supremeClaimedDays.includes(day) ? "今日至尊奖励已领取。" : "今日暂不可领取至尊奖励。");
+    };
+    const makeupMonthlySign = (day) => {
+      const row = ensureMonthlySignInState();
+      const safeDay = clamp(Math.floor(Number(day) || 0), 1, MONTHLY_SIGN_DAYS);
+      const realDay = new Date().getDate();
+      if (row.signedDays.includes(safeDay)) return showToast("该日期已签到。");
+      if (!(safeDay < realDay || realDay > MONTHLY_SIGN_DAYS)) return showToast("只能补签已错过的日期。");
+      if (Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) < MONTHLY_SIGN_MAKEUP_COST) return showToast(`H币不足，补签需要${MONTHLY_SIGN_MAKEUP_COST}H币。`);
+      state.value.hCoins = Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) - MONTHLY_SIGN_MAKEUP_COST;
+      row.signedDays.push(safeDay);
+      row.makeupDays.push(safeDay);
+      row.signedDays.sort((a, b) => a - b);
+      row.makeupDays.sort((a, b) => a - b);
+      const label = claimMonthlySignNormalReward(safeDay);
+      if (label) queueRewardFlyToasts([`获得${label}！`]);
+      showToast(`补签成功，已消耗${MONTHLY_SIGN_MAKEUP_COST}H币。`);
+    };
+    const claimMonthlySignSupreme = (day) => {
+      const label = claimMonthlySignSupremeReward(day);
+      if (!label) return showToast("当前日期没有可领取的至尊奖励。");
+      queueRewardFlyToasts([`获得${label}！`]);
+      showToast("至尊月签到奖励已领取。");
+    };
+    const activateMonthlySupreme = () => {
+      const row = ensureMonthlySignInState();
+      if (monthlySignSupremeActive.value) return showToast(`至尊月签到仍在有效期内，${monthlySignSupremeExpireText.value}。`);
+      if (Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) < MONTHLY_SIGN_SUPREME_COST) return showToast(`H币不足，激活至尊月签到需要${MONTHLY_SIGN_SUPREME_COST}H币。`);
+      state.value.hCoins = Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) - MONTHLY_SIGN_SUPREME_COST;
+      const now = Date.now();
+      row.supremeActivatedAt = now;
+      row.supremeExpiresAt = now + MONTHLY_SIGN_SUPREME_DURATION_MS;
+      const today = monthlySignTodayDay.value;
+      row.supremeStartDay = row.signedDays.includes(today) ? Math.min(MONTHLY_SIGN_DAYS + 1, today + 1) : today;
+      showToast("至尊月签到已激活，有效期30天。");
+    };
+    const claimMonthlySignMilestone = (days) => {
+      const row = ensureMonthlySignInState();
+      const entry = MONTHLY_SIGN_MILESTONE_REWARDS.find((item) => item.days === Number(days));
+      if (!entry) return showToast("该累计奖励不存在。");
+      if (row.signedDays.length < entry.days) return showToast(`累计签到${entry.days}天后可领取。`);
+      if (row.milestonesClaimed && row.milestonesClaimed[entry.days]) return showToast("该累计奖励已领取。");
+      if (!row.milestonesClaimed || typeof row.milestonesClaimed !== "object") row.milestonesClaimed = {};
+      row.milestonesClaimed[entry.days] = true;
+      const label = grantMonthlySignReward(entry.reward);
+      if (label) queueRewardFlyToasts([`获得${label}！`]);
+      showToast("累计签到奖励已领取。");
     };
     const dragonBoatZongziCount = computed(() => getItemCount(ZONGZI_ITEM_ID));
     const ensureShopDailyPurchases = () => {
@@ -12937,15 +13634,46 @@ createApp({
         leaderboardLoading.value = false;
       }
     };
+    const looksLikeSaveState = (value) => {
+      if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+      return Array.isArray(value.activePets)
+        || Array.isArray(value.activatedDexIds)
+        || Array.isArray(value.eggs)
+        || (value.items && typeof value.items === "object" && !Array.isArray(value.items))
+        || Number.isFinite(Number(value.hCoins));
+    };
+    const extractRemoteSaveState = (payload) => {
+      let cur = payload;
+      for (let i = 0; i < 5; i += 1) {
+        if (!cur || typeof cur !== "object" || Array.isArray(cur)) return null;
+        if (looksLikeSaveState(cur)) return cur;
+        if (cur.save && typeof cur.save === "object" && !Array.isArray(cur.save)) {
+          cur = cur.save.save && typeof cur.save.save === "object" && !Array.isArray(cur.save.save)
+            ? cur.save.save
+            : cur.save;
+          continue;
+        }
+        if (cur.state && typeof cur.state === "object" && !Array.isArray(cur.state)) { cur = cur.state; continue; }
+        if (cur.data && typeof cur.data === "object" && !Array.isArray(cur.data)) { cur = cur.data; continue; }
+        if (cur.payload && typeof cur.payload === "object" && !Array.isArray(cur.payload)) { cur = cur.payload; continue; }
+        return null;
+      }
+      return looksLikeSaveState(cur) ? cur : null;
+    };
     const loadServerSave = async () => {
       if (!authUser.value) return false;
       await ensureGameDataIndexesReady();
       const data = await apiJson("/api/save");
-      if (data && data.save && data.save.save) {
-        state.value = sanitizeState(data.save.save);
+      const loadedSave = extractRemoteSaveState(data && data.save);
+      if (loadedSave) {
+        state.value = sanitizeState(loadedSave);
         lastServerSavedAt.value = data.save.savedAt || "";
         showToast("已读取服务器存档。");
         return true;
+      }
+      if (data && data.save) {
+        showToast("服务器存档格式异常，已保留当前页面进度，未覆盖存档。");
+        return null;
       }
       state.value = createInitialState();
       lastServerSavedAt.value = "";
@@ -13242,6 +13970,11 @@ createApp({
       }
       if (!validateLoginCaptcha({ force: authMode.value === "register" })) return;
       authLoading.value = true;
+      const previousAuthUser = authUser.value;
+      const previousAuthToken = readAuthToken();
+      const previousPlayMode = playMode.value;
+      const previousState = state.value;
+      const previousLastServerSavedAt = lastServerSavedAt.value;
       try {
         const path = authMode.value === "register" ? "/api/auth/register" : "/api/auth/login";
         const data = await apiJson(path, {
@@ -13249,6 +13982,7 @@ createApp({
           body: JSON.stringify({ username, password })
         });
         authUser.value = data.user || null;
+        if (!authUser.value) throw new Error("登录状态异常，请重试。");
         writeAuthToken(data.token || "");
         writeLoginCaptchaVerified();
         rememberPassword.value = true;
@@ -13256,13 +13990,20 @@ createApp({
         authCaptcha.value = "";
         startLoginLoading();
         await ensureGameDataIndexesReady();
+        lastServerSavedAt.value = "";
+        const loadedServerSave = await loadServerSave();
+        if (loadedServerSave === null) throw new Error("服务器存档格式异常，已取消登录以避免覆盖存档。");
         playMode.value = "user";
         writeSessionMode("user");
-        state.value = createInitialState();
-        lastServerSavedAt.value = "";
         showToast(authMode.value === "register" ? "注册并登录成功。" : "登录成功。");
-        if (authUser.value) await loadServerSave();
       } catch (err) {
+        authUser.value = previousAuthUser;
+        writeAuthToken(previousAuthToken);
+        playMode.value = previousPlayMode;
+        writeSessionMode(previousPlayMode === "guest" || previousPlayMode === "user" ? previousPlayMode : "");
+        state.value = previousState;
+        lastServerSavedAt.value = previousLastServerSavedAt;
+        stopLoginLoading();
         showToast(err && err.message ? err.message : "登录失败。");
       } finally {
         authLoading.value = false;
@@ -14271,33 +15012,53 @@ createApp({
       gear: petEquippedGearBySlot(bag2DisplayPet.value, slot)
     })));
     const bag2DisplayPetFeatureText = computed(() => petFeatureText(bag2DisplayPet.value));
-    const gearEquippedPetName = (gearId) => {
+    const gearEquippedPets = (gearId) => {
       const id = normalize(gearId);
-      const pet = safeActivePets.value.find((row) => id && Object.values(normalizePetGearSlots(row)).some((gearId) => normalize(gearId) === id)) || null;
-      return pet ? petDisplayName(pet) : "";
+      if (!id) return [];
+      return safeActivePets.value.filter((row) => row && Object.values(normalizePetGearSlots(row)).some((gearId) => normalize(gearId) === id));
+    };
+    const gearEquippedPetName = (gearId) => {
+      const names = gearEquippedPets(gearId).map((pet) => petDisplayName(pet)).filter(Boolean);
+      if (names.length <= 3) return names.join("、");
+      return `${names.slice(0, 3).join("、")}等${names.length}只`;
+    };
+    const gearEquipAvailableCount = (gearId, targetPetId = "") => {
+      const id = normalize(gearId);
+      const targetId = normalize(targetPetId);
+      const equippedCount = gearEquippedPets(id).filter((pet) => normalize(pet && pet.id) !== targetId).length;
+      return Math.max(0, getItemCount(id) - equippedCount);
     };
     const dragonBoatBladeEquippedPetName = computed(() => gearEquippedPetName(DRAGON_BOAT_BLADE_ITEM_ID));
-    const gearInventoryRows = computed(() => PET_GEAR_CONFIGS.map((gear) => ({
-      ...gear,
-      slot: petGearSlotOf(gear),
-      slotLabel: PET_GEAR_SLOT_LABELS[petGearSlotOf(gear)] || { mark: "", label: "" },
-      count: getItemCount(gear.id),
-      effectText: gearStatsText(gear),
-      equippedPetName: gearEquippedPetName(gear.id),
-      equipped: Boolean(gearEquippedPetName(gear.id)),
-      equippedOnBag2Pet: Object.values(normalizePetGearSlots(bag2DisplayPet.value)).some((gearId) => normalize(gearId) === normalize(gear.id)),
-      canEquip: getItemCount(gear.id) > 0
-    })).filter((gear) => gear.count > 0 || normalize(gear.id) === DRAGON_BOAT_BLADE_ITEM_ID || Math.max(0, Math.floor(Number(gear.crystalCost) || 0)) > 0));
+    const gearInventoryRows = computed(() => PET_GEAR_CONFIGS.map((gear) => {
+      const count = getItemCount(gear.id);
+      const equippedCount = gearEquippedPets(gear.id).length;
+      const availableCount = Math.max(0, count - equippedCount);
+      const equippedPetName = gearEquippedPetName(gear.id);
+      return {
+        ...gear,
+        slot: petGearSlotOf(gear),
+        slotLabel: PET_GEAR_SLOT_LABELS[petGearSlotOf(gear)] || { mark: "", label: "" },
+        count,
+        equippedCount,
+        availableCount,
+        effectText: gearStatsText(gear),
+        equippedPetName,
+        equipped: equippedCount > 0,
+        hasAvailableCopy: availableCount > 0,
+        equippedOnBag2Pet: Object.values(normalizePetGearSlots(bag2DisplayPet.value)).some((gearId) => normalize(gearId) === normalize(gear.id)),
+        canEquip: gearEquipAvailableCount(gear.id, bag2DisplayPet.value && bag2DisplayPet.value.id) > 0
+      };
+    }).filter((gear) => gear.count > 0 || normalize(gear.id) === DRAGON_BOAT_BLADE_ITEM_ID || Math.max(0, Math.floor(Number(gear.crystalCost) || 0)) > 0));
     const filteredGearInventoryRows = computed(() => {
       const mode = normalize(bag2GearFilter.value) || "all";
       if (mode === "equipped") return gearInventoryRows.value.filter((gear) => gear.equipped);
-      if (mode === "unequipped") return gearInventoryRows.value.filter((gear) => !gear.equipped);
+      if (mode === "unequipped") return gearInventoryRows.value.filter((gear) => gear.hasAvailableCopy);
       return gearInventoryRows.value;
     });
     const itemInventoryRows = computed(() => itemCatalog.value.map((it) => ({
       ...it,
       count: getItemCount(it.id),
-      countLabel: it.id === "double_exp_device" || it.id === "auto_battle_device" ? `${getItemCount(it.id)} 次` : `× ${getItemCount(it.id)}`
+      countLabel: it.id === "double_exp_device" || it.id === "auto_battle_device" || it.id === "double_hcoin_device" ? `${getItemCount(it.id)} 次` : `× ${getItemCount(it.id)}`
     })));
     const abilityBreakthroughCoreNameOf = (item) => normalize(item && item.name);
     const abilityBreakthroughPetNameOf = (item) => {
@@ -14599,7 +15360,8 @@ createApp({
         ? `首次低于30%体力时暴击提升3级，之后攻击附加${rule.lowHpFixedDamage || 0}点固伤。`
         : `首次低于30%体力时恢复自身${Math.round((Number(rule.lowHpHealRatio) || 0) * 100)}%最大体力，之后攻击附加${rule.lowHpFixedDamage || 0}点固伤。`;
       const forbiddenText = NORMAL_HARD_CHALLENGE_FORBIDDEN_DIFFICULTY_KEYS.has(option.key) ? NORMAL_HARD_CHALLENGE_FORBIDDEN_TEXT : "";
-      return `当周BOSS：${config.name} ${option.label}难度，体力${option.fixedHp}，自带${Math.round(option.damageReductionRatio * 100)}%减伤；${periodicText}${lowHpText}出战${config.counterName}可获得全属性+2、伤害+20%、抗性+10%、免疫异常，并无效固伤效果。${forbiddenText}胜利获得${medalText}当周BOSS勋章、${option.rewardHCoins}H币、${keyText}${badgeText}。勋章上限${WEEKLY_BOSS_MEDAL_MAX}个，${WEEKLY_BOSS_EGG_EXCHANGE_COST}个可兑换${config.name}亚比蛋。`;
+      const counterText = config.counterName ? `出战${config.counterName}可获得全属性+2、伤害+20%、抗性+10%、免疫异常，并无效固伤效果。` : "";
+      return `当周BOSS：${config.name} ${option.label}难度，体力${option.fixedHp}，自带${Math.round(option.damageReductionRatio * 100)}%减伤；${periodicText}${lowHpText}${counterText}${forbiddenText}胜利获得${medalText}当周BOSS勋章、${option.rewardHCoins}H币、${keyText}${badgeText}。勋章上限${WEEKLY_BOSS_MEDAL_MAX}个，${WEEKLY_BOSS_EGG_EXCHANGE_COST}个可兑换${config.name}亚比蛋。`;
     });
     const timeEnvViewportStyle = computed(() => {
       const designW = 1700;
@@ -14682,20 +15444,30 @@ createApp({
       const rootDexId = Number(chain.rootDexId) || fallbackDexId;
       return resolveEvolutionDexIdByPetAndStage({ dexId: rootDexId, baseDexId: rootDexId, speciesName: pet && pet.speciesName }, idx) || fallbackDexId;
     };
-    const canUseQiankunXiuluoshenSkinOnPet = (pet) => {
-      if (!pet) return false;
+    const canUsePetSkinOnPet = (config, pet) => {
+      if (!config || !pet) return false;
       const ids = [
         Number(pet.dexId) || 0,
         Number(pet.baseDexId) || 0,
         Number(resolvePetCurrentDexId(pet)) || 0,
         Number(resolveEvolutionDexIdByPetAndStage(pet, 0)) || 0
       ];
-      return ids.some((id) => QIANKUN_XIULUOSHEN_SKIN_ALLOWED_DEX_IDS.has(id));
+      const names = [petDisplayName(pet), pet && pet.speciesName, pet && pet.fixedName].map(normalize).filter(Boolean);
+      return ids.some((id) => config.allowedDexIds && config.allowedDexIds.has(id))
+        || names.some((name) => (config.allowedNames || []).some((allowed) => name.includes(allowed)));
     };
+    const activePetSkinConfig = (pet) => {
+      const config = PET_SKIN_CONFIG_BY_KEY.get(normalize(pet && pet.skinKey)) || null;
+      return config && canUsePetSkinOnPet(config, pet) ? config : null;
+    };
+    const selectedPetSkinEquipped = computed(() => Boolean(activePetSkinConfig(selectedPet.value)));
+    const selectedPetSkinName = computed(() => {
+      const config = activePetSkinConfig(selectedPet.value);
+      return (config && config.name) || "皮肤";
+    });
     const petBattleVisualDexId = (pet) => {
-      if (pet && normalize(pet.skinKey) === QIANKUN_XIULUOSHEN_SKIN_KEY && canUseQiankunXiuluoshenSkinOnPet(pet)) {
-        return QIANKUN_XIULUOSHEN_SKIN_DEX_ID;
-      }
+      const config = activePetSkinConfig(pet);
+      if (config) return Number(config.dexId) || 0;
       return Number(resolvePetCurrentDexId(pet)) || Number(pet && pet.dexId) || 0;
     };
     const applyPetSkinBattleAbilityBonus = (ability, pet) => {
@@ -14708,7 +15480,7 @@ createApp({
         speed: Math.max(1, Math.floor(Number(ability && ability.speed) || 1)),
         total: Math.max(1, Math.floor(Number(ability && ability.total) || 1))
       };
-      if (!pet || normalize(pet.skinKey) !== QIANKUN_XIULUOSHEN_SKIN_KEY || !canUseQiankunXiuluoshenSkinOnPet(pet)) return base;
+      if (!activePetSkinConfig(pet)) return base;
       base.hp = Math.max(1, Math.floor(Number(base.hp) || 1) + 200);
       ["atk", "def", "spAtk", "spDef"].forEach((key) => {
         base[key] = Math.max(1, Math.floor((Number(base[key]) || 1) * 1.1));
@@ -15381,7 +16153,7 @@ createApp({
     const loadPetActionLayout = async () => {
       try {
         let data = null;
-        const url = `${PET_ACTION_LAYOUT_URL}?v=20260615_qiankun_4036_layout`;
+        const url = `${PET_ACTION_LAYOUT_URL}?v=20260717_skin_4057_layout`;
         if (isAndroidWebView) {
           data = JSON.parse(await loadLocalAssetText(url));
         } else {
@@ -15855,19 +16627,17 @@ createApp({
       const actionBox = action && (Array.isArray(action.bodyBbox) ? action.bodyBbox : (Array.isArray(action.bbox) ? action.bbox : null));
       if (!idle || !action || !idleBox || !actionBox) return {};
       const idleBodyH = Math.max(1, idleBox[3] - idleBox[1]);
-      const actionBodyW = Math.max(1, actionBox[2] - actionBox[0]);
-      const actionBodyH = Math.max(1, actionBox[3] - actionBox[1]);
       const safeTargetBodyH = Math.max(1, Number(targetBodyH) || 120);
       const isIdleState = String(stateCode || "1") === "1";
       const idleW = Math.max(1, Number(idle.w) || 1);
       const idleH = Math.max(1, Number(idle.h) || 1);
       const actionW = Math.max(1, Number(action.w) || 1);
       const actionH = Math.max(1, Number(action.h) || 1);
-      const maxBodyW = safeTargetBodyH * (isIdleState ? 1.85 : 2.25);
-      const actionScale = Math.max(0.01, Math.min(safeTargetBodyH / (isIdleState ? idleBodyH : actionBodyH), maxBodyW / actionBodyW));
       const idleAnchor = getPetBodyAnchor(idleBox, idle);
       const actionAnchor = getPetBodyAnchor(actionBox, action);
+      const maxBodyW = safeTargetBodyH * (isIdleState ? 1.85 : 2.25);
       const idleScale = Math.max(0.01, Math.min(safeTargetBodyH / idleBodyH, maxBodyW / Math.max(1, idleBox[2] - idleBox[0])));
+      const actionScale = idleScale;
       const idleAnchorX = (idleAnchor.centerX - idleW / 2) * idleScale;
       const idleAnchorY = -(idleH - idleAnchor.bottom) * idleScale;
       return {
@@ -16170,7 +16940,7 @@ createApp({
       if (!pet) return { src: PLACEHOLDER, animated: false };
       const dexId = Number(petBattleVisualDexId(pet)) || Number(pet.dexId) || 0;
       if (dexId > 0) {
-        return { src: petBattleSvgImage(dexId, "target", "idle"), staticImage: petCroppedStaticImage(dexId), animated: true };
+        return { src: petBattleIdleImage(dexId, "target"), staticImage: petCroppedStaticImage(dexId), animated: hasPetBattleActionResource(dexId) };
       }
       return { src: ensureHttps(petCurrentForm(pet).img) || PLACEHOLDER, animated: false };
     };
@@ -16255,6 +17025,11 @@ createApp({
         "--skill-fx-duration": `${duration}ms`
       };
     };
+    const battleShengyuBackgroundStyle = () => {
+      const bg = battleScene.value && battleScene.value.shengyuBackground;
+      const duration = Math.max(120, Number(bg && bg.durationMs) || battleDelayMs(SHENGYU_ENTRY_ANIMATION_DURATION_MS, 120));
+      return { "--shengyu-bg-duration": `${duration}ms` };
+    };
     const battleStatusEffectStyle = (side, forceMorale = false) => {
       const scene = battleScene.value;
       const safeSide = side === "target" ? "target" : "attacker";
@@ -16336,12 +17111,13 @@ createApp({
       const first = statuses.find((x) => x && normalize(x.status || x.key || x.label)) || statuses[0];
       const statusKey = normalize(first && (first.status || first.key));
       const label = normalize(first && first.label) || statusLabel(statusKey) || "";
+      const directSrc = normalize(first && first.src);
       const fileLabel = STATUS_ANIM_FILE_MAP[statusKey] || label;
-      if (!fileLabel) return;
+      if (!directSrc && !fileLabel) return;
       const seq = Date.now() + Math.random();
       scene.statusEffectFx = {
         side: safeSide,
-        src: assetSrcWithQuery(encodeAssetSrc(`./resource/pet-state/${fileLabel}.gif`), "fx", seq),
+        src: directSrc ? assetSrcWithQuery(directSrc, "fx", seq) : assetSrcWithQuery(encodeAssetSrc(`./resource/pet-state/${fileLabel}.gif`), "fx", seq),
         label,
         seq,
         durationMs: battleSceneDelayMs(scene, STATUS_ANIM_DURATION_MS, 180)
@@ -16372,6 +17148,55 @@ createApp({
       if (Date.now() < (Number(scene._skillEffectUntil) || 0)) return;
       scene.skillEffectFx = null;
       scene._skillEffectUntil = 0;
+    };
+    const resolveBattleShengyuConfig = (scene) => {
+      if (!scene) return null;
+      const curId = String(scene.currentAttackerId || "");
+      const current = Array.isArray(scene.team)
+        ? scene.team.find((u) => u && String(u.id || "") === curId)
+        : null;
+      const activePet = state && state.value && Array.isArray(state.value.activePets)
+        ? state.value.activePets.find((p) => p && String(p.id || "") === curId)
+        : null;
+      const ids = [
+        resolveBattleSideDexId(scene, "attacker"),
+        scene.attackerBattleVisualDexId,
+        scene.attackerOriginalBattleVisualDexId,
+        scene.attackerSkinBattleVisualDexId,
+        scene.attackerDexId,
+        scene.attackerBaseDexId,
+        current && current.battleVisualDexId,
+        current && current.originalBattleVisualDexId,
+        current && current.skinBattleVisualDexId,
+        current && current.dexId,
+        current && current.baseDexId,
+        activePet && petBattleVisualDexId(activePet),
+        activePet && activePet.dexId,
+        activePet && activePet.baseDexId,
+        resolveBattleSideDexId(scene, "target"),
+        scene.targetBattleVisualDexId,
+        scene.targetOriginalBattleVisualDexId,
+        scene.targetDexId,
+        scene.targetBaseDexId
+      ];
+      const config = ids
+        .map((id) => shengyuPetConfigByDexId(id))
+        .find(Boolean);
+      return config || null;
+    };
+    const applyBattleShengyuBackground = (scene) => {
+      if (!scene || scene.shengyuBackground) return 0;
+      const config = resolveBattleShengyuConfig(scene);
+      const src = config && (config.backgroundSrc || config.animationSrc);
+      if (!config || !src) return 0;
+      const duration = battleSceneDelayMs(scene, Math.max(120, Number(config.durationMs) || SHENGYU_ENTRY_ANIMATION_DURATION_MS), 120);
+      scene.shengyuBackground = {
+        src,
+        name: normalize(config.name),
+        seq: Date.now() + Math.random(),
+        durationMs: duration
+      };
+      return duration;
     };
     const applyBattleAnimImage = (scene, side, stateKey, actionSeq = 0) => {
       if (!scene) return;
@@ -16503,7 +17328,7 @@ createApp({
     };
     const battleUnitCanTransformSkin = (unit) => Boolean(
       unit
-      && normalize(unit.skinKey) === QIANKUN_XIULUOSHEN_SKIN_KEY
+      && PET_SKIN_CONFIG_BY_KEY.has(normalize(unit.skinKey))
       && Number(unit.skinBattleVisualDexId) > 0
       && !unit.skinActivated
     );
@@ -16578,7 +17403,8 @@ createApp({
       scene.attackerTransformUnitId = String(unit.id || "");
       scene.attackerTransformingSkin = true;
       scene.attackerTransformFx = assetSrcWithQuery(BATTLE_SKIN_TRANSFORM_FX_SRC, "skin", seq);
-      pushBattleLog(scene, `${scene.attackerName}灵皮启耀，${QIANKUN_XIULUOSHEN_SKIN_NAME}姿态显现。皮肤对战加成：${QIANKUN_XIULUOSHEN_SKIN_BATTLE_BONUS_TEXT}。`);
+      const skinConfig = PET_SKIN_CONFIG_BY_KEY.get(normalize(unit.skinKey)) || null;
+      pushBattleLog(scene, `${scene.attackerName}灵皮启耀，${(skinConfig && skinConfig.name) || "皮肤"}姿态显现。皮肤对战加成：${(skinConfig && skinConfig.battleBonusText) || QIANKUN_XIULUOSHEN_SKIN_BATTLE_BONUS_TEXT}。`);
       getAnimatedGifTiming(BATTLE_SKIN_TRANSFORM_FX_SRC).then((timing) => {
         if (battleScene.value !== scene) return;
         const rawDuration = clamp(Number(timing && timing.durationMs) || 1200, 900, 2600);
@@ -16738,12 +17564,13 @@ createApp({
       const visualDexId = petBattleVisualDexId(pet);
       const baseDexId = Number(pet.baseDexId) || Number(pet.dexId || (species && species.dexId)) || 0;
       const staticDexId = Number(resolvePetCurrentDexId(pet)) || baseDexId || Number(pet.dexId || (species && species.dexId)) || 0;
-      const usesQiankunSkin = normalize(pet.skinKey) === QIANKUN_XIULUOSHEN_SKIN_KEY && Number(visualDexId) === QIANKUN_XIULUOSHEN_SKIN_DEX_ID;
-      const battleStaticDexId = usesQiankunSkin ? QIANKUN_XIULUOSHEN_SKIN_DEX_ID : staticDexId;
+      const skinConfig = activePetSkinConfig(pet);
+      const usesPetSkin = Boolean(skinConfig && Number(visualDexId) === Number(skinConfig.dexId));
+      const battleStaticDexId = usesPetSkin ? Number(skinConfig.dexId) : staticDexId;
       const originalStaticImage = petCroppedStaticImage(staticDexId);
       const staticImage = petCroppedStaticImage(battleStaticDexId);
       const originalBattleVisualDexId = staticDexId;
-      const skinBattleVisualDexId = usesQiankunSkin ? QIANKUN_XIULUOSHEN_SKIN_DEX_ID : 0;
+      const skinBattleVisualDexId = usesPetSkin ? Number(skinConfig.dexId) : 0;
       const originalBattleImage = BATTLE_IDLE_USES_ACTION_SVG && Number(originalBattleVisualDexId) > 0
         ? getPetBattleAnimPath(originalBattleVisualDexId, "attacker", "idle")
         : originalStaticImage;
@@ -16841,7 +17668,7 @@ createApp({
       return {
         dexId: entry.dexId,
         name: normalize(displayName) || entry.name,
-        image: ensureHttps(displayImage || petBattleSvgImage(entry.dexId, "target", "idle") || img),
+        image: ensureHttps(displayImage || petBattleIdleImage(entry.dexId, "target", img)),
         staticImage,
         level,
         element: normalize(entry.element) || "未知系",
@@ -16978,7 +17805,7 @@ const applyBossChainFinalBuff = (scene) => {
         talentOverride: createUniformTalent60(),
         studyOverride: createGuardianStudy(),
         displayName: entry.name,
-        displayImage: petBattleSvgImage(entry.dexId, "target", "idle") || entry.image
+        displayImage: petBattleIdleImage(entry.dexId, "target", entry.image)
       });
       if (!target) return false;
       const fixedTargetMaxHp = Math.max(0, Math.floor(Number(scene.guardianMeta && scene.guardianMeta.fixedHp) || Number(meta.fixedHp) || 0));
@@ -17119,7 +17946,7 @@ const applyBossChainFinalBuff = (scene) => {
           talentOverride: targetTalentOverride,
           studyOverride: targetStudyOverride,
           displayName: mode === "normal" ? effectiveTargetEntry.name : effectiveTargetEntry.name,
-          displayImage: petBattleSvgImage(effectiveTargetEntry.dexId, "target", "idle") || effectiveTargetEntry.image
+          displayImage: petBattleIdleImage(effectiveTargetEntry.dexId, "target", effectiveTargetEntry.image)
         });
       if (!target) {
         showToast("挑战目标缺少可用种族值或技能数据。");
@@ -17244,6 +18071,8 @@ const applyBossChainFinalBuff = (scene) => {
         critOnAttacker: false,
         critOnTarget: false,
         skillEffectFx: null,
+        shengyuBackground: null,
+        shengyuDomain: "",
         ppOnAttacker: "",
         ppOnTarget: "",
         comboHitsOnAttacker: [],
@@ -17260,7 +18089,8 @@ const applyBossChainFinalBuff = (scene) => {
         pendingForcedSwitchTargetAction: false,
         pendingForcedSwitchFinishTurn: false,
         pendingEndTurnTick: false,
-        pendingFinish: false
+        pendingFinish: false,
+        nextPetStageBoost: null
       };
       battlePrepareTrace("scene-created", {
         attackerImage: battleScene.value.attackerImage,
@@ -17296,6 +18126,7 @@ const applyBossChainFinalBuff = (scene) => {
       const startLog = mode === "guardian" ? "守护者挑战开始。按速度和技能优先度决定先手。" : (mode === "boss" ? "BOSS挑战开始。按速度和技能优先度决定先手。" : (mode === "equipmentDungeon" ? `装备秘境${guardianMeta && guardianMeta.equipmentDungeonDifficultyLabel ? guardianMeta.equipmentDungeonDifficultyLabel : ""}难度开始。仅背包前3只亚比可出战。` : (mode === "timeTunnel" ? `时空隧道第${timeTunnelMeta && timeTunnelMeta.floor ? timeTunnelMeta.floor : 1}层开始。击败本层全部亚比才能开启下一层。` : (mode === "study" ? `${guardianMeta && guardianMeta.label ? guardianMeta.label : ""}学习力战场开始。按速度和技能优先度决定先手。` : "对战开始。按速度和技能优先度决定先手。"))));
       pushBattleLog(battleScene.value, startLog);
       applyWeeklyBossCounterPetBuff(battleScene.value);
+      applyShengyuEntryPassives(battleScene.value);
       if (mode === "equipmentDungeon" && guardianMeta && guardianMeta.immuneStatus) {
         addTimedEffect(battleScene.value, "target", { kind: "statusShield", turns: 999, data: { status: "all" } });
         pushBattleLog(battleScene.value, `${battleScene.value.targetName}免疫异常状态。`);
@@ -17316,13 +18147,17 @@ const applyBossChainFinalBuff = (scene) => {
         pushBattleLog(battleScene.value, `${battleScene.value.targetName}获得挑战减伤：普通/特殊攻击造成的伤害减少${Math.round(battleScene.value.targetChallengeDamageReductionRatio * 100)}%${counteredText}。`);
       }
       pushBattleLog(battleScene.value, "第1回合开始。");
+      triggerShengyuTurnStartPassives(battleScene.value).forEach((fx) => showBattleStatusEffectFx(battleScene.value, fx.side, [fx]));
       playBattleBgm();
       if (autoBattleMeta) scheduleAutoBattlePlayerAction(battleScene.value, 650);
       battlePrepareTrace("setup-done", { mode, autoBattle: Boolean(autoBattleMeta) });
       nextTick(() => {
         battlePrepareTrace("battle-dom-nextTick", { open: Boolean(battleScene.value && battleScene.value.open) });
         const traceAfterPaint = () => {
-          if (battleScene.value && battleScene.value.open) battleScene.value.visualReady = true;
+          if (battleScene.value && battleScene.value.open) {
+            battleScene.value.visualReady = true;
+            applyBattleShengyuBackground(battleScene.value);
+          }
           battlePrepareTrace("battle-dom-rAF", { open: Boolean(battleScene.value && battleScene.value.open), visualReady: Boolean(battleScene.value && battleScene.value.visualReady) });
         };
         if (typeof requestAnimationFrame === "function") requestAnimationFrame(traceAfterPaint);
@@ -17883,6 +18718,7 @@ const applyBossChainFinalBuff = (scene) => {
         resetBattleAnimIdle(battleScene.value);
         battleScene.value.turnCount = Math.max(1, Number(battleScene.value.turnCount) || 1) + 1;
         pushBattleLog(battleScene.value, `第${battleScene.value.turnCount}回合开始。`);
+        triggerShengyuTurnStartPassives(battleScene.value).forEach((fx) => showBattleStatusEffectFx(battleScene.value, fx.side, [fx]));
         triggerChallengeMoraleIfNeeded(battleScene.value);
         battleScene.value.isActing = false;
         if (getTurnSequenceAttackEffect(battleScene.value, "attacker")) {
@@ -17924,6 +18760,21 @@ const applyBossChainFinalBuff = (scene) => {
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       pushBattleLog(scene, `${who}${label}${delta > 0 ? "提升" : "降低"}${Math.abs(delta)}级：${changed.map((key) => battleStatLabel(key)).join("、")}。`);
       return true;
+    };
+    const applyEquipmentDungeonOnSkillEffects = (scene, actorSide) => {
+      if (!scene || scene.mode !== "equipmentDungeon" || actorSide !== "target" || Math.max(0, Number(scene.targetHp) || 0) <= 0) return;
+      const effects = Array.isArray(scene.guardianMeta && scene.guardianMeta.equipmentDungeonOnSkillEffects) ? scene.guardianMeta.equipmentDungeonOnSkillEffects : [];
+      effects.forEach((effect) => {
+        const chance = Number.isFinite(Number(effect && effect.chance)) ? clamp(Number(effect.chance), 0, 1) : 1;
+        if (Math.random() > chance) return;
+        const kind = normalize(effect && effect.kind);
+        if (kind === "stageGuard") {
+          const turns = Math.max(1, Math.floor(Number(effect && effect.turns) || 1));
+          const mode = normalize(effect && effect.mode) || "debuff";
+          addTimedEffect(scene, "target", { kind: "stageGuard", turns, data: { mode } });
+          pushBattleLog(scene, `${scene.targetName}的秘境效果触发，保护自身属性${turns}回合。`);
+        }
+      });
     };
     const applyEquipmentDungeonEndTurnEffects = (scene) => {
       if (!scene || scene.mode !== "equipmentDungeon" || Math.max(0, Number(scene.targetHp) || 0) <= 0) return;
@@ -17989,6 +18840,7 @@ const applyBossChainFinalBuff = (scene) => {
           showBattleStatusEffectFx(turnEnd, "target", targetEndFx && targetEndFx.statuses);
           triggerWeeklyBossLowHpBuffIfNeeded(turnEnd);
           applyEquipmentDungeonEndTurnEffects(turnEnd);
+          applyShengyuEndTurnPassives(turnEnd).forEach((fx) => showBattleStatusEffectFx(turnEnd, fx.side, [fx]));
           if (resolveBattleDefeatIfNeeded(turnEnd)) {
             pushBattleLog(turnEnd, `${turnEnd.targetName} 倒下。`);
             return false;
@@ -18203,12 +19055,12 @@ const applyBossChainFinalBuff = (scene) => {
         : 1;
       const effectsForHit = parseSkillEffects(skill);
       const selfAccuracyFreeKinds = new Set([
-        "flag", "priority", "dynamicPower", "heal", "healByStatRatio", "healFlat", "healFlatTeam", "timedHeal", "endTurnHealFlat", "endTurnHealByLostHp",
+        "flag", "priority", "dynamicPower", "heal", "healByStatRatio", "healFlat", "healFlatTeam", "timedHeal", "endTurnHealFlat", "endTurnHealByMaxHpRatio", "endTurnHealByLostHp",
         "statusCure", "statusShield", "stageGuard", "attackImmunity", "diminishingSuccessGate", "damageAbsorb", "damageReduction",
         "typedDamageReduction", "damageBoost", "abilityStatFactor", "chancePowerMultiplier", "damageShield", "turnSequenceAttack", "timedStage", "timedRandomStage", "onAttackRandomStage", "endTurnStageAndStatusChance", "endTurnClearStageChance",
         "lastStand", "damageReflect", "damageReflectFlat", "elementChange", "elementDamageReduction", "globalElementPower",
         "mirrorOpponentStageBoost", "setCritStage", "windGodPossession", "elementShelter", "battleBackgroundOverride", "lifestealBuff", "fullRestoreOnDefeatThisTurn", "clearOpponentPpOnSelfDefeatThisTurn", "nextPetFullRestore",
-        "endTurnSetHpToOne", "unharmedBranch", "hpConditionalStage", "endTurnDamageFlat", "endTurnHealByLostHpRatio", "nextElementPowerBoost", "damageDelay", "recoilFlat"
+        "endTurnSetHpToOne", "unharmedBranch", "hpConditionalStage", "endTurnDamageFlat", "endTurnHealByLostHpRatio", "nextElementPowerBoost", "damageDelay", "recoilFlat", "selfKo", "nextPetStageBoost"
       ]);
       const selfAccuracyFreeSkill = !hasUsablePower && effectsForHit.length > 0 && effectsForHit.every((e) => {
         const kind = normalize(e && e.kind);
@@ -18298,6 +19150,7 @@ const applyBossChainFinalBuff = (scene) => {
         const bonusFixedPerHit = mh ? parseBonusFixedDamagePerHit(skill) : null;
         const bonusFixedEffects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "bonusFixedDamage");
         const statusCountBonusEffects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "statusCountBonusDamage");
+        const statusFixedBonusEffects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "bonusFixedDamageOnStatus");
         const perHitEffects = mh ? parseSkillEffects(skill).filter((e) => ["perHitStatus", "perHitStage", "perHitRandomAbilityStatFactor", "onHitRandomStage"].includes(normalize(e && e.kind))) : [];
         const onCritStatusEffects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "onCritStatus");
         const onCritHealMaxHpEffects = mh ? parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "onCritHealMaxHp") : [];
@@ -18396,6 +19249,15 @@ const applyBossChainFinalBuff = (scene) => {
             one += amount;
             pushBattleLog(scene, `${targetName}身上的不良状态使${skill.name}追加${amount}点伤害。`);
           });
+          statusFixedBonusEffects.forEach((e) => {
+            if (e.requireHit && !hitOk) return;
+            const side = normalize(e.target) === "self" ? actorSide : targetSide;
+            const status = normalize(e.status);
+            if (!status) return;
+            const statuses = getSideState(scene, side).statuses || {};
+            if (Math.max(0, Number(statuses[status]) || 0) <= 0) return;
+            one += Math.max(1, Math.floor(Number(e.amount) || 1));
+          });
           const shield = useDamageShieldAmount(scene, targetSide, one);
           if (shield.amount > 0) {
             const beforeShield = one;
@@ -18452,10 +19314,15 @@ const applyBossChainFinalBuff = (scene) => {
             const chance = clamp(Number(e.chance) || 0, 0, 1);
             if (Math.random() > chance) return;
             const side = e.target === "self" ? actorSide : targetSide;
-            if (e.guardianBossImmune && isGuardianBossProtectedTarget(scene, side)) return;
+            if (e.guardianBossImmune && isBossLikeProtectedTarget(scene, side)) return;
             const state = getSideState(scene, side);
             if (normalize(e.kind) === "perHitStatus") {
-              const status = normalize(e.status);
+              let status = normalize(e.status);
+              if (status === "random") {
+                const options = ["poison", "burn", "freeze", "weak", "leech", "bind", "paralyze", "fear", "sleep", "confuse"]
+                  .filter((s) => !isStatusImmuneByElement(scene, side, s) && !hasStatusShield(scene, side, s));
+                status = options.length > 0 ? options[Math.floor(Math.random() * options.length)] : "";
+              }
               if (!status || isGuardianBossProtectedTarget(scene, side) || isStatusImmuneByElement(scene, side, status) || hasStatusShield(scene, side, status)) return;
               applyStatusTurns(state, status, e.turns);
               pushBattleLog(scene, `${skill.name}第${i + 1}击触发，${side === "attacker" ? scene.attackerName : scene.targetName}陷入${statusLabel(status)}${state.statuses[status]}回合。`);
@@ -18724,7 +19591,9 @@ const applyBossChainFinalBuff = (scene) => {
       const isEffectOnlySkill = atkKind === "status" || !hasUsablePower;
       const canApplySkillEffect = didHit && (elementFactorForEffectGate > 0 || selfAccuracyFreeSkill) && !hasOnlyInvalidHits && (skillEffectDidApply || isEffectOnlySkill);
       if (canApplySkillEffect && atkKind !== "status" && hasUsablePower) applyOnAttackRandomStageEffects(scene, actorSide);
+      if (canApplySkillEffect && atkKind !== "status" && hasUsablePower) applyShengyuOnAttackPassives(scene, actorSide, targetSide, true);
       applySkillEffects(scene, actorSide, skill, canApplySkillEffect);
+      applyEquipmentDungeonOnSkillEffects(scene, actorSide);
       advanceTurnSequenceAttackEffect(scene, actorSide, skill, canApplySkillEffect);
       if (atkKind !== "status" && hasConsumableNextAttackEffect(scene, actorSide)) consumeNextAttackEffects(scene, actorSide);
       showBattleStageTotalChangeFx(scene, stageTotalsBeforeSkill, 220);
@@ -18801,7 +19670,7 @@ const applyBossChainFinalBuff = (scene) => {
         talentOverride: meta.talentValue === 50 ? createUniformTalent50() : null,
         studyOverride: createGuardianStudy(),
         displayName: entry.name,
-        displayImage: petBattleSvgImage(entry.dexId, "target", "idle") || entry.image
+        displayImage: petBattleIdleImage(entry.dexId, "target", entry.image)
       });
       if (!nextTarget) return false;
       scene.targetDexId = nextTarget.dexId;
@@ -18877,7 +19746,7 @@ const applyBossChainFinalBuff = (scene) => {
         talentOverride: createUniformTalent30(),
         studyOverride: createZeroStats(),
         displayName: meta.targetEntry.name,
-        displayImage: petBattleSvgImage(meta.targetEntry.dexId, "target", "idle") || meta.targetEntry.image
+        displayImage: petBattleIdleImage(meta.targetEntry.dexId, "target", meta.targetEntry.image)
       });
       if (!nextTarget) return false;
       scene.targetDexId = nextTarget.dexId;
@@ -19137,9 +20006,17 @@ const applyBossChainFinalBuff = (scene) => {
         }
         if (hCoinGain > 0) {
           const baseHCoinGain = hCoinGain;
-          hCoinGain = baseHCoinGain * rewardEventMultiplier;
+          const deviceHCoinMultiplier = consumeItemCount("double_hcoin_device", 1) ? 2 : 1;
+          hCoinGain = baseHCoinGain * rewardEventMultiplier * deviceHCoinMultiplier;
           state.value.hCoins = Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) + hCoinGain;
-          pushBattleLog(scene, rewardEventMultiplier > 1 ? `双倍H币生效：${baseHCoinGain} -> ${hCoinGain} H币。` : `获得 ${hCoinGain} H币。`);
+          if (rewardEventMultiplier > 1 || deviceHCoinMultiplier > 1) {
+            const parts = [];
+            if (rewardEventMultiplier > 1) parts.push("双倍时段");
+            if (deviceHCoinMultiplier > 1) parts.push("双倍H币器");
+            pushBattleLog(scene, `${parts.join("+")}生效：${baseHCoinGain} -> ${hCoinGain} H币。`);
+          } else {
+            pushBattleLog(scene, `获得 ${hCoinGain} H币。`);
+          }
           if (Array.isArray(scene._weeklyBossRewardFlyBase)) {
             queueRewardFlyToasts([
               ...scene._weeklyBossRewardFlyBase,
@@ -19281,7 +20158,18 @@ const applyBossChainFinalBuff = (scene) => {
         }
         pushBattleLog(scene, `${next.name}因神秘仪式满状态回复。`);
       }
+      if (scene.nextPetStageBoost && typeof scene.nextPetStageBoost === "object") {
+        const boost = scene.nextPetStageBoost;
+        scene.nextPetStageBoost = null;
+        const keys = Array.isArray(boost.keys) && boost.keys.length > 0 ? boost.keys : ALL_ABILITY_STAGE_KEYS.slice();
+        const delta = Math.floor(Number(boost.delta) || 1);
+        const changed = applyStageDelta(scene, "attacker", keys, delta);
+        if (changed.length > 0) {
+          pushBattleLog(scene, `${next.name}因${normalize(boost.label) || "上场强化"}提升${Math.abs(delta)}级：${changed.map((k) => battleStatLabel(k)).join("、")}。`);
+        }
+      }
       applyWeeklyBossCounterPetBuff(scene);
+      applyShengyuEntryPassives(scene);
       clearBattleFloatTextIfExpired(scene, true);
       resetBattleVisualHold(scene);
       scene.fxAttackerDefeated = false;
@@ -19933,8 +20821,10 @@ const applyBossChainFinalBuff = (scene) => {
       const wallet = Math.max(0, Math.floor(Number(state.value.hCoins) || 0));
       if (wallet < totalPrice) return showToast(`H\u5e01\u4e0d\u8db3\uff0c\u9700\u8981 ${totalPrice} H\u5e01\u3002`);
       state.value.hCoins = wallet - totalPrice;
-      const gainCount = id === "double_exp_device" || id === "auto_battle_device" ? quantity * 10 : quantity;
-      addItemCount(id, gainCount);
+      const grantItemId = normalize(item.grantItemId) || id;
+      const grantCountPerPurchase = Math.max(1, Math.floor(Number(item.grantCount) || 1));
+      const gainCount = id === "double_exp_device" || id === "auto_battle_device" || id === "double_hcoin_device" ? quantity * 10 : quantity * grantCountPerPurchase;
+      addItemCount(grantItemId, gainCount);
       if (shopItemDailyLimit(item) > 0) {
         const purchases = ensureShopDailyPurchases();
         purchases[id] = shopItemDailyBoughtCount(id) + quantity;
@@ -19943,11 +20833,14 @@ const applyBossChainFinalBuff = (scene) => {
         const purchases = ensureShopLimitedPurchases();
         purchases[id] = shopItemLimitedBoughtCount(id) + quantity;
       }
-      const gainLabel = id === "double_exp_device" || id === "auto_battle_device" ? `${gainCount} \u6b21\u6570` : `${gainCount} \u4e2a`;
+      const gainName = grantItemId === id ? item.name : itemNameById(grantItemId, item.name);
+      const gainLabel = id === "double_exp_device" || id === "auto_battle_device" || id === "double_hcoin_device" ? `${gainCount} \u6b21\u6570` : `${gainName}\u00d7${gainCount}`;
+      if (normalize(item.grantItemId)) queueRewardFlyToasts([`获得${gainName}×${gainCount}！`]);
       showToast(totalPrice > 0 ? `\u5df2\u8d2d\u4e70${item.name} x${quantity}\uff0c\u83b7\u5f97${gainLabel}\uff0c\u82b1\u8d39 ${totalPrice} H\u5e01\u3002` : `\u5df2\u8d2d\u4e70${item.name} x${quantity}\u3002`);
     };
     const buyShopItem = (itemId) => buyHcoinShopItem(itemId, shopItems.value);
     const buySkillShopItem = (itemId) => buyHcoinShopItem(itemId, skillShopItems.value);
+    const buyBundleShopItem = (itemId) => buyHcoinShopItem(itemId, bundleShopItems.value);
     const buyGearShopItem = (itemId) => {
       const id = normalize(String(itemId || ""));
       const item = gearShopItems.value.find((row) => normalize(row.id) === id);
@@ -20000,7 +20893,7 @@ const applyBossChainFinalBuff = (scene) => {
     const redeemShopCode = () => {
       const code = normalize(shopRedeemCodeInput.value).replace(/\s+/g, "").toUpperCase();
       if (!code) return showToast("请输入兑换码。");
-      if (![SHOP_REDEEM_CODE_ALHUB666, SHOP_REDEEM_CODE_HUBDWAK, SHOP_REDEEM_CODE_EQUIPMENT_DUNGEON_STRONG_ROAD, SHOP_REDEEM_CODE_HUB_TOGETHER].includes(code)) return showToast("该兑换码无效。");
+      if (![SHOP_REDEEM_CODE_ALHUB666, SHOP_REDEEM_CODE_HUBDWAK, SHOP_REDEEM_CODE_EQUIPMENT_DUNGEON_STRONG_ROAD, SHOP_REDEEM_CODE_HUB_TOGETHER, SHOP_REDEEM_CODE_SERVER_RECOVERY].includes(code)) return showToast("该兑换码无效。");
       if (!Array.isArray(state.value.redeemedCodes)) state.value.redeemedCodes = [];
       if (state.value.redeemedCodes.map((row) => normalize(row).toUpperCase()).includes(code)) {
         return showToast("该兑换码已经使用过了。");
@@ -20024,6 +20917,20 @@ const applyBossChainFinalBuff = (scene) => {
           "获取神宠之匙×10！"
         ]);
         showToast("兑换成功，奖励已发放。");
+        return;
+      }
+      if (code === SHOP_REDEEM_CODE_SERVER_RECOVERY) {
+        state.value.redeemedCodes.push(code);
+        state.value.hCoins = Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) + 10000;
+        addItemCount(EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, 10);
+        addItemCount("divine_pet_key", 10);
+        shopRedeemCodeInput.value = "";
+        queueRewardFlyToasts([
+          "获取10000H币！",
+          "获取秘境晶石×10！",
+          "获取神宠之匙×10！"
+        ]);
+        showToast("兑换成功，服务器恢复奖励已发放。");
         return;
       }
       if (code === SHOP_REDEEM_CODE_HUBDWAK) {
@@ -20238,16 +21145,9 @@ const applyBossChainFinalBuff = (scene) => {
       if (!gear) return showToast("装备数据不存在。");
       if (getItemCount(id) <= 0) return showToast(`${gear.name}数量不足。`);
       const slot = petGearSlotOf(gear);
-      safeActivePets.value.forEach((row) => {
-        if (!row || row.id === pet.id) return;
-        const slots = normalizePetGearSlots(row);
-        if (!Object.values(slots).some((gearId) => normalize(gearId) === id)) return;
-        row.equippedGearIds = { ...(row.equippedGearIds || {}) };
-        PET_GEAR_SLOT_KEYS.forEach((slotKey) => {
-          if (normalize(slots[slotKey]) === id) row.equippedGearIds[slotKey] = "";
-        });
-        if (normalize(row.equippedGearId) === id) row.equippedGearId = "";
-      });
+      const currentSlots = normalizePetGearSlots(pet);
+      const alreadyEquippedOnPet = Object.values(currentSlots).some((gearId) => normalize(gearId) === id);
+      if (!alreadyEquippedOnPet && gearEquipAvailableCount(id, pet.id) <= 0) return showToast(`${gear.name}可用数量不足，请先卸下其他亚比身上的同名装备。`);
       pet.equippedGearIds = { ...normalizePetGearSlots(pet), [slot]: id };
       pet.equippedGearId = pet.equippedGearIds.blade || "";
       showToast(`${petDisplayName(pet)} 已装备${gear.name}。`);
@@ -20322,8 +21222,14 @@ const applyBossChainFinalBuff = (scene) => {
       if (!id) return;
       const requestedAmount = clamp(Math.floor(Number(amount) || 1), 1, 999);
       const ownedAmount = getItemCount(id);
-      if (ownedAmount <= 0) return showToast("该道具数量不足。");
+      const skinItemConfig = PET_SKIN_CONFIG_BY_ITEM_ID.get(id) || null;
+      const qixingSkinUnlocked = Boolean(skinItemConfig
+        && state.value.qixingGacha
+        && state.value.qixingGacha.limitedEggs
+        && state.value.qixingGacha.limitedEggs[skinItemConfig.limitedKey]);
+      if (ownedAmount <= 0 && !qixingSkinUnlocked) return showToast("该道具数量不足。");
       if (id === "double_exp_device") return showToast("双倍经验器会在非学习力战斗开始时自动消耗 1 次，并使胜利经验翻倍。");
+      if (id === "double_hcoin_device") return showToast("双倍H币器会在后续可获得H币的战斗结算时自动消耗 1 次，并使本场H币收益翻倍。");
       if (id === "auto_battle_device") return showToast("自动战斗仪请在图鉴挑战信息中使用，可连续挑战同一目标。");
       if (id === "divine_pet_key") return showToast("神宠之匙可在启星转盘中使用。");
       if (id === WEEKLY_BOSS_MEDAL_ITEM_ID) return showToast("当周BOSS勋章可在当周BOSS挑战页面兑换亚比蛋。");
@@ -20352,12 +21258,12 @@ const applyBossChainFinalBuff = (scene) => {
       if (gearConfigById(id)) {
         return equipGearToSelectedPet(id, pet.id);
       }
-      if (id === QIANKUN_XIULUOSHEN_SKIN_ITEM_ID) {
-        if (!canUseQiankunXiuluoshenSkinOnPet(pet)) return showToast(`${QIANKUN_XIULUOSHEN_SKIN_NAME}仅限圣光修罗或修罗使用。`);
-        if (normalize(pet.skinKey) === QIANKUN_XIULUOSHEN_SKIN_KEY) return showToast(`${petDisplayName(pet)} 已装配${QIANKUN_XIULUOSHEN_SKIN_NAME}。`);
-        pet.skinKey = QIANKUN_XIULUOSHEN_SKIN_KEY;
-        addItemCount(id, -1);
-        showToast(`${petDisplayName(pet)} 已装配${QIANKUN_XIULUOSHEN_SKIN_NAME}。`);
+      if (skinItemConfig) {
+        if (!canUsePetSkinOnPet(skinItemConfig, pet)) return showToast(`${skinItemConfig.name}仅限${skinItemConfig.allowedText}使用。`);
+        if (normalize(pet.skinKey) === skinItemConfig.skinKey) return showToast(`${petDisplayName(pet)} 已装配${skinItemConfig.name}。`);
+        pet.skinKey = skinItemConfig.skinKey;
+        state.value.qixingGacha.limitedEggs[skinItemConfig.limitedKey] = true;
+        showToast(`${petDisplayName(pet)} 已装配${skinItemConfig.name}。`);
         return;
       }
       if (SKILL_STONE_ITEM_IDS.has(id)) {
@@ -20666,6 +21572,15 @@ const applyBossChainFinalBuff = (scene) => {
       pet.equippedItemId = "";
       pet.equippedItemInstanceId = "";
       showToast(`${petDisplayName(pet)} 已卸下${itemNameById(itemId, "亚比道具")}。`);
+    };
+    const unequipPetSkin = (petId) => {
+      const id = normalize(petId);
+      const pet = bagPets.value.find((p) => p && (!id || p.id === id));
+      if (!pet) return showToast("请先选择背包中的亚比。");
+      const skinConfig = activePetSkinConfig(pet);
+      if (!skinConfig) return showToast(`${petDisplayName(pet)} 当前没有装配皮肤。`);
+      pet.skinKey = "";
+      showToast(`${petDisplayName(pet)} 已卸下${skinConfig.name}。`);
     };
     const setChallengeFormIndex = (idx) => {
       void idx;
@@ -21271,6 +22186,8 @@ const applyBossChainFinalBuff = (scene) => {
       date: localDateKey(),
       attemptsUsed: 0,
       score: 0,
+      sweepScore: 0,
+      sweepUnlocked: false,
       active: false,
       completedRegionKeys: [],
       unlockedRegionKeys: ["aixi"],
@@ -21288,6 +22205,8 @@ const applyBossChainFinalBuff = (scene) => {
       row.date = today;
       row.attemptsUsed = clamp(Math.floor(Number(row.attemptsUsed) || 0), 0, EQUIPMENT_DUNGEON_DAILY_ATTEMPT_LIMIT);
       row.score = Math.max(0, Math.floor(Number(row.score) || 0));
+      row.sweepScore = Math.max(0, Math.floor(Number(row.sweepScore) || 0));
+      row.sweepUnlocked = Boolean(row.sweepUnlocked || row.settled);
       row.completedRegionKeys = Array.isArray(row.completedRegionKeys)
         ? row.completedRegionKeys.filter((key, idx, arr) => EQUIPMENT_DUNGEON_ROUTE_KEYS.includes(key) && arr.indexOf(key) === idx)
         : [];
@@ -21322,6 +22241,8 @@ const applyBossChainFinalBuff = (scene) => {
     const equipmentDungeonProgress = computed(() => readEquipmentDungeonProgress());
     const equipmentDungeonScore = computed(() => equipmentDungeonProgress.value.score);
     const equipmentDungeonAttemptsLeft = computed(() => Math.max(0, EQUIPMENT_DUNGEON_DAILY_ATTEMPT_LIMIT - equipmentDungeonProgress.value.attemptsUsed));
+    const equipmentDungeonSweepScore = computed(() => Math.max(0, Math.floor(Number(equipmentDungeonProgress.value.sweepScore) || 0)));
+    const equipmentDungeonCanSweep = computed(() => Boolean(equipmentDungeonProgress.value.sweepUnlocked && !equipmentDungeonProgress.value.active && equipmentDungeonAttemptsLeft.value > 0));
     const equipmentDungeonActiveRouteKey = computed(() => EQUIPMENT_DUNGEON_ROUTE_KEYS.find((key) => !equipmentDungeonProgress.value.completedRegionKeys.includes(key)) || EQUIPMENT_DUNGEON_ROUTE_KEYS[0]);
     const isEquipmentDungeonRegionUnlocked = (region) => {
       const key = normalize(region && region.key);
@@ -21341,7 +22262,7 @@ const applyBossChainFinalBuff = (scene) => {
     const equipmentDungeonBossAnimSrc = computed(() => {
       const entry = equipmentDungeonCurrentBossEntry.value;
       if (!entry) return PLACEHOLDER;
-      return petBattleSvgImage(entry.dexId, "target", "idle") || entry.image || PLACEHOLDER;
+      return petBattleIdleImage(entry.dexId, "target", entry.image || PLACEHOLDER);
     });
     const equipmentDungeonLeaderStyle = computed(() => {
       const config = equipmentDungeonCurrentBossConfig.value;
@@ -21367,16 +22288,19 @@ const applyBossChainFinalBuff = (scene) => {
         return {
           ...difficulty,
           bossName: config ? config.bossName : "",
-          challengeText: `${difficulty.desc}${extra ? ` ${extra}` : ""}`
+          challengeText: `${difficulty.desc}${extra ? ` ${extra}` : ""} ${EQUIPMENT_DUNGEON_FORBIDDEN_TEXT}`
         };
       });
     });
     const equipmentDungeonBossCardsVisible = computed(() => Boolean(equipmentDungeonBossCardRegionKey.value && equipmentDungeonBossCardRegionKey.value === equipmentDungeonSceneKey.value));
+    const equipmentDungeonRewardByScore = (score) => EQUIPMENT_DUNGEON_SCORE_REWARDS.find((item) => score >= item.min) || EQUIPMENT_DUNGEON_SCORE_REWARDS[EQUIPMENT_DUNGEON_SCORE_REWARDS.length - 1];
     const settleEquipmentDungeonRun = (scene, clearedAll = false) => {
       const row = normalizeEquipmentDungeonProgress();
       const score = Math.max(0, Math.floor(Number(row.score) || 0));
       state.value.equipmentDungeonBestScore = Math.max(0, Math.floor(Number(state.value.equipmentDungeonBestScore) || 0), score);
-      const reward = EQUIPMENT_DUNGEON_SCORE_REWARDS.find((item) => score >= item.min) || EQUIPMENT_DUNGEON_SCORE_REWARDS[EQUIPMENT_DUNGEON_SCORE_REWARDS.length - 1];
+      const reward = equipmentDungeonRewardByScore(score);
+      row.sweepScore = score;
+      row.sweepUnlocked = true;
       row.active = false;
       row.settled = true;
       row.completedRegionKeys = [];
@@ -21386,6 +22310,19 @@ const applyBossChainFinalBuff = (scene) => {
       if (scene) pushBattleLog(scene, text);
       queueRewardFlyToasts([`评级${reward.rating}！`, `获取秘境晶石×${reward.crystals}！`]);
       return text;
+    };
+    const sweepEquipmentDungeon = (times = 1) => {
+      const row = normalizeEquipmentDungeonProgress();
+      if (row.active) return showToast("当前装备秘境挑战进行中，不能扫荡。");
+      if (!equipmentDungeonCanSweep.value) return showToast("今日完成一次装备秘境挑战后可开启扫荡。");
+      const sweepTimes = clamp(Math.floor(Number(times) || 1), 1, equipmentDungeonAttemptsLeft.value);
+      const score = Math.max(0, Math.floor(Number(row.sweepScore) || 0));
+      const reward = equipmentDungeonRewardByScore(score);
+      row.attemptsUsed = clamp(row.attemptsUsed + sweepTimes, 0, EQUIPMENT_DUNGEON_DAILY_ATTEMPT_LIMIT);
+      state.value.equipmentDungeonBestScore = Math.max(0, Math.floor(Number(state.value.equipmentDungeonBestScore) || 0), score);
+      addItemCount(EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, reward.crystals * sweepTimes);
+      queueRewardFlyToasts([`扫荡${sweepTimes}次！`, `获取秘境晶石×${reward.crystals * sweepTimes}！`]);
+      showToast(`已按上次${score}分扫荡${sweepTimes}次，获得秘境晶石×${reward.crystals * sweepTimes}。`);
     };
     const completeEquipmentDungeonBoss = (scene) => {
       const row = normalizeEquipmentDungeonProgress();
@@ -21413,8 +22350,8 @@ const applyBossChainFinalBuff = (scene) => {
       ].filter(Boolean);
       const rootIds = ids.map((id) => Number(chainRootByDex.get(id)) || id);
       const names = [pet.speciesName, pet.fixedName, petDisplayName(pet)].map(normalize).filter(Boolean);
-      return ids.concat(rootIds).some((id) => NORMAL_HARD_CHALLENGE_FORBIDDEN_DEX_IDS.has(id))
-        || names.some((name) => NORMAL_HARD_CHALLENGE_FORBIDDEN_PET_NAMES.some((forbiddenName) => name.includes(forbiddenName)));
+      return ids.concat(rootIds).some((id) => EQUIPMENT_DUNGEON_FORBIDDEN_DEX_IDS.has(id))
+        || names.some((name) => EQUIPMENT_DUNGEON_FORBIDDEN_PET_NAMES.some((forbiddenName) => name.includes(forbiddenName)));
     });
     const openEquipmentDungeonPanel = () => {
       normalizeEquipmentDungeonProgress();
@@ -21488,7 +22425,7 @@ const applyBossChainFinalBuff = (scene) => {
       }
       const firstThree = bagSlots.value.slice(0, 3).map((slot) => slot && slot.pet).filter((pet) => pet && pet.id);
       if (firstThree.length === 0) return showToast("背包前3只亚比中没有可出战亚比。");
-      if (hasEquipmentDungeonForbiddenPet()) return showToast(`装备秘境禁用亚比：${NORMAL_HARD_CHALLENGE_FORBIDDEN_PET_NAMES.join("、")}。`);
+      if (hasEquipmentDungeonForbiddenPet()) return showToast(`装备秘境${EQUIPMENT_DUNGEON_FORBIDDEN_TEXT}`);
       const entry = findDexByName(config.bossName) || dexEntries.find((item) => normalize(item && item.name) === normalize(config.bossName));
       if (!entry) return showToast(`${config.bossName}数据暂不可用。`);
       if (shouldStartNewRun) {
@@ -21515,6 +22452,7 @@ const applyBossChainFinalBuff = (scene) => {
           equipmentDungeonSkillNames: config.skills,
           equipmentDungeonSkillWeights: buildEquipmentDungeonSkillWeights(config, difficulty.key),
           equipmentDungeonEndTurnEffects: config.endTurn && config.endTurn[difficulty.key] ? config.endTurn[difficulty.key] : [],
+          equipmentDungeonOnSkillEffects: config.onSkill && config.onSkill[difficulty.key] ? config.onSkill[difficulty.key] : [],
           fixedHp: difficulty.fixedHp,
           damageReductionRatio: clamp(Number(difficulty.damageReductionRatio) || 0, 0, 0.95),
           counteredDamageReductionRatio: clamp(Number(difficulty.counteredDamageReductionRatio) || 0, 0, 0.95),
@@ -21675,8 +22613,8 @@ const applyBossChainFinalBuff = (scene) => {
       if (!img || !scene) return withFallback(event);
       const safeSide = side === "target" ? "target" : "attacker";
       const animFallback = safeSide === "target"
-        ? petBattleSvgImage(scene.targetDexId, "target", "idle")
-        : petBattleSvgImage(scene.attackerBattleVisualDexId || scene.attackerDexId || scene.attackerBaseDexId, "attacker", "idle");
+        ? petBattleIdleImage(scene.targetDexId, "target", scene.targetImage || scene.targetStaticImage)
+        : petBattleIdleImage(scene.attackerBattleVisualDexId || scene.attackerDexId || scene.attackerBaseDexId, "attacker", scene.attackerImage || scene.attackerStaticImage);
       const fallback = animFallback || (safeSide === "target" ? scene.targetStaticImage : scene.attackerStaticImage);
       if (!fallback || img.dataset.battleFallbackDone === "1") return withFallback(event);
       img.dataset.battleFallbackDone = "1";
@@ -21784,7 +22722,23 @@ const applyBossChainFinalBuff = (scene) => {
       showBadgePanel,
       showEggHatchPanel,
       showLeaderboardPanel,
+      showMonthlySignPanel,
+      monthlySignTab,
       showDragonBoatShopPanel,
+      monthlySignRows,
+      monthlySignMilestones,
+      monthlySignSignedCount,
+      monthlySignTodayDay,
+      monthlySignSupremeActive,
+      monthlySignSupremeExpireText,
+      openMonthlySignPanel,
+      closeMonthlySignPanel,
+      signMonthlyToday,
+      signMonthlySupremeToday,
+      makeupMonthlySign,
+      activateMonthlySupreme,
+      claimMonthlySignSupreme,
+      claimMonthlySignMilestone,
       leaderboardMetric,
       leaderboardTabs,
       leaderboardRows,
@@ -21885,6 +22839,7 @@ const applyBossChainFinalBuff = (scene) => {
       shopItems,
       skillShopItems,
       gearShopItems,
+      bundleShopItems,
       shopBuyQuantities,
       shopEggEntries,
       itemInventoryRows,
@@ -21931,6 +22886,8 @@ const applyBossChainFinalBuff = (scene) => {
       bagItemUseValidationText,
       petItemInventoryRows,
       selectedPetFeatureText,
+      selectedPetSkinEquipped,
+      selectedPetSkinName,
       dragonBoatBladeEquippedPetName,
       gearEquippedPetName,
       rewardFlyToast,
@@ -22009,6 +22966,7 @@ const applyBossChainFinalBuff = (scene) => {
       timeTunnelEnemyScaleStyle,
       petAnimImageStyle,
       battleSkillEffectStyle,
+      battleShengyuBackgroundStyle,
       battleStatusEffectStyle,
       battleTransformEffectStyle,
       battleStageChangeFxStyle,
@@ -22085,6 +23043,8 @@ const applyBossChainFinalBuff = (scene) => {
       equipmentDungeonSceneSvgSrc,
       equipmentDungeonScore,
       equipmentDungeonAttemptsLeft,
+      equipmentDungeonSweepScore,
+      equipmentDungeonCanSweep,
       equipmentDungeonBossAnimSrc,
       equipmentDungeonLeaderStyle,
       equipmentDungeonDifficultyCards,
@@ -22102,6 +23062,7 @@ const applyBossChainFinalBuff = (scene) => {
       enterEquipmentDungeonRegion,
       openEquipmentDungeonBossCards,
       startEquipmentDungeonBossChallenge,
+      sweepEquipmentDungeon,
       isEquipmentDungeonRegionUnlocked,
       isEquipmentDungeonRegionCompleted,
       isWeeklyBossDifficultyCleared,
@@ -22225,6 +23186,7 @@ const applyBossChainFinalBuff = (scene) => {
       closeEggHatchPanel,
       buyShopItem,
       buySkillShopItem,
+      buyBundleShopItem,
       buyGearShopItem,
       buyDragonBoatShopItem,
       redeemShopCode,
@@ -22247,6 +23209,7 @@ const applyBossChainFinalBuff = (scene) => {
       getItemCount,
       useShopItem,
       unequipPetItem,
+      unequipPetSkin,
       equipPetItemToSelectedPet,
       equipGearToSelectedPet,
       equipDragonBoatBladeToSelectedPet,
