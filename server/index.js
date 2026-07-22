@@ -7,6 +7,7 @@ const ROOT_DIR = path.resolve(__dirname, "..");
 const DATA_DIR = process.env.AOLA_DATA_DIR || path.join(__dirname, "data");
 const SAVE_ROOT = path.join(DATA_DIR, "saves");
 const USERS_FILE = path.join(DATA_DIR, "users.json");
+const TEAMS_FILE = path.join(DATA_DIR, "teams.json");
 const STATIC_RESOURCE_DIR = process.env.AOLA_STATIC_RESOURCE_DIR || "";
 const STATIC_RESOURCE_PREFIXES = [
   "resource/BGM/",
@@ -72,6 +73,8 @@ const saveUsersDb = (db) => writeJsonFile(USERS_FILE, db);
 
 const safeUserName = (name) => String(name || "").trim();
 
+const safeTeamText = (value, maxLen) => String(value || "").replace(/[\u200b\u00a0]/g, "").trim().slice(0, maxLen);
+
 const createUserId = () => crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString("hex");
 
 const hashPassword = (password, salt = crypto.randomBytes(16).toString("hex")) => {
@@ -95,6 +98,23 @@ const LEADERBOARD_MAX_OPEN_DEX_ID = 2050;
 const LEADERBOARD_MAX_HCOINS = 100000000;
 const LEADERBOARD_METRICS = new Set(["battlePower", "activatedDexCount", "hCoins", "timeTunnelMaxClearedFloor", "equipmentDungeonBestScore"]);
 const LEADERBOARD_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
+const TEAM_LEVEL_RULES = [
+  { level: 1, memberLimit: 20, nextHonor: 15000 },
+  { level: 2, memberLimit: 25, nextHonor: 30000 },
+  { level: 3, memberLimit: 30, nextHonor: 60000 },
+  { level: 4, memberLimit: 35, nextHonor: 120000 },
+  { level: 5, memberLimit: 40, nextHonor: 300000 },
+  { level: 6, memberLimit: 45, nextHonor: 800000 },
+  { level: 7, memberLimit: 50, nextHonor: 0 }
+];
+const TEAM_ROLE_LABELS = {
+  leader: "队长",
+  vice: "副队长",
+  elder: "元老",
+  member: "成员"
+};
+const TEAM_MAX_VICE_CAPTAINS = 2;
+const TEAM_MAX_ELDERS = 5;
 const TEST_MAX_DEX_ID = 1960;
 const TEST_DEFAULT_WEEKLY_REWARD_STATE_VERSION = "wunian_2020_exchange_reset_v2";
 const TEST_DEFAULT_WEEKLY_MEDAL_ITEM_ID = "weekly_boss_medal_wunian_2020";
@@ -836,6 +856,176 @@ const buildRankedLeaderboardRows = (metric) => buildQualifiedLeaderboardRows()
   })
   .map((row, idx) => ({ ...row, rank: idx + 1 }));
 
+const teamsDb = () => {
+  const raw = readJsonFile(TEAMS_FILE, { teams: [] });
+  const teams = Array.isArray(raw.teams) ? raw.teams : [];
+  return { teams: teams.map(normalizeTeamRow).filter((team) => team.id && team.name) };
+};
+
+const saveTeamsDb = (db) => writeJsonFile(TEAMS_FILE, { teams: Array.isArray(db && db.teams) ? db.teams : [] });
+
+const createTeamId = () => `team_${crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString("hex")}`;
+
+const teamLevelHonorThreshold = (level) => {
+  const targetLevel = Math.max(1, Math.min(7, safeNonNegInt(level, 1)));
+  if (targetLevel <= 1) return 0;
+  const prev = TEAM_LEVEL_RULES.find((row) => row.level === targetLevel - 1);
+  return safeNonNegInt(prev && prev.nextHonor, 0);
+};
+
+const resolveTeamLevelByHonor = (honor) => {
+  const totalHonor = safeNonNegInt(honor, 0);
+  let level = 1;
+  TEAM_LEVEL_RULES.forEach((row) => {
+    if (totalHonor >= teamLevelHonorThreshold(row.level)) level = Math.max(level, row.level);
+  });
+  return Math.max(1, Math.min(7, level));
+};
+
+const teamMemberLimitByLevel = (level) => {
+  const row = TEAM_LEVEL_RULES.find((item) => item.level === Math.max(1, Math.min(7, safeNonNegInt(level, 1))));
+  return row ? row.memberLimit : 20;
+};
+
+const normalizeTeamMember = (member) => ({
+  userId: String(member && member.userId || ""),
+  role: TEAM_ROLE_LABELS[member && member.role] ? member.role : "member",
+  contribution: safeNonNegInt(member && member.contribution, 0),
+  honor: safeNonNegInt(member && member.honor, 0),
+  joinedAt: String(member && member.joinedAt || new Date().toISOString())
+});
+
+function normalizeTeamRow(team) {
+  const members = (Array.isArray(team && team.members) ? team.members : []).map(normalizeTeamMember).filter((member) => member.userId);
+  const leaderId = String((team && team.leaderId) || (members.find((member) => member.role === "leader") || {}).userId || "");
+  const normalizedMembers = members.map((member) => ({
+    ...member,
+    role: member.userId === leaderId ? "leader" : member.role
+  }));
+  if (leaderId && !normalizedMembers.some((member) => member.userId === leaderId)) {
+    normalizedMembers.unshift({ userId: leaderId, role: "leader", contribution: 0, honor: 0, joinedAt: String(team && team.createdAt || new Date().toISOString()) });
+  }
+  const applications = (Array.isArray(team && team.applications) ? team.applications : [])
+    .map((app) => ({ userId: String(app && app.userId || ""), appliedAt: String(app && app.appliedAt || new Date().toISOString()) }))
+    .filter((app) => app.userId && !normalizedMembers.some((member) => member.userId === app.userId));
+  return {
+    id: String(team && team.id || ""),
+    name: safeTeamText(team && team.name, 24),
+    slogan: safeTeamText(team && team.slogan, 80),
+    leaderId,
+    createdAt: String(team && team.createdAt || new Date().toISOString()),
+    updatedAt: String(team && team.updatedAt || new Date().toISOString()),
+    members: normalizedMembers,
+    applications
+  };
+}
+
+const teamTotalHonor = (team) => (Array.isArray(team && team.members) ? team.members : [])
+  .reduce((sum, member) => sum + safeNonNegInt(member && member.honor, 0), 0);
+
+const findUserTeam = (db, userId) => (Array.isArray(db && db.teams) ? db.teams : [])
+  .find((team) => Array.isArray(team.members) && team.members.some((member) => member.userId === userId));
+
+const findTeamById = (db, teamId) => (Array.isArray(db && db.teams) ? db.teams : [])
+  .find((team) => team.id === teamId);
+
+const userNameByIdMap = () => usersDb().users.reduce((acc, user) => {
+  acc.set(user.id, safeUserName(user.username) || "匿名玩家");
+  return acc;
+}, new Map());
+
+const readUserMaxBattlePower = (() => {
+  let speciesByDex = null;
+  return (userId) => {
+    const payload = readJsonFile(userSaveFile(userId), null);
+    const save = extractGameSaveState(payload);
+    const savedMax = Math.max(
+      safeNonNegInt(save && save.maxBagBattlePower, 0),
+      safeNonNegInt(save && save.maxBattlePower, 0),
+      safeNonNegInt(save && save.battlePower, 0)
+    );
+    if (savedMax > 0) return savedMax;
+    if (!speciesByDex) speciesByDex = loadWindowDataScript("aola-species-data.js", "AOLA_SPECIES_DATA_BY_DEX") || {};
+    const activePets = Array.isArray(save && save.activePets) ? save.activePets : [];
+    return activePets
+      .map((pet) => calcPetBattlePowerForSave(pet, speciesByDex))
+      .sort((a, b) => b - a)
+      .slice(0, 6)
+      .reduce((sum, value) => sum + safeNonNegInt(value, 0), 0);
+  };
+})();
+
+const publicTeamMember = (member, names) => ({
+  userId: member.userId,
+  name: names.get(member.userId) || "匿名玩家",
+  role: member.role,
+  roleLabel: TEAM_ROLE_LABELS[member.role] || TEAM_ROLE_LABELS.member,
+  maxBattlePower: readUserMaxBattlePower(member.userId),
+  contribution: safeNonNegInt(member.contribution, 0),
+  honor: safeNonNegInt(member.honor, 0),
+  joinedAt: member.joinedAt
+});
+
+const publicTeamApplication = (app, names) => ({
+  userId: app.userId,
+  name: names.get(app.userId) || "匿名玩家",
+  maxBattlePower: readUserMaxBattlePower(app.userId),
+  appliedAt: app.appliedAt
+});
+
+const publicTeam = (team, options = {}) => {
+  const names = options.names || userNameByIdMap();
+  const honor = teamTotalHonor(team);
+  const level = resolveTeamLevelByHonor(honor);
+  const leaderName = names.get(team.leaderId) || "匿名玩家";
+  const viewerMember = options.viewerUserId
+    ? (team.members || []).find((member) => member.userId === options.viewerUserId)
+    : null;
+  return {
+    id: team.id,
+    name: team.name,
+    slogan: team.slogan,
+    leaderId: team.leaderId,
+    leader: leaderName,
+    leaderName,
+    level,
+    honor,
+    score: honor,
+    memberCount: (team.members || []).length,
+    memberLimit: teamMemberLimitByLevel(level),
+    members: `${(team.members || []).length}/${teamMemberLimitByLevel(level)}`,
+    viewerRole: viewerMember ? viewerMember.role : "",
+    isMember: Boolean(viewerMember),
+    isLeader: Boolean(viewerMember && viewerMember.role === "leader"),
+    contribution: viewerMember ? safeNonNegInt(viewerMember.contribution, 0) : 0,
+    applications: options.includeRecords ? (team.applications || []).map((app) => publicTeamApplication(app, names)) : [],
+    memberRows: options.includeRecords ? (team.members || []).map((member) => publicTeamMember(member, names)) : []
+  };
+};
+
+const rankedPublicTeams = (viewerUserId = "", includeRecords = false) => {
+  const db = teamsDb();
+  const names = userNameByIdMap();
+  return db.teams
+    .map((team) => publicTeam(team, { names, viewerUserId, includeRecords }))
+    .sort((a, b) => safeNonNegInt(b.honor, 0) - safeNonNegInt(a.honor, 0) || String(a.name).localeCompare(String(b.name), "zh-Hans-CN"))
+    .map((team, index) => ({ ...team, rank: index + 1 }));
+};
+
+const publicTeamWithRank = (team, viewerUserId = "", includeRecords = false) => {
+  const rankedTeam = rankedPublicTeams(viewerUserId, false).find((row) => row.id === team.id);
+  return {
+    ...publicTeam(team, { viewerUserId, includeRecords }),
+    rank: rankedTeam ? rankedTeam.rank : 0
+  };
+};
+
+const assertTeamManager = (team, userId, allowVice = true) => {
+  const member = (team.members || []).find((row) => row.userId === userId);
+  if (!member) return false;
+  return member.role === "leader" || (allowVice && member.role === "vice");
+};
+
 const normalizeLeaderboardPageSize = (value) => {
   const pageSize = Math.max(1, Math.floor(Number(value) || LEADERBOARD_PAGE_SIZE_OPTIONS[0]));
   return LEADERBOARD_PAGE_SIZE_OPTIONS.includes(pageSize) ? pageSize : LEADERBOARD_PAGE_SIZE_OPTIONS[0];
@@ -898,6 +1088,8 @@ const requireUser = (req, res) => {
 
 const handleApi = async (req, res) => {
   try {
+    const apiUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+    const pathname = apiUrl.pathname;
     if (req.method === "POST" && req.url === "/api/auth/register") {
       const body = await readBody(req);
       const username = safeUserName(body.username);
@@ -936,6 +1128,184 @@ const handleApi = async (req, res) => {
     if (req.method === "GET" && req.url === "/api/auth/me") {
       const user = currentUser(req);
       return sendJson(res, 200, { ok: true, user: user ? publicUser(user) : null });
+    }
+    if (req.method === "POST" && req.url === "/api/auth/rename") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const username = safeUserName(body.username);
+      if (username.length < 2 || username.length > 32) return sendJson(res, 400, { ok: false, message: "用户名长度需为2-32个字符。" });
+      const db = usersDb();
+      if (db.users.some((u) => u.id !== user.id && String(u.username || "").toLowerCase() === username.toLowerCase())) {
+        return sendJson(res, 409, { ok: false, message: "用户名已存在。" });
+      }
+      const row = db.users.find((u) => u.id === user.id);
+      if (!row) return sendJson(res, 404, { ok: false, message: "用户不存在。" });
+      row.username = username;
+      row.updatedAt = new Date().toISOString();
+      saveUsersDb(db);
+      const saveFile = userSaveFile(user.id);
+      const save = readJsonFile(saveFile, null);
+      if (save && typeof save === "object" && !Array.isArray(save)) {
+        save.username = username;
+        writeJsonFile(saveFile, save);
+      }
+      return sendJson(res, 200, { ok: true, user: publicUser(row) });
+    }
+    if (req.method === "GET" && pathname === "/api/teams") {
+      const user = currentUser(req);
+      return sendJson(res, 200, { ok: true, teams: rankedPublicTeams(user ? user.id : "") });
+    }
+    if (req.method === "GET" && pathname === "/api/teams/me") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const db = teamsDb();
+      const team = findUserTeam(db, user.id);
+      if (!team) return sendJson(res, 200, { ok: true, team: null });
+      return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
+    }
+    if (req.method === "GET" && pathname.startsWith("/api/teams/")) {
+      const teamId = decodeURIComponent(pathname.slice("/api/teams/".length));
+      const user = currentUser(req);
+      const db = teamsDb();
+      const team = findTeamById(db, teamId);
+      if (!team) return sendJson(res, 404, { ok: false, message: "战队不存在。" });
+      const viewerUserId = user ? user.id : "";
+      const includeRecords = Boolean(user && assertTeamManager(team, user.id, true));
+      return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, viewerUserId, includeRecords) });
+    }
+    if (req.method === "POST" && pathname === "/api/teams/create") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const name = safeTeamText(body.name, 24);
+      const slogan = safeTeamText(body.slogan, 80);
+      if (name.length < 2 || name.length > 24) return sendJson(res, 400, { ok: false, message: "战队名称长度需要 2-24 个字符。" });
+      const db = teamsDb();
+      if (findUserTeam(db, user.id)) return sendJson(res, 409, { ok: false, message: "当前账号已经加入战队。" });
+      if (db.teams.some((team) => String(team.name || "").toLowerCase() === name.toLowerCase())) {
+        return sendJson(res, 409, { ok: false, message: "战队名称已存在。" });
+      }
+      const now = new Date().toISOString();
+      const team = normalizeTeamRow({
+        id: createTeamId(),
+        name,
+        slogan: slogan || "欢迎加入我们的战队！",
+        leaderId: user.id,
+        createdAt: now,
+        updatedAt: now,
+        members: [{ userId: user.id, role: "leader", contribution: 0, honor: 0, joinedAt: now }],
+        applications: []
+      });
+      db.teams.push(team);
+      saveTeamsDb(db);
+      return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
+    }
+    if (req.method === "POST" && pathname === "/api/teams/apply") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const teamId = String(body.teamId || "");
+      const db = teamsDb();
+      if (findUserTeam(db, user.id)) return sendJson(res, 409, { ok: false, message: "当前账号已经加入战队。" });
+      const team = findTeamById(db, teamId);
+      if (!team) return sendJson(res, 404, { ok: false, message: "战队不存在。" });
+      const level = resolveTeamLevelByHonor(teamTotalHonor(team));
+      if ((team.members || []).length >= teamMemberLimitByLevel(level)) return sendJson(res, 409, { ok: false, message: "该战队人数已满。" });
+      if ((team.applications || []).some((app) => app.userId === user.id)) return sendJson(res, 409, { ok: false, message: "已提交过申请，请等待审核。" });
+      team.applications.push({ userId: user.id, appliedAt: new Date().toISOString() });
+      team.updatedAt = new Date().toISOString();
+      saveTeamsDb(db);
+      return sendJson(res, 200, { ok: true });
+    }
+    if (req.method === "POST" && pathname === "/api/teams/applications/approve") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const teamId = String(body.teamId || "");
+      const applicantUserId = String(body.userId || "");
+      const db = teamsDb();
+      const team = findTeamById(db, teamId);
+      if (!team) return sendJson(res, 404, { ok: false, message: "战队不存在。" });
+      if (!assertTeamManager(team, user.id, true)) return sendJson(res, 403, { ok: false, message: "只有队长或副队长可以审核申请。" });
+      const appIndex = (team.applications || []).findIndex((app) => app.userId === applicantUserId);
+      if (appIndex < 0) return sendJson(res, 404, { ok: false, message: "申请记录不存在。" });
+      if (findUserTeam(db, applicantUserId)) {
+        team.applications.splice(appIndex, 1);
+        saveTeamsDb(db);
+        return sendJson(res, 409, { ok: false, message: "该玩家已经加入其他战队。" });
+      }
+      const level = resolveTeamLevelByHonor(teamTotalHonor(team));
+      if ((team.members || []).length >= teamMemberLimitByLevel(level)) return sendJson(res, 409, { ok: false, message: "该战队人数已满。" });
+      team.applications.splice(appIndex, 1);
+      team.members.push({ userId: applicantUserId, role: "member", contribution: 0, honor: 0, joinedAt: new Date().toISOString() });
+      team.updatedAt = new Date().toISOString();
+      saveTeamsDb(db);
+      return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
+    }
+    if (req.method === "POST" && pathname === "/api/teams/applications/reject") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const teamId = String(body.teamId || "");
+      const applicantUserId = String(body.userId || "");
+      const db = teamsDb();
+      const team = findTeamById(db, teamId);
+      if (!team) return sendJson(res, 404, { ok: false, message: "战队不存在。" });
+      if (!assertTeamManager(team, user.id, true)) return sendJson(res, 403, { ok: false, message: "只有队长或副队长可以审核申请。" });
+      team.applications = (team.applications || []).filter((app) => app.userId !== applicantUserId);
+      team.updatedAt = new Date().toISOString();
+      saveTeamsDb(db);
+      return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
+    }
+    if (req.method === "POST" && pathname === "/api/teams/member-role") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const teamId = String(body.teamId || "");
+      const targetUserId = String(body.userId || "");
+      const role = String(body.role || "");
+      const db = teamsDb();
+      const team = findTeamById(db, teamId);
+      if (!team) return sendJson(res, 404, { ok: false, message: "战队不存在。" });
+      const actor = (team.members || []).find((member) => member.userId === user.id);
+      const target = (team.members || []).find((member) => member.userId === targetUserId);
+      if (!actor || !target) return sendJson(res, 404, { ok: false, message: "成员不存在。" });
+      if (target.role === "leader") return sendJson(res, 400, { ok: false, message: "不能调整队长职位。" });
+      if (role === "vice") {
+        if (actor.role !== "leader") return sendJson(res, 403, { ok: false, message: "只有队长可以设置副队长。" });
+        const viceCount = team.members.filter((member) => member.role === "vice" && member.userId !== target.userId).length;
+        if (viceCount >= TEAM_MAX_VICE_CAPTAINS) return sendJson(res, 409, { ok: false, message: "副队长最多只能设置 2 名。" });
+        target.role = "vice";
+      } else if (role === "elder") {
+        if (actor.role !== "leader" && actor.role !== "vice") return sendJson(res, 403, { ok: false, message: "只有队长或副队长可以设置元老。" });
+        if (target.role === "vice") return sendJson(res, 400, { ok: false, message: "副队长不能同时设置为元老。" });
+        const elderCount = team.members.filter((member) => member.role === "elder" && member.userId !== target.userId).length;
+        if (elderCount >= TEAM_MAX_ELDERS) return sendJson(res, 409, { ok: false, message: "元老最多只能设置 5 名。" });
+        target.role = "elder";
+      } else {
+        return sendJson(res, 400, { ok: false, message: "职位类型不正确。" });
+      }
+      team.updatedAt = new Date().toISOString();
+      saveTeamsDb(db);
+      return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
+    }
+    if (req.method === "POST" && pathname === "/api/teams/contribution") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const contribution = Math.min(1000000, safeNonNegInt(body.contribution, 0));
+      const honor = Math.min(1000000, safeNonNegInt(body.honor, 0));
+      if (contribution <= 0 && honor <= 0) return sendJson(res, 400, { ok: false, message: "贡献或荣誉必须大于 0。" });
+      const db = teamsDb();
+      const team = findUserTeam(db, user.id);
+      if (!team) return sendJson(res, 404, { ok: false, message: "当前账号未加入战队。" });
+      const member = team.members.find((row) => row.userId === user.id);
+      member.contribution = safeNonNegInt(member.contribution, 0) + contribution;
+      member.honor = safeNonNegInt(member.honor, 0) + honor;
+      team.updatedAt = new Date().toISOString();
+      saveTeamsDb(db);
+      return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
     }
     if (req.method === "GET" && new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname === "/api/leaderboard/my-rank") {
       const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
@@ -1024,6 +1394,7 @@ const startServer = (port = PORT, callback = null) => {
   ensureDir(DATA_DIR);
   ensureDir(SAVE_ROOT);
   if (!fs.existsSync(USERS_FILE)) writeJsonFile(USERS_FILE, { users: [] });
+  if (!fs.existsSync(TEAMS_FILE)) writeJsonFile(TEAMS_FILE, { teams: [] });
   ensureTestAccount();
   const server = http.createServer((req, res) => {
     const pathname = new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname;

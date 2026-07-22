@@ -1596,6 +1596,27 @@ const BOSS_DIFFICULTY_FIRST_WIN_REWARDS = {
     ]
   }
 };
+const TEAM_LEVEL_RULES = [
+  { level: 1, memberLimit: 20, nextHonor: 15000 },
+  { level: 2, memberLimit: 25, nextHonor: 30000 },
+  { level: 3, memberLimit: 30, nextHonor: 60000 },
+  { level: 4, memberLimit: 35, nextHonor: 120000 },
+  { level: 5, memberLimit: 40, nextHonor: 300000 },
+  { level: 6, memberLimit: 45, nextHonor: 800000 },
+  { level: 7, memberLimit: 50, nextHonor: 0 }
+];
+const TEAM_TASK_DEFINITIONS = [
+  { key: "dex_challenge_win", name: "挑战任意图鉴成功", trigger: "dexChallengeWin", contribution: 20, honor: 10 },
+  { key: "time_tunnel_win", name: "挑战时空隧道任意层成功", trigger: "timeTunnelWin", contribution: 50, honor: 25 },
+  { key: "team_intruder_win", name: "击败战队入侵者", trigger: "teamIntruderWin", contribution: 100, honor: 50 },
+  { key: "shop_purchase", name: "亚比商店购买任意道具", trigger: "shopPurchase", contribution: 30, honor: 15 },
+  { key: "equipment_boss_win", name: "装备秘境挑战任意头领成功", trigger: "equipmentBossWin", contribution: 50, honor: 25 },
+  { key: "equipment_clear_win", name: "装备秘境挑战通关成功", trigger: "equipmentClearWin", contribution: 250, honor: 125 },
+  { key: "challenge_road_normal", name: "挑战之路挑战任意守护者/BOSS普通难度", trigger: "challengeRoadNormalWin", contribution: 100, honor: 50 },
+  { key: "challenge_road_hard", name: "挑战之路挑战任意BOSS困难难度", trigger: "challengeRoadHardWin", contribution: 200, honor: 100 },
+  { key: "challenge_road_nightmare", name: "挑战之路挑战任意BOSS噩梦难度", trigger: "challengeRoadNightmareWin", contribution: 300, honor: 150 }
+];
+const TEAM_INTRUDER_PREFERRED_NAMES = ["修罗", "骰子大王", "凯撒"];
 const BADGE_IMAGE_FILE_NAMES = new Set([
   "Hub同辉赞助徽章.png",
   "暗焰天龙专属黑金徽章.png",
@@ -5105,7 +5126,7 @@ const manualHardcodedSkillEffects = (skill) => {
   }
   if (skillId === 1247 || (name === "浑天盾" && /1\.5/.test(skillDesc))) {
     return [
-      { kind: "damageReflect", target: "self", attackKind: "physical", ratio: 1.5, turns: 5, consumeOnTrigger: true, label: "浑天盾" }
+      { kind: "damageReflect", target: "self", attackKind: "physical", ratio: 1.5, maxReflect: 3000, turns: 5, consumeOnTrigger: true, label: "浑天盾" }
     ];
   }
   if (canonicalSkillName === "锁神诀") {
@@ -8892,7 +8913,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       addTimedEffect(scene, side, {
         kind: "damageReflect",
         turns,
-        data: { attackKind, ratio, consumeOnTrigger: Boolean(e.consumeOnTrigger), label: normalize(e.label) }
+        data: { attackKind, ratio, maxReflect: Math.max(0, Math.floor(Number(e.maxReflect) || 0)), consumeOnTrigger: Boolean(e.consumeOnTrigger), label: normalize(e.label) }
       });
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       const attackLabel = attackKind === "physical" ? "普通攻击" : (attackKind === "special" ? "特殊攻击" : "攻击");
@@ -10997,6 +11018,7 @@ createApp({
         weeklyBossRewardStates: {},
         equipmentDungeon: { date: "", attemptsUsed: 0, score: 0, sweepScore: 0, sweepUnlocked: false, active: false, completedRegionKeys: [], unlockedRegionKeys: ["aixi"], settled: false },
         equipmentDungeonBestScore: 0,
+        teamProfile: { hasTeam: false, isLeader: false, team: null, tasks: { date: "", rows: {} } },
         monthlySignIn: { monthKey: monthlySignMonthKeyOf(), signedDays: [], makeupDays: [], normalClaimedDays: [], supremeClaimedDays: [], milestonesClaimed: {}, supremeActivatedAt: 0, supremeExpiresAt: 0, supremeStartDay: 0 },
         abilityBreakthroughEntries: [],
         shopDailyPurchases: { date: "", counts: {} },
@@ -11341,6 +11363,9 @@ createApp({
           Math.floor(Number(loaded.equipmentDungeonHighScore) || 0),
           Math.floor(Number(equipmentDungeon.score) || 0)
         ),
+        teamProfile: loaded.teamProfile && typeof loaded.teamProfile === "object" && !Array.isArray(loaded.teamProfile)
+          ? loaded.teamProfile
+          : { hasTeam: false, isLeader: false, team: null, tasks: { date: "", rows: {} } },
         monthlySignIn: sanitizeMonthlySignInState(loaded.monthlySignIn),
         weeklyBossAttempts: (() => {
           const source = loaded.weeklyBossAttempts && typeof loaded.weeklyBossAttempts === "object" ? loaded.weeklyBossAttempts : {};
@@ -11649,6 +11674,8 @@ createApp({
     const authUsername = ref("");
     const authPassword = ref("");
     const authCaptcha = ref("");
+    const renameUsernameInput = ref("");
+    const renameUsernameLoading = ref(false);
     const rememberPassword = ref(false);
     const authMode = ref("login");
     const authLoading = ref(false);
@@ -11773,8 +11800,9 @@ createApp({
     const showTeamShop = ref(false);
     const showTeamRecord = ref(false);
     const showJoinTeamList = ref(false);
-    const teamRecordTab = ref("applications");
-    const isTeamLeader = ref(true);
+    const teamRecordTab = ref("members");
+    const isTeamLeader = ref(false);
+    const myTeamRole = ref("");
     const searchTeamId = ref("");
     const newTeamName = ref("");
     const newTeamSlogan = ref("");
@@ -11854,6 +11882,9 @@ createApp({
       { name: "圣光守护者", level: 90 },
       { name: "雷霆使者", level: 88 }
     ]);
+    const teamMembers = ref([]);
+    const showTeamMemberInfo = ref(false);
+    const selectedTeamMemberInfo = ref(null);
     const teamHistory = ref([
       { name: "暗夜猎手", action: "申请加入战队", time: "2分钟前" },
       { name: "圣光守护者", action: "申请加入战队", time: "5分钟前" },
@@ -11861,8 +11892,180 @@ createApp({
       { name: "烈焰战神", action: "已退出战队", time: "1小时前" },
       { name: "星辰术士", action: "已加入战队", time: "2小时前" }
     ]);
+    const teamLevelHonorThreshold = (level) => {
+      const targetLevel = clamp(Math.floor(Number(level) || 1), 1, 7);
+      if (targetLevel <= 1) return 0;
+      const prev = TEAM_LEVEL_RULES.find((row) => row.level === targetLevel - 1);
+      return Math.max(0, Math.floor(Number(prev && prev.nextHonor) || 0));
+    };
+    const resolveTeamLevelByHonor = (honor) => {
+      const totalHonor = Math.max(0, Math.floor(Number(honor) || 0));
+      let level = 1;
+      TEAM_LEVEL_RULES.forEach((row) => {
+        if (totalHonor >= teamLevelHonorThreshold(row.level)) level = Math.max(level, row.level);
+      });
+      return clamp(level, 1, 7);
+    };
+    const teamMemberLimitByLevel = (level) => {
+      const row = TEAM_LEVEL_RULES.find((item) => item.level === clamp(Math.floor(Number(level) || 1), 1, 7));
+      return row ? row.memberLimit : 20;
+    };
+    const parseTeamMemberCount = (team) => {
+      const raw = normalize(team && team.members);
+      const matched = raw.match(/^(\d+)/);
+      return Math.max(1, Math.floor(Number(team && team.memberCount) || Number(matched && matched[1]) || 1));
+    };
+    const normalizeTeamInfo = (team, fallback = {}) => {
+      const totalHonor = Math.max(0, Math.floor(Number((team && team.honor) ?? (team && team.score) ?? fallback.honor) || 0));
+      const level = resolveTeamLevelByHonor(totalHonor);
+      const memberCount = clamp(parseTeamMemberCount(team || fallback), 1, teamMemberLimitByLevel(level));
+      return {
+        id: normalize(team && team.id) || normalize(fallback.id) || String(Math.floor(1000 + Math.random() * 9000)),
+        name: normalize(team && team.name) || normalize(fallback.name) || "星辰战队",
+        leader: normalize(team && team.leader) || normalize(fallback.leader) || (authUser.value && authUser.value.username) || authUsername.value || "玩家名称",
+        memberCount,
+        members: `${memberCount}/${teamMemberLimitByLevel(level)}`,
+        level,
+        score: totalHonor,
+        rank: Math.max(1, Math.floor(Number((team && team.rank) ?? fallback.rank) || 999)),
+        slogan: normalize(team && team.slogan) || normalize(fallback.slogan) || "欢迎加入我们的战队！",
+        honor: totalHonor,
+        contribution: Math.max(0, Math.floor(Number((team && team.contribution) ?? fallback.contribution) || 0)),
+        funds: Math.max(0, Math.floor(Number((team && team.funds) ?? fallback.funds) || 0)),
+        activity: clamp(Math.floor(Number((team && team.activity) ?? fallback.activity) || 0), 0, 100),
+        viewerRole: normalize(team && team.viewerRole) || normalize(fallback.viewerRole),
+        isMember: Boolean((team && team.isMember) ?? fallback.isMember),
+        isLeader: Boolean((team && team.isLeader) ?? fallback.isLeader),
+        memberRows: Array.isArray(team && team.memberRows) ? team.memberRows : (Array.isArray(fallback.memberRows) ? fallback.memberRows : []),
+        applications: Array.isArray(team && team.applications) ? team.applications : (Array.isArray(fallback.applications) ? fallback.applications : [])
+      };
+    };
+    const ensureTeamDailyTasks = () => {
+      if (!state.value.teamProfile || typeof state.value.teamProfile !== "object" || Array.isArray(state.value.teamProfile)) {
+        state.value.teamProfile = { hasTeam: false, isLeader: false, team: null, tasks: { date: "", rows: {} } };
+      }
+      const today = localDateKey();
+      const tasks = state.value.teamProfile.tasks && typeof state.value.teamProfile.tasks === "object" ? state.value.teamProfile.tasks : { date: "", rows: {} };
+      if (normalize(tasks.date) !== today) {
+        state.value.teamProfile.tasks = { date: today, rows: {} };
+      } else if (!state.value.teamProfile.tasks) {
+        state.value.teamProfile.tasks = tasks;
+      }
+      const rows = state.value.teamProfile.tasks.rows && typeof state.value.teamProfile.tasks.rows === "object" ? state.value.teamProfile.tasks.rows : {};
+      TEAM_TASK_DEFINITIONS.forEach((task) => {
+        const row = rows[task.key] && typeof rows[task.key] === "object" ? rows[task.key] : {};
+        rows[task.key] = {
+          claimed: Boolean(row.claimed),
+          completed: Boolean(row.completed),
+          completedAt: Math.max(0, Math.floor(Number(row.completedAt) || 0))
+        };
+      });
+      state.value.teamProfile.tasks.rows = rows;
+      return rows;
+    };
+    const syncTeamProfileToState = () => {
+      state.value.teamProfile = {
+        hasTeam: Boolean(hasTeam.value),
+        isLeader: Boolean(isTeamLeader.value),
+        role: normalize(myTeamRole.value),
+        team: hasTeam.value ? normalizeTeamInfo(myTeam.value) : null,
+        tasks: state.value.teamProfile && state.value.teamProfile.tasks ? state.value.teamProfile.tasks : { date: "", rows: {} }
+      };
+    };
+    const syncTeamRefsFromState = () => {
+      const profile = state.value.teamProfile && typeof state.value.teamProfile === "object" ? state.value.teamProfile : null;
+      hasTeam.value = Boolean(profile && profile.hasTeam && profile.team);
+      isTeamLeader.value = Boolean(profile && profile.isLeader);
+      myTeamRole.value = normalize(profile && profile.role) || (isTeamLeader.value ? "leader" : "");
+      if (hasTeam.value) {
+        myTeam.value = normalizeTeamInfo(profile.team);
+        currentTeam.value = { ...myTeam.value };
+      } else {
+        myTeam.value = {};
+        currentTeam.value = {};
+      }
+      ensureTeamDailyTasks();
+    };
+    const teamTaskRows = computed(() => {
+      const rows = ensureTeamDailyTasks();
+      return TEAM_TASK_DEFINITIONS.map((task) => ({
+        ...task,
+        claimed: Boolean(rows[task.key] && rows[task.key].claimed),
+        completed: Boolean(rows[task.key] && rows[task.key].completed)
+      }));
+    });
+    const teamNextLevelHonorText = computed(() => {
+      const team = currentTeam.value && currentTeam.value.name ? currentTeam.value : myTeam.value;
+      if (!team || !team.name) return "未加入战队";
+      const level = clamp(Math.floor(Number(team.level) || 1), 1, 7);
+      if (level >= 7) return "已达到最高等级";
+      const need = teamLevelHonorThreshold(level + 1);
+      return `距离Lv.${level + 1}还需${Math.max(0, need - Math.max(0, Math.floor(Number(team.honor) || 0)))}荣誉`;
+    });
+    const claimTeamTask = (taskKey) => {
+      if (!hasTeam.value) return showToast("请先创建或加入战队。");
+      const task = TEAM_TASK_DEFINITIONS.find((row) => row.key === taskKey);
+      if (!task) return;
+      const rows = ensureTeamDailyTasks();
+      if (rows[task.key].completed) return showToast("该战队任务今日已完成。");
+      if (rows[task.key].claimed) return showToast("该战队任务今日已领取。");
+      rows[task.key].claimed = true;
+      syncTeamProfileToState();
+      showToast(`已领取战队任务：${task.name}`);
+    };
+    const completeClaimedTeamTaskByTrigger = (trigger) => {
+      if (!hasTeam.value) return false;
+      const task = TEAM_TASK_DEFINITIONS.find((row) => row.trigger === trigger);
+      if (!task) return false;
+      const rows = ensureTeamDailyTasks();
+      const row = rows[task.key];
+      if (!row || !row.claimed || row.completed) return false;
+      row.completed = true;
+      row.completedAt = Date.now();
+      myTeam.value = normalizeTeamInfo({
+        ...myTeam.value,
+        honor: Math.max(0, Math.floor(Number(myTeam.value.honor) || 0)) + task.honor,
+        contribution: Math.max(0, Math.floor(Number(myTeam.value.contribution) || 0)) + task.contribution
+      });
+      currentTeam.value = { ...myTeam.value };
+      teamHistory.value.unshift({ name: authUser.value && authUser.value.username ? authUser.value.username : "我", action: `完成${task.name}，贡献+${task.contribution}，荣誉+${task.honor}`, time: "刚刚" });
+      syncTeamProfileToState();
+      syncTeamContributionToServer(task.contribution, task.honor);
+      showToast(`战队任务完成：贡献+${task.contribution}，荣誉+${task.honor}`);
+      return true;
+    };
+    const teamIntruderTaskActive = computed(() => {
+      const rows = ensureTeamDailyTasks();
+      const row = rows.team_intruder_win;
+      return Boolean(hasTeam.value && row && row.claimed && !row.completed);
+    });
+    const teamIntruderEntry = computed(() => TEAM_INTRUDER_PREFERRED_NAMES
+      .map((name) => findDexByName(name))
+      .find(Boolean) || dexEntries.find((entry) => Number(entry && entry.dexId) > 0) || null);
+    const teamIntruderImage = computed(() => {
+      const entry = teamIntruderEntry.value;
+      return entry ? petBattleIdleImage(entry.dexId, "target", entry.image || PLACEHOLDER) : PLACEHOLDER;
+    });
+    const startTeamIntruderBattle = () => {
+      if (!teamIntruderTaskActive.value) return showToast("请先领取“击败战队入侵者”任务。");
+      const entry = teamIntruderEntry.value;
+      if (!entry) return showToast("战队入侵者数据缺失。");
+      if (bagPets.value.length === 0) return showToast("背包中没有可出战亚比。");
+      showTeamPanel.value = false;
+      showTeamTask.value = false;
+      showTeamButler.value = false;
+      startBattlePrepare(`正在迎战战队入侵者 ${entry.name}...`, entry, 80, () => setupBattleScene({
+        targetEntry: entry,
+        targetLevel: 80,
+        targetTalentOverride: createUniformTalent30(),
+        targetStudyOverride: createGuardianStudy(),
+        mode: "normal",
+        guardianMeta: { teamIntruder: true }
+      }));
+    };
+    const normalizedTeamRankList = computed(() => teamRankList.value.map((team) => normalizeTeamInfo(team)));
     const joinTeamList = computed(() => {
-      return teamRankList.value.slice(0, 10).map((team, index) => ({
+      return normalizedTeamRankList.value.slice(0, 10).map((team, index) => ({
         ...team,
         rank: index + 1
       }));
@@ -11872,7 +12075,7 @@ createApp({
         showToast("请输入战队序号！");
         return;
       }
-      const team = teamRankList.value.find(t => t.id === searchTeamId.value.trim());
+      const team = normalizedTeamRankList.value.find(t => t.id === searchTeamId.value.trim());
       if (team) {
         viewTeamInfo(team);
         searchTeamId.value = "";
@@ -13791,6 +13994,7 @@ createApp({
       const loadedSave = extractRemoteSaveState(data && data.save);
       if (loadedSave) {
         state.value = sanitizeState(loadedSave);
+        syncTeamRefsFromState();
         lastServerSavedAt.value = data.save.savedAt || "";
         showToast("已读取服务器存档。");
         return true;
@@ -13800,6 +14004,7 @@ createApp({
         return null;
       }
       state.value = createInitialState();
+      syncTeamRefsFromState();
       lastServerSavedAt.value = "";
       showToast("当前用户暂无服务器存档，已初始化新进度。");
       return false;
@@ -13818,6 +14023,7 @@ createApp({
       writeSessionMode("");
       playMode.value = "";
       state.value = createInitialState();
+      syncTeamRefsFromState();
       authReady.value = true;
       refreshSceneBgm();
     };
@@ -13882,6 +14088,7 @@ createApp({
       playMode.value = "guest";
       writeSessionMode("guest");
       state.value = loadLocalState();
+      syncTeamRefsFromState();
       authCaptcha.value = "";
       showToast("已以游客身份进入，进度将保存到本机。");
       refreshSceneBgm();
@@ -13902,6 +14109,7 @@ createApp({
       playMode.value = "guest";
       writeSessionMode("guest");
       state.value = imported;
+      syncTeamRefsFromState();
       saveState(state.value);
       showToast("已导入本地存档并进入游客模式。");
       refreshSceneBgm();
@@ -14041,6 +14249,7 @@ createApp({
       }
       const imported = sanitizeState(parseLocalSaveText(text));
       state.value = imported;
+      syncTeamRefsFromState();
       const saved = await persistUserSave({ silent: true });
       showToast(saved ? "已导入本地存档并绑定到当前用户。" : "已导入本地存档，但服务器保存失败，请稍后手动存档。");
       refreshSceneBgm();
@@ -14143,6 +14352,7 @@ createApp({
       playMode.value = "";
       writeSessionMode("");
       state.value = createInitialState();
+      syncTeamRefsFromState();
       lastServerSavedAt.value = "";
       showToast("已退出登录。");
       refreshSceneBgm();
@@ -14155,6 +14365,7 @@ createApp({
       playMode.value = "";
       writeSessionMode("");
       state.value = createInitialState();
+      syncTeamRefsFromState();
       lastServerSavedAt.value = "";
       showToast("已退出游客登录。");
       refreshSceneBgm();
@@ -19654,7 +19865,9 @@ const applyBossChainFinalBuff = (scene) => {
         reflectEffects.forEach((fx) => {
           const ratio = Math.max(0.01, Number(fx.data && fx.data.ratio) || 1);
           const reflectLabel = normalize(fx.data && fx.data.label) || "伤害反弹";
-          const reflect = Math.max(1, Math.floor(damage * ratio));
+          const maxReflect = Math.max(0, Math.floor(Number(fx.data && fx.data.maxReflect) || 0));
+          const rawReflect = Math.max(1, Math.floor(damage * ratio));
+          const reflect = maxReflect > 0 ? Math.min(rawReflect, maxReflect) : rawReflect;
           const hpKey = actorSide === "attacker" ? "attackerHp" : "targetHp";
           const before = Math.max(0, Number(scene[hpKey]) || 0);
           scene[hpKey] = Math.max(hasLastStandEffect(scene, actorSide) && before > 0 ? 1 : 0, before - reflect);
@@ -19981,6 +20194,7 @@ const applyBossChainFinalBuff = (scene) => {
               pushBattleLog(scene, `第${floor}层阶段奖励已领取过，本次不重复发放。`);
             }
           }
+          completeClaimedTeamTaskByTrigger("timeTunnelWin");
         } else if (scene.mode === "guardian") {
           hCoinGain = isExtraGuardianName(target.name) ? 1000 : 500;
           const advanced = switchGuardianStage(scene);
@@ -20016,6 +20230,7 @@ const applyBossChainFinalBuff = (scene) => {
           } else {
             unlockText = `${target.name} 守护者全阶段挑战成功，亚比蛋已获取过，不重复发放。`;
           }
+          completeClaimedTeamTaskByTrigger("challengeRoadNormalWin");
         } else if (scene.mode === "boss") {
           hCoinGain = 2000;
           markDefeatedDex(target.dexId);
@@ -20041,6 +20256,9 @@ const applyBossChainFinalBuff = (scene) => {
           } else {
             unlockText = `${target.name} BOSS挑战成功，亚比蛋已获取过，不重复发放。`;
           }
+          if (bossDifficultyKey === "hard") completeClaimedTeamTaskByTrigger("challengeRoadHardWin");
+          else if (bossDifficultyKey === "nightmare") completeClaimedTeamTaskByTrigger("challengeRoadNightmareWin");
+          else completeClaimedTeamTaskByTrigger("challengeRoadNormalWin");
         } else if (scene.mode === "weeklyBoss") {
           const difficultyKey = normalize(scene.guardianMeta && scene.guardianMeta.weeklyBossDifficulty) || "normal";
           const difficulty = WEEKLY_BOSS_DIFFICULTY_BY_KEY.get(difficultyKey) || WEEKLY_BOSS_DIFFICULTY_OPTIONS[0];
@@ -20098,6 +20316,8 @@ const applyBossChainFinalBuff = (scene) => {
         } else if (scene.mode === "equipmentDungeon") {
           hCoinGain = 0;
           unlockText = completeEquipmentDungeonBoss(scene);
+          completeClaimedTeamTaskByTrigger("equipmentBossWin");
+          if (/全部通关/.test(unlockText)) completeClaimedTeamTaskByTrigger("equipmentClearWin");
         } else {
           hCoinGain = Math.max(0, Math.floor(Number(scene.targetLevel) || 0) * 2);
           const targetChain = getChainStageInfoByDexId(target.dexId, target.name);
@@ -20126,6 +20346,11 @@ const applyBossChainFinalBuff = (scene) => {
             }
           } else {
             unlockText = `${target.name} 不是最终形态，已激活图鉴但不掉落亚比蛋。`;
+          }
+          if (scene.guardianMeta && scene.guardianMeta.teamIntruder) {
+            completeClaimedTeamTaskByTrigger("teamIntruderWin");
+          } else if (scene.guardianMeta && scene.guardianMeta.dexChallenge) {
+            completeClaimedTeamTaskByTrigger("dexChallengeWin");
           }
         }
         if (hCoinGain > 0) {
@@ -20631,10 +20856,40 @@ const applyBossChainFinalBuff = (scene) => {
       showBag2Panel.value = false;
     };
     const openInfoCardPanel = () => {
+      renameUsernameInput.value = authUser.value ? normalize(authUser.value.username || authUsername.value) : "";
       showInfoCardPanel.value = true;
     };
     const closeInfoCardPanel = () => {
       showInfoCardPanel.value = false;
+    };
+    const submitRenameUsername = async () => {
+      if (!authUser.value || renameUsernameLoading.value) return;
+      const username = normalize(renameUsernameInput.value);
+      if (username.length < 2 || username.length > 32) return showToast("用户名长度需为2-32个字符。");
+      if (normalize(authUser.value.username) === username) return showToast("新用户名与当前用户名相同。");
+      const oldUsername = normalize(authUser.value.username || authUsername.value);
+      renameUsernameLoading.value = true;
+      try {
+        const data = await apiJson("/api/auth/rename", {
+          method: "POST",
+          body: JSON.stringify({ username })
+        });
+        authUser.value = data.user || authUser.value;
+        authUsername.value = authUser.value.username || username;
+        renameUsernameInput.value = authUsername.value;
+        if (hasTeam.value && normalize(myTeam.value && myTeam.value.leader) === oldUsername) {
+          myTeam.value = normalizeTeamInfo({ ...myTeam.value, leader: authUsername.value });
+          currentTeam.value = { ...myTeam.value };
+          syncTeamProfileToState();
+        }
+        if (rememberPassword.value) writeRememberLogin(authUsername.value, authPassword.value);
+        showToast("账号名称已更新。");
+        await persistUserSave({ silent: true, force: true });
+      } catch (err) {
+        showToast(err && err.message ? err.message : "账号名称修改失败。");
+      } finally {
+        renameUsernameLoading.value = false;
+      }
     };
     const showStrongRoadPanel = ref(false);
     const openStrongRoadPanel = () => {
@@ -20960,6 +21215,7 @@ const applyBossChainFinalBuff = (scene) => {
       const gainName = grantItemId === id ? item.name : itemNameById(grantItemId, item.name);
       const gainLabel = id === "double_exp_device" || id === "auto_battle_device" || id === "double_hcoin_device" ? `${gainCount} \u6b21\u6570` : `${gainName}\u00d7${gainCount}`;
       if (normalize(item.grantItemId)) queueRewardFlyToasts([`获得${gainName}×${gainCount}！`]);
+      completeClaimedTeamTaskByTrigger("shopPurchase");
       showToast(totalPrice > 0 ? `\u5df2\u8d2d\u4e70${item.name} x${quantity}\uff0c\u83b7\u5f97${gainLabel}\uff0c\u82b1\u8d39 ${totalPrice} H\u5e01\u3002` : `\u5df2\u8d2d\u4e70${item.name} x${quantity}\u3002`);
     };
     const buyShopItem = (itemId) => buyHcoinShopItem(itemId, shopItems.value);
@@ -21012,6 +21268,7 @@ const applyBossChainFinalBuff = (scene) => {
         hatchAt: Date.now() + HATCH_MS
       });
       markObtainedEggDex(entry.dexId);
+      completeClaimedTeamTaskByTrigger("shopPurchase");
       showToast(`已购买 ${entry.name} 亚比蛋，花费 ${price} H币。`);
     };
     const redeemShopCode = () => {
@@ -21882,14 +22139,147 @@ const applyBossChainFinalBuff = (scene) => {
         syncSelectedSkillName();
       });
     });
+    const teamRoleLabel = (role) => {
+      const map = { leader: "队长", vice: "副队长", elder: "元老", member: "成员" };
+      return map[normalize(role)] || "成员";
+    };
+    const serverTeamToClientTeam = (team) => normalizeTeamInfo({
+      ...(team || {}),
+      leader: normalize(team && (team.leaderName || team.leader)),
+      honor: Math.max(0, Math.floor(Number(team && (team.honor ?? team.score)) || 0)),
+      memberCount: Math.max(0, Math.floor(Number(team && team.memberCount) || 0)),
+      members: `${Math.max(0, Math.floor(Number(team && team.memberCount) || 0))}/${Math.max(1, Math.floor(Number(team && team.memberLimit) || 20))}`,
+      contribution: Math.max(0, Math.floor(Number(team && team.contribution) || 0))
+    });
+    const applyMyServerTeamData = (team) => {
+      if (!team) {
+        hasTeam.value = false;
+        isTeamLeader.value = false;
+        myTeamRole.value = "";
+        myTeam.value = {};
+        teamMembers.value = [];
+        teamApplications.value = [];
+        if (isViewingOwnTeam.value) currentTeam.value = {};
+        syncTeamProfileToState();
+        return;
+      }
+      const normalized = serverTeamToClientTeam(team);
+      hasTeam.value = true;
+      myTeamRole.value = normalize(team.viewerRole) || (team.isLeader ? "leader" : "member");
+      isTeamLeader.value = myTeamRole.value === "leader";
+      myTeam.value = normalized;
+      if (isViewingOwnTeam.value || !currentTeam.value || !currentTeam.value.id || currentTeam.value.id === normalized.id) {
+        currentTeam.value = { ...normalized };
+        isViewingOwnTeam.value = true;
+      }
+      teamMembers.value = Array.isArray(team.memberRows) ? team.memberRows : [];
+      teamApplications.value = Array.isArray(team.applications) ? team.applications : [];
+      syncTeamProfileToState();
+    };
+    const refreshMyTeamFromServer = async (options = {}) => {
+      if (!authUser.value) {
+        applyMyServerTeamData(null);
+        return false;
+      }
+      try {
+        const data = await apiJson("/api/teams/me");
+        applyMyServerTeamData(data.team || null);
+        return true;
+      } catch (err) {
+        if (!(options && options.silent)) showToast(err && err.message ? err.message : "加载我的战队失败。");
+        return false;
+      }
+    };
+    const refreshTeamRankFromServer = async (options = {}) => {
+      try {
+        const data = await apiJson("/api/teams");
+        teamRankList.value = (Array.isArray(data.teams) ? data.teams : []).map(serverTeamToClientTeam);
+        return true;
+      } catch (err) {
+        if (!(options && options.silent)) showToast(err && err.message ? err.message : "加载战队风云榜失败。");
+        return false;
+      }
+    };
+    const refreshTeamDetailFromServer = async (teamId, options = {}) => {
+      const id = normalize(teamId);
+      if (!id) return null;
+      try {
+        const data = await apiJson(`/api/teams/${encodeURIComponent(id)}`);
+        const team = data.team || null;
+        if (!team) return null;
+        const normalized = serverTeamToClientTeam(team);
+        if (team.isMember) applyMyServerTeamData(team);
+        if (team.memberRows) teamMembers.value = team.memberRows;
+        if (team.applications) teamApplications.value = team.applications;
+        return normalized;
+      } catch (err) {
+        if (!(options && options.silent)) showToast(err && err.message ? err.message : "加载战队详情失败。");
+        return null;
+      }
+    };
+    const syncTeamContributionToServer = async (contribution, honor) => {
+      if (!authUser.value || !hasTeam.value) return false;
+      try {
+        const data = await apiJson("/api/teams/contribution", {
+          method: "POST",
+          body: JSON.stringify({ contribution, honor })
+        });
+        if (data.team) applyMyServerTeamData(data.team);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    };
+    const teamViceCaptainCount = computed(() => teamMembers.value.filter((member) => normalize(member.role) === "vice").length);
+    const teamElderCount = computed(() => teamMembers.value.filter((member) => normalize(member.role) === "elder").length);
+    const isTeamViceCaptain = computed(() => normalize(myTeamRole.value) === "vice");
+    const canManageTeamApplications = computed(() => isTeamLeader.value || isTeamViceCaptain.value);
+    const canSetTeamViceCaptain = (member) => {
+      if (!isTeamLeader.value || !member) return false;
+      const role = normalize(member.role);
+      if (role === "leader" || role === "vice") return false;
+      return teamViceCaptainCount.value < 2;
+    };
+    const canSetTeamElder = (member) => {
+      if ((!isTeamLeader.value && !isTeamViceCaptain.value) || !member) return false;
+      const role = normalize(member.role);
+      if (role === "leader" || role === "vice" || role === "elder") return false;
+      return teamElderCount.value < 5;
+    };
+    const viewTeamMemberInfo = (member) => {
+      if (!member) return;
+      selectedTeamMemberInfo.value = {
+        ...member,
+        roleLabel: member.roleLabel || teamRoleLabel(member.role),
+        teamName: currentTeam.value && currentTeam.value.name ? currentTeam.value.name : (myTeam.value && myTeam.value.name) || ""
+      };
+      showTeamMemberInfo.value = true;
+    };
+    const setTeamMemberRole = async (member, role) => {
+      if (!member || !myTeam.value || !myTeam.value.id) return;
+      try {
+        const data = await apiJson("/api/teams/member-role", {
+          method: "POST",
+          body: JSON.stringify({ teamId: myTeam.value.id, userId: member.userId, role })
+        });
+        if (data.team) applyMyServerTeamData(data.team);
+        showToast(role === "vice" ? "已设置副队长。" : "已设置元老。");
+      } catch (err) {
+        showToast(err && err.message ? err.message : "职位设置失败。");
+      }
+    };
     const openElementPanel = () => { showElementPanel.value = true; };
     const closeElementPanel = () => { showElementPanel.value = false; };
-    const openTeamPanel = () => {
+    const openTeamPanel = async () => {
       showTeamPanel.value = true;
       teamLoading.value = true;
+      await Promise.all([
+        refreshMyTeamFromServer({ silent: true }),
+        refreshTeamRankFromServer({ silent: true })
+      ]);
       setTimeout(() => {
         teamLoading.value = false;
-      }, 1500);
+      }, 300);
     };
     const closeTeamPanel = () => {
       showTeamPanel.value = false;
@@ -21902,6 +22292,9 @@ const applyBossChainFinalBuff = (scene) => {
       showTeamButler.value = false;
       showTeamTask.value = false;
       showTeamShop.value = false;
+      showTeamRecord.value = false;
+      showJoinTeamList.value = false;
+      showTeamMemberInfo.value = false;
     };
     const closeTeamModals = () => {
       showTeamModal.value = false;
@@ -21912,6 +22305,9 @@ const applyBossChainFinalBuff = (scene) => {
       showTeamButler.value = false;
       showTeamTask.value = false;
       showTeamShop.value = false;
+      showTeamRecord.value = false;
+      showJoinTeamList.value = false;
+      showTeamMemberInfo.value = false;
     };
     const openTeamButler = () => {
       showTeamButler.value = true;
@@ -21939,24 +22335,47 @@ const applyBossChainFinalBuff = (scene) => {
       newTeamSlogan.value = "";
       currentTeam.value = {};
       myTeam.value = {};
+      syncTeamProfileToState();
       showToast("已退出战队！");
     };
-    const openTeamRecord = () => {
+    const openTeamRecord = async () => {
+      if (!hasTeam.value) return showToast("请先创建或加入战队。");
+      await refreshMyTeamFromServer({ silent: true });
+      teamRecordTab.value = "members";
       showTeamRecord.value = true;
     };
-    const approveApplication = (index) => {
-      const app = teamApplications.value[index];
-      teamApplications.value.splice(index, 1);
-      teamHistory.value.unshift({ name: app.name, action: "已批准加入", time: "刚刚" });
-      showToast(`已批准 ${app.name} 加入战队！`);
+    const approveApplication = async (indexOrApp) => {
+      const app = typeof indexOrApp === "number" ? teamApplications.value[indexOrApp] : indexOrApp;
+      if (!app || !myTeam.value || !myTeam.value.id) return;
+      try {
+        const data = await apiJson("/api/teams/applications/approve", {
+          method: "POST",
+          body: JSON.stringify({ teamId: myTeam.value.id, userId: app.userId })
+        });
+        if (data.team) applyMyServerTeamData(data.team);
+        teamHistory.value.unshift({ name: app.name, action: "已批准加入", time: "刚刚" });
+        showToast(`已批准 ${app.name} 加入战队！`);
+      } catch (err) {
+        showToast(err && err.message ? err.message : "审批申请失败。");
+      }
     };
-    const rejectApplication = (index) => {
-      const app = teamApplications.value[index];
-      teamApplications.value.splice(index, 1);
-      teamHistory.value.unshift({ name: app.name, action: "已拒绝加入", time: "刚刚" });
-      showToast(`已拒绝 ${app.name} 的申请！`);
+    const rejectApplication = async (indexOrApp) => {
+      const app = typeof indexOrApp === "number" ? teamApplications.value[indexOrApp] : indexOrApp;
+      if (!app || !myTeam.value || !myTeam.value.id) return;
+      try {
+        const data = await apiJson("/api/teams/applications/reject", {
+          method: "POST",
+          body: JSON.stringify({ teamId: myTeam.value.id, userId: app.userId })
+        });
+        if (data.team) applyMyServerTeamData(data.team);
+        teamHistory.value.unshift({ name: app.name, action: "已拒绝加入", time: "刚刚" });
+        showToast(`已拒绝 ${app.name} 的申请！`);
+      } catch (err) {
+        showToast(err && err.message ? err.message : "拒绝申请失败。");
+      }
     };
-    const onCommanderClick = () => {
+    const onCommanderClick = async () => {
+      await refreshMyTeamFromServer({ silent: true });
       if (hasTeam.value) {
         isViewingOwnTeam.value = true;
         currentTeam.value = { ...myTeam.value };
@@ -21974,90 +22393,50 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const handleCreateTeam = () => {
       showTeamModal.value = false;
-      showToast("战队创建成功！");
-      hasTeam.value = true;
-      isViewingOwnTeam.value = true;
-      myTeam.value = {
-        name: "星辰战队",
-        leader: "玩家名称",
-        members: "1/10",
-        level: 1,
-        score: 0,
-        rank: 999,
-        slogan: "欢迎加入我们的战队！",
-        honor: 0,
-        funds: 0,
-        activity: 0
-      };
-      currentTeam.value = { ...myTeam.value };
-      showTeamInfo.value = true;
+      showCreateTeamModal.value = true;
     };
-    const submitCreateTeam = () => {
+    const submitCreateTeam = async () => {
       if (!newTeamName.value.trim()) {
         showToast("请输入战队名称！");
         return;
       }
-      showCreateTeamModal.value = false;
-      showToast("战队创建成功！");
-      hasTeam.value = true;
-      isViewingOwnTeam.value = true;
-      myTeam.value = {
-        name: newTeamName.value.trim(),
-        leader: "玩家名称",
-        members: "1/10",
-        level: 1,
-        score: 0,
-        rank: 999,
-        slogan: newTeamSlogan.value.trim() || "欢迎加入我们的战队！",
-        honor: 0,
-        funds: 0,
-        activity: 0
-      };
-      currentTeam.value = { ...myTeam.value };
-      newTeamName.value = "";
-      newTeamSlogan.value = "";
-      showTeamInfo.value = true;
+      if (!authUser.value) return showToast("请先登录账号后再创建战队。");
+      try {
+        const data = await apiJson("/api/teams/create", {
+          method: "POST",
+          body: JSON.stringify({
+            name: newTeamName.value.trim(),
+            slogan: newTeamSlogan.value.trim()
+          })
+        });
+        applyMyServerTeamData(data.team || null);
+        await refreshTeamRankFromServer({ silent: true });
+        showCreateTeamModal.value = false;
+        newTeamName.value = "";
+        newTeamSlogan.value = "";
+        showTeamInfo.value = true;
+        showToast("战队创建成功！");
+      } catch (err) {
+        showToast(err && err.message ? err.message : "战队创建失败。");
+      }
     };
     const joinTeam = () => {
       showTeamModal.value = false;
-      showToast("加入战队成功！");
-      hasTeam.value = true;
-      isViewingOwnTeam.value = true;
-      myTeam.value = {
-        name: "星辰战队",
-        leader: "队长名称",
-        members: "8/10",
-        level: 10,
-        score: 15000,
-        rank: 5,
-        slogan: "团结一心，共创辉煌！",
-        honor: 3200,
-        funds: 8500,
-        activity: 88
-      };
-      currentTeam.value = { ...myTeam.value };
-      showTeamInfo.value = true;
+      showJoinTeamList.value = true;
     };
-    const viewTeamInfo = (team) => {
+    const viewTeamInfo = async (team) => {
+      const detailed = await refreshTeamDetailFromServer(team && team.id, { silent: true });
+      const source = detailed || serverTeamToClientTeam(team);
       isViewingOwnTeam.value = false;
       currentTeam.value = {
-        name: team.name,
-        leader: team.leader,
-        members: team.members,
-        level: team.level,
-        score: team.honor,
-        rank: teamRankList.value.findIndex(t => t.name === team.name) + 1,
-        slogan: team.slogan || "暂无战队口号",
-        honor: team.honor,
-        funds: team.funds || 0,
-        activity: team.activity,
-        id: team.id || ""
+        ...source,
+        rank: source.rank || normalizedTeamRankList.value.findIndex(t => t.id === source.id) + 1
       };
       showTeamInfo.value = true;
     };
-    const applyJoinTeam = () => {
-      showToast("申请已发送！等待队长审核。");
-      showTeamInfo.value = false;
+    const applyJoinTeam = async () => {
+      if (!currentTeam.value || !currentTeam.value.id) return;
+      await applyToTeam(currentTeam.value);
     };
     const startEditSlogan = () => {
       editingSlogan.value = true;
@@ -22065,6 +22444,11 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const saveSlogan = () => {
       currentTeam.value.slogan = editingSloganText.value.trim();
+      if (hasTeam.value && isViewingOwnTeam.value) {
+        myTeam.value = normalizeTeamInfo({ ...myTeam.value, slogan: currentTeam.value.slogan });
+        currentTeam.value = { ...myTeam.value };
+        syncTeamProfileToState();
+      }
       editingSlogan.value = false;
       showToast("战队口号已更新！");
     };
@@ -22072,11 +22456,23 @@ const applyBossChainFinalBuff = (scene) => {
       editingSlogan.value = false;
       editingSloganText.value = "";
     };
-    const openTeamRank = () => {
+    const openTeamRank = async () => {
+      await refreshTeamRankFromServer({ silent: true });
       showTeamRank.value = true;
     };
-    const applyToTeam = (team) => {
-      showToast(`已向「${team.name}」发送加入申请！等待队长审核。`);
+    const applyToTeam = async (team) => {
+      if (!authUser.value) return showToast("请先登录账号后再申请加入战队。");
+      if (!team || !team.id) return;
+      try {
+        await apiJson("/api/teams/apply", {
+          method: "POST",
+          body: JSON.stringify({ teamId: team.id })
+        });
+        showToast(`已向「${team.name}」发送加入申请！等待队长审核。`);
+        showTeamInfo.value = false;
+      } catch (err) {
+        showToast(err && err.message ? err.message : "提交加入申请失败。");
+      }
     };
 
     const startChallenge = () => {
@@ -22948,6 +23344,8 @@ const applyBossChainFinalBuff = (scene) => {
       authUsername,
       authPassword,
       authCaptcha,
+      renameUsernameInput,
+      renameUsernameLoading,
       loginCaptchaVerified,
       loginCaptchaNotice: LOGIN_CAPTCHA_NOTICE,
       loginLoadingActive,
@@ -23023,8 +23421,16 @@ const applyBossChainFinalBuff = (scene) => {
       showJoinTeamList,
       teamRecordTab,
       isTeamLeader,
+      myTeamRole,
+      isTeamViceCaptain,
+      canManageTeamApplications,
+      teamMembers,
       teamApplications,
       teamHistory,
+      teamTaskRows,
+      teamNextLevelHonorText,
+      teamIntruderTaskActive,
+      teamIntruderImage,
       newTeamName,
       newTeamSlogan,
       hasTeam,
@@ -23034,6 +23440,7 @@ const applyBossChainFinalBuff = (scene) => {
       currentTeam,
       myTeam,
       teamRankList,
+      normalizedTeamRankList,
       recruitPlayerList,
       recruitPlayer,
       openTeamPanel,
@@ -23056,14 +23463,24 @@ const applyBossChainFinalBuff = (scene) => {
       openTeamButler,
       confirmExitTeam,
       openTeamRecord,
+      claimTeamTask,
+      startTeamIntruderBattle,
       approveApplication,
       rejectApplication,
+      canSetTeamViceCaptain,
+      canSetTeamElder,
+      setTeamMemberRole,
+      showTeamMemberInfo,
+      selectedTeamMemberInfo,
+      viewTeamMemberInfo,
+      teamRoleLabel,
       showBagPanel,
       showBag2Panel,
       bag2Loading,
       showInfoCardPanel,
       openInfoCardPanel,
       closeInfoCardPanel,
+      submitRenameUsername,
       showAbilityBreakthroughPanel,
       abilityBreakthroughRows,
       abilityBreakthroughEntryRows,

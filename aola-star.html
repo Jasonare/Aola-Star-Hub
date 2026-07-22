@@ -1516,6 +1516,39 @@
       width: 24px;
       height: 24px;
     }
+    .team-intruder {
+      position: absolute;
+      left: 67%;
+      top: 47%;
+      width: 15%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      z-index: 8;
+      filter: drop-shadow(0 10px 18px rgba(239,68,68,0.55));
+      animation: team-intruder-pulse 1.4s ease-in-out infinite;
+    }
+    .team-intruder img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    .team-intruder-label {
+      position: absolute;
+      left: 50%;
+      bottom: -16px;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      border-radius: 999px;
+      background: rgba(127,29,29,0.88);
+      padding: 2px 8px;
+      color: #fee2e2;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    @keyframes team-intruder-pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.06); }
+    }
     .team-task-panel {
       position: absolute;
       left: 50%;
@@ -1541,6 +1574,65 @@
     .team-task-close-btn img {
       width: 100%;
       height: auto;
+    }
+    .team-task-content {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 16%;
+      bottom: 10%;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+      z-index: 3;
+    }
+    .team-task-summary {
+      border-radius: 10px;
+      background: rgba(15,23,42,0.72);
+      padding: 8px 10px;
+      color: #fef3c7;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .team-task-row {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) auto;
+      gap: 8px;
+      align-items: center;
+      border-radius: 10px;
+      background: rgba(15,23,42,0.72);
+      padding: 8px 10px;
+      color: white;
+    }
+    .team-task-name {
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .team-task-reward {
+      margin-top: 2px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #fde68a;
+    }
+    .team-task-action {
+      min-width: 64px;
+      height: 30px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .team-task-action.done {
+      background: rgba(34,197,94,0.86);
+    }
+    .team-task-action.waiting {
+      background: rgba(100,116,139,0.86);
+      cursor: default;
     }
     .team-shop-panel {
       position: absolute;
@@ -2025,6 +2117,134 @@
       color: #64748b;
       font-size: 14px;
     }
+    .team-record-members,
+    .team-record-applications {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .team-record-table {
+      display: grid;
+      gap: 8px;
+      min-width: 640px;
+    }
+    .team-record-table-head,
+    .team-record-table-row {
+      display: grid;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 10px;
+      border-radius: 8px;
+    }
+    .team-record-member-table .team-record-table-head,
+    .team-record-member-table .team-record-table-row {
+      grid-template-columns: 1.1fr .75fr .85fr .85fr .85fr 1.45fr;
+    }
+    .team-record-application-table {
+      min-width: 420px;
+    }
+    .team-record-application-table .team-record-table-head,
+    .team-record-application-table .team-record-table-row {
+      grid-template-columns: 1.25fr .9fr 1.1fr;
+    }
+    .team-record-table-head {
+      background: rgba(56, 189, 248, .18);
+      color: #bae6fd;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .team-record-table-row {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(56, 189, 248, .2);
+      color: #e2e8f0;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .team-record-name-btn {
+      border: none;
+      background: transparent;
+      color: #facc15;
+      font-size: 12px;
+      font-weight: 950;
+      cursor: pointer;
+      text-align: left;
+      padding: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .team-record-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .team-record-mini-btn {
+      border: none;
+      border-radius: 6px;
+      min-height: 26px;
+      padding: 4px 8px;
+      background: linear-gradient(180deg, #38bdf8, #0284c7);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .team-record-mini-btn.approve {
+      background: linear-gradient(180deg, #22c55e, #16a34a);
+    }
+    .team-record-mini-btn.reject {
+      background: linear-gradient(180deg, #ef4444, #dc2626);
+    }
+    .team-record-mini-btn:disabled {
+      cursor: not-allowed;
+      opacity: .45;
+      filter: grayscale(.45);
+    }
+    .team-member-card {
+      width: min(90vw, 360px);
+      background: linear-gradient(180deg, #f8fafc, #e0f2fe);
+      border: 2px solid #38bdf8;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 12px 34px rgba(0,0,0,.35);
+      color: #0f172a;
+    }
+    .team-member-card-title {
+      margin-bottom: 14px;
+      color: #0c4a6e;
+      font-size: 18px;
+      font-weight: 950;
+      text-align: center;
+    }
+    .team-member-card-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(14, 165, 233, .22);
+      font-size: 13px;
+    }
+    .team-member-card-row span {
+      color: #475569;
+      font-weight: 800;
+    }
+    .team-member-card-row b {
+      color: #0f172a;
+      font-weight: 950;
+      text-align: right;
+    }
+    .team-member-card-close {
+      width: 100%;
+      height: 36px;
+      margin-top: 16px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #38bdf8, #0284c7);
+      color: white;
+      font-weight: 950;
+      cursor: pointer;
+    }
     .team-join-list-modal {
       position: relative;
       width: min(90%, 700px);
@@ -2334,6 +2554,42 @@
       font-size: 16px;
       font-weight: black;
       color: white;
+    }
+    .info-card-rename-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .info-card-rename-input {
+      flex: 1;
+      min-width: 0;
+      height: 30px;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 8px;
+      background: rgba(15,23,42,0.28);
+      padding: 0 8px;
+      color: white;
+      font-size: 12px;
+      font-weight: 800;
+      outline: none;
+    }
+    .info-card-rename-input::placeholder {
+      color: rgba(255,255,255,0.55);
+    }
+    .info-card-rename-btn {
+      width: 58px;
+      height: 30px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .info-card-rename-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
     .info-card-stats {
       display: flex;
@@ -10736,7 +10992,11 @@
         <div class="info-card-title">信息卡</div>
         <div class="info-card-account">
           <div class="info-card-account-label">当前用户</div>
-          <div class="info-card-account-value">{{ authUsername || '游客' }}</div>
+          <div class="info-card-account-value">{{ authUser && authUser.username ? authUser.username : (authUsername || '游客') }}</div>
+          <div v-if="authUser" class="info-card-rename-row">
+            <input v-model="renameUsernameInput" class="info-card-rename-input" maxlength="32" placeholder="输入新账号名称" @keyup.enter="submitRenameUsername">
+            <button @click="submitRenameUsername" :disabled="renameUsernameLoading" class="info-card-rename-btn">{{ renameUsernameLoading ? '保存中' : '改名' }}</button>
+          </div>
         </div>
         <div class="info-card-stats">
           <div class="info-card-stat">
@@ -12041,6 +12301,10 @@
       <div class="team-butler-btn" @click="openTeamButler">
         <img src="./resource-v8/战队管家.png" alt="战队管家">
       </div>
+      <div v-if="teamIntruderTaskActive" class="team-intruder" @click="startTeamIntruderBattle" title="战队入侵者">
+        <img :src="teamIntruderImage" alt="战队入侵者" @error="withFallback">
+        <div class="team-intruder-label">战队入侵者</div>
+      </div>
     </div>
 
     <div v-show="showJoinTeamList" class="team-modal-overlay">
@@ -12098,11 +12362,15 @@
         </div>
         <div class="team-info-row">
           <span>成员: {{ currentTeam.members }}</span>
-          <span>资金: {{ currentTeam.funds }}</span>
+          <span>贡献: {{ currentTeam.contribution || 0 }}</span>
         </div>
         <div class="team-info-row">
           <span>队长: {{ currentTeam.leader }}</span>
           <span>活跃: {{ currentTeam.activity }}%</span>
+        </div>
+        <div class="team-info-row">
+          <span>{{ teamNextLevelHonorText }}</span>
+          <span>上限: {{ currentTeam.members }}</span>
         </div>
       </div>
       <div class="team-info-buttons">
@@ -12112,7 +12380,7 @@
         <div class="team-info-close-btn" @click="showTeamInfo = false">
           <img src="./resource-v8/关闭.png" alt="关闭">
         </div>
-        <div v-if="hasTeam && isViewingOwnTeam && isTeamLeader" class="team-info-record-btn" @click="openTeamRecord">
+        <div v-if="hasTeam && isViewingOwnTeam" class="team-info-record-btn" @click="openTeamRecord">
           <img src="./resource-v8/战队记录.png" alt="战队记录">
         </div>
       </div>
@@ -12140,6 +12408,23 @@
       <div class="team-task-close-btn" @click="showTeamTask = false">
         <img src="./resource-v8/荣誉榜关闭按钮.png" alt="关闭">
       </div>
+      <div class="team-task-content">
+        <div class="team-task-summary">每日任务需先领取，完成后发放战队贡献和战队荣誉。</div>
+        <div v-for="task in teamTaskRows" :key="'team_task_'+task.key" class="team-task-row">
+          <div>
+            <div class="team-task-name">{{ task.name }}</div>
+            <div class="team-task-reward">贡献 +{{ task.contribution }} ｜ 荣誉 +{{ task.honor }}</div>
+          </div>
+          <button
+            v-if="!task.completed"
+            class="team-task-action"
+            :class="{ waiting: task.claimed }"
+            :disabled="task.claimed"
+            @click="claimTeamTask(task.key)"
+          >{{ task.claimed ? '进行中' : '领取' }}</button>
+          <button v-else class="team-task-action done" disabled>完成</button>
+        </div>
+      </div>
     </div>
 
     <div v-show="showTeamShop" class="team-shop-panel">
@@ -12152,31 +12437,78 @@
     <div v-show="showTeamRecord" class="team-record-panel">
       <div class="team-record-header">
         <div class="team-record-tabs">
-          <button class="team-record-tab" :class="{ active: teamRecordTab === 'applications' }" @click="teamRecordTab = 'applications'">申请列表</button>
-          <button class="team-record-tab" :class="{ active: teamRecordTab === 'history' }" @click="teamRecordTab = 'history'">成员动态</button>
+          <button class="team-record-tab" :class="{ active: teamRecordTab === 'members' }" @click="teamRecordTab = 'members'">成员列表</button>
+          <button class="team-record-tab" :class="{ active: teamRecordTab === 'applications' }" @click="teamRecordTab = 'applications'">申请记录</button>
         </div>
         <div class="team-record-close-btn" @click="showTeamRecord = false">
           <img src="./resource-v8/荣誉榜关闭按钮.png" alt="关闭">
         </div>
       </div>
       <div class="team-record-content">
+        <div v-if="teamRecordTab === 'members'" class="team-record-members">
+          <div v-if="teamMembers.length === 0" class="team-record-empty">暂无成员</div>
+          <div v-else class="team-record-table team-record-member-table">
+            <div class="team-record-table-head">
+              <span>成员名称</span>
+              <span>职位</span>
+              <span>最大战力</span>
+              <span>累计贡献</span>
+              <span>累计荣誉</span>
+              <span>职位操作</span>
+            </div>
+            <div v-for="member in teamMembers" :key="member.userId" class="team-record-table-row">
+              <button class="team-record-name-btn" @click="viewTeamMemberInfo(member)">{{ member.name }}</button>
+              <span>{{ member.roleLabel || teamRoleLabel(member.role) }}</span>
+              <span>{{ member.maxBattlePower || 0 }}</span>
+              <span>{{ member.contribution || 0 }}</span>
+              <span>{{ member.honor || 0 }}</span>
+              <span class="team-record-actions">
+                <button
+                  v-if="isTeamLeader"
+                  class="team-record-mini-btn"
+                  :disabled="!canSetTeamViceCaptain(member)"
+                  @click="setTeamMemberRole(member, 'vice')"
+                >设为副队长</button>
+                <button
+                  v-if="isTeamLeader || isTeamViceCaptain"
+                  class="team-record-mini-btn"
+                  :disabled="!canSetTeamElder(member)"
+                  @click="setTeamMemberRole(member, 'elder')"
+                >设为元老</button>
+              </span>
+            </div>
+          </div>
+        </div>
         <div v-if="teamRecordTab === 'applications'" class="team-record-applications">
           <div v-if="teamApplications.length === 0" class="team-record-empty">暂无申请</div>
-          <div v-for="(app, index) in teamApplications" :key="index" class="team-record-application-item">
-            <span class="team-record-app-name">{{ app.name }}</span>
-            <span class="team-record-app-level">Lv.{{ app.level }}</span>
-            <button class="team-record-app-approve" @click="approveApplication(index)">批准</button>
-            <button class="team-record-app-reject" @click="rejectApplication(index)">拒绝</button>
+          <div v-else class="team-record-table team-record-application-table">
+            <div class="team-record-table-head">
+              <span>申请成员</span>
+              <span>最大战力</span>
+              <span>操作</span>
+            </div>
+            <div v-for="app in teamApplications" :key="app.userId" class="team-record-table-row">
+              <button class="team-record-name-btn" @click="viewTeamMemberInfo(app)">{{ app.name }}</button>
+              <span>{{ app.maxBattlePower || 0 }}</span>
+              <span class="team-record-actions">
+                <button v-if="canManageTeamApplications" class="team-record-mini-btn approve" @click="approveApplication(app)">批准</button>
+                <button v-if="canManageTeamApplications" class="team-record-mini-btn reject" @click="rejectApplication(app)">拒绝</button>
+              </span>
+            </div>
           </div>
         </div>
-        <div v-if="teamRecordTab === 'history'" class="team-record-history">
-          <div v-if="teamHistory.length === 0" class="team-record-empty">暂无记录</div>
-          <div v-for="(record, index) in teamHistory" :key="index" class="team-record-history-item">
-            <span class="team-record-history-name">{{ record.name }}</span>
-            <span class="team-record-history-action">{{ record.action }}</span>
-            <span class="team-record-history-time">{{ record.time }}</span>
-          </div>
-        </div>
+      </div>
+    </div>
+
+    <div v-show="showTeamMemberInfo" class="team-modal-overlay">
+      <div class="team-member-card">
+        <div class="team-member-card-title">{{ selectedTeamMemberInfo && selectedTeamMemberInfo.name }}</div>
+        <div class="team-member-card-row"><span>所属战队</span><b>{{ selectedTeamMemberInfo && selectedTeamMemberInfo.teamName }}</b></div>
+        <div class="team-member-card-row"><span>成员职位</span><b>{{ selectedTeamMemberInfo && selectedTeamMemberInfo.roleLabel }}</b></div>
+        <div class="team-member-card-row"><span>最大战斗力</span><b>{{ selectedTeamMemberInfo && (selectedTeamMemberInfo.maxBattlePower || 0) }}</b></div>
+        <div class="team-member-card-row"><span>累计贡献值</span><b>{{ selectedTeamMemberInfo && (selectedTeamMemberInfo.contribution || 0) }}</b></div>
+        <div class="team-member-card-row"><span>累计荣誉值</span><b>{{ selectedTeamMemberInfo && (selectedTeamMemberInfo.honor || 0) }}</b></div>
+        <button class="team-member-card-close" @click="showTeamMemberInfo = false">关闭</button>
       </div>
     </div>
 
@@ -12186,7 +12518,7 @@
         <img src="./resource-v8/荣誉榜关闭按钮.png" alt="关闭">
       </div>
       <div class="team-rank-list">
-        <div v-for="(item, index) in teamRankList" :key="index" class="team-rank-item">
+        <div v-for="(item, index) in normalizedTeamRankList" :key="index" class="team-rank-item">
           <span class="team-rank-num">{{ index + 1 }}</span>
           <span class="team-rank-name">{{ item.name }}</span>
           <span class="team-rank-leader">{{ item.leader }}</span>
@@ -12727,6 +13059,6 @@
 </div>
 
 <script src="./aola-dex-1-100.js?v=20260617_fix_weekly_and_action_fx"></script>
-<script src="./aola-star-app.js?v=20260625_leaderboard_split_rank_api"></script>
+<script src="./aola-star-app.js?v=20260722_team_server_records"></script>
 </body>
 </html>
