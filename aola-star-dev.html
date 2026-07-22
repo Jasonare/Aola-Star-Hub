@@ -1645,6 +1645,7 @@
       transform: translate(-50%, -50%) scale(1.5);
       z-index: 25;
       width: min(95%, 95vmin);
+      max-width: 760px;
       text-align: center;
     }
     .team-shop-bg {
@@ -1663,6 +1664,149 @@
     .team-shop-close-btn img {
       width: 100%;
       height: auto;
+    }
+    .team-shop-content {
+      position: absolute;
+      left: 9%;
+      right: 9%;
+      top: 12%;
+      bottom: 10%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      color: #082f49;
+      text-align: left;
+    }
+    .team-shop-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(14,165,233,0.28);
+      background: rgba(240,249,255,0.9);
+      padding: 10px 12px;
+      box-shadow: inset 0 0 18px rgba(56,189,248,0.12);
+    }
+    .team-shop-title {
+      font-size: 18px;
+      font-weight: 950;
+      color: #075985;
+    }
+    .team-shop-subtitle {
+      margin-top: 2px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #0369a1;
+    }
+    .team-shop-wallet {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+      font-size: 12px;
+      font-weight: 950;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+    .team-shop-list {
+      min-height: 0;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      padding-right: 4px;
+    }
+    .team-shop-card {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      border-radius: 12px;
+      border: 1px solid rgba(14,165,233,0.24);
+      background: linear-gradient(135deg, rgba(240,249,255,0.95), rgba(224,242,254,0.88));
+      padding: 8px;
+      box-shadow: 0 8px 18px rgba(2,132,199,0.12);
+    }
+    .team-shop-card.locked {
+      filter: grayscale(0.8);
+      opacity: 0.68;
+    }
+    .team-shop-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      border: 1px solid rgba(14,165,233,0.22);
+      background: rgba(255,255,255,0.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-size: 14px;
+      font-weight: 950;
+      color: #0369a1;
+    }
+    .team-shop-card-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .team-shop-card-main {
+      min-width: 0;
+    }
+    .team-shop-card-name {
+      font-size: 12px;
+      font-weight: 950;
+      color: #082f49;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .team-shop-card-meta {
+      margin-top: 3px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      font-size: 9px;
+      font-weight: 850;
+      color: #0369a1;
+    }
+    .team-shop-card-reward {
+      margin-top: 4px;
+      font-size: 10px;
+      font-weight: 900;
+      color: #0f766e;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .team-shop-card-action {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .team-shop-card-cost {
+      font-size: 11px;
+      font-weight: 950;
+      color: #b45309;
+      white-space: nowrap;
+    }
+    .team-shop-card-action button {
+      min-width: 52px;
+      height: 28px;
+      border: none;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #fbbf24, #f97316);
+      color: #111827;
+      font-size: 11px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+    .team-shop-card-action button:disabled {
+      background: rgba(148,163,184,0.65);
+      color: rgba(15,23,42,0.62);
+      cursor: default;
     }
     .team-create-form {
       margin: 16px 0;
@@ -2142,7 +2286,7 @@
     }
     .team-record-member-table .team-record-table-head,
     .team-record-member-table .team-record-table-row {
-      grid-template-columns: 1.1fr .75fr .85fr .85fr .85fr 1.45fr;
+      grid-template-columns: 1.05fr .65fr .75fr .75fr .75fr .75fr 1.35fr;
     }
     .team-record-application-table {
       min-width: 420px;
@@ -9820,7 +9964,7 @@
       <button @click="openQixingGachaPanel" class="home-action-btn home-action-gacha" title="启星转盘" aria-label="启星转盘"><img src="./resource/ui/背景/转盘.png" alt=""></button>
       <button @click="openChallengeRecordPanel" class="home-action-btn home-action-record" title="挑战录像" aria-label="挑战录像"><img src="./resource/界面ui/录像.png" alt=""></button>
       <button @click="openElementPanel" class="home-action-btn home-action-element" title="属性克制" aria-label="属性克制"><img src="./resource/界面ui/属性.png" alt=""></button>
-      <button @click="openTeamPanel" class="home-action-btn home-action-team" title="战队" aria-label="战队"><img src="./resource-v8/创建战队.png" alt=""></button>
+      <button @click="openTeamPanel" class="home-action-btn home-action-team" title="战队" aria-label="战队"><img src="./resource/创建战队.png" alt=""></button>
       <button
         @click="showGlobalSettingsPanel = true"
         class="home-settings-btn"
@@ -12273,37 +12417,37 @@
     </div>
   </div>
 
-  <div v-show="showTeamPanel" class="fixed inset-0 z-[95] bg-black flex items-center justify-center">
+  <div v-if="showTeamPanel" class="fixed inset-0 z-[95] bg-black flex items-center justify-center">
     <div v-if="teamLoading" class="team-loading-mask">
       <div class="bag2-spinner"></div>
       <div class="bag2-loading-text">加载中...</div>
     </div>
     <div v-else class="team-panel" @click.stop>
       <div class="team-bg">
-        <img src="./resource-v8/战队底图.png" alt="战队背景" class="team-bg-img">
+        <img src="./resource/战队底图.png" alt="战队背景" class="team-bg-img">
       </div>
       <button @click="closeTeamModals" class="team-close-btn" title="关闭弹窗">
         <svg viewBox="0 0 24 24" class="w-6 h-6 fill-none stroke-white stroke-width-2"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
 
       <div class="team-commander" @click="onCommanderClick">
-        <img src="./resource-v8/指挥官_.png" alt="指挥官">
+        <img src="./resource/指挥官_.png" alt="指挥官">
       </div>
 
       <div class="team-recruit-btn" @click="onRecruitClick">
-        <img src="./resource-v8/战队招募.png" alt="战队招募">
+        <img src="./resource/战队招募.png" alt="战队招募">
       </div>
 
       <div class="team-leave-btn" @click="closeTeamPanel">
-        <img src="./resource-v8/离开要塞.png" alt="离开要塞">
+        <img src="./resource/离开要塞.png" alt="离开要塞">
       </div>
 
       <div class="team-rank-btn" @click="openTeamRank">
-        <img src="./resource-v8/风云榜_.png" alt="风云榜">
+        <img src="./resource/风云榜_.png" alt="风云榜">
       </div>
 
       <div class="team-butler-btn" @click="openTeamButler">
-        <img src="./resource-v8/战队管家.png" alt="战队管家">
+        <img src="./resource/战队管家.png" alt="战队管家">
       </div>
       <div v-if="teamIntruderTaskActive" class="team-intruder" @click="startTeamIntruderBattle" title="战队入侵者">
         <img :src="teamIntruderImage" alt="战队入侵者" @error="withFallback">
@@ -12316,7 +12460,7 @@
         <div class="team-join-list-header">
           <div class="team-modal-title">申请加入战队</div>
           <div class="team-join-list-close" @click="showJoinTeamList = false">
-            <img src="./resource-v8/荣誉榜关闭按钮.png" alt="关闭">
+            <img src="./resource/荣誉榜关闭按钮.png" alt="关闭">
           </div>
         </div>
         <div class="team-join-list-search">
@@ -12340,9 +12484,9 @@
 
 
     <div v-show="showTeamInfo" class="team-info-panel">
-      <img src="./resource-v8/战队信息底图.png?v=3" class="team-info-bg" alt="战队信息">
+      <img src="./resource/战队信息底图.png?v=3" class="team-info-bg" alt="战队信息">
       <div v-if="!hasTeam && !isViewingOwnTeam" class="team-info-join-btn" @click="applyJoinTeam">
-        <img src="./resource-v8/申请加入按钮.png" alt="申请加入">
+        <img src="./resource/申请加入按钮.png" alt="申请加入">
       </div>
       <div class="team-info-slogan-panel">
         <div v-if="!editingSlogan" class="team-info-slogan-text" @click="startEditSlogan">
@@ -12366,11 +12510,11 @@
         </div>
         <div class="team-info-row">
           <span>成员: {{ currentTeam.members }}</span>
-          <span>贡献: {{ currentTeam.contribution || 0 }}</span>
+          <span>当前贡献: {{ currentTeam.currentContribution || 0 }}</span>
         </div>
         <div class="team-info-row">
           <span>队长: {{ currentTeam.leader }}</span>
-          <span>活跃: {{ currentTeam.activity }}%</span>
+          <span>累计贡献: {{ currentTeam.contribution || 0 }}</span>
         </div>
         <div class="team-info-row">
           <span>{{ teamNextLevelHonorText }}</span>
@@ -12379,13 +12523,13 @@
       </div>
       <div class="team-info-buttons">
         <div v-if="hasTeam && isViewingOwnTeam" class="team-info-exit-btn" @click="confirmExitTeam">
-          <img src="./resource-v8/退出战队.png" alt="退出战队">
+          <img src="./resource/退出战队.png" alt="退出战队">
         </div>
         <div class="team-info-close-btn" @click="showTeamInfo = false">
-          <img src="./resource-v8/关闭.png" alt="关闭">
+          <img src="./resource/关闭.png" alt="关闭">
         </div>
         <div v-if="hasTeam && isViewingOwnTeam" class="team-info-record-btn" @click="openTeamRecord">
-          <img src="./resource-v8/战队记录.png" alt="战队记录">
+          <img src="./resource/战队记录.png" alt="战队记录">
         </div>
       </div>
     </div>
@@ -12395,11 +12539,11 @@
         <div class="team-butler-title">战队管家</div>
         <div class="team-butler-buttons">
           <button class="team-butler-btn-item task" @click="showTeamButler = false; showTeamTask = true">
-            <img src="./resource-v8/战队任务.png" alt="战队任务">
+            <img src="./resource/战队任务.png" alt="战队任务">
             <span>战队任务</span>
           </button>
           <button class="team-butler-btn-item shop" @click="showTeamButler = false; showTeamShop = true">
-            <img src="./resource-v8/战队商店.png" alt="战队商店">
+            <img src="./resource/战队商店.png" alt="战队商店">
             <span>战队商店</span>
           </button>
           <button class="team-butler-btn-item cancel" @click="showTeamButler = false">取消</button>
@@ -12408,9 +12552,9 @@
     </div>
 
     <div v-show="showTeamTask" class="team-task-panel">
-      <img src="./resource-v8/战队任务.png" class="team-task-bg" alt="战队任务">
+      <img src="./resource/战队任务.png" class="team-task-bg" alt="战队任务">
       <div class="team-task-close-btn" @click="showTeamTask = false">
-        <img src="./resource-v8/荣誉榜关闭按钮.png" alt="关闭">
+        <img src="./resource/荣誉榜关闭按钮.png" alt="关闭">
       </div>
       <div class="team-task-content">
         <div class="team-task-summary">每日任务需先领取，完成后发放战队贡献和战队荣誉。</div>
@@ -12432,9 +12576,41 @@
     </div>
 
     <div v-show="showTeamShop" class="team-shop-panel">
-      <img src="./resource-v8/战队商店.png" class="team-shop-bg" alt="战队商店">
+      <img src="./resource/战队商店.png" class="team-shop-bg" alt="战队商店">
       <div class="team-shop-close-btn" @click="showTeamShop = false">
-        <img src="./resource-v8/荣誉榜关闭按钮.png" alt="关闭">
+        <img src="./resource/荣誉榜关闭按钮.png" alt="关闭">
+      </div>
+      <div class="team-shop-content">
+        <div class="team-shop-header">
+          <div>
+            <div class="team-shop-title">战队商店</div>
+            <div class="team-shop-subtitle">战队 Lv.{{ myTeam.level || 1 }}，按等级开放商品</div>
+          </div>
+          <div class="team-shop-wallet">
+            <span>当前贡献 {{ teamCurrentContribution }}</span>
+            <span>累计贡献 {{ teamTotalContribution }}</span>
+          </div>
+        </div>
+        <div class="team-shop-list">
+          <div v-for="it in teamShopRows" :key="'team_shop_'+it.id" class="team-shop-card" :class="{ locked: !it.unlocked }">
+            <div v-if="it.image" class="team-shop-card-icon">
+              <img :src="it.image" @error="withFallback" :alt="it.name">
+            </div>
+            <div v-else class="team-shop-card-icon text">{{ it.name.slice(0, 2) }}</div>
+            <div class="team-shop-card-main">
+              <div class="team-shop-card-name">{{ it.name }}</div>
+              <div class="team-shop-card-meta">
+                <span>{{ it.levelLabel }}</span>
+                <span>{{ it.limitLabel }}</span>
+              </div>
+              <div class="team-shop-card-reward">奖励：{{ it.rewardLabel }}</div>
+            </div>
+            <div class="team-shop-card-action">
+              <div class="team-shop-card-cost">{{ it.cost }}贡献</div>
+              <button @click="buyTeamShopItem(it.id)" :disabled="!it.canBuy">{{ !it.unlocked ? '未开放' : (it.remaining <= 0 ? '已限购' : '兑换') }}</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -12445,7 +12621,7 @@
           <button class="team-record-tab" :class="{ active: teamRecordTab === 'applications' }" @click="teamRecordTab = 'applications'">申请记录</button>
         </div>
         <div class="team-record-close-btn" @click="showTeamRecord = false">
-          <img src="./resource-v8/荣誉榜关闭按钮.png" alt="关闭">
+          <img src="./resource/荣誉榜关闭按钮.png" alt="关闭">
         </div>
       </div>
       <div class="team-record-content">
@@ -12456,6 +12632,7 @@
               <span>成员名称</span>
               <span>职位</span>
               <span>最大战力</span>
+              <span>当前贡献</span>
               <span>累计贡献</span>
               <span>累计荣誉</span>
               <span>职位操作</span>
@@ -12464,6 +12641,7 @@
               <button class="team-record-name-btn" @click="viewTeamMemberInfo(member)">{{ member.name }}</button>
               <span>{{ member.roleLabel || teamRoleLabel(member.role) }}</span>
               <span>{{ member.maxBattlePower || 0 }}</span>
+              <span>{{ member.currentContribution || 0 }}</span>
               <span>{{ member.contribution || 0 }}</span>
               <span>{{ member.honor || 0 }}</span>
               <span class="team-record-actions">
@@ -12517,9 +12695,9 @@
     </div>
 
     <div v-show="showTeamRank" class="team-rank-panel">
-      <img src="./resource-v8/荣誉榜底图.png" class="team-rank-bg" alt="荣誉榜">
+      <img src="./resource/荣誉榜底图.png" class="team-rank-bg" alt="荣誉榜">
       <div class="team-rank-close-btn" @click="showTeamRank = false">
-        <img src="./resource-v8/荣誉榜关闭按钮.png" alt="关闭">
+        <img src="./resource/荣誉榜关闭按钮.png" alt="关闭">
       </div>
       <div class="team-rank-list">
         <div v-for="(item, index) in normalizedTeamRankList" :key="index" class="team-rank-item">
@@ -12531,10 +12709,10 @@
           <span class="team-rank-members">{{ item.members }}</span>
           <span class="team-rank-activity">{{ item.activity }}%</span>
           <span class="team-rank-view" @click="viewTeamInfo(item)">
-            <img src="./resource-v8/查看.png" alt="查看">
+            <img src="./resource/查看.png" alt="查看">
           </span>
           <span v-if="!hasTeam" class="team-rank-apply" @click="applyToTeam(item)">
-            <img src="./resource-v8/加入.png" alt="申请加入">
+            <img src="./resource/加入.png" alt="申请加入">
           </span>
         </div>
       </div>
@@ -12558,7 +12736,7 @@
     </div>
   </div>
 
-  <div v-show="showTeamModal" class="team-modal-overlay">
+  <div v-if="showTeamModal" class="team-modal-overlay">
     <div class="team-modal">
       <div class="team-modal-title">选择操作</div>
       <div class="team-modal-buttons">
@@ -12569,7 +12747,7 @@
     </div>
   </div>
 
-  <div v-show="showCreateTeamModal" class="team-modal-overlay">
+  <div v-if="showCreateTeamModal" class="team-modal-overlay">
     <div class="team-create-modal">
       <div class="team-modal-title">创建战队</div>
       <div class="team-create-form">

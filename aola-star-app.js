@@ -1510,7 +1510,7 @@ const SHENGYU_PET_CONFIGS = [
 const SHENGYU_PET_CONFIG_BY_DEX_ID = new Map(SHENGYU_PET_CONFIGS.map((config) => [Number(config.dexId) || 0, config]));
 const shengyuPetConfigByDexId = (dexId) => SHENGYU_PET_CONFIG_BY_DEX_ID.get(Number(dexId) || 0) || null;
 const SHENGYU_DOMAIN_YANGYAN = "yangyan";
-const SHENGYU_YANZHUO_BAHUANG_FX_SRC = encodeAssetSrc("./resource-v8/shengyu/skill/炎灼八荒.gif");
+const SHENGYU_YANZHUO_BAHUANG_FX_SRC = encodeAssetSrc("./resource/shengyu/skill/炎灼八荒.gif");
 const SHENGYU_PASSIVE_CONFIG_BY_DEX_ID = {
   2050: {
     domain: SHENGYU_DOMAIN_YANGYAN,
@@ -1615,6 +1615,48 @@ const TEAM_TASK_DEFINITIONS = [
   { key: "challenge_road_normal", name: "挑战之路挑战任意守护者/BOSS普通难度", trigger: "challengeRoadNormalWin", contribution: 100, honor: 50 },
   { key: "challenge_road_hard", name: "挑战之路挑战任意BOSS困难难度", trigger: "challengeRoadHardWin", contribution: 200, honor: 100 },
   { key: "challenge_road_nightmare", name: "挑战之路挑战任意BOSS噩梦难度", trigger: "challengeRoadNightmareWin", contribution: 300, honor: 150 }
+];
+const TEAM_SHOP_ITEMS = [
+  { id: "double_exp_device", name: "双倍经验器", minLevel: 1, cost: 50, limit: 0, reward: { type: "item", itemId: "double_exp_device", amount: 1, label: "双倍经验器" } },
+  { id: "auto_battle_device", name: "自动战斗仪", minLevel: 1, cost: 50, limit: 0, reward: { type: "item", itemId: "auto_battle_device", amount: 1, label: "自动战斗仪" } },
+  { id: "divine_pet_key_10", name: "10个神宠之匙", minLevel: 1, cost: 200, limit: 5, reward: { type: "item", itemId: "divine_pet_key", amount: 10, label: "神宠之匙×10" } },
+  { id: "equipment_crystal_10", name: "10个秘境晶石", minLevel: 1, cost: 200, limit: 5, reward: { type: "item", itemId: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, amount: 10, label: "秘境晶石×10" } },
+  { id: "double_hcoin_device", name: "双倍H币器", minLevel: 2, cost: 300, limit: 0, reward: { type: "item", itemId: "double_hcoin_device", amount: 1, label: "双倍H币器" } },
+  { id: "talent_grade_wanzhong_fruit", name: "万众瞩目果实", minLevel: 2, cost: 300, limit: 15, reward: { type: "item", itemId: "talent_grade_wanzhong_fruit", amount: 1, label: "万众瞩目果实" } },
+  { id: "divine_pet_key_20", name: "20个神宠之匙", minLevel: 2, cost: 400, limit: 3, reward: { type: "item", itemId: "divine_pet_key", amount: 20, label: "神宠之匙×20" } },
+  { id: "equipment_crystal_20", name: "20个秘境晶石", minLevel: 2, cost: 400, limit: 3, reward: { type: "item", itemId: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, amount: 20, label: "秘境晶石×20" } },
+  { id: "divine_pet_key_30", name: "30个神宠之匙", minLevel: 3, cost: 570, limit: 2, reward: { type: "item", itemId: "divine_pet_key", amount: 30, label: "神宠之匙×30" } },
+  { id: "equipment_crystal_30", name: "30个秘境晶石", minLevel: 3, cost: 570, limit: 2, reward: { type: "item", itemId: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, amount: 30, label: "秘境晶石×30" } },
+  { id: "rare_battle_blade", name: "稀有战刃", minLevel: 3, cost: 700, limit: 2, reward: { type: "item", itemId: "rare_battle_blade", amount: 1, label: "稀有战刃" } },
+  { id: "rare_shield", name: "稀有护盾", minLevel: 3, cost: 700, limit: 2, reward: { type: "item", itemId: "rare_shield", amount: 1, label: "稀有护盾" } },
+  { id: "rare_charm", name: "稀有护符", minLevel: 3, cost: 700, limit: 2, reward: { type: "item", itemId: "rare_charm", amount: 1, label: "稀有护符" } },
+  { id: "rare_boots", name: "稀有护靴", minLevel: 3, cost: 700, limit: 2, reward: { type: "item", itemId: "rare_boots", amount: 1, label: "稀有护靴" } },
+  { id: "divine_pet_key_40", name: "40个神宠之匙", minLevel: 4, cost: 640, limit: 2, reward: { type: "item", itemId: "divine_pet_key", amount: 40, label: "神宠之匙×40" } },
+  { id: "equipment_crystal_40", name: "40个秘境晶石", minLevel: 4, cost: 640, limit: 2, reward: { type: "item", itemId: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, amount: 40, label: "秘境晶石×40" } },
+  { id: "talent_grade_wangzhe_fruit", name: "王者无敌果实", minLevel: 4, cost: 500, limit: 10, reward: { type: "item", itemId: "talent_grade_wangzhe_fruit", amount: 1, label: "王者无敌果实" } },
+  { id: "hcoins_10000", name: "10000H币", minLevel: 4, cost: 200, limit: 0, reward: { type: "hCoins", amount: 10000, label: "10000H币" } },
+  { id: "divine_pet_key_50", name: "50个神宠之匙", minLevel: 5, cost: 750, limit: 2, reward: { type: "item", itemId: "divine_pet_key", amount: 50, label: "神宠之匙×50" } },
+  { id: "equipment_crystal_50", name: "50个秘境晶石", minLevel: 5, cost: 750, limit: 2, reward: { type: "item", itemId: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, amount: 50, label: "秘境晶石×50" } },
+  { id: "precious_battle_blade", name: "珍奇战刃", minLevel: 5, cost: 1080, limit: 2, reward: { type: "item", itemId: "precious_battle_blade", amount: 1, label: "珍奇战刃" } },
+  { id: "precious_shield", name: "珍奇护盾", minLevel: 5, cost: 1080, limit: 2, reward: { type: "item", itemId: "precious_shield", amount: 1, label: "珍奇护盾" } },
+  { id: "precious_charm", name: "珍奇护符", minLevel: 5, cost: 1080, limit: 2, reward: { type: "item", itemId: "precious_charm", amount: 1, label: "珍奇护符" } },
+  { id: "precious_boots", name: "珍奇护靴", minLevel: 5, cost: 1080, limit: 2, reward: { type: "item", itemId: "precious_boots", amount: 1, label: "珍奇护靴" } },
+  { id: "divine_pet_key_60", name: "60个神宠之匙", minLevel: 6, cost: 840, limit: 2, reward: { type: "item", itemId: "divine_pet_key", amount: 60, label: "神宠之匙×60" } },
+  { id: "equipment_crystal_60", name: "60个秘境晶石", minLevel: 6, cost: 840, limit: 2, reward: { type: "item", itemId: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, amount: 60, label: "秘境晶石×60" } },
+  { id: "talent_grade_tianxia_fruit", name: "天下无双果实", minLevel: 6, cost: 660, limit: 8, reward: { type: "item", itemId: "talent_grade_tianxia_fruit", amount: 1, label: "天下无双果实" } },
+  { id: "trait_choice_bundle", name: "特性自选礼包", minLevel: 6, cost: 1000, limit: 6, reward: { type: "traitChoice", label: "特性自选礼包" } },
+  { id: "divine_pet_key_100", name: "100个神宠之匙", minLevel: 7, cost: 1200, limit: 2, reward: { type: "item", itemId: "divine_pet_key", amount: 100, label: "神宠之匙×100" } },
+  { id: "equipment_crystal_100", name: "100个秘境晶石", minLevel: 7, cost: 1200, limit: 2, reward: { type: "item", itemId: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, amount: 100, label: "秘境晶石×100" } },
+  { id: "legend_battle_blade", name: "传说战刃", minLevel: 7, cost: 1400, limit: 2, reward: { type: "item", itemId: "legend_battle_blade", amount: 1, label: "传说战刃" } },
+  { id: "legend_shield", name: "传说护盾", minLevel: 7, cost: 1400, limit: 2, reward: { type: "item", itemId: "legend_shield", amount: 1, label: "传说护盾" } },
+  { id: "legend_charm", name: "传说护符", minLevel: 7, cost: 1400, limit: 2, reward: { type: "item", itemId: "legend_charm", amount: 1, label: "传说护符" } },
+  { id: "legend_boots", name: "传说护靴", minLevel: 7, cost: 1400, limit: 2, reward: { type: "item", itemId: "legend_boots", amount: 1, label: "传说护靴" } }
+];
+const TEAM_SHOP_TRAIT_CHOICES = [
+  { key: QIXING_TRAIT_KEYS.LEGACY, name: "启星之印" },
+  { key: QIXING_TRAIT_KEYS.LIANGYI, name: "两仪之印" },
+  { key: QIXING_TRAIT_KEYS.SHOUYU, name: "守御之印" },
+  { key: QIXING_TRAIT_KEYS.JILAN, name: "疾岚之瞳" }
 ];
 const TEAM_INTRUDER_PREFERRED_NAMES = ["修罗", "骰子大王", "凯撒"];
 const BADGE_IMAGE_FILE_NAMES = new Set([
@@ -11849,11 +11891,13 @@ createApp({
         slogan: normalize(team && team.slogan) || normalize(fallback.slogan) || "欢迎加入我们的战队！",
         honor: totalHonor,
         contribution: Math.max(0, Math.floor(Number((team && team.contribution) ?? fallback.contribution) || 0)),
+        currentContribution: Math.max(0, Math.floor(Number((team && team.currentContribution) ?? fallback.currentContribution ?? (team && team.contribution) ?? fallback.contribution) || 0)),
         funds: Math.max(0, Math.floor(Number((team && team.funds) ?? fallback.funds) || 0)),
         activity: clamp(Math.floor(Number((team && team.activity) ?? fallback.activity) || 0), 0, 100),
         viewerRole: normalize(team && team.viewerRole) || normalize(fallback.viewerRole),
         isMember: Boolean((team && team.isMember) ?? fallback.isMember),
         isLeader: Boolean((team && team.isLeader) ?? fallback.isLeader),
+        shopPurchases: team && team.shopPurchases && typeof team.shopPurchases === "object" && !Array.isArray(team.shopPurchases) ? team.shopPurchases : (fallback.shopPurchases && typeof fallback.shopPurchases === "object" ? fallback.shopPurchases : {}),
         memberRows: Array.isArray(team && team.memberRows) ? team.memberRows : (Array.isArray(fallback.memberRows) ? fallback.memberRows : []),
         applications: Array.isArray(team && team.applications) ? team.applications : (Array.isArray(fallback.applications) ? fallback.applications : [])
       };
@@ -11920,6 +11964,35 @@ createApp({
       const need = teamLevelHonorThreshold(level + 1);
       return `距离Lv.${level + 1}还需${Math.max(0, need - Math.max(0, Math.floor(Number(team.honor) || 0)))}荣誉`;
     });
+    const teamCurrentContribution = computed(() => Math.max(0, Math.floor(Number(myTeam.value && myTeam.value.currentContribution) || 0)));
+    const teamTotalContribution = computed(() => Math.max(0, Math.floor(Number(myTeam.value && myTeam.value.contribution) || 0)));
+    const teamShopPurchaseCounts = computed(() => {
+      const source = myTeam.value && myTeam.value.shopPurchases && typeof myTeam.value.shopPurchases === "object" ? myTeam.value.shopPurchases : {};
+      return source;
+    });
+    const teamShopRows = computed(() => {
+      const level = clamp(Math.floor(Number(myTeam.value && myTeam.value.level) || 1), 1, 7);
+      const wallet = teamCurrentContribution.value;
+      return TEAM_SHOP_ITEMS.map((item) => {
+        const limit = Math.max(0, Math.floor(Number(item.limit) || 0));
+        const bought = Math.max(0, Math.floor(Number(teamShopPurchaseCounts.value[item.id]) || 0));
+        const unlocked = level >= Math.max(1, Math.floor(Number(item.minLevel) || 1));
+        const remaining = limit > 0 ? Math.max(0, limit - bought) : 999;
+        const reward = item.reward || {};
+        const catalog = reward.itemId ? (PET_GEAR_CONFIG_BY_ID.get(normalize(reward.itemId)) || null) : null;
+        return {
+          ...item,
+          bought,
+          remaining,
+          unlocked,
+          canBuy: hasTeam.value && unlocked && remaining > 0 && wallet >= Math.max(0, Math.floor(Number(item.cost) || 0)),
+          levelLabel: `${item.minLevel}级开放`,
+          limitLabel: limit > 0 ? `限购${limit}次，剩余${remaining}次` : "不限购",
+          rewardLabel: normalize(reward.label) || item.name,
+          image: catalog && catalog.image ? catalog.image : ""
+        };
+      });
+    });
     const claimTeamTask = (taskKey) => {
       if (!hasTeam.value) return showToast("请先创建或加入战队。");
       const task = TEAM_TASK_DEFINITIONS.find((row) => row.key === taskKey);
@@ -11943,7 +12016,8 @@ createApp({
       myTeam.value = normalizeTeamInfo({
         ...myTeam.value,
         honor: Math.max(0, Math.floor(Number(myTeam.value.honor) || 0)) + task.honor,
-        contribution: Math.max(0, Math.floor(Number(myTeam.value.contribution) || 0)) + task.contribution
+        contribution: Math.max(0, Math.floor(Number(myTeam.value.contribution) || 0)) + task.contribution,
+        currentContribution: Math.max(0, Math.floor(Number(myTeam.value.currentContribution) || 0)) + task.contribution
       });
       currentTeam.value = { ...myTeam.value };
       teamHistory.value.unshift({ name: authUser.value && authUser.value.username ? authUser.value.username : "我", action: `完成${task.name}，贡献+${task.contribution}，荣誉+${task.honor}`, time: "刚刚" });
@@ -21101,6 +21175,60 @@ const applyBossChainFinalBuff = (scene) => {
     const closeEggHatchPanel = () => {
       showEggHatchPanel.value = false;
     };
+    const chooseTeamShopTrait = () => {
+      const text = window.prompt(`请选择特性：${TEAM_SHOP_TRAIT_CHOICES.map((item, index) => `${index + 1}.${item.name}`).join("、")}`, "1");
+      if (text === null) return null;
+      const raw = normalize(text);
+      const byIndex = TEAM_SHOP_TRAIT_CHOICES[Math.max(0, Math.floor(Number(raw) || 0) - 1)] || null;
+      return byIndex || TEAM_SHOP_TRAIT_CHOICES.find((item) => normalize(item.name) === raw || normalize(item.key) === raw) || null;
+    };
+    const grantTeamShopReward = (item, traitChoice = null) => {
+      const reward = item && item.reward;
+      if (!reward || typeof reward !== "object") return "";
+      const amount = Math.max(1, Math.floor(Number(reward.amount) || 1));
+      if (reward.type === "hCoins") {
+        const gain = Math.max(0, Math.floor(Number(reward.amount) || 0));
+        state.value.hCoins = Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) + gain;
+        return reward.label || `${gain}H币`;
+      }
+      if (reward.type === "item") {
+        const itemId = normalize(reward.itemId);
+        if (!itemId) return "";
+        addItemCount(itemId, amount);
+        return reward.label || `${itemNameById(itemId, item.name)}×${amount}`;
+      }
+      if (reward.type === "traitChoice") {
+        const choice = traitChoice || TEAM_SHOP_TRAIT_CHOICES[0];
+        grantQixingSeal(choice.key, 1);
+        return choice.name;
+      }
+      return "";
+    };
+    const buyTeamShopItem = async (itemId) => {
+      if (!authUser.value) return showToast("请先登录账号后再使用战队商店。");
+      if (!hasTeam.value) return showToast("请先创建或加入战队。");
+      const id = normalize(String(itemId || ""));
+      const item = TEAM_SHOP_ITEMS.find((row) => normalize(row.id) === id);
+      if (!item) return showToast("该战队商品不存在。");
+      let traitChoice = null;
+      if (item.reward && item.reward.type === "traitChoice") {
+        traitChoice = chooseTeamShopTrait();
+        if (!traitChoice) return showToast("已取消购买特性自选礼包。");
+      }
+      try {
+        const data = await apiJson("/api/teams/shop/purchase", {
+          method: "POST",
+          body: JSON.stringify({ itemId: id })
+        });
+        if (data.team) applyMyServerTeamData(data.team);
+        const label = grantTeamShopReward(item, traitChoice);
+        if (label) queueRewardFlyToasts([`获得${label}！`]);
+        await persistUserSave({ silent: true, force: true });
+        showToast(`已兑换${item.name}，消耗${item.cost}贡献值。`);
+      } catch (err) {
+        showToast(err && err.message ? err.message : "战队商店兑换失败。");
+      }
+    };
     const buyHcoinShopItem = (itemId, sourceItems) => {
       const id = normalize(String(itemId || ""));
       if (!id) return;
@@ -22070,7 +22198,9 @@ const applyBossChainFinalBuff = (scene) => {
       honor: Math.max(0, Math.floor(Number(team && (team.honor ?? team.score)) || 0)),
       memberCount: Math.max(0, Math.floor(Number(team && team.memberCount) || 0)),
       members: `${Math.max(0, Math.floor(Number(team && team.memberCount) || 0))}/${Math.max(1, Math.floor(Number(team && team.memberLimit) || 20))}`,
-      contribution: Math.max(0, Math.floor(Number(team && team.contribution) || 0))
+      contribution: Math.max(0, Math.floor(Number(team && team.contribution) || 0)),
+      currentContribution: Math.max(0, Math.floor(Number(team && (team.currentContribution ?? team.contribution)) || 0)),
+      shopPurchases: team && team.shopPurchases && typeof team.shopPurchases === "object" ? team.shopPurchases : {}
     });
     const applyMyServerTeamData = (team) => {
       if (!team) {
@@ -22093,8 +22223,8 @@ const applyBossChainFinalBuff = (scene) => {
         currentTeam.value = { ...normalized };
         isViewingOwnTeam.value = true;
       }
-      teamMembers.value = Array.isArray(team.memberRows) ? team.memberRows : [];
-      teamApplications.value = Array.isArray(team.applications) ? team.applications : [];
+      if (Array.isArray(team.memberRows)) teamMembers.value = team.memberRows;
+      if (Array.isArray(team.applications)) teamApplications.value = team.applications;
       syncTeamProfileToState();
     };
     const refreshMyTeamFromServer = async (options = {}) => {
@@ -22103,7 +22233,8 @@ const applyBossChainFinalBuff = (scene) => {
         return false;
       }
       try {
-        const data = await apiJson("/api/teams/me");
+        const records = options && options.records ? "1" : "0";
+        const data = await apiJson(`/api/teams/me?records=${records}`);
         applyMyServerTeamData(data.team || null);
         return true;
       } catch (err) {
@@ -22194,13 +22325,17 @@ const applyBossChainFinalBuff = (scene) => {
     const openTeamPanel = async () => {
       showTeamPanel.value = true;
       teamLoading.value = true;
-      await Promise.all([
-        refreshMyTeamFromServer({ silent: true }),
-        refreshTeamRankFromServer({ silent: true })
-      ]);
-      setTimeout(() => {
+      try {
+        await Promise.race([
+          Promise.all([
+            refreshMyTeamFromServer({ silent: true, records: false }),
+            refreshTeamRankFromServer({ silent: true })
+          ]),
+          new Promise((resolve) => setTimeout(resolve, 3500))
+        ]);
+      } finally {
         teamLoading.value = false;
-      }, 300);
+      }
     };
     const closeTeamPanel = () => {
       showTeamPanel.value = false;
@@ -22261,7 +22396,7 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const openTeamRecord = async () => {
       if (!hasTeam.value) return showToast("请先创建或加入战队。");
-      await refreshMyTeamFromServer({ silent: true });
+      await refreshMyTeamFromServer({ silent: true, records: true });
       teamRecordTab.value = "members";
       showTeamRecord.value = true;
     };
@@ -23350,6 +23485,9 @@ const applyBossChainFinalBuff = (scene) => {
       teamHistory,
       teamTaskRows,
       teamNextLevelHonorText,
+      teamCurrentContribution,
+      teamTotalContribution,
+      teamShopRows,
       teamIntruderTaskActive,
       teamIntruderImage,
       newTeamName,
@@ -23385,6 +23523,7 @@ const applyBossChainFinalBuff = (scene) => {
       confirmExitTeam,
       openTeamRecord,
       claimTeamTask,
+      buyTeamShopItem,
       startTeamIntruderBattle,
       approveApplication,
       rejectApplication,

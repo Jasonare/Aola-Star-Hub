@@ -115,6 +115,43 @@ const TEAM_ROLE_LABELS = {
 };
 const TEAM_MAX_VICE_CAPTAINS = 2;
 const TEAM_MAX_ELDERS = 5;
+const TEAM_SHOP_ITEMS = [
+  { id: "double_exp_device", name: "双倍经验器", minLevel: 1, cost: 50, limit: 0 },
+  { id: "auto_battle_device", name: "自动战斗仪", minLevel: 1, cost: 50, limit: 0 },
+  { id: "divine_pet_key_10", name: "10个神宠之匙", minLevel: 1, cost: 200, limit: 5 },
+  { id: "equipment_crystal_10", name: "10个秘境晶石", minLevel: 1, cost: 200, limit: 5 },
+  { id: "double_hcoin_device", name: "双倍H币器", minLevel: 2, cost: 300, limit: 0 },
+  { id: "talent_grade_wanzhong_fruit", name: "万众瞩目果实", minLevel: 2, cost: 300, limit: 15 },
+  { id: "divine_pet_key_20", name: "20个神宠之匙", minLevel: 2, cost: 400, limit: 3 },
+  { id: "equipment_crystal_20", name: "20个秘境晶石", minLevel: 2, cost: 400, limit: 3 },
+  { id: "divine_pet_key_30", name: "30个神宠之匙", minLevel: 3, cost: 570, limit: 2 },
+  { id: "equipment_crystal_30", name: "30个秘境晶石", minLevel: 3, cost: 570, limit: 2 },
+  { id: "rare_battle_blade", name: "稀有战刃", minLevel: 3, cost: 700, limit: 2 },
+  { id: "rare_shield", name: "稀有护盾", minLevel: 3, cost: 700, limit: 2 },
+  { id: "rare_charm", name: "稀有护符", minLevel: 3, cost: 700, limit: 2 },
+  { id: "rare_boots", name: "稀有护靴", minLevel: 3, cost: 700, limit: 2 },
+  { id: "divine_pet_key_40", name: "40个神宠之匙", minLevel: 4, cost: 640, limit: 2 },
+  { id: "equipment_crystal_40", name: "40个秘境晶石", minLevel: 4, cost: 640, limit: 2 },
+  { id: "talent_grade_wangzhe_fruit", name: "王者无敌果实", minLevel: 4, cost: 500, limit: 10 },
+  { id: "hcoins_10000", name: "10000H币", minLevel: 4, cost: 200, limit: 0 },
+  { id: "divine_pet_key_50", name: "50个神宠之匙", minLevel: 5, cost: 750, limit: 2 },
+  { id: "equipment_crystal_50", name: "50个秘境晶石", minLevel: 5, cost: 750, limit: 2 },
+  { id: "precious_battle_blade", name: "珍奇战刃", minLevel: 5, cost: 1080, limit: 2 },
+  { id: "precious_shield", name: "珍奇护盾", minLevel: 5, cost: 1080, limit: 2 },
+  { id: "precious_charm", name: "珍奇护符", minLevel: 5, cost: 1080, limit: 2 },
+  { id: "precious_boots", name: "珍奇护靴", minLevel: 5, cost: 1080, limit: 2 },
+  { id: "divine_pet_key_60", name: "60个神宠之匙", minLevel: 6, cost: 840, limit: 2 },
+  { id: "equipment_crystal_60", name: "60个秘境晶石", minLevel: 6, cost: 840, limit: 2 },
+  { id: "talent_grade_tianxia_fruit", name: "天下无双果实", minLevel: 6, cost: 660, limit: 8 },
+  { id: "trait_choice_bundle", name: "特性自选礼包", minLevel: 6, cost: 1000, limit: 6 },
+  { id: "divine_pet_key_100", name: "100个神宠之匙", minLevel: 7, cost: 1200, limit: 2 },
+  { id: "equipment_crystal_100", name: "100个秘境晶石", minLevel: 7, cost: 1200, limit: 2 },
+  { id: "legend_battle_blade", name: "传说战刃", minLevel: 7, cost: 1400, limit: 2 },
+  { id: "legend_shield", name: "传说护盾", minLevel: 7, cost: 1400, limit: 2 },
+  { id: "legend_charm", name: "传说护符", minLevel: 7, cost: 1400, limit: 2 },
+  { id: "legend_boots", name: "传说护靴", minLevel: 7, cost: 1400, limit: 2 }
+];
+const TEAM_SHOP_ITEM_BY_ID = new Map(TEAM_SHOP_ITEMS.map((item) => [item.id, item]));
 const TEST_MAX_DEX_ID = 1960;
 const TEST_DEFAULT_WEEKLY_REWARD_STATE_VERSION = "wunian_2020_exchange_reset_v2";
 const TEST_DEFAULT_WEEKLY_MEDAL_ITEM_ID = "weekly_boss_medal_wunian_2020";
@@ -891,7 +928,13 @@ const normalizeTeamMember = (member) => ({
   userId: String(member && member.userId || ""),
   role: TEAM_ROLE_LABELS[member && member.role] ? member.role : "member",
   contribution: safeNonNegInt(member && member.contribution, 0),
+  currentContribution: member && Object.prototype.hasOwnProperty.call(member, "currentContribution")
+    ? safeNonNegInt(member.currentContribution, 0)
+    : safeNonNegInt(member && member.contribution, 0),
   honor: safeNonNegInt(member && member.honor, 0),
+  shopPurchases: member && member.shopPurchases && typeof member.shopPurchases === "object" && !Array.isArray(member.shopPurchases)
+    ? Object.fromEntries(Object.entries(member.shopPurchases).map(([key, value]) => [String(key), safeNonNegInt(value, 0)]))
+    : {},
   joinedAt: String(member && member.joinedAt || new Date().toISOString())
 });
 
@@ -903,7 +946,7 @@ function normalizeTeamRow(team) {
     role: member.userId === leaderId ? "leader" : member.role
   }));
   if (leaderId && !normalizedMembers.some((member) => member.userId === leaderId)) {
-    normalizedMembers.unshift({ userId: leaderId, role: "leader", contribution: 0, honor: 0, joinedAt: String(team && team.createdAt || new Date().toISOString()) });
+    normalizedMembers.unshift({ userId: leaderId, role: "leader", contribution: 0, currentContribution: 0, honor: 0, shopPurchases: {}, joinedAt: String(team && team.createdAt || new Date().toISOString()) });
   }
   const applications = (Array.isArray(team && team.applications) ? team.applications : [])
     .map((app) => ({ userId: String(app && app.userId || ""), appliedAt: String(app && app.appliedAt || new Date().toISOString()) }))
@@ -962,6 +1005,7 @@ const publicTeamMember = (member, names) => ({
   roleLabel: TEAM_ROLE_LABELS[member.role] || TEAM_ROLE_LABELS.member,
   maxBattlePower: readUserMaxBattlePower(member.userId),
   contribution: safeNonNegInt(member.contribution, 0),
+  currentContribution: safeNonNegInt(member.currentContribution, 0),
   honor: safeNonNegInt(member.honor, 0),
   joinedAt: member.joinedAt
 });
@@ -998,6 +1042,8 @@ const publicTeam = (team, options = {}) => {
     isMember: Boolean(viewerMember),
     isLeader: Boolean(viewerMember && viewerMember.role === "leader"),
     contribution: viewerMember ? safeNonNegInt(viewerMember.contribution, 0) : 0,
+    currentContribution: viewerMember ? safeNonNegInt(viewerMember.currentContribution, 0) : 0,
+    shopPurchases: viewerMember && viewerMember.shopPurchases && typeof viewerMember.shopPurchases === "object" ? viewerMember.shopPurchases : {},
     applications: options.includeRecords ? (team.applications || []).map((app) => publicTeamApplication(app, names)) : [],
     memberRows: options.includeRecords ? (team.members || []).map((member) => publicTeamMember(member, names)) : []
   };
@@ -1159,19 +1205,22 @@ const handleApi = async (req, res) => {
     if (req.method === "GET" && pathname === "/api/teams/me") {
       const user = requireUser(req, res);
       if (!user) return;
+      const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+      const includeRecords = url.searchParams.get("records") === "1" || url.searchParams.get("includeRecords") === "1";
       const db = teamsDb();
       const team = findUserTeam(db, user.id);
       if (!team) return sendJson(res, 200, { ok: true, team: null });
-      return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
+      return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, includeRecords) });
     }
     if (req.method === "GET" && pathname.startsWith("/api/teams/")) {
+      const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
       const teamId = decodeURIComponent(pathname.slice("/api/teams/".length));
       const user = currentUser(req);
       const db = teamsDb();
       const team = findTeamById(db, teamId);
       if (!team) return sendJson(res, 404, { ok: false, message: "战队不存在。" });
       const viewerUserId = user ? user.id : "";
-      const includeRecords = Boolean(user && assertTeamManager(team, user.id, true));
+      const includeRecords = url.searchParams.get("records") !== "0" && Boolean(user && assertTeamManager(team, user.id, true));
       return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, viewerUserId, includeRecords) });
     }
     if (req.method === "POST" && pathname === "/api/teams/create") {
@@ -1194,7 +1243,7 @@ const handleApi = async (req, res) => {
         leaderId: user.id,
         createdAt: now,
         updatedAt: now,
-        members: [{ userId: user.id, role: "leader", contribution: 0, honor: 0, joinedAt: now }],
+        members: [{ userId: user.id, role: "leader", contribution: 0, currentContribution: 0, honor: 0, shopPurchases: {}, joinedAt: now }],
         applications: []
       });
       db.teams.push(team);
@@ -1238,7 +1287,7 @@ const handleApi = async (req, res) => {
       const level = resolveTeamLevelByHonor(teamTotalHonor(team));
       if ((team.members || []).length >= teamMemberLimitByLevel(level)) return sendJson(res, 409, { ok: false, message: "该战队人数已满。" });
       team.applications.splice(appIndex, 1);
-      team.members.push({ userId: applicantUserId, role: "member", contribution: 0, honor: 0, joinedAt: new Date().toISOString() });
+      team.members.push({ userId: applicantUserId, role: "member", contribution: 0, currentContribution: 0, honor: 0, shopPurchases: {}, joinedAt: new Date().toISOString() });
       team.updatedAt = new Date().toISOString();
       saveTeamsDb(db);
       return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
@@ -1302,10 +1351,37 @@ const handleApi = async (req, res) => {
       if (!team) return sendJson(res, 404, { ok: false, message: "当前账号未加入战队。" });
       const member = team.members.find((row) => row.userId === user.id);
       member.contribution = safeNonNegInt(member.contribution, 0) + contribution;
+      member.currentContribution = safeNonNegInt(member.currentContribution, 0) + contribution;
       member.honor = safeNonNegInt(member.honor, 0) + honor;
       team.updatedAt = new Date().toISOString();
       saveTeamsDb(db);
       return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
+    }
+    if (req.method === "POST" && pathname === "/api/teams/shop/purchase") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const itemId = String(body.itemId || "");
+      const item = TEAM_SHOP_ITEM_BY_ID.get(itemId);
+      if (!item) return sendJson(res, 404, { ok: false, message: "战队商店商品不存在。" });
+      const db = teamsDb();
+      const team = findUserTeam(db, user.id);
+      if (!team) return sendJson(res, 404, { ok: false, message: "当前账号未加入战队。" });
+      const level = resolveTeamLevelByHonor(teamTotalHonor(team));
+      if (level < safeNonNegInt(item.minLevel, 1)) return sendJson(res, 403, { ok: false, message: `战队达到${item.minLevel}级后开放该商品。` });
+      const member = team.members.find((row) => row.userId === user.id);
+      if (!member) return sendJson(res, 404, { ok: false, message: "战队成员不存在。" });
+      if (!member.shopPurchases || typeof member.shopPurchases !== "object" || Array.isArray(member.shopPurchases)) member.shopPurchases = {};
+      const limit = safeNonNegInt(item.limit, 0);
+      const bought = safeNonNegInt(member.shopPurchases[item.id], 0);
+      if (limit > 0 && bought >= limit) return sendJson(res, 409, { ok: false, message: "该商品已达到个人限购次数。" });
+      const cost = safeNonNegInt(item.cost, 0);
+      if (safeNonNegInt(member.currentContribution, 0) < cost) return sendJson(res, 409, { ok: false, message: `当前贡献值不足，需要${cost}贡献值。` });
+      member.currentContribution = safeNonNegInt(member.currentContribution, 0) - cost;
+      if (limit > 0) member.shopPurchases[item.id] = bought + 1;
+      team.updatedAt = new Date().toISOString();
+      saveTeamsDb(db);
+      return sendJson(res, 200, { ok: true, item, team: publicTeamWithRank(team, user.id, true) });
     }
     if (req.method === "GET" && new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname === "/api/leaderboard/my-rank") {
       const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
