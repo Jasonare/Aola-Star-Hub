@@ -9891,27 +9891,38 @@
     <div class="login-card">
       <div class="mb-6">
         <div class="text-4xl font-black tracking-tight text-white">Aola Star Hub</div>
-        <p class="mt-2 text-sm font-bold text-cyan-100/75 leading-6">注册用户使用服务器存档，桌面端登录后可导入本地存档，游客支持本地进度。</p>
+        <p class="mt-2 text-sm font-bold text-cyan-100/75 leading-6">{{ isMobileClient ? '手机端仅支持游客登录，进度保存在本机。' : '注册用户使用服务器存档，桌面端登录后可导入本地存档，游客支持本地进度。' }}</p>
       </div>
-      <div class="flex gap-2 mb-4">
-        <button @click="authMode='login'" class="flex-1 login-ghost-btn" :class="authMode==='login' ? '!bg-cyan-500 !text-white !border-cyan-300' : ''">登录</button>
-        <button @click="authMode='register'" class="flex-1 login-ghost-btn" :class="authMode==='register' ? '!bg-cyan-500 !text-white !border-cyan-300' : ''">注册</button>
-      </div>
-      <div class="space-y-3">
-        <input v-model="authUsername" type="text" autocomplete="username" placeholder="用户名" class="login-input">
-        <input v-model="authPassword" type="password" autocomplete="current-password" placeholder="密码" @keyup.enter="submitAuth" class="login-input">
-        <div v-if="authMode === 'register' || !loginCaptchaVerified" class="login-captcha-box">
-          <div>{{ loginCaptchaNotice }}</div>
+      <template v-if="isMobileClient">
+        <div class="space-y-3">
+          <div class="login-captcha-box">
+            <div>{{ loginCaptchaNotice }}</div>
+          </div>
+          <input v-model="authCaptcha" type="text" autocomplete="off" placeholder="请输入验证码" @keyup.enter="enterGuestMode" class="login-input">
         </div>
-        <input v-if="authMode === 'register' || !loginCaptchaVerified" v-model="authCaptcha" type="text" autocomplete="off" placeholder="请输入验证码" @keyup.enter="submitAuth" class="login-input">
-      </div>
-      <label class="mt-3 flex items-center gap-2 text-xs font-black text-cyan-100/85 select-none">
-        <input v-model="rememberPassword" type="checkbox" class="w-4 h-4 accent-cyan-500">
-        <span>记住密码</span>
-      </label>
-      <button @click="submitAuth" :disabled="authLoading" class="login-primary-btn w-full mt-4 disabled:opacity-50">{{ authMode==='register' ? '注册并进入游戏' : '登录并读取存档' }}</button>
-      <button @click="enterGuestMode" :disabled="authLoading" class="login-ghost-btn w-full mt-3 disabled:opacity-50">游客登录（使用本地进度）</button>
-      <div class="mt-5 rounded-2xl border border-cyan-300/20 bg-slate-950/35 p-3 text-xs font-bold text-cyan-100/75 leading-5">
+        <button @click="enterGuestMode" :disabled="authLoading" class="login-primary-btn w-full mt-4 disabled:opacity-50">游客登录</button>
+      </template>
+      <template v-else>
+        <div class="flex gap-2 mb-4">
+          <button @click="authMode='login'" class="flex-1 login-ghost-btn" :class="authMode==='login' ? '!bg-cyan-500 !text-white !border-cyan-300' : ''">登录</button>
+          <button @click="authMode='register'" class="flex-1 login-ghost-btn" :class="authMode==='register' ? '!bg-cyan-500 !text-white !border-cyan-300' : ''">注册</button>
+        </div>
+        <div class="space-y-3">
+          <input v-model="authUsername" type="text" autocomplete="username" placeholder="用户名" class="login-input">
+          <input v-model="authPassword" type="password" autocomplete="current-password" placeholder="密码" @keyup.enter="submitAuth" class="login-input">
+          <div v-if="authMode === 'register' || !loginCaptchaVerified" class="login-captcha-box">
+            <div>{{ loginCaptchaNotice }}</div>
+          </div>
+          <input v-if="authMode === 'register' || !loginCaptchaVerified" v-model="authCaptcha" type="text" autocomplete="off" placeholder="请输入验证码" @keyup.enter="submitAuth" class="login-input">
+        </div>
+        <label class="mt-3 flex items-center gap-2 text-xs font-black text-cyan-100/85 select-none">
+          <input v-model="rememberPassword" type="checkbox" class="w-4 h-4 accent-cyan-500">
+          <span>记住密码</span>
+        </label>
+        <button @click="submitAuth" :disabled="authLoading" class="login-primary-btn w-full mt-4 disabled:opacity-50">{{ authMode==='register' ? '注册并进入游戏' : '登录并读取存档' }}</button>
+        <button @click="enterGuestMode" :disabled="authLoading" class="login-ghost-btn w-full mt-3 disabled:opacity-50">游客登录（使用本地进度）</button>
+      </template>
+      <div v-if="!isMobileClient" class="mt-5 rounded-2xl border border-cyan-300/20 bg-slate-950/35 p-3 text-xs font-bold text-cyan-100/75 leading-5">
         登录用户会保存到对应用户目录；导入本地存档时会自动绑定为当前登录用户。
       </div>
     </div>
@@ -9964,7 +9975,7 @@
       <button @click="openQixingGachaPanel" class="home-action-btn home-action-gacha" title="启星转盘" aria-label="启星转盘"><img src="./resource/ui/背景/转盘.png" alt=""></button>
       <button @click="openChallengeRecordPanel" class="home-action-btn home-action-record" title="挑战录像" aria-label="挑战录像"><img src="./resource/界面ui/录像.png" alt=""></button>
       <button @click="openElementPanel" class="home-action-btn home-action-element" title="属性克制" aria-label="属性克制"><img src="./resource/界面ui/属性.png" alt=""></button>
-      <button @click="openTeamPanel" class="home-action-btn home-action-team" title="战队" aria-label="战队"><img src="./resource/创建战队.png" alt=""></button>
+      <button v-if="!isMobileClient" @click="openTeamPanel" class="home-action-btn home-action-team" title="战队" aria-label="战队"><img src="./resource/创建战队.png" alt=""></button>
       <button
         @click="showGlobalSettingsPanel = true"
         class="home-settings-btn"
@@ -10254,7 +10265,7 @@
         <button @click="closeDexPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
       <div class="rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2 text-[11px] font-black text-indigo-700 mb-3">
-        图鉴提示：只有击败某亚比的最终形态，才会获得该亚比蛋。守护者和BOSS请从【挑战之路】入口挑战，商店蛋亚比只能从【亚比商店】购买。
+        图鉴提示：只有击败某亚比的最终形态，才会获得该亚比蛋。守护者和BOSS请从【挑战之路】入口挑战，商店蛋亚比只能从【亚比商店】购买，签到亚比仅可通过【至尊月签到】里程碑获取。
       </div>
       <div class="grid grid-cols-6 gap-1 md:gap-2 flex-1 overflow-y-auto pr-1 scrollbar">
         <button v-for="entry in filteredDex" :key="'dex_'+entry.dexId" @click="canChallengeFromDex(entry) ? selectDex(entry.dexId) : null" class="dex-card rounded-xl border bg-white p-1.5 md:p-2 text-left min-h-[164px]" :class="canChallengeFromDex(entry) ? 'border-slate-200 hover:border-indigo-300' : 'border-amber-300 bg-amber-50 cursor-not-allowed'">
@@ -10263,7 +10274,7 @@
             <span class="element-icon" :style="petElementIconStyle(entry.element, 15)" :title="entry.element || ''"></span>
             <span v-if="entry.subElement" class="element-icon" :style="petElementIconStyle(entry.subElement, 15)" :title="entry.subElement || ''"></span>
             <span v-if="hasDefeatedDex(entry.dexId)" class="rounded bg-emerald-500 px-1.5 py-0.5 text-[9px] font-black text-white" :class="canChallengeFromDex(entry) ? 'ml-auto' : ''">WIN</span>
-            <span v-if="!canChallengeFromDex(entry)" class="ml-auto text-[10px] font-black" :class="dexStatus(entry)==='BOSS' ? 'text-rose-700' : (dexStatus(entry)==='绝版BOSS' ? 'text-slate-700' : (dexStatus(entry)==='商店蛋' ? 'text-violet-700' : 'text-amber-700'))">{{ dexStatus(entry) }}</span>
+            <span v-if="!canChallengeFromDex(entry)" class="ml-auto text-[10px] font-black" :class="dexStatus(entry)==='BOSS' ? 'text-rose-700' : (dexStatus(entry)==='绝版BOSS' ? 'text-slate-700' : (dexStatus(entry)==='商店蛋' ? 'text-violet-700' : (dexStatus(entry)==='签到' ? 'text-fuchsia-700' : 'text-amber-700')))">{{ dexStatus(entry) }}</span>
           </div>
           <div class="dex-card-image-wrap">
             <img :src="entry.image" @error="withFallback" class="dex-card-image w-20 h-20 object-contain mx-auto">
@@ -11504,6 +11515,7 @@
             <div v-if="it.dailyLimit" class="text-[11px] font-black text-rose-600 mt-1">今日剩余 {{ shopItemRemainingDaily(it) }}/{{ it.dailyLimit }}</div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
+            <button @click="openSkillStoneDetail(it.id)" class="h-9 px-3 rounded-xl bg-white border border-amber-200 text-amber-800 text-sm font-black">&#26597;&#30475;</button>
             <input
               type="number"
               min="1"
@@ -11614,6 +11626,28 @@
       </div>
     </div>
   </div>
+  </div>
+
+  <div v-if="showSkillStoneDetail" class="fixed inset-0 z-[75] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeSkillStoneDetail">
+    <div v-if="selectedSkillStoneDetail" class="w-full max-w-lg rounded-3xl border border-amber-100 bg-white p-5 shadow-2xl app-modal" @click.stop>
+      <div class="flex items-start justify-between gap-4">
+        <div class="min-w-0">
+          <div class="text-xs font-black text-amber-700">&#25216;&#33021;&#30707;&#35814;&#24773;</div>
+          <h3 class="mt-1 text-xl font-black text-slate-900 break-words">{{ selectedSkillStoneDetail.skill.name }}</h3>
+          <div class="mt-1 text-xs font-bold text-slate-500">&#20165;&#38480; {{ selectedSkillStoneDetail.restriction }} &#20351;&#29992;</div>
+        </div>
+        <button @click="closeSkillStoneDetail" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">&#20851;&#38381;</button>
+      </div>
+      <div class="mt-4 grid grid-cols-2 gap-2 text-xs font-bold">
+        <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">&#23646;&#24615;: {{ selectedSkillStoneDetail.skill.element }}</div>
+        <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">&#31867;&#22411;: {{ selectedSkillStoneDetail.skill.attackType }}</div>
+        <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">&#23041;&#21147;: {{ selectedSkillStoneDetail.skill.power > 0 ? selectedSkillStoneDetail.skill.power : '-' }}</div>
+        <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">&#21629;&#20013;: {{ selectedSkillStoneDetail.skill.accuracy }}</div>
+        <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">PP: {{ selectedSkillStoneDetail.skill.pp }}</div>
+        <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-amber-800">&#20215;&#26684;: {{ selectedSkillStoneDetail.item.price }} H&#24065;</div>
+      </div>
+      <div class="mt-3 rounded-xl border border-amber-100 bg-amber-50 px-3 py-3 text-sm font-bold leading-6 text-amber-950 break-words">{{ selectedSkillStoneDetail.skill.desc }}</div>
+    </div>
   </div>
 
   <div v-show="showBadgePanel" style="display:none" class="fixed inset-0 z-[72] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBadgePanel">
@@ -11925,15 +11959,15 @@
       </div>
       <div class="mt-4 rounded-2xl border border-sky-200 bg-white/75 p-3">
         <div class="mb-3 flex items-center justify-between gap-3">
-          <div class="text-sm font-black text-sky-900">累计签到里程碑</div>
-          <div class="text-[11px] font-bold text-slate-500">达到天数后点击领取</div>
+          <div class="text-sm font-black text-sky-900">{{ monthlySignTab==='supreme' ? '至尊月签到里程碑' : '累计签到里程碑' }}</div>
+          <div class="text-[11px] font-bold text-slate-500">{{ monthlySignTab==='supreme' ? '激活至尊后，达到天数可领取签到亚比' : '达到天数后点击领取' }}</div>
         </div>
         <div class="grid grid-cols-4 gap-2">
           <button
-            v-for="entry in monthlySignMilestones"
-            :key="'monthly_sign_milestone_'+entry.days"
-            @click="claimMonthlySignMilestone(entry.days)"
-            :disabled="!entry.reached || entry.claimed"
+            v-for="entry in (monthlySignTab==='supreme' ? monthlySignSupremeMilestones : monthlySignMilestones)"
+            :key="'monthly_sign_milestone_'+monthlySignTab+'_'+entry.days"
+            @click="monthlySignTab==='supreme' ? claimMonthlySignSupremeMilestone(entry.days) : claimMonthlySignMilestone(entry.days)"
+            :disabled="!entry.reached || entry.claimed || (monthlySignTab==='supreme' && !monthlySignSupremeActive)"
             class="relative overflow-hidden rounded-2xl border p-3 text-left transition disabled:opacity-55"
             :class="entry.claimed ? 'border-emerald-300 bg-emerald-50 text-emerald-950' : (entry.reached ? 'border-yellow-300 bg-yellow-100 text-slate-950 shadow-lg shadow-yellow-500/15' : 'border-sky-100 bg-white/70 text-slate-600')"
           >
@@ -13244,6 +13278,6 @@
 <script src="./aola-species-data.js?v=20260702_data_split"></script>
 <script src="./aola-skill-data.js?v=20260702_data_split"></script>
 <script src="./aola-evolution-chains.js?v=20260702_data_split"></script>
-<script src="./aola-star-app-dev.js?v=20260722_dev_team_server_records"></script>
+<script src="./aola-star-app-dev.js?v=20260723_dev_team_sign_bosses"></script>
 </body>
 </html>
