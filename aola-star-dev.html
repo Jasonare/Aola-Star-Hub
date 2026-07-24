@@ -533,8 +533,8 @@
     }
     .home-action-monthly {
       --x: 1.25%;
-      --y: 73.0%;
-      --w: 7.4%;
+      --y: 71.8%;
+      --w: 10%;
     }
     .home-action-gift { --x: 1.2%; --y: 83.4%; --w: 7.1%; }
     .home-action-dragonboat { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
@@ -970,7 +970,7 @@
         width: min(520px, calc(100vw - 32px));
       }
       .home-action-gift { --x: 2%; --y: 76%; --w: 18%; }
-      .home-action-monthly { --x: 2%; --y: 60.5%; --w: 18%; }
+      .home-action-monthly { --x: 2%; --y: 58.5%; --w: 24.3%; }
       .home-action-dragonboat { --x: 2%; --y: 60%; --w: 18%; }
       .home-action-rank { --x: 18%; --y: 82%; --w: 18%; }
       .home-action-tunnel { --x: 34%; --y: 82%; --w: 18%; }
@@ -4729,6 +4729,11 @@
       top: var(--status-fx-local-y, 50%);
       width: var(--status-fx-size, min(46vw, calc(520 * var(--ui-px))));
       height: var(--status-fx-size, min(46vw, calc(520 * var(--ui-px))));
+      max-width: none !important;
+      max-height: none !important;
+      min-width: var(--status-fx-size, min(46vw, calc(520 * var(--ui-px))));
+      min-height: var(--status-fx-size, min(46vw, calc(520 * var(--ui-px))));
+      display: block;
       object-fit: contain;
       pointer-events: none;
       z-index: 180;
@@ -7022,7 +7027,7 @@
       background-repeat: no-repeat !important;
     }
     html.android-webview.android-landscape header.home-hub-scene .home-action-gift { --x: 1.2%; --y: 68.8%; --w: 6.5%; }
-    html.android-webview.android-landscape header.home-hub-scene .home-action-monthly { --x: 1.2%; --y: 57.0%; --w: 6.8%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-monthly { --x: 1.2%; --y: 55.8%; --w: 9.2%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-dragonboat { --x: 8.5%; --y: 67.6%; --w: 7.3%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-rank { --x: 6.2%; --y: 70.3%; --w: 6.1%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-tunnel { --x: 33.8%; --y: 71.8%; --w: 7.6%; }
@@ -10090,7 +10095,11 @@
                     <div class="text-xs font-black text-sky-950 leading-4">{{ item.name }}</div>
                     <div class="mt-2 text-[11px] font-black text-sky-700">{{ item.countLabel }}</div>
                     <div class="mt-1 text-[10px] font-bold text-slate-500 leading-4 line-clamp-2">{{ item.desc }}</div>
-                    <button v-if="item.supportsUseQuantity" @click.stop="openBagItemUseDialog(item)" :disabled="!item.canUse" class="mt-2 h-8 w-full rounded-lg bg-sky-600 text-white text-xs font-black disabled:opacity-40">使用</button>
+                    <div v-if="item.skinKey" class="mt-2 grid grid-cols-2 gap-1">
+                      <button @click.stop="useBagItemOnSelectedPet(item.id)" :disabled="!item.canUse" class="h-8 rounded-lg bg-sky-600 text-white text-xs font-black disabled:opacity-40">&#20351;&#29992;</button>
+                      <button @click.stop="unequipPetSkin(petId(selectedPet))" :disabled="!selectedPet || selectedPet.skinKey !== item.skinKey" class="h-8 rounded-lg bg-violet-600 text-white text-xs font-black disabled:opacity-40">&#21368;&#19979;</button>
+                    </div>
+                    <button v-else-if="item.supportsUseQuantity" @click.stop="openBagItemUseDialog(item)" :disabled="!item.canUse" class="mt-2 h-8 w-full rounded-lg bg-sky-600 text-white text-xs font-black disabled:opacity-40">使用</button>
                     <button v-else @click.stop="useBagItemOnSelectedPet(item.id)" :disabled="!item.canUse" class="mt-2 h-8 w-full rounded-lg bg-sky-600 text-white text-xs font-black disabled:opacity-40">使用</button>
                   </div>
                 </div>
@@ -10624,7 +10633,11 @@
             <div v-for="item in petItemInventoryRows" :key="'bag2_item_'+item.id" @click="item.canUse ? (item.supportsUseQuantity ? openBagItemUseDialog(item) : useBagItemOnSelectedPet(item.id)) : null" class="bag2-item-card" :class="item.canUse ? 'cursor-pointer' : 'opacity-60'">
               <div class="bag2-item-name">{{ item.name }}</div>
               <div class="bag2-item-count">{{ item.countLabel }}</div>
-              <button v-if="item.canUse" @click.stop="item.supportsUseQuantity ? openBagItemUseDialog(item) : useBagItemOnSelectedPet(item.id)" class="bag2-item-use-btn">使用</button>
+              <div v-if="item.skinKey" class="mt-1 grid grid-cols-2 gap-1">
+                <button @click.stop="useBagItemOnSelectedPet(item.id)" :disabled="!item.canUse" class="bag2-item-use-btn disabled:opacity-40">&#20351;&#29992;</button>
+                <button @click.stop="unequipPetSkin(petId(selectedPet))" :disabled="!selectedPet || selectedPet.skinKey !== item.skinKey" class="bag2-item-use-btn disabled:opacity-40">&#21368;&#19979;</button>
+              </div>
+              <button v-else-if="item.canUse" @click.stop="item.supportsUseQuantity ? openBagItemUseDialog(item) : useBagItemOnSelectedPet(item.id)" class="bag2-item-use-btn">使用</button>
             </div>
           </div>
         </template>
@@ -11020,7 +11033,11 @@
                     <div class="text-xs font-black text-sky-950 leading-4">{{ item.name }}</div>
                     <div class="mt-2 text-[11px] font-black text-sky-700">{{ item.countLabel }}</div>
                     <div class="mt-1 text-[10px] font-bold text-slate-500 leading-4 line-clamp-2">{{ item.desc }}</div>
-                    <button v-if="item.supportsUseQuantity" @click.stop="openBagItemUseDialog(item)" :disabled="!item.canUse" class="mt-2 h-8 w-full rounded-lg bg-sky-600 text-white text-xs font-black disabled:opacity-40">使用</button>
+                    <div v-if="item.skinKey" class="mt-2 grid grid-cols-2 gap-1">
+                      <button @click.stop="useBagItemOnSelectedPet(item.id)" :disabled="!item.canUse" class="h-8 rounded-lg bg-sky-600 text-white text-xs font-black disabled:opacity-40">&#20351;&#29992;</button>
+                      <button @click.stop="unequipPetSkin(petId(selectedPet))" :disabled="!selectedPet || selectedPet.skinKey !== item.skinKey" class="h-8 rounded-lg bg-violet-600 text-white text-xs font-black disabled:opacity-40">&#21368;&#19979;</button>
+                    </div>
+                    <button v-else-if="item.supportsUseQuantity" @click.stop="openBagItemUseDialog(item)" :disabled="!item.canUse" class="mt-2 h-8 w-full rounded-lg bg-sky-600 text-white text-xs font-black disabled:opacity-40">使用</button>
                     <button v-else @click.stop="useBagItemOnSelectedPet(item.id)" :disabled="!item.canUse" class="mt-2 h-8 w-full rounded-lg bg-sky-600 text-white text-xs font-black disabled:opacity-40">使用</button>
                   </div>
                 </div>
@@ -11515,7 +11532,6 @@
             <div v-if="it.dailyLimit" class="text-[11px] font-black text-rose-600 mt-1">今日剩余 {{ shopItemRemainingDaily(it) }}/{{ it.dailyLimit }}</div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <button @click="openSkillStoneDetail(it.id)" class="h-9 px-3 rounded-xl bg-white border border-amber-200 text-amber-800 text-sm font-black">&#26597;&#30475;</button>
             <input
               type="number"
               min="1"
@@ -11537,6 +11553,7 @@
             <div v-if="it.purchaseLimit" class="text-[11px] font-black text-orange-700 mt-1">&#38480;&#36141;&#21097;&#20313; {{ shopItemRemainingLimited(it) }}/{{ it.purchaseLimit }}</div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
+            <button @click="openSkillStoneDetail(it.id)" class="h-9 px-3 rounded-xl bg-white border border-amber-200 text-amber-800 text-sm font-black">&#26597;&#30475;</button>
             <input
               type="number"
               min="1"
@@ -12489,7 +12506,7 @@
       </div>
     </div>
 
-    <div v-show="showJoinTeamList" class="team-modal-overlay">
+    <div v-if="showJoinTeamList" class="team-modal-overlay">
       <div class="team-join-list-modal">
         <div class="team-join-list-header">
           <div class="team-modal-title">申请加入战队</div>
@@ -12517,7 +12534,7 @@
 
 
 
-    <div v-show="showTeamInfo" class="team-info-panel">
+    <div v-if="showTeamInfo" class="team-info-panel">
       <img src="./resource/战队信息底图.png?v=3" class="team-info-bg" alt="战队信息">
       <div v-if="!hasTeam && !isViewingOwnTeam" class="team-info-join-btn" @click="applyJoinTeam">
         <img src="./resource/申请加入按钮.png" alt="申请加入">
@@ -12568,11 +12585,11 @@
       </div>
     </div>
 
-    <div v-show="showTeamButler" class="team-modal-overlay">
+    <div v-if="showTeamButler" class="team-modal-overlay">
       <div class="team-butler-modal">
         <div class="team-butler-title">战队管家</div>
         <div class="team-butler-buttons">
-          <button class="team-butler-btn-item task" @click="showTeamButler = false; showTeamTask = true">
+          <button class="team-butler-btn-item task" @click="openTeamTask">
             <img src="./resource/战队任务.png" alt="战队任务">
             <span>战队任务</span>
           </button>
@@ -12585,7 +12602,7 @@
       </div>
     </div>
 
-    <div v-show="showTeamTask" class="team-task-panel">
+    <div v-if="showTeamTask" class="team-task-panel">
       <img src="./resource/战队任务.png" class="team-task-bg" alt="战队任务">
       <div class="team-task-close-btn" @click="showTeamTask = false">
         <img src="./resource/荣誉榜关闭按钮.png" alt="关闭">
@@ -12609,7 +12626,7 @@
       </div>
     </div>
 
-    <div v-show="showTeamShop" class="team-shop-panel">
+    <div v-if="showTeamShop" class="team-shop-panel">
       <img src="./resource/战队商店.png" class="team-shop-bg" alt="战队商店">
       <div class="team-shop-close-btn" @click="showTeamShop = false">
         <img src="./resource/荣誉榜关闭按钮.png" alt="关闭">
@@ -12648,7 +12665,7 @@
       </div>
     </div>
 
-    <div v-show="showTeamRecord" class="team-record-panel">
+    <div v-if="showTeamRecord" class="team-record-panel">
       <div class="team-record-header">
         <div class="team-record-tabs">
           <button class="team-record-tab" :class="{ active: teamRecordTab === 'members' }" @click="teamRecordTab = 'members'">成员列表</button>
@@ -12716,7 +12733,7 @@
       </div>
     </div>
 
-    <div v-show="showTeamMemberInfo" class="team-modal-overlay">
+    <div v-if="showTeamMemberInfo" class="team-modal-overlay">
       <div class="team-member-card">
         <div class="team-member-card-title">{{ selectedTeamMemberInfo && selectedTeamMemberInfo.name }}</div>
         <div class="team-member-card-row"><span>所属战队</span><b>{{ selectedTeamMemberInfo && selectedTeamMemberInfo.teamName }}</b></div>
@@ -12728,7 +12745,7 @@
       </div>
     </div>
 
-    <div v-show="showTeamRank" class="team-rank-panel">
+    <div v-if="showTeamRank" class="team-rank-panel">
       <img src="./resource/荣誉榜底图.png" class="team-rank-bg" alt="荣誉榜">
       <div class="team-rank-close-btn" @click="showTeamRank = false">
         <img src="./resource/荣誉榜关闭按钮.png" alt="关闭">
@@ -12752,7 +12769,7 @@
       </div>
     </div>
 
-    <div v-show="showTeamRecruit" class="team-recruit-panel">
+    <div v-if="showTeamRecruit" class="team-recruit-panel">
       <div class="team-recruit-title">战队招募</div>
       <div class="team-recruit-list">
         <div v-for="(player, index) in recruitPlayerList" :key="index" class="team-recruit-item">
@@ -12774,7 +12791,7 @@
     <div class="team-modal">
       <div class="team-modal-title">选择操作</div>
       <div class="team-modal-buttons">
-        <button class="team-modal-btn create" @click="showTeamModal = false; showCreateTeamModal = true">创建战队</button>
+        <button class="team-modal-btn create" @click="handleCreateTeam">创建战队</button>
         <button class="team-modal-btn join" @click="showTeamModal = false; showJoinTeamList = true">申请加入</button>
         <button class="team-modal-btn cancel" @click="showTeamModal = false">取消</button>
       </div>
@@ -12796,7 +12813,7 @@
       </div>
       <div class="team-modal-buttons">
         <button class="team-modal-btn create" @click="submitCreateTeam">确认创建</button>
-        <button class="team-modal-btn cancel" @click="showCreateTeamModal = false">取消</button>
+        <button class="team-modal-btn cancel" @click="cancelCreateTeam">取消</button>
       </div>
     </div>
   </div>
@@ -12916,7 +12933,7 @@
               <div v-if="battleScene.fxTargetSkillText" class="text-sm font-black whitespace-nowrap battle-skill-float battle-pet-skill-float battle-target-skill-float" :style="battlePetSkillFloatStyle('target')">{{ battleScene.fxTargetSkillText }}</div>
               <img :key="'battle_target_pet_' + battleScene.targetImage" :src="battleScene.targetImage" :style="battlePetImageStyle('target')" @error="(event) => withBattlePetFallback(event, 'target')" class="battle-pet-img battle-target-pet-img drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
               <img v-if="battleVisualReady && battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'target'" :key="'skill_fx_target_' + battleScene.skillEffectFx.seq" :src="battleScene.skillEffectFx.src" class="battle-skill-effect-gif" :style="battleSkillEffectStyle('target')" alt="">
-              <img v-if="battleVisualReady && battleScene.statusEffectFx && battleScene.statusEffectFx.side === 'target'" :key="'status_fx_target_' + battleScene.statusEffectFx.seq" :src="battleScene.statusEffectFx.src" class="battle-status-effect-gif" :style="battleStatusEffectStyle('target')" alt="">
+              <img v-if="battleVisualReady && battleScene.statusEffectFxBySide && battleScene.statusEffectFxBySide.target" :key="'status_fx_target_' + battleScene.statusEffectFxBySide.target.seq" :src="battleScene.statusEffectFxBySide.target.src" class="battle-status-effect-gif" :style="battleStatusEffectStyle('target')" alt="">
               <img v-if="battleVisualReady && battleScene.moraleEffectFx && battleScene.moraleEffectFx.side === 'target'" :key="'morale_fx_target_' + battleScene.moraleEffectFx.seq" :src="battleScene.moraleEffectFx.src" class="battle-status-effect-gif battle-morale-effect-gif" :style="battleStatusEffectStyle('target', true)" alt="">
               <img v-if="battleVisualReady && battleScene.stageChangeFx && battleScene.stageChangeFx.target" :key="'stage_change_target_' + battleScene.stageChangeFx.target.seq" :src="battleScene.stageChangeFx.target.src" class="battle-stage-change-fx" :style="battleStageChangeFxStyle('target')" alt="">
           <div v-if="battleScene.damageOnTarget || battleScene.damageTagOnTarget" class="battle-pet-value-float battle-pet-value-float-row battle-damage-pop" :style="battlePetValueFloatStyle('target', 'damage')">
@@ -13089,7 +13106,7 @@
           <img :key="'battle_attacker_pet_' + battleScene.attackerImage" :src="battleScene.attackerImage" :style="battlePetImageStyle('attacker')" @error="(event) => withBattlePetFallback(event, 'attacker')" class="battle-pet-img battle-attacker-pet-img drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
           <img v-if="battleVisualReady && battleScene.attackerTransformFx" :key="'transform_fx_attacker_' + battleScene.attackerTransformSeq" :src="battleScene.attackerTransformFx" class="battle-transform-effect-gif" :style="battleTransformEffectStyle('attacker')" alt="">
           <img v-if="battleVisualReady && battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'attacker'" :key="'skill_fx_attacker_' + battleScene.skillEffectFx.seq" :src="battleScene.skillEffectFx.src" class="battle-skill-effect-gif" :style="battleSkillEffectStyle('attacker')" alt="">
-          <img v-if="battleVisualReady && battleScene.statusEffectFx && battleScene.statusEffectFx.side === 'attacker'" :key="'status_fx_attacker_' + battleScene.statusEffectFx.seq" :src="battleScene.statusEffectFx.src" class="battle-status-effect-gif" :style="battleStatusEffectStyle('attacker')" alt="">
+          <img v-if="battleVisualReady && battleScene.statusEffectFxBySide && battleScene.statusEffectFxBySide.attacker" :key="'status_fx_attacker_' + battleScene.statusEffectFxBySide.attacker.seq" :src="battleScene.statusEffectFxBySide.attacker.src" class="battle-status-effect-gif" :style="battleStatusEffectStyle('attacker')" alt="">
           <img v-if="battleVisualReady && battleScene.moraleEffectFx && battleScene.moraleEffectFx.side === 'attacker'" :key="'morale_fx_attacker_' + battleScene.moraleEffectFx.seq" :src="battleScene.moraleEffectFx.src" class="battle-status-effect-gif battle-morale-effect-gif" :style="battleStatusEffectStyle('attacker', true)" alt="">
           <img v-if="battleVisualReady && battleScene.stageChangeFx && battleScene.stageChangeFx.attacker" :key="'stage_change_attacker_' + battleScene.stageChangeFx.attacker.seq" :src="battleScene.stageChangeFx.attacker.src" class="battle-stage-change-fx" :style="battleStageChangeFxStyle('attacker')" alt="">
         <div v-if="battleScene.damageOnAttacker || battleScene.damageTagOnAttacker" class="battle-pet-value-float battle-pet-value-float-row battle-damage-pop" :style="battlePetValueFloatStyle('attacker', 'damage')">

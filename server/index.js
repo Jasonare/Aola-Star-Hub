@@ -20,6 +20,7 @@ const STATIC_RESOURCE_PREFIXES = [
   "resource/skill-effect/",
   "resource/skill-effect-fullscreen/",
   "resource/scene/",
+  "resource/shengyu/",
   "resource/time-tunnel-environments/",
   "resource/type/",
   "resource/type-transparent/",
@@ -1248,7 +1249,7 @@ const handleApi = async (req, res) => {
       });
       db.teams.push(team);
       saveTeamsDb(db);
-      return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
+      return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, false) });
     }
     if (req.method === "POST" && pathname === "/api/teams/apply") {
       const user = requireUser(req, res);

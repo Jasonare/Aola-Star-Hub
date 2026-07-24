@@ -11199,7 +11199,8 @@ createApp({
       const expiresAt = Math.max(0, Math.floor(Number(raw.supremeExpiresAt) || 0));
       const now = Date.now();
       const supremeActive = expiresAt > now;
-      const supremeStartDay = supremeActive ? clamp(Math.floor(Number(raw.supremeStartDay) || MONTHLY_SIGN_DAYS + 1), 1, MONTHLY_SIGN_DAYS + 1) : 0;
+      const storedSupremeStartDay = clamp(Math.floor(Number(raw.supremeStartDay) || MONTHLY_SIGN_DAYS + 1), 1, MONTHLY_SIGN_DAYS + 1);
+      const supremeStartDay = supremeActive ? Math.min(storedSupremeStartDay, monthlySignDayOf()) : 0;
       return {
         monthKey: currentMonthKey,
         signedDays,
@@ -12083,6 +12084,12 @@ createApp({
       state.value.teamProfile.tasks.rows = rows;
       return rows;
     };
+    const readTeamDailyTasks = () => {
+      const profile = state.value.teamProfile;
+      const tasks = profile && profile.tasks && typeof profile.tasks === "object" && !Array.isArray(profile.tasks) ? profile.tasks : null;
+      if (!tasks || normalize(tasks.date) !== localDateKey()) return {};
+      return tasks.rows && typeof tasks.rows === "object" && !Array.isArray(tasks.rows) ? tasks.rows : {};
+    };
     const syncTeamProfileToState = () => {
       state.value.teamProfile = {
         hasTeam: Boolean(hasTeam.value),
@@ -12107,7 +12114,7 @@ createApp({
       ensureTeamDailyTasks();
     };
     const teamTaskRows = computed(() => {
-      const rows = ensureTeamDailyTasks();
+      const rows = readTeamDailyTasks();
       return TEAM_TASK_DEFINITIONS.map((task) => ({
         ...task,
         claimed: Boolean(rows[task.key] && rows[task.key].claimed),
@@ -12181,11 +12188,15 @@ createApp({
       teamHistory.value.unshift({ name: authUser.value && authUser.value.username ? authUser.value.username : "我", action: `完成${task.name}，贡献+${task.contribution}，荣誉+${task.honor}`, time: "刚刚" });
       syncTeamProfileToState();
       syncTeamContributionToServer(task.contribution, task.honor);
+      queueRewardFlyToasts([
+        `获得战队贡献×${task.contribution}！`,
+        `获得战队荣誉×${task.honor}！`
+      ]);
       showToast(`战队任务完成：贡献+${task.contribution}，荣誉+${task.honor}`);
       return true;
     };
     const teamIntruderTaskActive = computed(() => {
-      const rows = ensureTeamDailyTasks();
+      const rows = readTeamDailyTasks();
       const row = rows.team_intruder_win;
       return Boolean(hasTeam.value && row && row.claimed && !row.completed);
     });
@@ -13396,6 +13407,7 @@ createApp({
           maxUseQuantity: bagItemMaxUseQuantity(it.id),
           supportsUseQuantity: supportsBagItemUseQuantity(it.id),
           canUse: count > 0 || isSkinUnlock,
+          skinKey: skinConfig ? skinConfig.skinKey : "",
           countLabel: isSkinUnlock ? "已解锁" : (it.id === "double_exp_device" || it.id === "auto_battle_device" || it.id === "double_hcoin_device" ? `${count} 次` : `× ${count}`),
           equipped: safeActivePets.value.filter((pet) => normalize(pet && pet.equippedItemId) === normalize(it.id)).length
         };
@@ -13809,7 +13821,7 @@ createApp({
       row.supremeActivatedAt = now;
       row.supremeExpiresAt = now + MONTHLY_SIGN_SUPREME_DURATION_MS;
       const today = monthlySignTodayDay.value;
-      row.supremeStartDay = row.signedDays.includes(today) ? Math.min(MONTHLY_SIGN_DAYS + 1, today + 1) : today;
+      row.supremeStartDay = today;
       showToast("至尊月签到已激活，有效期30天。");
     };
     const claimMonthlySignMilestone = (days) => {
@@ -15904,9 +15916,8 @@ createApp({
       const lowHpText = config.lowHpKind === "darkflame"
         ? `首次低于30%体力时暴击提升3级，之后攻击附加${rule.lowHpFixedDamage || 0}点固伤。`
         : `首次低于30%体力时恢复自身${Math.round((Number(rule.lowHpHealRatio) || 0) * 100)}%最大体力，之后攻击附加${rule.lowHpFixedDamage || 0}点固伤。`;
-      const forbiddenText = NORMAL_HARD_CHALLENGE_FORBIDDEN_DIFFICULTY_KEYS.has(option.key) ? NORMAL_HARD_CHALLENGE_FORBIDDEN_TEXT : "";
       const counterText = config.counterName ? `出战${config.counterName}可获得全属性+2、伤害+20%、抗性+10%、免疫异常，并无效固伤效果。` : "";
-      return `当周BOSS：${config.name} ${option.label}难度，体力${option.fixedHp}，自带${Math.round(option.damageReductionRatio * 100)}%减伤；${periodicText}${lowHpText}${counterText}${forbiddenText}胜利获得${medalText}当周BOSS勋章、${option.rewardHCoins}H币、${keyText}${badgeText}。勋章上限${WEEKLY_BOSS_MEDAL_MAX}个，${WEEKLY_BOSS_EGG_EXCHANGE_COST}个可兑换${config.name}亚比蛋。`;
+      return `当周BOSS：${config.name} ${option.label}难度，体力${option.fixedHp}，自带${Math.round(option.damageReductionRatio * 100)}%减伤；${periodicText}${lowHpText}${counterText}胜利获得${medalText}当周BOSS勋章、${option.rewardHCoins}H币、${keyText}${badgeText}。勋章上限${WEEKLY_BOSS_MEDAL_MAX}个，${WEEKLY_BOSS_EGG_EXCHANGE_COST}个可兑换${config.name}亚比蛋。`;
     });
     const timeEnvViewportStyle = computed(() => {
       const designW = 1700;
@@ -17470,12 +17481,20 @@ createApp({
       900405: 2221,
       900406: 2244
     });
+    const SKILL_EFFECT_ID_BY_NAME = Object.freeze({
+      年兽之域: 16315,
+      凶兽冥想: 21084,
+      兽皇终舞: 17319,
+      风魄入魂: 3207,
+      龙族血脉: 16201,
+      神灵: 14242
+    });
     const getBattleSkillEffectId = (skill) => {
       const mappedSkillStoneEffectId = SKILL_STONE_SKILL_EFFECT_ID_BY_SKILL_ID[Number(skill && skill.skillId) || 0];
       if (mappedSkillStoneEffectId) return mappedSkillStoneEffectId;
       const name = normalizeSkillKey(skill && skill.name).replace(/[·.\s]/g, "");
       if (name === "骰子炸弹" || name === "超级骰子炸弹") return DICE_BOMB_SKILL_EFFECT_ID;
-      return Number(FULLSCREEN_SKILL_EFFECT_ID_BY_NAME[name]) || Number(skill && skill.skillId) || 0;
+      return Number(SKILL_EFFECT_ID_BY_NAME[name]) || Number(FULLSCREEN_SKILL_EFFECT_ID_BY_NAME[name]) || Number(skill && skill.skillId) || 0;
     };
     const getBattleSkillEffectPath = (skill, actionSeq = 0) => {
       const id = getBattleSkillEffectId(skill);
@@ -17581,7 +17600,9 @@ createApp({
     const battleStatusEffectStyle = (side, forceMorale = false) => {
       const scene = battleScene.value;
       const safeSide = side === "target" ? "target" : "attacker";
-      const fx = forceMorale ? (scene && scene.moraleEffectFx) : (scene && scene.statusEffectFx);
+      const fx = forceMorale
+        ? (scene && scene.moraleEffectFx)
+        : (scene && scene.statusEffectFxBySide && scene.statusEffectFxBySide[safeSide]);
       const duration = Math.max(360, Number(fx && fx.durationMs) || battleDelayMs(STATUS_ANIM_DURATION_MS, 180));
       const vw = Math.max(1, Number(viewportSize.value && viewportSize.value.width) || 1700);
       const vh = Math.max(1, Number(viewportSize.value && viewportSize.value.height) || 765);
@@ -17652,29 +17673,66 @@ createApp({
         "--stage-change-size": `${Math.round(clamp(targetBodyH * 0.54, 72, 158))}px`
       };
     };
+    const ensureBattleStatusEffectSlots = (scene) => {
+      if (!scene.statusEffectFxBySide || typeof scene.statusEffectFxBySide !== "object") scene.statusEffectFxBySide = { attacker: null, target: null };
+      if (!scene.statusEffectQueueBySide || typeof scene.statusEffectQueueBySide !== "object") scene.statusEffectQueueBySide = { attacker: [], target: [] };
+      ["attacker", "target"].forEach((side) => {
+        if (!Array.isArray(scene.statusEffectQueueBySide[side])) scene.statusEffectQueueBySide[side] = [];
+      });
+      return { slots: scene.statusEffectFxBySide, queues: scene.statusEffectQueueBySide };
+    };
+    const playNextBattleStatusEffectFx = (scene, side) => {
+      if (!scene || scene.ended) return;
+      const safeSide = side === "target" ? "target" : "attacker";
+      const { slots, queues } = ensureBattleStatusEffectSlots(scene);
+      if (slots[safeSide]) return;
+      if (!scene.visualReady) {
+        if (scene._battleStatusFxWaiting && scene._battleStatusFxWaiting[safeSide]) return;
+        scene._battleStatusFxWaiting = scene._battleStatusFxWaiting || {};
+        scene._battleStatusFxWaiting[safeSide] = true;
+        setTimeout(() => {
+          if (scene._battleStatusFxWaiting) scene._battleStatusFxWaiting[safeSide] = false;
+          playNextBattleStatusEffectFx(scene, safeSide);
+        }, 32);
+        return;
+      }
+      const next = queues[safeSide].shift();
+      if (!next) return;
+      const seq = Date.now() + Math.random();
+      const durationMs = Math.max(650, battleSceneDelayMs(scene, STATUS_ANIM_DURATION_MS, 180));
+      const fx = {
+        side: safeSide,
+        src: next.directSrc ? assetSrcWithQuery(next.directSrc, "fx", seq) : assetSrcWithQuery(encodeAssetSrc(`./resource/pet-state/${next.fileLabel}.gif`), "fx", seq),
+        label: next.label,
+        seq,
+        durationMs
+      };
+      slots[safeSide] = fx;
+      scene.statusEffectFx = fx;
+      markBattleVisualHoldMs(scene, durationMs);
+      setTimeout(() => {
+        const live = battleScene.value;
+        if (!live || live !== scene) return;
+        const liveSlots = ensureBattleStatusEffectSlots(live).slots;
+        if (liveSlots[safeSide] && liveSlots[safeSide].seq === seq) liveSlots[safeSide] = null;
+        if (live.statusEffectFx && live.statusEffectFx.seq === seq) live.statusEffectFx = null;
+        playNextBattleStatusEffectFx(live, safeSide);
+      }, durationMs + 80);
+    };
     const showBattleStatusEffectFx = (scene, side, statuses = []) => {
       if (!scene || !Array.isArray(statuses) || statuses.length === 0) return;
       const safeSide = side === "target" ? "target" : "attacker";
       if (scene.moraleEffectFx && scene.moraleEffectFx.side === safeSide && Date.now() < (Number(scene._battleMoraleUntil) || 0)) return;
-      const first = statuses.find((x) => x && normalize(x.status || x.key || x.label)) || statuses[0];
-      const statusKey = normalize(first && (first.status || first.key));
-      const label = normalize(first && first.label) || statusLabel(statusKey) || "";
-      const directSrc = normalize(first && first.src);
-      const fileLabel = STATUS_ANIM_FILE_MAP[statusKey] || label;
-      if (!directSrc && !fileLabel) return;
-      const seq = Date.now() + Math.random();
-      scene.statusEffectFx = {
-        side: safeSide,
-        src: directSrc ? assetSrcWithQuery(directSrc, "fx", seq) : assetSrcWithQuery(encodeAssetSrc(`./resource/pet-state/${fileLabel}.gif`), "fx", seq),
-        label,
-        seq,
-        durationMs: battleSceneDelayMs(scene, STATUS_ANIM_DURATION_MS, 180)
-      };
-      setTimeout(() => {
-        const live = battleScene.value;
-        if (!live || live !== scene || !live.statusEffectFx || live.statusEffectFx.seq !== seq) return;
-        live.statusEffectFx = null;
-      }, scene.statusEffectFx.durationMs + 80);
+      const { queues } = ensureBattleStatusEffectSlots(scene);
+      statuses.forEach((status) => {
+        const statusKey = normalize(status && (status.status || status.key));
+        const label = normalize(status && status.label) || statusLabel(statusKey) || "";
+        const directSrc = normalize(status && status.src);
+        const fileLabel = STATUS_ANIM_FILE_MAP[statusKey] || label;
+        if (!directSrc && !fileLabel) return;
+        queues[safeSide].push({ directSrc, fileLabel, label });
+      });
+      playNextBattleStatusEffectFx(scene, safeSide);
     };
     const setBattleSkillEffectFx = (scene, fx, durationMs, expireMs, alreadyScaled = false) => {
       if (!scene || !fx) return;
@@ -18643,6 +18701,8 @@ const applyBossChainFinalBuff = (scene) => {
         comboTotalDelayOnAttacker: 0,
         comboTotalDelayOnTarget: 0,
         statusEffectFx: null,
+        statusEffectFxBySide: { attacker: null, target: null },
+        statusEffectQueueBySide: { attacker: [], target: [] },
         moraleEffectFx: null,
         stageChangeFx: { attacker: null, target: null },
         forceDefeatSide: "",
@@ -19330,6 +19390,8 @@ const applyBossChainFinalBuff = (scene) => {
         battleScene.value.fxTargetShake = false;
         battleScene.value.fxAttackerShake = false;
         battleScene.value.statusEffectFx = null;
+        battleScene.value.statusEffectFxBySide = { attacker: null, target: null };
+        battleScene.value.statusEffectQueueBySide = { attacker: [], target: [] };
         battleScene.value.moraleEffectFx = null;
         battleScene.value._petAnimActionMarks = {};
         battleScene.value._petAnimActionStartedAt = {};
@@ -22626,11 +22688,12 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const openElementPanel = () => { showElementPanel.value = true; };
     const closeElementPanel = () => { showElementPanel.value = false; };
-    const openTeamPanel = () => {
+    const openTeamPanel = async () => {
       showTeamPanel.value = true;
+      teamLoading.value = true;
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      await refreshMyTeamFromServer({ silent: true, records: false });
       teamLoading.value = false;
-      refreshMyTeamFromServer({ silent: true, records: false });
-      refreshTeamRankFromServer({ silent: true });
     };
     const closeTeamPanel = () => {
       showTeamPanel.value = false;
@@ -22662,6 +22725,12 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const openTeamButler = () => {
       showTeamButler.value = true;
+    };
+    const openTeamTask = () => {
+      if (!hasTeam.value) return showToast("请先创建或加入战队。");
+      ensureTeamDailyTasks();
+      showTeamButler.value = false;
+      showTeamTask.value = true;
     };
     const confirmExitTeam = () => {
       if (confirm("确定要退出当前战队吗？")) {
@@ -22744,7 +22813,13 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const handleCreateTeam = () => {
       showTeamModal.value = false;
+      showTeamPanel.value = false;
       showCreateTeamModal.value = true;
+    };
+    const cancelCreateTeam = () => {
+      showCreateTeamModal.value = false;
+      showTeamPanel.value = true;
+      showTeamModal.value = true;
     };
     const submitCreateTeam = async () => {
       if (!newTeamName.value.trim()) {
@@ -22761,10 +22836,10 @@ const applyBossChainFinalBuff = (scene) => {
           })
         });
         applyMyServerTeamData(data.team || null);
-        await refreshTeamRankFromServer({ silent: true });
         showCreateTeamModal.value = false;
         newTeamName.value = "";
         newTeamSlogan.value = "";
+        showTeamPanel.value = true;
         showTeamInfo.value = true;
         showToast("战队创建成功！");
       } catch (err) {
@@ -23574,7 +23649,6 @@ const applyBossChainFinalBuff = (scene) => {
       if (bagPets.value.length === 0) return showToast("背包中没有可出战亚比。");
       if (weeklyBossAttemptsLeft.value <= 0) return showToast("今日当周BOSS挑战次数已用完。");
       const difficulty = selectedWeeklyBossDifficultyOption.value || WEEKLY_BOSS_DIFFICULTY_OPTIONS[0];
-      if (blockNormalHardChallengeForbiddenPet(difficulty.key)) return;
       const row = ensureWeeklyBossAttemptRow();
       row.used = Math.min(weeklyBossAttemptsTotal.value, row.used + 1);
       setBattleReturnContext({ panel: "weeklyBoss" });
@@ -23805,6 +23879,7 @@ const applyBossChainFinalBuff = (scene) => {
       closeTeamPanel,
       submitCreateTeam,
       handleCreateTeam,
+      cancelCreateTeam,
       closeTeamModals,
       onCommanderClick,
       onRecruitClick,
@@ -23819,6 +23894,7 @@ const applyBossChainFinalBuff = (scene) => {
       cancelEditSlogan,
       openTeamRank,
       openTeamButler,
+      openTeamTask,
       confirmExitTeam,
       openTeamRecord,
       claimTeamTask,
