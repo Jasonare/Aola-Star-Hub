@@ -160,26 +160,27 @@ const LOGIN_LOADING_SLIDE_SRCS = [
   "./resource/界面ui/第五个.png",
   "./resource/ui/登录加载/随机图4.png"
 ].map(encodeAssetSrc);
-const RELEASE_NOTES_V040 = {
-  title: "Aola Star Hub-debug-V0.7.0版本更新内容：",
+const RELEASE_NOTES_V080 = {
+  title: "Aola Star Hub-debug-V0.8.0版本更新内容：",
   items: [
-    "修复部分技能生效不准确或导致页面卡死的问题，包括：水神祝福、神罗天征、玄冥咆哮、原子暴风圈、光之斩魄、星宇X斩、空念等；",
-    "修复了手机端对战界面的buff类效果、伤害值、技能名称显示遮挡的问题；",
-    "修复倍速时技能动画被阉割的问题；",
-    "优化了部分BOSS的徽章图案；",
-    "优化了亚比背包的UI设计；",
-    "新增能量核心转盘，入口为启星转盘-能量核心转盘；",
-    "优化了排行榜，过滤非法玩家，支持查看时空隧道的排行信息；",
-    "新增装备系统，通过装备秘境副本获取秘境晶石，在亚比商店-装备商店兑换；",
-    "新增BOSS列表：龙帝卡、裂空菲洛、爆裂侠x、天辉侠x、帝夜奇纳、司马懿、达力戈、艾恩；",
-    "当周双BOSS风暴龙、暗焰天龙登场；",
-    "时空隧道开放至30层；",
-    "本期加强亚比：机甲勇士、炫光铁拳鼠；",
-    "增加了能力突破系统，拥有对应亚比的能量核心可以突破能力极限；",
-    "进一步优化了主页面UI，修复了手机端分辨率的问题；",
-    "亚比商店新增技能石商店，目前上架机甲勇士、炫光铁拳鼠的技能石；",
-    "多余的粽子道具可以在亚比背包道具栏点击兑换成H币；",
-    "亚比蛋商店新增：炫光金小问；"
+    "修复部分技能生效不准确的问题，包括：圣诞礼物、夜之域、浑天盾(限制反伤上限)等；",
+    "装备秘境限制了部分技能：包括鲁莽、痛苦之源等；",
+    "新增战队系统，只限于桌面端；",
+    "亚比商店新增道具礼包TAB页；",
+    "优化了技能全屏特效；",
+    "能量核心转盘调整为龙族大法师能量核心、年兽能量核心；",
+    "优化装备秘境，每天挑战成功一次，剩余次数可以按照上次的分数扫荡；",
+    "新增月签到系统；",
+    "新增BOSS列表：麦斗元帅、蓝晶X神兽、紫星X神兽、圣光X神兽、斗士豪达；",
+    "当周BOSS煌炎战神登场；",
+    "时空隧道开放至35层；",
+    "本期加强亚比：年兽、龙族大法师；",
+    "帝皇圣龙回归BOSS挑战；",
+    "启星转盘皮肤调整为未来计划·神秘战无炎皮肤；",
+    "技能石商店新增查看按钮，可以查看技能详情；",
+    "技能石商店新增年兽、龙族大法师的技能石；",
+    "亚比蛋商店新增：炫光电子鼠；",
+    "支持用户账号名称更改；"
   ]
 };
 const SAVE_FILE_PREFIX = "aola_battle_save_";
@@ -1192,7 +1193,7 @@ const WEEKLY_BOSS_HISTORY_CONFIGS = [
   }
 ];
 const WEEKLY_BOSS_MEDAL_ITEM_ID = "weekly_boss_medal_huangyan_2050_202607";
-const WEEKLY_BOSS_MEDAL_MAX = 100;
+const WEEKLY_BOSS_MEDAL_MAX = 50;
 const WEEKLY_BOSS_EGG_EXCHANGE_COST = 50;
 const WEEKLY_BOSS_REWARD_STATE_VERSION = "huangyan_2050_reset_v1";
 const WEEKLY_BOSS_DIFFICULTY_OPTIONS = [
@@ -1378,7 +1379,7 @@ const STUDY_BATTLEFIELDS = [
   { key: "spDef", label: "特防", guardianName: "盼盼" },
   { key: "speed", label: "速度", guardianName: "毛毛球" }
 ];
-const TIME_TUNNEL_OPEN_MAX_FLOOR = 30;
+const TIME_TUNNEL_OPEN_MAX_FLOOR = 35;
 const TIME_TUNNEL_FLOORS = [
   { floor: 1, enemies: [{ dexId: 33, level: 62 }, { dexId: 36, level: 64 }] },
   { floor: 2, enemies: [{ dexId: 54, level: 66 }, { dexId: 60, level: 68 }] },
@@ -1409,7 +1410,12 @@ const TIME_TUNNEL_FLOORS = [
   { floor: 27, enemies: [{ dexId: 373, level: 100 }, { dexId: 374, level: 100 }] },
   { floor: 28, enemies: [{ dexId: 375, level: 100 }, { dexId: 378, level: 100 }] },
   { floor: 29, enemies: [{ dexId: 386, level: 100 }, { dexId: 398, level: 100 }] },
-  { floor: 30, enemies: [{ dexId: 400, level: 100 }, { dexId: 401, level: 100 }] }
+  { floor: 30, enemies: [{ dexId: 400, level: 100 }, { dexId: 401, level: 100 }] },
+  { floor: 31, enemies: [{ dexId: 536, level: 100 }, { dexId: 560, level: 100 }] },
+  { floor: 32, enemies: [{ dexId: 490, level: 100 }, { dexId: 503, level: 100 }] },
+  { floor: 33, enemies: [{ dexId: 530, level: 100 }, { dexId: 577, level: 100 }] },
+  { floor: 34, enemies: [{ dexId: 397, level: 100 }, { dexId: 621, level: 100 }] },
+  { floor: 35, enemies: [{ dexId: 240, level: 100 }, { dexId: 1000, level: 100 }] }
 ];
 const TIME_TUNNEL_FLOOR_20_BONUS_DEX_IDS = new Set([249, 296]);
 const TIME_TUNNEL_FLOOR_25_BONUS_DEX_IDS = new Set([369, 382]);
@@ -1465,6 +1471,14 @@ const TIME_TUNNEL_REWARDS_BY_FLOOR = {
       { id: "double_exp_device", count: 30, label: "双倍经验器" },
       { id: "talent_grade_wanzhong_fruit", count: 3, label: "万众瞩目果实" },
       { id: "talent_boost_capsule", count: 8, label: "天赋增强胶囊" }
+    ]
+  },
+  35: {
+    hCoins: 0,
+    items: [
+      { id: "time_tunnel_big_exp_fruit", count: 20, label: "大经验果" },
+      { id: "double_hcoin_device", count: 20, label: "双倍H币器" },
+      { type: "traitChoice", count: 1, label: "特性自选礼包" }
     ]
   }
 };
@@ -1679,7 +1693,7 @@ const TEAM_SHOP_TRAIT_CHOICES = [
   { key: QIXING_TRAIT_KEYS.SHOUYU, name: "守御之印" },
   { key: QIXING_TRAIT_KEYS.JILAN, name: "疾岚之瞳" }
 ];
-const TEAM_INTRUDER_PREFERRED_NAMES = ["修罗", "骰子大王", "凯撒"];
+const TEAM_INTRUDER_DEX_ID = 503;
 const BADGE_IMAGE_FILE_NAMES = new Set([
   "Hub同辉赞助徽章.png",
   "暗焰天龙专属黑金徽章.png",
@@ -2323,6 +2337,9 @@ const getBattleHitRateBoostFactor = (scene, side, targetSide, skillElement) => {
   if (targetElements.includes("飞行系")) factor *= 0.95;
   return factor;
 };
+const getBossHitRateBoostFactor = (scene, side) => (
+  side === "target" && scene && ["boss", "weeklyBoss"].includes(scene.mode) ? 1.15 : 1
+);
 
 const expRequired = (level) => (level >= 100 ? Infinity : Math.floor(60 + level * 18 + Math.pow(level, 1.45) * 8));
 const calcWinExp = (targetLevel) => {
@@ -3481,6 +3498,7 @@ const resetBattleAnimIdle = (scene) => {
   scene._petAnimTargetPlayLock = false;
   scene._petAnimAttackerPlayLock = false;
   scene._petAnimActionMarks = {};
+  scene._staticPetSides = { attacker: false, target: false };
   const curId = String(scene.currentAttackerId || "");
   const current = Array.isArray(scene.team)
     ? scene.team.find((u) => u && String(u.id || "") === curId)
@@ -7979,7 +7997,10 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
     }
     if (e.kind === "chanceExclusive") {
       if (e.requireHit && !didHit) return;
-      const picked = Math.random() <= clamp(Number(e.chance) || 0, 0, 1) ? e.success : e.fail;
+      const instantKoBoost = normalize(e.success && e.success.kind) === "instantko"
+        ? Math.max(0, Number((getTimeTunnelFloor35BossBuff(scene, actor) || {}).instantKoChanceBoost) || 0)
+        : 0;
+      const picked = Math.random() <= clamp((Number(e.chance) || 0) + instantKoBoost, 0, 1) ? e.success : e.fail;
       if (!picked || typeof picked !== "object") return;
       const nestedLogs = applySkillEffects(scene, actor, { ...skill, __manualEffects: [{ ...picked, requireHit: false }] }, didHit);
       nestedLogs.forEach((line) => logs.push(line));
@@ -8203,7 +8224,8 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
     }
     if (e.kind === "instantKo") {
       if (e.requireHit && !didHit) return;
-      const chance = clamp(Number(e.chance) || 1, 0, 1);
+      const tunnelBuff = getTimeTunnelFloor35BossBuff(scene, actor);
+      const chance = clamp((Number(e.chance) || 1) + Math.max(0, Number(tunnelBuff && tunnelBuff.instantKoChanceBoost) || 0), 0, 1);
       if (Math.random() > chance) return;
       const side = sideByTarget(e.target || "opponent");
       const targetHpBelow = Math.floor(Number(e.targetHpBelow) || 0);
@@ -12282,9 +12304,9 @@ createApp({
       const row = rows.team_intruder_win;
       return Boolean(hasTeam.value && row && row.claimed && !row.completed);
     });
-    const teamIntruderEntry = computed(() => TEAM_INTRUDER_PREFERRED_NAMES
-      .map((name) => findDexByName(name))
-      .find(Boolean) || dexEntries.find((entry) => Number(entry && entry.dexId) > 0) || null);
+    const teamIntruderEntry = computed(() => dexById.get(TEAM_INTRUDER_DEX_ID)
+      || dexEntries.find((entry) => Number(entry && entry.dexId) === TEAM_INTRUDER_DEX_ID)
+      || null);
     const teamIntruderImage = computed(() => {
       const entry = teamIntruderEntry.value;
       return entry ? petBattleIdleImage(entry.dexId, "target", entry.image || PLACEHOLDER) : PLACEHOLDER;
@@ -12297,7 +12319,7 @@ createApp({
       showTeamPanel.value = false;
       showTeamTask.value = false;
       showTeamButler.value = false;
-      startBattlePrepare(`正在迎战战队入侵者 ${entry.name}...`, entry, 80, () => setupBattleScene({
+      startBattlePrepare(`正在迎战战队入侵者 SR勇士...`, entry, 80, () => setupBattleScene({
         targetEntry: entry,
         targetLevel: 80,
         targetTalentOverride: createUniformTalent30(),
@@ -12391,7 +12413,7 @@ createApp({
     const challengeRecordingBusy = ref(false);
     const activeChallengeRecording = ref(null);
     const autoBattleCountOptions = [10, 20, 50];
-    const releaseNotes = RELEASE_NOTES_V040;
+    const releaseNotes = RELEASE_NOTES_V080;
     const gameplayGuideLines = GAMEPLAY_GUIDE_LINES;
     const normalizeBadgeImageManifestSrc = (raw) => {
       const text = String(raw || "").trim();
@@ -14368,7 +14390,7 @@ createApp({
       return LOGIN_LOADING_SLIDE_SRCS[idx] || "";
     });
     const enterGuestMode = async () => {
-      if (!validateLoginCaptcha({ force: isMobileClient.value })) return;
+      if (!validateLoginCaptcha()) return;
       startLoginLoading();
       try {
         await ensureGameDataIndexesReady();
@@ -17292,9 +17314,11 @@ createApp({
     };
     const battlePetImageStyleCache = new Map();
     const battlePetImageStyle = (side) => {
-      if (!BATTLE_IDLE_USES_ACTION_SVG) return BATTLE_STATIC_PET_RENDER_STYLE;
       const scene = battleScene.value;
       const safeSide = side === "target" ? "target" : "attacker";
+      if (!BATTLE_IDLE_USES_ACTION_SVG) {
+        return { ...BATTLE_STATIC_PET_RENDER_STYLE, "--battle-pet-scale-x": safeSide === "attacker" ? "-1" : "1" };
+      }
       const dexId = resolveBattleSideDexId(scene, safeSide);
       const sideCode = safeSide === "target" ? "1" : "2";
       const stateCode = getPetBattleStateCode(scene, safeSide);
@@ -17304,6 +17328,16 @@ createApp({
       const targetBodyH = landscapeAndroid && safeSide === "attacker"
         ? Math.max(1, Math.min(vw * 0.22, vh * 0.43))
         : clamp(Math.min(vw * 0.252, vh * 0.252), vw * 0.14, vw * 0.266) * 1.5;
+      if (scene && scene._staticPetSides && scene._staticPetSides[safeSide]) {
+        const imageSize = Math.round(targetBodyH * 1.42);
+        return {
+          "--battle-pet-render-width": `${imageSize}px`,
+          "--battle-pet-render-height": `${imageSize}px`,
+          "--battle-pet-offset-x": `${Math.round(-imageSize * 0.5)}px`,
+          "--battle-pet-offset-y": `${Math.round(-imageSize * 0.82)}px`,
+          "--battle-pet-scale-x": safeSide === "attacker" ? "-1" : "1"
+        };
+      }
       const cacheKey = `${safeSide}|${dexId}|${sideCode}|${stateCode}|${Math.round(targetBodyH)}`;
       if (battlePetImageStyleCache.has(cacheKey)) return battlePetImageStyleCache.get(cacheKey);
       const style = getBattlePetAnimLayoutStyle(dexId, sideCode, stateCode, targetBodyH);
@@ -17875,7 +17909,8 @@ createApp({
       const config = resolveBattleShengyuConfig(scene);
       const src = config && (config.backgroundSrc || config.animationSrc);
       if (!config || !src) return 0;
-      const duration = battleSceneDelayMs(scene, Math.max(120, Number(config.durationMs) || SHENGYU_ENTRY_ANIMATION_DURATION_MS), 120);
+      const configuredDuration = Math.max(120, Number(config.durationMs) || SHENGYU_ENTRY_ANIMATION_DURATION_MS);
+      const duration = battleSceneDelayMs(scene, isAndroidWebViewRuntime() ? Math.min(configuredDuration, 1100) : configuredDuration, 120);
       scene.shengyuBackground = {
         src,
         name: normalize(config.name),
@@ -17938,6 +17973,8 @@ createApp({
       };
       const commitNext = (next, speedAdjusted = speed <= 1) => {
         if (!next) return;
+        if (!scene._staticPetSides || typeof scene._staticPetSides !== "object") scene._staticPetSides = { attacker: false, target: false };
+        scene._staticPetSides[safeSide] = false;
         scene[`_${imageKey}ExpectedSrc`] = next;
         scene[layoutSrcKey] = rawNext;
         if (scene[imageKey] === next) {
@@ -17983,6 +18020,7 @@ createApp({
     };
     const resetBattleAnimIdle = (scene) => {
       if (!scene) return;
+      scene._staticPetSides = { attacker: false, target: false };
       if (!BATTLE_IDLE_USES_ACTION_SVG) {
         if (scene._petAnimTargetAutoIdleTimer) {
           clearTimeout(scene._petAnimTargetAutoIdleTimer);
@@ -18463,6 +18501,24 @@ const applyTimeTunnelFloor30TargetBuff = (scene) => {
   }
   return false;
 };
+const TIME_TUNNEL_FLOOR_35_BOSS_BUFF_BY_DEX_ID = {
+  240: { name: "法老王", damageReduction: 0.2, defenseFactor: 1.1, instantKoChanceBoost: 0.1 },
+  1000: { name: "阿努比斯", damageReduction: 0.2, defenseFactor: 1.3, instantKoChanceBoost: 0.2 }
+};
+const getTimeTunnelFloor35BossBuff = (scene, actorSide = "target") => {
+  if (!scene || scene.mode !== "timeTunnel" || actorSide !== "target") return null;
+  const meta = scene.timeTunnelMeta || {};
+  if (Math.max(1, Math.floor(Number(meta.floor) || 1)) !== 35) return null;
+  return TIME_TUNNEL_FLOOR_35_BOSS_BUFF_BY_DEX_ID[Number(scene.targetDexId) || 0] || null;
+};
+const applyTimeTunnelFloor35TargetBuff = (scene) => {
+  const buff = getTimeTunnelFloor35BossBuff(scene);
+  if (!buff) return false;
+  addTimedEffect(scene, "target", { kind: "damageReduction", turns: 999, data: { ratio: buff.damageReduction, permanent: true } });
+  addTimedEffect(scene, "target", { kind: "abilityStatFactor", turns: 999, data: { keys: ["def", "spDef"], factor: buff.defenseFactor, permanent: true, stackable: false, stackKey: "time_tunnel_floor_35_defense" } });
+  pushBattleLog(scene, `${buff.name}获得时空隧道第35层加护：减伤${Math.round(buff.damageReduction * 100)}%，双防数值提升${Math.round((buff.defenseFactor - 1) * 100)}%，自身技能的秒杀概率提升${Math.round(buff.instantKoChanceBoost * 100)}%。`);
+  return true;
+};
 const applyTimeTunnelFloor30RaptorKillBoost = (scene) => {
   if (!scene || scene.mode !== "timeTunnel") return false;
   const meta = scene.timeTunnelMeta || {};
@@ -18843,6 +18899,7 @@ const applyBossChainFinalBuff = (scene) => {
       if (mode === "timeTunnel") applyTimeTunnelFloor20TargetBuff(battleScene.value);
       if (mode === "timeTunnel") applyTimeTunnelFloor25TargetBuff(battleScene.value);
       if (mode === "timeTunnel") applyTimeTunnelFloor30TargetBuff(battleScene.value);
+      if (mode === "timeTunnel") applyTimeTunnelFloor35TargetBuff(battleScene.value);
       if ((mode === "boss" || mode === "weeklyBoss" || mode === "equipmentDungeon") && battleScene.value.targetChallengeDamageReductionRatio > 0) {
         const counteredText = battleScene.value.targetCounteredDamageReductionRatio > 0 ? `，受到克制伤害时额外减伤${Math.round(battleScene.value.targetCounteredDamageReductionRatio * 100)}%` : "";
         pushBattleLog(battleScene.value, `${battleScene.value.targetName}获得挑战减伤：普通/特殊攻击造成的伤害减少${Math.round(battleScene.value.targetChallengeDamageReductionRatio * 100)}%${counteredText}。`);
@@ -19105,6 +19162,7 @@ const applyBossChainFinalBuff = (scene) => {
       applyTimeTunnelFloor20TargetBuff(scene);
       applyTimeTunnelFloor25TargetBuff(scene);
       applyTimeTunnelFloor30TargetBuff(scene);
+      applyTimeTunnelFloor35TargetBuff(scene);
       if (Math.max(1, Math.floor(Number(meta.floor) || 1)) === 25 && Number(target.dexId) === 382) {
         addTimedEffect(scene, "target", { kind: "damageBoost", turns: 999, data: { factor: 1.4, permanent: true } });
         pushBattleLog(scene, `${target.name}承接暗影甲龙的时空余焰，额外获得伤害提升40%。`);
@@ -19835,7 +19893,7 @@ const applyBossChainFinalBuff = (scene) => {
       const actorAccStage = getSideState(scene, actorSide).stages.accuracy || 0;
       const targetEvaStage = getSideState(scene, targetSide).stages.evasion || 0;
       const hitRateElementFactor = applyBattleHitRateFactor(scene, actorSide, targetSide, skillElement);
-      const finalHitRate = hasSkillEffectFlag(skill, "mustHit") || hasActiveNextAttackMustHit(scene, actorSide) || selfAccuracyFreeSkill ? 1 : clamp((acc / 100) * stageHitRateFactor(actorAccStage, targetEvaStage) * hitRateElementFactor, 0.1, 1);
+      const finalHitRate = hasSkillEffectFlag(skill, "mustHit") || hasActiveNextAttackMustHit(scene, actorSide) || selfAccuracyFreeSkill ? 1 : clamp((acc / 100) * stageHitRateFactor(actorAccStage, targetEvaStage) * hitRateElementFactor * getBossHitRateBoostFactor(scene, actorSide), 0.1, 1);
       const hardcodedMultiHit = fixedDamage > 0 ? null : parseMultiHitRangeFromDesc(skill);
       const didHit = hardcodedMultiHit ? true : Math.random() <= finalHitRate;
 
@@ -20616,6 +20674,11 @@ const applyBossChainFinalBuff = (scene) => {
                 state.value.hCoins = Math.max(0, Math.floor(Number(state.value.hCoins) || 0)) + stageHCoins;
               }
               (Array.isArray(rewardCfg.items) ? rewardCfg.items : []).forEach((item) => {
+                if (normalize(item && item.type) === "traitchoice") {
+                  const choice = chooseTeamShopTrait() || TEAM_SHOP_TRAIT_CHOICES[0];
+                  if (choice) grantQixingSeal(choice.key, Math.max(1, Math.floor(Number(item.count) || 1)));
+                  return;
+                }
                 addItemCount(item.id, item.count);
               });
               const rewardTexts = [
@@ -20750,6 +20813,10 @@ const applyBossChainFinalBuff = (scene) => {
             ...(medalGain > 0 ? [`获取当周BOSS勋章×${medalGain}！`] : []),
             ...rewardTexts.filter((text) => !text.startsWith("当周BOSS勋章")).map((text) => `获取${text}！`)
           ];
+        } else if (scene.guardianMeta && scene.guardianMeta.teamIntruder) {
+          hCoinGain = 0;
+          unlockText = "战队入侵者 SR勇士挑战成功，入侵者已被击败。";
+          completeClaimedTeamTaskByTrigger("teamIntruderWin");
         } else if (scene.mode === "equipmentDungeon") {
           hCoinGain = 0;
           unlockText = completeEquipmentDungeonBoss(scene);
@@ -20784,9 +20851,7 @@ const applyBossChainFinalBuff = (scene) => {
           } else {
             unlockText = `${target.name} 不是最终形态，已激活图鉴但不掉落亚比蛋。`;
           }
-          if (scene.guardianMeta && scene.guardianMeta.teamIntruder) {
-            completeClaimedTeamTaskByTrigger("teamIntruderWin");
-          } else if (scene.guardianMeta && scene.guardianMeta.dexChallenge) {
+          if (scene.guardianMeta && scene.guardianMeta.dexChallenge) {
             completeClaimedTeamTaskByTrigger("dexChallengeWin");
           }
         }
@@ -23833,14 +23898,16 @@ const applyBossChainFinalBuff = (scene) => {
       const scene = battleScene.value;
       if (!img || !scene) return withFallback(event);
       const safeSide = side === "target" ? "target" : "attacker";
-      const animFallback = safeSide === "target"
-        ? petBattleIdleImage(scene.targetDexId, "target", scene.targetImage || scene.targetStaticImage)
-        : petBattleIdleImage(scene.attackerBattleVisualDexId || scene.attackerDexId || scene.attackerBaseDexId, "attacker", scene.attackerImage || scene.attackerStaticImage);
-      const fallback = animFallback || (safeSide === "target" ? scene.targetStaticImage : scene.attackerStaticImage);
+      const imageKey = safeSide === "target" ? "targetImage" : "attackerImage";
+      const fallback = safeSide === "target"
+        ? (scene.targetStaticImage || petCroppedStaticImage(scene.targetDexId))
+        : (scene.attackerStaticImage || petCroppedStaticImage(scene.attackerBattleVisualDexId || scene.attackerDexId || scene.attackerBaseDexId));
       if (!fallback || img.dataset.battleFallbackDone === "1") return withFallback(event);
+      if (!scene._staticPetSides || typeof scene._staticPetSides !== "object") scene._staticPetSides = { attacker: false, target: false };
+      scene._staticPetSides[safeSide] = true;
       img.dataset.battleFallbackDone = "1";
+      scene[imageKey] = fallback;
       img.src = fallback;
-      img.classList.add("pet-bob");
     };
 
     return {
