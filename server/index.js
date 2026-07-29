@@ -152,6 +152,10 @@ const TEAM_SHOP_ITEMS = [
   { id: "legend_charm", name: "传说护符", minLevel: 7, cost: 1400, limit: 2 },
   { id: "legend_boots", name: "传说护靴", minLevel: 7, cost: 1400, limit: 2 }
 ];
+// Keep server-side purchase validation aligned with the displayed team-shop limits.
+TEAM_SHOP_ITEMS.forEach((item) => {
+  if (Number(item.limit) === 2) item.limit = 8;
+});
 const TEAM_SHOP_ITEM_BY_ID = new Map(TEAM_SHOP_ITEMS.map((item) => [item.id, item]));
 const TEST_MAX_DEX_ID = 1960;
 const TEST_DEFAULT_WEEKLY_REWARD_STATE_VERSION = "wunian_2020_exchange_reset_v2";
@@ -1336,6 +1340,30 @@ const handleApi = async (req, res) => {
       } else {
         return sendJson(res, 400, { ok: false, message: "职位类型不正确。" });
       }
+      team.updatedAt = new Date().toISOString();
+      saveTeamsDb(db);
+      return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
+    }
+    if (req.method === "POST" && pathname === "/api/teams/member-kick") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const teamId = String(body.teamId || "");
+      const targetUserId = String(body.userId || "");
+      const db = teamsDb();
+      const team = findTeamById(db, teamId);
+      if (!team) return sendJson(res, 404, { ok: false, message: "战队不存在。" });
+      const actor = (team.members || []).find((member) => member.userId === user.id);
+      const targetIndex = (team.members || []).findIndex((member) => member.userId === targetUserId);
+      const target = targetIndex >= 0 ? team.members[targetIndex] : null;
+      if (!actor || !target) return sendJson(res, 404, { ok: false, message: "成员不存在。" });
+      if (actor.userId === target.userId) return sendJson(res, 400, { ok: false, message: "不能踢出自己，请使用退出战队。" });
+      if (target.role === "leader") return sendJson(res, 400, { ok: false, message: "不能踢出队长。" });
+      const rank = { leader: 3, vice: 2, elder: 1, member: 0 };
+      const actorRank = rank[actor.role] ?? 0;
+      const targetRank = rank[target.role] ?? 0;
+      if (actorRank <= 0 || actorRank <= targetRank) return sendJson(res, 403, { ok: false, message: "当前职位无权踢出该成员。" });
+      team.members.splice(targetIndex, 1);
       team.updatedAt = new Date().toISOString();
       saveTeamsDb(db);
       return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
