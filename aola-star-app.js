@@ -11292,6 +11292,7 @@ createApp({
         obtainedEggDexIds: [],
         activePets: starterPets,
         bagPetIds: bagSeed,
+        elitePetIds: ["", "", "", "", "", "", "", "", "", "", "", ""],
         eggs: [],
         redeemedCodes: [],
         selectedDexId: null,
@@ -11329,6 +11330,16 @@ createApp({
           mode: "default",
           src: DEFAULT_BATTLE_BG_SRC,
           name: "默认战斗背景"
+        },
+        customHomeBgm: {
+          mode: "default",
+          src: HOME_BGM_SRC,
+          name: "默认主页音乐"
+        },
+        customBattleBgm: {
+          mode: "default",
+          src: BATTLE_BGM_SRC,
+          name: "默认战斗音乐"
         }
       };
     };
@@ -11337,6 +11348,7 @@ createApp({
       activatedDexIds: [],
       activePets: [],
       bagPetIds: ["", "", "", "", "", ""],
+      elitePetIds: ["", "", "", "", "", "", "", "", "", "", "", ""],
       selectedAttackerId: "",
       selectedPetId: ""
     });
@@ -11650,6 +11662,15 @@ createApp({
         obtainedEggDexIds,
         activePets,
         bagPetIds,
+        elitePetIds: (() => {
+          const saved = Array.isArray(loaded.elitePetIds) ? loaded.elitePetIds : [];
+          const out = new Array(12).fill("");
+          for (let i = 0; i < 12; i++) {
+            const id = normalize(saved[i] || "");
+            if (id && activePets.some((p) => p.id === id)) out[i] = id;
+          }
+          return out;
+        })(),
         eggs,
         redeemedCodes,
         items,
@@ -11858,6 +11879,20 @@ createApp({
           const src = mode === "custom" && normalize(source.src) ? String(source.src) : DEFAULT_BATTLE_BG_SRC;
           const name = mode === "custom" && normalize(source.name) ? normalize(source.name) : "默认战斗背景";
           return { mode, src, name };
+        })(),
+        customHomeBgm: (() => {
+          const source = loaded.customHomeBgm && typeof loaded.customHomeBgm === "object" ? loaded.customHomeBgm : {};
+          const mode = normalize(source.mode) === "custom" ? "custom" : "default";
+          const src = mode === "custom" && normalize(source.src) ? String(source.src) : HOME_BGM_SRC;
+          const name = mode === "custom" && normalize(source.name) ? normalize(source.name) : "默认主页音乐";
+          return { mode, src, name };
+        })(),
+        customBattleBgm: (() => {
+          const source = loaded.customBattleBgm && typeof loaded.customBattleBgm === "object" ? loaded.customBattleBgm : {};
+          const mode = normalize(source.mode) === "custom" ? "custom" : "default";
+          const src = mode === "custom" && normalize(source.src) ? String(source.src) : BATTLE_BGM_SRC;
+          const name = mode === "custom" && normalize(source.name) ? normalize(source.name) : "默认战斗音乐";
+          return { mode, src, name };
         })()
       };
     };
@@ -11880,7 +11915,7 @@ createApp({
     const looksLikeGameSave = (raw) => {
       const obj = extractSavePayload(raw);
       if (!obj || typeof obj !== "object" || Array.isArray(obj)) return false;
-      const arrayFields = ["activePets", "bagPetIds", "activatedDexIds", "defeatedDexIds", "obtainedEggDexIds", "eggs", "battleLog"];
+      const arrayFields = ["activePets", "bagPetIds", "elitePetIds", "activatedDexIds", "defeatedDexIds", "obtainedEggDexIds", "eggs", "battleLog"];
       if (arrayFields.some((key) => Array.isArray(obj[key]))) return true;
       if (obj.items && typeof obj.items === "object") return true;
       if (obj.guardianWinCounts && typeof obj.guardianWinCounts === "object") return true;
@@ -12133,6 +12168,32 @@ createApp({
     const isViewingOwnTeam = ref(true);
     const showTeamRank = ref(false);
     const showTeamRecruit = ref(false);
+    const showTeamBoss = ref(false);
+    const teamBossRankTab = ref('inner');
+    const teamBossMaxHp = ref(1000000);
+    const teamBossCurrentHp = ref(850000);
+    const teamBossInnerRankList = ref([
+      { name: '星辰·破晓', damage: 128500 },
+      { name: '星辰·银河', damage: 115200 },
+      { name: '星辰·暗夜', damage: 98700 },
+      { name: '星辰·晨曦', damage: 87600 },
+      { name: '星辰·苍穹', damage: 76300 },
+      { name: '星辰·琉璃', damage: 65400 },
+      { name: '星辰·疾风', damage: 52100 },
+      { name: '星辰·明月', damage: 43800 },
+      { name: '星辰·云海', damage: 35200 },
+      { name: '星辰·流光', damage: 28900 }
+    ]);
+    const teamBossTeamRankList = ref([
+      { name: '星辰战队', damage: 852000 },
+      { name: '烈焰战队', damage: 725000 },
+      { name: '暗影战队', damage: 618000 },
+      { name: '圣光战队', damage: 512000 },
+      { name: '风暴战队', damage: 438000 },
+      { name: '雷霆战队', damage: 356000 },
+      { name: '寒冰战队', damage: 289000 },
+      { name: '大地战队', damage: 215000 }
+    ]);
     const showTeamButler = ref(false);
     const showTeamTask = ref(false);
     const showTeamShop = ref(false);
@@ -12492,6 +12553,11 @@ createApp({
       }));
     };
     const normalizedTeamRankList = computed(() => teamRankList.value.map((team) => normalizeTeamInfo(team)));
+    const teamBossHpPercent = computed(() => Math.max(0, (teamBossCurrentHp.value / teamBossMaxHp.value) * 100));
+    const currentTeamBossRankList = computed(() => {
+      const list = teamBossRankTab.value === 'inner' ? teamBossInnerRankList.value : teamBossTeamRankList.value;
+      return list.map(item => ({ ...item, damage: item.damage.toLocaleString() }));
+    });
     const joinTeamList = computed(() => {
       return normalizedTeamRankList.value.slice(0, 10).map((team, index) => ({
         ...team,
@@ -12517,6 +12583,7 @@ createApp({
     };
     const showBagPanel = ref(false);
     const showBag2Panel = ref(false);
+    const lockedDexEntry = ref(null);
     const showInfoCardPanel = ref(false);
     const showAbilityBreakthroughPanel = ref(false);
     const abilityBreakthroughSession = ref(null);
@@ -12525,6 +12592,9 @@ createApp({
     const bag2InfoTab = ref("skills");
     const bag2EnhanceTab = ref("traits");
     const showWarehousePanel = ref(false);
+    const showNewWarehousePanel = ref(false);
+    const selectedNewWarehousePet = ref(null);
+    const newWarehousePage = ref(0);
     const showShopPanel = ref(false);
     const showSkillStoneDetail = ref(false);
     const selectedSkillStoneDetail = ref(null);
@@ -12988,6 +13058,29 @@ createApp({
       showToast(mode === "custom" ? "已应用自定义战斗背景。" : "已恢复默认战斗背景。");
     };
     const resetBattleBackground = () => applyBattleBackground({ mode: "default", src: DEFAULT_BATTLE_BG_SRC, name: "默认战斗背景" });
+    const applyCustomHomeBgm = (bgm) => {
+      const next = bgm && typeof bgm === "object" ? bgm : {};
+      const mode = normalize(next.mode) === "custom" ? "custom" : "default";
+      const src = mode === "custom" && normalize(next.src) ? String(next.src) : HOME_BGM_SRC;
+      const name = mode === "custom" && normalize(next.name) ? normalize(next.name) : "默认主页音乐";
+      state.value.customHomeBgm = { mode, src, name };
+      saveState(state.value);
+      showToast(mode === "custom" ? "已应用自定义主页音乐。" : "已恢复默认主页音乐。");
+      if (mode !== "temporary" && !battleScene.value?.open) {
+        playSceneBgm(src);
+      }
+    };
+    const resetHomeBgm = () => applyCustomHomeBgm({ mode: "default", src: HOME_BGM_SRC, name: "默认主页音乐" });
+    const applyCustomBattleBgm = (bgm) => {
+      const next = bgm && typeof bgm === "object" ? bgm : {};
+      const mode = normalize(next.mode) === "custom" ? "custom" : "default";
+      const src = mode === "custom" && normalize(next.src) ? String(next.src) : BATTLE_BGM_SRC;
+      const name = mode === "custom" && normalize(next.name) ? normalize(next.name) : "默认战斗音乐";
+      state.value.customBattleBgm = { mode, src, name };
+      saveState(state.value);
+      showToast(mode === "custom" ? "已应用自定义战斗音乐。" : "已恢复默认战斗音乐。");
+    };
+    const resetBattleBgm = () => applyCustomBattleBgm({ mode: "default", src: BATTLE_BGM_SRC, name: "默认战斗音乐" });
     const applyBattleSpeed = (value) => {
       const next = clampBattleSpeed(value);
       battleSpeed.value = next;
@@ -13101,6 +13194,58 @@ createApp({
       };
       reader.onerror = () => {
         showToast("背景读取失败。");
+        if (input) input.value = "";
+      };
+      reader.readAsDataURL(file);
+    };
+    const onHomeBgmFilePick = async (event) => {
+      const input = event && event.target;
+      const file = input && input.files && input.files[0];
+      if (!file) return;
+      if (!/^audio\//.test(file.type || "")) {
+        showToast("请选择音频文件。");
+        if (input) input.value = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const src = String(reader.result || "");
+        if (!src) {
+          showToast("音乐读取失败。");
+          if (input) input.value = "";
+          return;
+        }
+        applyCustomHomeBgm({ mode: "custom", src, name: file.name || "自定义主页音乐" });
+        if (input) input.value = "";
+      };
+      reader.onerror = () => {
+        showToast("音乐读取失败。");
+        if (input) input.value = "";
+      };
+      reader.readAsDataURL(file);
+    };
+    const onBattleBgmFilePick = async (event) => {
+      const input = event && event.target;
+      const file = input && input.files && input.files[0];
+      if (!file) return;
+      if (!/^audio\//.test(file.type || "")) {
+        showToast("请选择音频文件。");
+        if (input) input.value = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const src = String(reader.result || "");
+        if (!src) {
+          showToast("音乐读取失败。");
+          if (input) input.value = "";
+          return;
+        }
+        applyCustomBattleBgm({ mode: "custom", src, name: file.name || "自定义战斗音乐" });
+        if (input) input.value = "";
+      };
+      reader.onerror = () => {
+        showToast("音乐读取失败。");
         if (input) input.value = "";
       };
       reader.readAsDataURL(file);
@@ -14333,7 +14478,7 @@ createApp({
 
     const showToast = (message) => {
       toast.value = { show: true, message };
-      setTimeout(() => { toast.value.show = false; }, 2200);
+      setTimeout(() => { toast.value.show = false; }, 2000);
     };
     const playNextRewardFlyToast = () => {
       if (rewardFlyToastRunning) return;
@@ -15429,13 +15574,17 @@ createApp({
       if (showEquipmentDungeonPanel.value && equipmentDungeonView.value === "scene") {
         return playSceneBgm(getEquipmentDungeonRegionBgmSrc(equipmentDungeonSceneKey.value) || HOME_BGM_SRC);
       }
-      return playSceneBgm(HOME_BGM_SRC);
+      const customBgm = state.value && state.value.customHomeBgm ? state.value.customHomeBgm : null;
+      const homeSrc = customBgm && customBgm.mode === "custom" && normalize(customBgm.src) ? String(customBgm.src) : HOME_BGM_SRC;
+      return playSceneBgm(homeSrc);
     };
     const playBattleBgm = () => {
       try {
         stopSceneBgm();
+        const customBgm = state.value && state.value.customBattleBgm ? state.value.customBattleBgm : null;
+        const battleSrc = customBgm && customBgm.mode === "custom" && normalize(customBgm.src) ? String(customBgm.src) : BATTLE_BGM_SRC;
         if (!battleBgmAudio.value) {
-          const audio = new Audio(BATTLE_BGM_SRC);
+          const audio = new Audio(battleSrc);
           audio.loop = true;
           audio.preload = "auto";
           audio.volume = clamp(Number(bgmVolume.value) || 0, 0, 1);
@@ -15443,6 +15592,11 @@ createApp({
           battleBgmAudio.value = audio;
         }
         const audio = battleBgmAudio.value;
+        if (audio.src !== battleSrc) {
+          audio.pause();
+          audio.src = battleSrc;
+          audio.currentTime = 0;
+        }
         audio.loop = true;
         applyBgmVolume();
         const task = audio.play();
@@ -15609,6 +15763,8 @@ createApp({
 
     watch(() => state.value.activePets.map((p) => p.id).join("|"), () => {
       state.value.bagPetIds = normalizeBagIds(state.value.bagPetIds, state.value.activePets);
+      const byId = new Map(state.value.activePets.filter((p) => p && p.id).map((p) => [p.id, p]));
+      state.value.elitePetIds = state.value.elitePetIds.map((id) => (id && byId.has(id)) ? id : "");
       state.value.selectedAttackerId = state.value.bagPetIds[0] || "";
     });
     watch(bgmVolume, () => {
@@ -15784,7 +15940,14 @@ createApp({
     });
     const bagCount = computed(() => bagPets.value.length);
     const safeActivePets = computed(() => state.value.activePets.filter((p) => p && p.id));
-    const warehousePets = computed(() => safeActivePets.value.filter((p) => !state.value.bagPetIds.includes(p.id)));
+    const warehousePets = computed(() => safeActivePets.value.filter((p) => !state.value.bagPetIds.includes(p.id) && !state.value.elitePetIds.includes(p.id)));
+    const eliteWarehousePets = computed(() => {
+      const byId = new Map(safeActivePets.value.map((p) => [p.id, p]));
+      return state.value.elitePetIds
+        .filter((id) => normalize(id))
+        .map((id) => byId.get(id))
+        .filter((p) => p && p.id);
+    });
     const warehouseCount = computed(() => warehousePets.value.length);
     const shopTargetOptions = computed(() => bagPets.value.map((p) => ({
       id: p.id,
@@ -21615,6 +21778,89 @@ const applyBossChainFinalBuff = (scene) => {
     };
 
     const selectDex = (dexId) => { state.value.selectedDexId = dexId; };
+    const openLockedDexDialog = (entry) => { lockedDexEntry.value = entry; };
+    const closeLockedDexDialog = () => { lockedDexEntry.value = null; };
+    const lockedDexCanViewDetail = (entry) => {
+      if (!entry) return false;
+      return Boolean(speciesByDexMap.get(Number(entry.dexId)));
+    };
+    const lockedDexCanChallenge = (entry) => {
+      if (!entry) return false;
+      return isBossEntry(entry) || isGuardianName(entry.name) || isWeeklyBossEntry(entry);
+    };
+    const lockedDexChallengeLocation = (entry) => {
+      if (!entry) return null;
+      if (isShopEggEntry(entry)) return { type: "shop", label: "亚比商店", desc: "前往商店购买该亚比蛋" };
+      if (isMonthlySignPetEntry(entry)) return { type: "sign", label: "至尊月签到", desc: "通过月签到里程碑获取" };
+      if (isWeeklyBossEntry(entry)) return { type: "weekly", label: "当周BOSS", desc: "从【当周BOSS】入口挑战" };
+      if (isLegacyBossEntry(entry)) return { type: "legacy", label: "绝版BOSS", desc: "该亚比已绝版，暂不可挑战" };
+      const row = challengeRoadEntryByDexId(entry.dexId);
+      if (row && row.tier) {
+        return {
+          type: "challengeRoad",
+          label: `挑战之路 - ${row.tier.title}`,
+          desc: row.tier.unlocked ? "已解锁，可直接挑战" : (row.tier.lockText || "需要通关前置梯度"),
+          unlocked: row.tier.unlocked,
+          tierIndex: row.tier.tierIndex
+        };
+      }
+      return null;
+    };
+    const lockedDexSpecies = (entry) => {
+      if (!entry) return null;
+      return speciesByDexMap.get(Number(entry.dexId)) || null;
+    };
+    const openChallengeFromLockedDex = (entry) => {
+      if (!entry) return;
+      closeLockedDexDialog();
+      if (isShopEggEntry(entry)) {
+        showToast("该亚比蛋仅可从【亚比商店】购买。");
+        openShopPanel();
+        return;
+      }
+      if (isMonthlySignPetEntry(entry)) {
+        showToast("该亚比仅可从【至尊月签到】里程碑获取。");
+        return;
+      }
+      if (isLegacyBossEntry(entry)) {
+        showToast("该亚比为绝版BOSS，暂不可挑战。");
+        return;
+      }
+      if (isWeeklyBossEntry(entry)) {
+        openWeeklyBossPanel();
+        return;
+      }
+      if (!isDexIdInOpenChallengeRange(entry)) {
+        showToast(openChallengeRangeMessage());
+        return;
+      }
+      if (isBossEntry(entry)) {
+        openBossChallengePanel(entry.dexId);
+      } else if (isGuardianName(entry.name)) {
+        openGuardianChallengePanel(entry.dexId);
+      }
+    };
+    const openDetailFromLockedDex = (entry) => {
+      if (!entry) return;
+      closeLockedDexDialog();
+      const species = speciesByDexMap.get(Number(entry.dexId));
+      if (!species) {
+        showToast("该亚比暂无已生成的技能/种族值数据。");
+        return;
+      }
+      if (isBossEntry(entry) && !isLegacyBossEntry(entry)) {
+        selectedBossDexId.value = entry.dexId;
+        openSelectedBossDetail();
+        return;
+      }
+      if (isGuardianName(entry.name)) {
+        selectedGuardianDexId.value = entry.dexId;
+        openSelectedGuardianDetail();
+        return;
+      }
+      state.value.selectedDexId = entry.dexId;
+      openSelectedDexDetail();
+    };
     const selectPet = (petId) => { state.value.selectedPetId = petId; };
     const toggleDexPanel = () => { state.value.showDexPanel = !state.value.showDexPanel; };
     const openDexPanel = () => { state.value.showDexPanel = true; };
@@ -21697,6 +21943,341 @@ const applyBossChainFinalBuff = (scene) => {
     const openWarehousePanel = () => {
       showWarehousePanel.value = true;
       playSceneBgm(WAREHOUSE_BGM_SRC);
+    };
+    const openNewWarehousePanel = () => {
+      showNewWarehousePanel.value = true;
+      newWarehouseElementFilter.value = "全部系别";
+      newWarehouseSortMode.value = "time_desc";
+      newWarehouseSearch.value = "";
+      newWarehouseShowElementPicker.value = false;
+      newWarehouseTimeMenuOpen.value = false;
+      newWarehouseLevelMenuOpen.value = false;
+      newWarehousePage.value = 0;
+      newWarehouseView.value = "pet";
+      if (!selectedNewWarehousePet.value && filteredNewWarehousePets.value.length > 0) {
+        selectedNewWarehousePet.value = filteredNewWarehousePets.value[0];
+      }
+    };
+    const closeNewWarehousePanel = () => {
+      showNewWarehousePanel.value = false;
+    };
+    const selectNewWarehousePet = (pet) => {
+      selectedNewWarehousePet.value = pet;
+      newWarehouseInfoTab.value = "skills";
+      newWarehouseStudyPanel.value = false;
+      newWarehouseSkillLearnPanel.value = false;
+    };
+    const NEW_WAREHOUSE_PAGE_SIZE = 12;
+    const newWarehouseTotalPages = computed(() => {
+      const count = newWarehouseView.value === "elite" ? filteredEliteWarehousePets.value.length : filteredNewWarehousePets.value.length;
+      return Math.max(1, Math.ceil(count / NEW_WAREHOUSE_PAGE_SIZE));
+    });
+    const newWarehousePagePets = computed(() => {
+      const source = newWarehouseView.value === "elite" ? filteredEliteWarehousePets.value : filteredNewWarehousePets.value;
+      const start = newWarehousePage.value * NEW_WAREHOUSE_PAGE_SIZE;
+      return source.slice(start, start + NEW_WAREHOUSE_PAGE_SIZE);
+    });
+    const newWarehousePageSlots = computed(() => {
+      const pets = newWarehousePagePets.value;
+      const slots = [];
+      for (let i = 0; i < NEW_WAREHOUSE_PAGE_SIZE; i++) {
+        slots.push(pets[i] || null);
+      }
+      return slots;
+    });
+    const newWarehousePrevPage = () => {
+      if (newWarehouseView.value === "elite") {
+        if (newWarehousePage.value > 0) newWarehousePage.value--;
+      } else {
+        if (newWarehousePage.value > 0) newWarehousePage.value--;
+      }
+    };
+    const newWarehouseNextPage = () => {
+      if (newWarehouseView.value === "elite") {
+        if (newWarehousePage.value < eliteWarehouseTotalPages.value - 1) newWarehousePage.value++;
+      } else {
+        if (newWarehousePage.value < newWarehouseTotalPages.value - 1) newWarehousePage.value++;
+      }
+    };
+    const newWarehouseElementFilter = ref("全部系别");
+    const newWarehouseSortMode = ref("time_desc");
+    const newWarehouseSearch = ref("");
+    const newWarehouseShowElementPicker = ref(false);
+    const newWarehouseTimeMenuOpen = ref(false);
+    const newWarehouseLevelMenuOpen = ref(false);
+    const newWarehouseElementOptions = computed(() => {
+      const set = new Set();
+      warehousePets.value.forEach((p) => {
+        const e = normalizeElementName(p.element);
+        if (e) set.add(e);
+      });
+      eliteWarehousePets.value.forEach((p) => {
+        const e = normalizeElementName(p.element);
+        if (e) set.add(e);
+      });
+      return ["全部系别"].concat(Array.from(set).sort((a, b) => a.localeCompare(b, "zh-Hans-CN")));
+    });
+    const applyNewWarehouseFilterSort = (petList) => {
+      const keyword = normalize(newWarehouseSearch.value).toLowerCase();
+      const element = normalizeElementName(newWarehouseElementFilter.value) || normalize(newWarehouseElementFilter.value);
+      const orderOf = (pet) => Number(pet && pet.createdAt) || 0;
+      const powerOf = (pet) => calcPetBattlePower(pet);
+      const list = petList.filter((pet) => {
+        const name = normalize(petDisplayName(pet)).toLowerCase();
+        const speciesName = normalize(pet.speciesName).toLowerCase();
+        const petElement = normalizeElementName(pet.element);
+        const hitName = !keyword || name.includes(keyword) || speciesName.includes(keyword);
+        const hitElement = !element || element === "全部系别" || petElement === element;
+        return hitName && hitElement;
+      });
+      const mode = normalize(newWarehouseSortMode.value);
+      return list.slice().sort((a, b) => {
+        if (mode === "level_asc") return (Number(a.level) || 0) - (Number(b.level) || 0) || powerOf(a) - powerOf(b) || orderOf(a) - orderOf(b);
+        if (mode === "level_desc") return (Number(b.level) || 0) - (Number(a.level) || 0) || powerOf(b) - powerOf(a) || orderOf(a) - orderOf(b);
+        if (mode === "time_asc") return orderOf(a) - orderOf(b);
+        return orderOf(b) - orderOf(a);
+      });
+    };
+    const filteredNewWarehousePets = computed(() => applyNewWarehouseFilterSort(warehousePets.value));
+    const filteredEliteWarehousePets = computed(() => applyNewWarehouseFilterSort(eliteWarehousePets.value));
+    const eliteWarehouseTotalPages = computed(() => {
+      const count = filteredEliteWarehousePets.value.length;
+      return Math.max(1, Math.ceil(count / NEW_WAREHOUSE_PAGE_SIZE));
+    });
+    const eliteWarehousePagePets = computed(() => {
+      const start = newWarehousePage.value * NEW_WAREHOUSE_PAGE_SIZE;
+      return filteredEliteWarehousePets.value.slice(start, start + NEW_WAREHOUSE_PAGE_SIZE);
+    });
+    const eliteWarehousePageSlots = computed(() => {
+      const pets = eliteWarehousePagePets.value;
+      const slots = [];
+      for (let i = 0; i < NEW_WAREHOUSE_PAGE_SIZE; i++) {
+        slots.push(pets[i] || null);
+      }
+      return slots;
+    });
+    const toggleNewWarehouseElementPicker = () => {
+      newWarehouseShowElementPicker.value = !newWarehouseShowElementPicker.value;
+      newWarehouseTimeMenuOpen.value = false;
+      newWarehouseLevelMenuOpen.value = false;
+    };
+    const selectNewWarehouseElement = (el) => {
+      newWarehouseElementFilter.value = el;
+      newWarehouseShowElementPicker.value = false;
+      newWarehousePage.value = 0;
+      const currentList = newWarehouseView.value === "elite" ? filteredEliteWarehousePets.value : filteredNewWarehousePets.value;
+      if (selectedNewWarehousePet.value && !currentList.find((p) => p && p.id === selectedNewWarehousePet.value.id)) {
+        selectedNewWarehousePet.value = currentList[0] || null;
+      }
+    };
+    const toggleNewWarehouseTimeMenu = () => {
+      newWarehouseTimeMenuOpen.value = !newWarehouseTimeMenuOpen.value;
+      newWarehouseLevelMenuOpen.value = false;
+      newWarehouseShowElementPicker.value = false;
+    };
+    const toggleNewWarehouseLevelMenu = () => {
+      newWarehouseLevelMenuOpen.value = !newWarehouseLevelMenuOpen.value;
+      newWarehouseTimeMenuOpen.value = false;
+      newWarehouseShowElementPicker.value = false;
+    };
+    const setNewWarehouseSort = (mode) => {
+      newWarehouseSortMode.value = mode;
+      newWarehouseTimeMenuOpen.value = false;
+      newWarehouseLevelMenuOpen.value = false;
+      newWarehousePage.value = 0;
+      const currentList = newWarehouseView.value === "elite" ? filteredEliteWarehousePets.value : filteredNewWarehousePets.value;
+      if (selectedNewWarehousePet.value && !currentList.find((p) => p && p.id === selectedNewWarehousePet.value.id)) {
+        selectedNewWarehousePet.value = currentList[0] || null;
+      }
+    };
+    const closeNewWarehouseDropdowns = () => {
+      newWarehouseShowElementPicker.value = false;
+      newWarehouseTimeMenuOpen.value = false;
+      newWarehouseLevelMenuOpen.value = false;
+    };
+    const selectedNewWarehousePetSkills = computed(() => {
+      const pet = selectedNewWarehousePet.value;
+      if (!pet) return [];
+      const arr = pet && Array.isArray(pet.equippedSkills) ? pet.equippedSkills : [];
+      try {
+        const species = getSpeciesForPet(pet);
+        const skillLevel = skillLevelForPet(pet);
+        return currentEquippedSkillNamesBySpecies(species, arr, skillLevel, petExtraSkills(pet)).slice(0, 4);
+      } catch {
+        return arr.slice(0, 4);
+      }
+    });
+    const selectedNewWarehousePetBattlePower = computed(() => {
+      const pet = selectedNewWarehousePet.value;
+      if (!pet) return 0;
+      return calcPetBattlePower(pet);
+    });
+    const selectedNewWarehousePetTalent = computed(() => {
+      const pet = selectedNewWarehousePet.value;
+      if (!pet) return createZeroStats();
+      return normalizeTalent(pet.talent);
+    });
+    const selectedNewWarehousePetTalentTotal = computed(() => talentTotal(selectedNewWarehousePetTalent.value));
+    const selectedNewWarehousePetTalentGrade = computed(() => talentGradeByTotal(selectedNewWarehousePetTalentTotal.value));
+    const selectedNewWarehousePetTalentImageSrc = computed(() => talentGradeImageSrc(selectedNewWarehousePetTalentGrade.value));
+    const selectedNewWarehousePetStudy = computed(() => {
+      const pet = selectedNewWarehousePet.value;
+      if (!pet) return createZeroStats();
+      return normalizeStudy(pet.study);
+    });
+    const selectedNewWarehousePetStudyTotal = computed(() => {
+      const study = selectedNewWarehousePetStudy.value;
+      return study.hp + study.atk + study.def + study.spAtk + study.spDef + study.speed;
+    });
+    const selectedNewWarehousePetExpPercent = computed(() => {
+      const pet = selectedNewWarehousePet.value;
+      if (!pet) return 0;
+      return expPercent(pet);
+    });
+    const newWarehouseStudyPanel = ref(false);
+    const toggleNewWarehouseStudyPanel = () => {
+      newWarehouseStudyPanel.value = !newWarehouseStudyPanel.value;
+    };
+    const newWarehouseInfoTab = ref("skills");
+    const setNewWarehouseInfoTab = (tab) => {
+      const hit = String(tab || "");
+      newWarehouseInfoTab.value = ["skills", "info", "ability"].includes(hit) ? hit : "skills";
+    };
+    const newWarehouseView = ref("pet");
+    const setNewWarehouseView = (view) => {
+      const hit = String(view || "");
+      newWarehouseView.value = ["pet", "elite"].includes(hit) ? hit : "pet";
+      selectedNewWarehousePet.value = null;
+      newWarehouseInfoTab.value = "skills";
+      newWarehousePage.value = 0;
+      closeNewWarehouseDropdowns();
+      if (newWarehouseView.value === "pet" && filteredNewWarehousePets.value.length > 0) {
+        selectedNewWarehousePet.value = filteredNewWarehousePets.value[0];
+      } else if (newWarehouseView.value === "elite") {
+        const firstElite = filteredEliteWarehousePets.value.find((p) => p && p.id);
+        if (firstElite) selectedNewWarehousePet.value = firstElite;
+      }
+    };
+    const movePetToBag = (pet) => {
+      if (!pet || !pet.id) return;
+      const idx = state.value.bagPetIds.findIndex((id) => !normalize(id));
+      if (idx < 0) {
+        state.value.elitePetIds = state.value.elitePetIds.map((id) => (id === pet.id ? "" : id));
+        if (selectedNewWarehousePet.value && selectedNewWarehousePet.value.id === pet.id) {
+          if (newWarehouseView.value === "elite") {
+            selectedNewWarehousePet.value = filteredEliteWarehousePets.value.find((p) => p && p.id) || null;
+          } else {
+            selectedNewWarehousePet.value = filteredNewWarehousePets.value[0] || null;
+          }
+        }
+        if (newWarehouseView.value === "elite") {
+          const maxPage = eliteWarehouseTotalPages.value - 1;
+          if (newWarehousePage.value > maxPage) newWarehousePage.value = Math.max(0, maxPage);
+        }
+        beginReplaceBag(pet.id);
+        showToast && showToast("背包已满，请选择一个背包位进行替换");
+        return;
+      }
+      state.value.bagPetIds.splice(idx, 1, pet.id);
+      state.value.elitePetIds = state.value.elitePetIds.map((id) => (id === pet.id ? "" : id));
+      if (selectedNewWarehousePet.value && selectedNewWarehousePet.value.id === pet.id) {
+        if (newWarehouseView.value === "elite") {
+          const firstElite = filteredEliteWarehousePets.value.find((p) => p && p.id);
+          selectedNewWarehousePet.value = firstElite || null;
+        } else {
+          selectedNewWarehousePet.value = filteredNewWarehousePets.value[0] || null;
+        }
+      }
+      if (newWarehouseView.value === "elite") {
+        const maxPage = eliteWarehouseTotalPages.value - 1;
+        if (newWarehousePage.value > maxPage) newWarehousePage.value = Math.max(0, maxPage);
+      }
+      showToast && showToast("已放入背包");
+    };
+    const movePetToElite = (pet) => {
+      if (!pet || !pet.id) return;
+      if (state.value.elitePetIds.includes(pet.id)) {
+        showToast && showToast("已是精英");
+        return;
+      }
+      const idx = state.value.elitePetIds.findIndex((id) => !normalize(id));
+      if (idx >= 0) {
+        state.value.elitePetIds.splice(idx, 1, pet.id);
+      } else {
+        state.value.elitePetIds.push(pet.id);
+      }
+      if (selectedNewWarehousePet.value && selectedNewWarehousePet.value.id === pet.id) {
+        selectedNewWarehousePet.value = filteredNewWarehousePets.value[0] || null;
+      }
+      showToast && showToast("已设为精英");
+    };
+    const removePetFromElite = (pet) => {
+      if (!pet || !pet.id) return;
+      state.value.elitePetIds = state.value.elitePetIds.map((id) => (id === pet.id ? "" : id));
+      if (selectedNewWarehousePet.value && selectedNewWarehousePet.value.id === pet.id) {
+        const firstElite = filteredEliteWarehousePets.value.find((p) => p && p.id && p.id !== pet.id);
+        selectedNewWarehousePet.value = firstElite || null;
+      }
+      if (newWarehouseView.value === "elite") {
+        const maxPage = eliteWarehouseTotalPages.value - 1;
+        if (newWarehousePage.value > maxPage) newWarehousePage.value = Math.max(0, maxPage);
+      }
+      showToast && showToast("已取消精英");
+    };
+    const selectedNewWarehousePetSpecies = computed(() => {
+      const pet = selectedNewWarehousePet.value;
+      if (!pet) return null;
+      try {
+        return getSpeciesForPet(pet);
+      } catch {
+        return null;
+      }
+    });
+    const selectedNewWarehousePetRaceStats = computed(() => {
+      const pet = selectedNewWarehousePet.value;
+      const species = selectedNewWarehousePetSpecies.value;
+      if (!pet || !species || !species.raceStats) {
+        return { hp: 0, atk: 0, def: 0, spAtk: 0, spDef: 0, speed: 0 };
+      }
+      return species.raceStats;
+    });
+    const selectedNewWarehousePetRaceTotal = computed(() => {
+      const race = selectedNewWarehousePetRaceStats.value;
+      if (!race) return 0;
+      return (race.hp || 0) + (race.atk || 0) + (race.def || 0) + (race.spAtk || 0) + (race.spDef || 0) + (race.speed || 0);
+    });
+    const selectedNewWarehousePetAbilityStats = computed(() => {
+      const pet = selectedNewWarehousePet.value;
+      const race = selectedNewWarehousePetRaceStats.value;
+      if (!pet || !race) {
+        return { hp: 0, atk: 0, def: 0, spAtk: 0, spDef: 0, speed: 0, total: 0 };
+      }
+      const talent = normalizeTalent(pet.talent);
+      const study = normalizeStudy(pet.study);
+      const out = {
+        hp: calcAbilityHp(race.hp, talent.hp, study.hp, pet.level),
+        atk: calcAbilityStat(race.atk, talent.atk, study.atk, pet.level, 1),
+        def: calcAbilityStat(race.def, talent.def, study.def, pet.level, 1),
+        spAtk: calcAbilityStat(race.spAtk, talent.spAtk, study.spAtk, pet.level, 1),
+        spDef: calcAbilityStat(race.spDef, talent.spDef, study.spDef, pet.level, 1),
+        speed: calcAbilityStat(race.speed, talent.speed, study.speed, pet.level, 1)
+      };
+      out.total = out.hp + out.atk + out.def + out.spAtk + out.spDef + out.speed;
+      return out;
+    });
+    const availableSkillsForNewWarehousePet = computed(() => {
+      const pet = selectedNewWarehousePet.value;
+      if (!pet) return [];
+      const species = selectedNewWarehousePetSpecies.value;
+      if (!species) return [];
+      const list = Array.isArray(species.skills) ? species.skills : [];
+      const extra = petExtraSkills(pet);
+      const skillLevel = skillLevelForPet(pet);
+      return list.filter((s) => skillLevel === null || Number(s && s.level) <= Number(skillLevel)).concat(extra);
+    });
+    const newWarehouseSkillLearnPanel = ref(false);
+    const toggleNewWarehouseSkillLearnPanel = () => {
+      newWarehouseSkillLearnPanel.value = !newWarehouseSkillLearnPanel.value;
     };
     const bag2SetFirstPet = () => {
       if (!bag2DisplayPet.value) return;
@@ -23160,6 +23741,7 @@ const applyBossChainFinalBuff = (scene) => {
       showTeamInfo.value = false;
       showTeamRank.value = false;
       showTeamRecruit.value = false;
+      showTeamBoss.value = false;
       showTeamButler.value = false;
       showTeamTask.value = false;
       showTeamShop.value = false;
@@ -23174,6 +23756,7 @@ const applyBossChainFinalBuff = (scene) => {
       showTeamInfo.value = false;
       showTeamRank.value = false;
       showTeamRecruit.value = false;
+      showTeamBoss.value = false;
       showTeamButler.value = false;
       showTeamTask.value = false;
       showTeamShop.value = false;
@@ -23204,6 +23787,7 @@ const applyBossChainFinalBuff = (scene) => {
       showCreateTeamModal.value = false;
       showTeamRank.value = false;
       showTeamRecruit.value = false;
+      showTeamBoss.value = false;
       showTeamButler.value = false;
       showTeamTask.value = false;
       showTeamShop.value = false;
@@ -23268,6 +23852,43 @@ const applyBossChainFinalBuff = (scene) => {
         return;
       }
       showTeamRecruit.value = true;
+    };
+    const onTeamBossClick = () => {
+      if (!hasTeam.value) {
+        showToast("请先创建或加入战队！");
+        return;
+      }
+      showTeamBoss.value = true;
+    };
+    const challengeTeamBoss = () => {
+      if (teamBossCurrentHp.value <= 0) {
+        showToast("战队BOSS已被击败！等待下次刷新。");
+        return;
+      }
+      const damage = Math.floor(Math.random() * 8000) + 5000;
+      teamBossCurrentHp.value = Math.max(0, teamBossCurrentHp.value - damage);
+      showToast(`对BOSS造成 ${damage.toLocaleString()} 点伤害！`);
+      if (teamBossRankTab.value === 'inner') {
+        const name = myTeam.value?.name ? myTeam.value.name.split('·')[0] + '·' + (myTeam.value?.leader || '玩家') : '玩家';
+        const existing = teamBossInnerRankList.value.find(item => item.name === name);
+        if (existing) {
+          existing.damage += damage;
+        } else {
+          teamBossInnerRankList.value.push({ name, damage });
+        }
+        teamBossInnerRankList.value.sort((a, b) => b.damage - a.damage);
+        if (teamBossInnerRankList.value.length > 10) teamBossInnerRankList.value = teamBossInnerRankList.value.slice(0, 10);
+      } else {
+        const teamName = myTeam.value?.name || '我的战队';
+        const existing = teamBossTeamRankList.value.find(item => item.name === teamName);
+        if (existing) {
+          existing.damage += damage;
+        } else {
+          teamBossTeamRankList.value.push({ name: teamName, damage });
+        }
+        teamBossTeamRankList.value.sort((a, b) => b.damage - a.damage);
+        if (teamBossTeamRankList.value.length > 10) teamBossTeamRankList.value = teamBossTeamRankList.value.slice(0, 10);
+      }
     };
     const handleCreateTeam = () => {
       showTeamModal.value = false;
@@ -24264,6 +24885,10 @@ const applyBossChainFinalBuff = (scene) => {
       battleBackground,
       onBattleBackgroundFilePick,
       resetBattleBackground,
+      onHomeBgmFilePick,
+      resetHomeBgm,
+      onBattleBgmFilePick,
+      resetBattleBgm,
       dexSearch,
       dexElementFilter,
       dexDefeatFilter,
@@ -24307,6 +24932,14 @@ const applyBossChainFinalBuff = (scene) => {
       isViewingOwnTeam,
       showTeamRank,
       showTeamRecruit,
+      showTeamBoss,
+      teamBossRankTab,
+      teamBossMaxHp,
+      teamBossCurrentHp,
+      teamBossInnerRankList,
+      teamBossTeamRankList,
+      teamBossHpPercent,
+      currentTeamBossRankList,
       showTeamButler,
       showTeamTask,
       showTeamShop,
@@ -24347,6 +24980,8 @@ const applyBossChainFinalBuff = (scene) => {
       closeTeamModals,
       onCommanderClick,
       onRecruitClick,
+      onTeamBossClick,
+      challengeTeamBoss,
       joinTeam,
       viewTeamInfo,
       applyJoinTeam,
@@ -24404,6 +25039,50 @@ const applyBossChainFinalBuff = (scene) => {
       bag2EnhanceTab,
       bag2GearFilter,
       showWarehousePanel,
+      showNewWarehousePanel,
+      selectedNewWarehousePet,
+      selectedNewWarehousePetSkills,
+      selectedNewWarehousePetBattlePower,
+      selectedNewWarehousePetTalentImageSrc,
+      selectedNewWarehousePetTalent,
+      selectedNewWarehousePetTalentTotal,
+      selectedNewWarehousePetTalentGrade,
+      selectedNewWarehousePetStudyTotal,
+      selectedNewWarehousePetStudy,
+      selectedNewWarehousePetExpPercent,
+      newWarehouseStudyPanel,
+      toggleNewWarehouseStudyPanel,
+      newWarehouseInfoTab,
+      setNewWarehouseInfoTab,
+      newWarehouseView,
+      setNewWarehouseView,
+      selectedNewWarehousePetSpecies,
+      selectedNewWarehousePetRaceStats,
+      selectedNewWarehousePetRaceTotal,
+      selectedNewWarehousePetAbilityStats,
+      availableSkillsForNewWarehousePet,
+      newWarehouseSkillLearnPanel,
+      toggleNewWarehouseSkillLearnPanel,
+      newWarehousePage,
+      newWarehouseTotalPages,
+      newWarehousePageSlots,
+      newWarehousePagePets,
+      eliteWarehouseTotalPages,
+      eliteWarehousePageSlots,
+      eliteWarehousePagePets,
+      newWarehouseElementFilter,
+      newWarehouseSortMode,
+      newWarehouseSearch,
+      newWarehouseShowElementPicker,
+      newWarehouseTimeMenuOpen,
+      newWarehouseLevelMenuOpen,
+      newWarehouseElementOptions,
+      toggleNewWarehouseElementPicker,
+      selectNewWarehouseElement,
+      toggleNewWarehouseTimeMenu,
+      toggleNewWarehouseLevelMenu,
+      setNewWarehouseSort,
+      closeNewWarehouseDropdowns,
       showShopPanel,
       showSkillStoneDetail,
       selectedSkillStoneDetail,
@@ -24523,8 +25202,12 @@ const applyBossChainFinalBuff = (scene) => {
       maxBagBattlePower,
       safeActivePets,
       warehousePets,
+      eliteWarehousePets,
+      movePetToBag,
+      movePetToElite,
+      removePetFromElite,
       warehouseElementOptions,
-      filteredWarehousePets,
+      filteredNewWarehousePets,
       warehouseCount,
       imageBadges,
       textBadges,
@@ -24778,6 +25461,16 @@ const applyBossChainFinalBuff = (scene) => {
       selectedPetEquippedItem,
       canChallengeFromDex,
       canStartChallengeByDex,
+      challengeLockMessage,
+      lockedDexEntry,
+      openLockedDexDialog,
+      closeLockedDexDialog,
+      lockedDexCanViewDetail,
+      lockedDexCanChallenge,
+      lockedDexChallengeLocation,
+      lockedDexSpecies,
+      openChallengeFromLockedDex,
+      openDetailFromLockedDex,
       selectedDexChallengeLocked,
       openChallengeRoadPanel,
       closeChallengeRoadPanel,
@@ -24833,6 +25526,11 @@ const applyBossChainFinalBuff = (scene) => {
       setBag2InfoTab,
       setBag2EnhanceTab,
       openWarehousePanel,
+      openNewWarehousePanel,
+      closeNewWarehousePanel,
+      selectNewWarehousePet,
+      newWarehousePrevPage,
+      newWarehouseNextPage,
       bag2SetFirstPet,
       bag2ReturnToWarehouse,
       bag2SortMode,

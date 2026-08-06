@@ -512,6 +512,7 @@
     .home-action-info-card { --x: 56.5%; --y: 88%; --w: 5.6%; }
     .home-action-badge { --x: 41.2%; --y: 84.3%; --w: 6.7%; }
     .home-action-egg { --x: 48.6%; --y: 84.0%; --w: 7%; }
+    
     .home-action-warehouse { --x: 64.6%; --y: 86.5%; --w: 6.5%; }
     .home-action-dex { --x: 72.4%; --y: 86.8%; --w: 6.4%; }
     .home-action-bag { --x: 80%; --y: 83.4%; --w: 6.4%; }
@@ -967,6 +968,7 @@
       .home-action-study { --x: 50%; --y: 82%; --w: 18%; }
       .home-action-badge { --x: 66%; --y: 83%; --w: 14%; }
       .home-action-egg { --x: 64%; --y: 83%; --w: 14%; }
+      
       .home-action-warehouse { --x: 75%; --y: 83%; --w: 15%; }
       .home-action-dex { --x: 11%; --y: 62%; --w: 16%; }
       .home-action-bag { --x: 27%; --y: 62%; --w: 16%; }
@@ -1200,7 +1202,7 @@
         --bag-slot-img-h: clamp(calc(52 * var(--ui-px)), 9vh, calc(68 * var(--ui-px)));
       }
       :root {
-        --warehouse-card-pet-size: clamp(calc(52 * var(--ui-px)), 13vw, calc(70 * var(--ui-px)));
+        --warehouse-card-pet-size: 58px;
       }
     }
     .bag2-panel {
@@ -1237,6 +1239,821 @@
     }
     .bag2-close-btn:hover { filter: brightness(1.1); }
     .bag2-close-btn:active { filter: brightness(0.9); transform: scale(0.95); }
+    .new-warehouse-panel {
+      position: relative;
+      width: 900px !important;
+      --ui-px: 1px;
+      --warehouse-card-pet-size: 70px;
+      --warehouse-action-pet-size: 58px;
+      font-size: 14px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin: 0;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .new-warehouse-bg {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      pointer-events: none;
+      user-select: none;
+    }
+    .new-warehouse-large-display {
+      position: absolute;
+      left: -5.5%;
+      top: 10%;
+      width: 70%;
+      pointer-events: none;
+    }
+    .new-warehouse-large-bg {
+      display: block;
+      width: 50%;
+      height: auto;
+      object-fit: contain;
+      margin: 0 auto;
+      pointer-events: none;
+      user-select: none;
+    }
+    .new-warehouse-large-info {
+      position: absolute;
+      top: 0;
+      left: 25%;
+      width: 50%;
+      padding-top: 4%;
+      text-align: center;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .new-warehouse-large-pet {
+      position: absolute;
+      top: 63%;
+      left: 48.5%;
+      transform: translate(-50%, -50%);
+      max-width: 75%;
+      max-height: 70%;
+      object-fit: contain;
+      pointer-events: none;
+      z-index: 1;
+      filter: drop-shadow(0 6px 10px rgba(15, 23, 42, .45));
+    }
+    .new-warehouse-large-empty {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 18px;
+      font-weight: 900;
+      color: #94a3b8;
+      text-shadow: 0 2px 6px rgba(0,0,0,.5);
+      z-index: 2;
+    }
+    .new-warehouse-large-name {
+      font-size: 15px;
+      font-weight: 950;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,.75), 0 0 10px rgba(56,189,248,.55);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 8px;
+    }
+    .new-warehouse-large-level {
+      font-size: 12px;
+      font-weight: 900;
+      color: #fde68a;
+      text-shadow: 0 2px 6px rgba(0,0,0,.65);
+      margin-top: 2px;
+    }
+    .new-warehouse-action-btns {
+      position: absolute;
+      left: 25%;
+      right: 25%;
+      bottom: 2%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      z-index: 5;
+      pointer-events: auto;
+    }
+    .new-warehouse-action-btn {
+      width: 25.6%;
+      max-width: 88px;
+      height: auto;
+      object-fit: contain;
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.15s ease;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .new-warehouse-action-btn:hover {
+      transform: scale(1.06);
+      filter: brightness(1.1) drop-shadow(0 0 6px rgba(56, 189, 248, .6));
+    }
+    .new-warehouse-action-btn:active {
+      transform: scale(0.96);
+      filter: brightness(0.92);
+    }
+    .new-warehouse-skill-panel {
+      position: absolute;
+      left: 47.99%;
+      top: 14.21%;
+      width: 39.78%;
+      pointer-events: none;
+    }
+    .new-warehouse-empty-state {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 15px;
+      font-weight: 900;
+      color: #0c4a6e;
+      text-align: center;
+      pointer-events: none;
+      z-index: 15;
+    }
+    .new-warehouse-skill-bg {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      pointer-events: none;
+      user-select: none;
+      position: relative;
+      z-index: 10;
+    }
+    .new-warehouse-skill-content {
+      position: absolute;
+      inset: 6% 5% 6% 5%;
+      display: flex;
+      flex-direction: column;
+      pointer-events: auto;
+      overflow: hidden;
+      z-index: 15;
+    }
+    .new-warehouse-tab-panel {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .new-warehouse-skill-header {
+      display: flex;
+      align-items: center;
+      gap: 3%;
+      margin-bottom: 3%;
+      flex-shrink: 0;
+    }
+    .new-warehouse-skill-header-name {
+      font-weight: 900;
+      font-size: 12px;
+      color: #0c4a6e;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex-shrink: 1;
+      min-width: 0;
+    }
+    .new-warehouse-skill-header-exp {
+      font-size: 9px;
+      font-weight: 700;
+      color: #0369a1;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .new-warehouse-skill-header-exp-bar {
+      width: 30px;
+      height: 4px;
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 999px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .new-warehouse-skill-header-exp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #22d3ee, #0ea5e9);
+      border-radius: 999px;
+      transition: width 0.3s;
+    }
+    .new-warehouse-skill-header-stats {
+      display: flex;
+      align-items: center;
+      gap: 4%;
+      margin-bottom: 3%;
+      flex-shrink: 0;
+    }
+    .new-warehouse-skill-stat {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 10px;
+      font-size: 9px;
+      font-weight: 700;
+    }
+    .new-warehouse-skill-stat-talent {
+      background: rgba(255, 255, 255, 0.7);
+      border-color: rgba(251, 191, 36, 0.5);
+      padding: 2px 6px;
+    }
+    .new-warehouse-skill-stat-power {
+      background: rgba(255, 255, 255, 0.6);
+      border-color: rgba(251, 191, 36, 0.5);
+      color: rgba(251, 191, 36, 0.9);
+    }
+    .new-warehouse-skill-stat-power-value {
+      color: #d97706;
+      font-weight: 900;
+    }
+    .new-warehouse-skill-stat-study {
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.6);
+      border-color: rgba(56, 189, 248, 0.5);
+      color: #0c4a6e;
+    }
+    .new-warehouse-skill-stat-study:hover {
+      background: rgba(224, 242, 254, 0.8);
+    }
+    .new-warehouse-skill-stat-study.active {
+      background: rgba(56, 189, 248, 0.3);
+      border-color: rgba(56, 189, 248, 0.8);
+    }
+    .new-warehouse-skill-stat-label {
+      font-weight: 700;
+      color: inherit;
+    }
+    .new-warehouse-skill-stat-value {
+      font-weight: 900;
+      color: #0c4a6e;
+    }
+    .new-warehouse-skill-talent-img {
+      height: 18px;
+      width: auto;
+      object-fit: contain;
+    }
+    .new-warehouse-skill-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3% 4%;
+      align-content: start;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(56, 189, 248, .5) transparent;
+    }
+    .new-warehouse-skill-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .new-warehouse-skill-list::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, .5);
+      border-radius: 2px;
+    }
+    .new-warehouse-skill-item {
+      background: rgba(224, 242, 254, 0.72);
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      border-radius: 8px;
+      padding: 8px 10px 6px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.32);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .new-warehouse-skill-name {
+      font-weight: 900;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #0c4a6e;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .new-warehouse-skill-type-dot {
+      display: inline-block;
+      border-radius: 999px;
+      flex-shrink: 0;
+      width: 10px;
+      height: 10px;
+    }
+    .new-warehouse-skill-meta {
+      font-size: 9px;
+      font-weight: 700;
+      color: #0369a1;
+      margin-top: 3px;
+    }
+    .new-warehouse-skill-desc {
+      font-size: 8px;
+      font-weight: 600;
+      color: #475569;
+      margin-top: 3px;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .new-warehouse-skill-tabs {
+      position: absolute;
+      top: -13%;
+      left: 1.5%;
+      display: flex;
+      gap: 0.75%;
+      z-index: 5;
+      pointer-events: auto;
+    }
+    .new-warehouse-skill-tab-btn {
+      width: 26%;
+      max-width: 104px;
+      height: auto;
+      object-fit: contain;
+      cursor: pointer;
+      transition: filter .15s ease, transform .15s ease;
+      pointer-events: auto;
+    }
+    .new-warehouse-skill-tab-btn:hover {
+      filter: brightness(1.12);
+      transform: translateY(-2px);
+    }
+    .new-warehouse-skill-tab-btn.active {
+      filter: brightness(1.2) drop-shadow(0 0 6px rgba(250, 204, 21, .7));
+      transform: translateY(-3px);
+    }
+    .new-warehouse-info-header {
+      display: flex;
+      align-items: center;
+      gap: 6%;
+      margin-bottom: 4%;
+      flex-shrink: 0;
+    }
+    .new-warehouse-info-talent-icon {
+      height: 21px;
+      width: auto;
+      object-fit: contain;
+    }
+    .new-warehouse-info-talent-total {
+      font-weight: 900;
+      font-size: 11px;
+      color: #0c4a6e;
+    }
+    .new-warehouse-info-talent-grade {
+      font-weight: 900;
+      font-size: 10px;
+      color: #d97706;
+      background: rgba(255,255,255,.6);
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(251, 191, 36, .5);
+    }
+    .new-warehouse-info-talent-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8%;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(56, 189, 248, .5) transparent;
+    }
+    .new-warehouse-info-talent-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .new-warehouse-info-talent-list::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, .5);
+      border-radius: 2px;
+    }
+    .new-warehouse-info-talent-row {
+      display: flex;
+      align-items: center;
+      gap: 4%;
+      padding: 4px 6px;
+      background: rgba(224, 242, 254, 0.6);
+      border-radius: 6px;
+    }
+    .new-warehouse-info-talent-name {
+      font-size: 10px;
+      font-weight: 700;
+      color: #0369a1;
+      width: 14%;
+      flex-shrink: 0;
+    }
+    .new-warehouse-info-talent-val {
+      font-size: 10px;
+      font-weight: 900;
+      color: #0c4a6e;
+      width: 10%;
+      flex-shrink: 0;
+      text-align: right;
+    }
+    .new-warehouse-info-talent-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .new-warehouse-ability-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 4%;
+      margin-bottom: 3%;
+      flex-shrink: 0;
+    }
+    .new-warehouse-ability-stat-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 3px 6px;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 8px;
+    }
+    .new-warehouse-ability-stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #0369a1;
+    }
+    .new-warehouse-ability-stat-val {
+      font-size: 13px;
+      font-weight: 900;
+      color: #0c4a6e;
+    }
+    .new-warehouse-ability-view-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 6px;
+      background: linear-gradient(180deg, rgba(14, 116, 144, .9), rgba(7, 89, 133, .9));
+      color: #fde68a;
+      font-size: 9px;
+      font-weight: 900;
+      border-radius: 8px;
+      border: 1px solid rgba(125, 211, 252, .5);
+      cursor: pointer;
+      transition: filter .15s;
+      pointer-events: auto;
+    }
+    .new-warehouse-ability-view-btn:hover {
+      filter: brightness(1.15);
+    }
+    .new-warehouse-ability-detail-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5%;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(56, 189, 248, .5) transparent;
+    }
+    .new-warehouse-ability-detail-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .new-warehouse-ability-detail-list::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, .5);
+      border-radius: 2px;
+    }
+    .new-warehouse-ability-section-title {
+      font-size: 9px;
+      font-weight: 900;
+      color: #075985;
+      padding: 1px 5px;
+      background: rgba(56, 189, 248, 0.15);
+      border-radius: 4px;
+      margin-top: 1%;
+      flex-shrink: 0;
+    }
+    .new-warehouse-ability-detail-row {
+      display: flex;
+      align-items: center;
+      gap: 3%;
+      padding: 1px 3px;
+      background: rgba(224, 242, 254, 0.6);
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+    .new-warehouse-ability-detail-name {
+      font-size: 8px;
+      font-weight: 700;
+      color: #0369a1;
+      width: 16%;
+      flex-shrink: 0;
+    }
+    .new-warehouse-ability-detail-label {
+      font-size: 8px;
+      font-weight: 600;
+      color: #64748b;
+      flex-shrink: 0;
+    }
+    .new-warehouse-ability-detail-val {
+      font-size: 9px;
+      font-weight: 900;
+      color: #0c4a6e;
+      flex-shrink: 0;
+    }
+    .new-warehouse-ability-detail-bar {
+      flex: 1;
+      height: 5px;
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .new-warehouse-grid-area {
+      position: absolute;
+      left: 28%;
+      top: 59.6%;
+      width: 55%;
+      height: 28%;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 1%;
+      padding: 1%;
+    }
+    .new-warehouse-slot {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      cursor: pointer;
+      transition: transform .14s ease, filter .14s ease;
+      overflow: hidden;
+    }
+    .new-warehouse-slot:hover {
+      transform: translateY(-2px) scale(1.04);
+      filter: brightness(1.15);
+    }
+    .new-warehouse-slot.is-empty {
+      cursor: default;
+    }
+    .new-warehouse-slot.is-empty:hover {
+      transform: none;
+      filter: none;
+    }
+    .new-warehouse-slot-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      pointer-events: none;
+    }
+    .new-warehouse-slot.is-selected .new-warehouse-slot-bg {
+      filter: brightness(1.3) drop-shadow(0 0 6px rgba(250, 204, 21, .8));
+    }
+    .new-warehouse-slot-pet {
+      position: absolute;
+      top: 42%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      max-width: 62%;
+      max-height: 60%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .new-warehouse-slot-label {
+      position: relative;
+      z-index: 2;
+      margin-bottom: 5%;
+      font-size: 11px;
+      font-weight: 900;
+      color: #000;
+      text-shadow: 0 1px 2px rgba(255,255,255,.6);
+      white-space: nowrap;
+      max-width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      pointer-events: none;
+      text-align: center;
+    }
+    .new-warehouse-view-tabs {
+      position: absolute;
+      top: 66%;
+      right: 72.75%;
+      display: flex;
+      flex-direction: column;
+      gap: 70%;
+      z-index: 30;
+      pointer-events: auto;
+      align-items: flex-end;
+    }
+    .new-warehouse-view-tab-btn {
+      width: 54.43%;
+      max-width: 242px;
+      height: auto;
+      object-fit: contain;
+      cursor: pointer;
+      transition: filter .15s ease, transform .15s ease;
+      pointer-events: auto;
+      filter: brightness(0.85);
+    }
+    .new-warehouse-view-tab-btn:hover {
+      filter: brightness(1.1);
+      transform: scale(1.05);
+    }
+    .new-warehouse-view-tab-btn.active {
+      filter: brightness(1.2) drop-shadow(0 0 6px rgba(56, 189, 248, .8));
+    }
+    .new-warehouse-page-nav {
+      position: absolute;
+      bottom: 7.2%;
+      left: 50.4%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 11;
+    }
+    .new-warehouse-page-nav button {
+      min-width: 23px;
+      height: 21px;
+      padding: 0 7px;
+      border-radius: 6px;
+      border: 1px solid rgba(125, 211, 252, .6);
+      background: linear-gradient(180deg, rgba(14, 116, 144, .9), rgba(7, 89, 133, .9));
+      color: #fff;
+      font-size: 9px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: filter .14s ease;
+    }
+    .new-warehouse-page-nav button:hover { filter: brightness(1.15); }
+    .new-warehouse-page-nav button:disabled { opacity: .35; cursor: not-allowed; }
+    .new-warehouse-page-indicator {
+      padding: 2px 17px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(14, 116, 144, .92), rgba(7, 89, 133, .92));
+      color: #fde68a;
+      font-size: 9px;
+      font-weight: 900;
+      border: 1px solid rgba(125, 211, 252, .5);
+      box-shadow: 0 2px 6px rgba(0,0,0,.35);
+    }
+    .new-warehouse-filter-bar {
+      position: absolute;
+      left: 28%;
+      top: 54%;
+      width: 55%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 12;
+      pointer-events: auto;
+      gap: 2%;
+    }
+    .new-warehouse-filter-group {
+      display: flex;
+      align-items: center;
+      gap: 4%;
+      position: relative;
+    }
+    .new-warehouse-filter-btn {
+      width: auto;
+      height: 100%;
+      max-height: 28px;
+      object-fit: contain;
+      cursor: pointer;
+      transition: filter .15s ease, transform .15s ease;
+      user-select: none;
+      -webkit-user-drag: none;
+      filter: brightness(1);
+    }
+    .new-warehouse-filter-btn:hover {
+      filter: brightness(1.08);
+      transform: scale(1.05);
+    }
+    .new-warehouse-filter-btn.active {
+      filter: brightness(1.25) drop-shadow(0 0 8px rgba(56, 189, 248, .9));
+    }
+    .new-warehouse-element-picker {
+      position: absolute;
+      top: 110%;
+      left: 0;
+      min-width: 120px;
+      max-height: 180px;
+      overflow-y: auto;
+      background: linear-gradient(180deg, rgba(14, 116, 144, .95), rgba(7, 89, 133, .95));
+      border: 1px solid rgba(125, 211, 252, .6);
+      border-radius: 8px;
+      padding: 6px;
+      z-index: 40;
+      box-shadow: 0 4px 12px rgba(0,0,0,.5);
+    }
+    .new-warehouse-element-item {
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 800;
+      color: #e0f2fe;
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .new-warehouse-element-item:hover {
+      background: rgba(56, 189, 248, .3);
+    }
+    .new-warehouse-element-item.active {
+      background: rgba(56, 189, 248, .5);
+      color: #fde68a;
+    }
+    .new-warehouse-search-wrap {
+      position: relative;
+      flex: 1;
+      max-width: 160px;
+      height: 24px;
+    }
+    .new-warehouse-search-input {
+      width: 100%;
+      height: 100%;
+      border: 1px solid rgba(125, 211, 252, .5);
+      border-radius: 12px;
+      background: rgba(14, 116, 144, .6);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 0 28px 0 8px;
+      outline: none;
+    }
+    .new-warehouse-search-input::placeholder {
+      color: rgba(186, 230, 253, .6);
+      font-weight: 700;
+    }
+    .new-warehouse-search-icon {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .new-warehouse-sort-menu {
+      position: absolute;
+      top: 110%;
+      right: 0;
+      min-width: 110px;
+      background: linear-gradient(180deg, rgba(14, 116, 144, .95), rgba(7, 89, 133, .95));
+      border: 1px solid rgba(125, 211, 252, .6);
+      border-radius: 8px;
+      padding: 6px;
+      z-index: 40;
+      box-shadow: 0 4px 12px rgba(0,0,0,.5);
+    }
+    .new-warehouse-sort-item {
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 800;
+      color: #e0f2fe;
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .new-warehouse-sort-item:hover {
+      background: rgba(56, 189, 248, .3);
+    }
+    .new-warehouse-sort-item.active {
+      background: rgba(56, 189, 248, .5);
+      color: #fde68a;
+    }
+    .new-warehouse-close-btn {
+      position: absolute;
+      top: 2.5%;
+      right: 1.5%;
+      width: 5%;
+      height: 8%;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      z-index: 10;
+    }
+    .new-warehouse-close-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+    }
+    .new-warehouse-close-btn:hover { filter: brightness(1.1); }
+    .new-warehouse-close-btn:active { filter: brightness(0.9); transform: scale(0.95); }
     .bag2-loading-mask {
       position: absolute;
       inset: 0;
@@ -1345,6 +2162,276 @@
       height: auto;
       object-fit: contain;
       filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+    }
+    .team-boss-btn {
+      position: absolute;
+      left: 8%;
+      top: 75%;
+      transform: translate(-50%, -50%);
+      width: 15%;
+      height: auto;
+      cursor: pointer;
+      z-index: 5;
+      transition: transform 0.15s ease;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      border-radius: 12px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    .team-boss-btn:hover {
+      transform: translate(-50%, -50%) scale(1.05);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
+    }
+    .team-boss-btn span {
+      color: #fff;
+      font-size: clamp(12px, 1vw, 16px);
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      letter-spacing: 1px;
+    }
+    .team-boss-panel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.84);
+      transform-origin: center center;
+      width: 85%;
+      max-width: 900px;
+      height: auto;
+      background: transparent;
+      z-index: 30;
+    }
+    .team-boss-bg {
+      width: 100%;
+      height: auto;
+      display: block;
+      transform: scale(1.5);
+      transform-origin: center center;
+    }
+    .team-boss-close {
+      position: absolute;
+      top: -18%;
+      right: -21%;
+      width: 6.4%;
+      height: auto;
+      cursor: pointer;
+      z-index: 31;
+      transition: transform 0.15s ease;
+    }
+    .team-boss-close:hover {
+      transform: scale(1.08);
+    }
+    .team-boss-main {
+      position: absolute;
+      top: 12%;
+      left: 2.5%;
+      right: 2.5%;
+      bottom: 8%;
+      display: flex;
+      gap: 1.5%;
+      z-index: 1;
+    }
+    .team-boss-rank {
+      position: relative;
+      width: 38%;
+      height: 100%;
+      aspect-ratio: 3 / 4;
+      overflow: visible;
+      transform: translate(-27%, -23%) scale(1.08);
+      transform-origin: center center;
+    }
+    .team-boss-rank-bg {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .team-boss-rank-tabs {
+      position: absolute;
+      top: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 4%;
+      z-index: 2;
+    }
+    .team-boss-rank-tab {
+      padding: 4px 14px;
+      font-size: clamp(13px, 0.975vw, 19.5px);
+      font-weight: bold;
+      color: #94a3b8;
+      cursor: pointer;
+      background: rgba(59, 130, 246, 0.4);
+      border: 2px solid rgba(59, 130, 246, 0.6);
+      border-radius: 20px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .team-boss-rank-tab.active {
+      color: #fff;
+      background: rgba(59, 130, 246, 0.8);
+      border-color: #3b82f6;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+    }
+    .team-boss-rank-list {
+      position: absolute;
+      top: 30%;
+      left: 8%;
+      right: 8%;
+      bottom: 24%;
+      overflow-y: auto;
+    }
+    .team-boss-rank-item {
+      display: flex;
+      align-items: center;
+      padding: 4px 6px;
+      margin-bottom: 3px;
+      font-size: clamp(13.5px, 0.9vw, 18px);
+      color: #e2e8f0;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 4px;
+    }
+    .team-boss-rank-num {
+      width: 12%;
+      font-weight: bold;
+      color: #fbbf24;
+    }
+    .team-boss-rank-name {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 6px;
+    }
+    .team-boss-ross-dmg {
+      width: 28%;
+      text-align: right;
+      color: #f87171;
+      font-weight: bold;
+    }
+    .team-boss-chest {
+      position: absolute;
+      bottom: -18%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 45%;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .team-boss-chest img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .team-boss-chest:hover {
+      transform: translateX(-50%) scale(1.05);
+    }
+    .team-boss-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1% 0;
+    }
+    .team-boss-display {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      transform: translateX(10%) scale(1.35);
+      transform-origin: center center;
+    }
+    .team-boss-frame {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .team-boss-content {
+      position: absolute;
+      top: 10%;
+      left: 10%;
+      right: 10%;
+      bottom: 10%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .team-boss-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.5));
+    }
+    .team-boss-challenge {
+      position: relative;
+      width: 32%;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      margin: 1% 0;
+      z-index: 10;
+      transform: translateX(20%);
+    }
+    .team-boss-challenge img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .team-boss-challenge:hover {
+      transform: translateX(20%) scale(1.05);
+      filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.6));
+    }
+    .team-boss-challenge:active {
+      transform: translateX(20%) scale(0.95);
+    }
+    .team-boss-hp {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 3;
+    }
+    .team-boss-hp-frame {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      position: relative;
+      z-index: 2;
+    }
+    .team-boss-hp-bar-wrap {
+      position: absolute;
+      top: 30%;
+      left: 10%;
+      right: 10%;
+      height: 40%;
+      background: transparent;
+      border-radius: 2px;
+      overflow: hidden;
+      z-index: 1;
+      transform: translate(15%, -2%) scale(1.323, 1.68714);
+      transform-origin: center center;
+    }
+    .team-boss-hp-bar {
+      height: 100%;
+      object-fit: fill;
+      transition: width 0.5s ease;
+      display: block;
+    }
+    .team-boss-hp-text {
+      position: absolute;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(18px, 1.2vw, 24px);
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+      white-space: nowrap;
+      z-index: 3;
     }
     .team-leave-btn {
       position: absolute;
@@ -7076,6 +8163,7 @@
     html.android-webview.android-landscape header.home-hub-scene .home-action-info-card { --x: 56.5%; --y: 88%; --w: 5.6%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-badge { --x: 41.2%; --y: 84.3%; --w: 6.7%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-egg { --x: 48.6%; --y: 84.0%; --w: 7%; }
+    html.android-webview.android-landscape header.home-hub-scene 
     html.android-webview.android-landscape header.home-hub-scene .home-action-warehouse { --x: 64.6%; --y: 86.5%; --w: 6.5%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-dex { --x: 72.4%; --y: 86.8%; --w: 6.4%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-bag { --x: 80%; --y: 83.4%; --w: 6.4%; }
@@ -10012,7 +11100,7 @@
       <button @click="openInfoCardPanel" class="home-action-btn home-action-info-card" title="信息卡" aria-label="信息卡"><img src="./resource/界面ui/信息卡.png" alt=""></button>
       <button @click="openBadgePanel" class="home-action-btn home-action-badge" title="徽章" aria-label="徽章"><img src="./resource/界面ui/徽章.png" alt=""></button>
       <button @click="openEggHatchPanel" class="home-action-btn home-action-egg" title="亚比蛋孵化" aria-label="亚比蛋孵化"><img src="./resource/界面ui/孵化.png" alt=""></button>
-      <button @click="openWarehousePanel" class="home-action-btn home-action-warehouse" title="亚比仓库" aria-label="亚比仓库"><img src="./resource/界面ui/亚比仓库.png" alt=""></button>
+      <button @click="openNewWarehousePanel" class="home-action-btn home-action-warehouse" title="亚比仓库" aria-label="亚比仓库"><img src="./resource/界面ui/亚比仓库.png" alt=""></button>
       <button @click="openDexPanel" class="home-action-btn home-action-dex" title="亚比图鉴" aria-label="亚比图鉴"><img src="./resource/界面ui/亚比图鉴.png" alt=""></button>
       <button @click="openBagPanel" class="home-action-btn home-action-bag" title="亚比背包" aria-label="亚比背包"><img src="./resource/界面ui/亚比背包.png" alt=""></button>
       <button @click="openShopPanel" class="home-action-btn home-action-shop" title="亚比商店" aria-label="亚比商店"><img src="./resource/ui/背景/道具商城.png" alt=""></button>
@@ -10318,7 +11406,7 @@
         图鉴提示：只有击败某亚比的最终形态，才会获得该亚比蛋。守护者和BOSS请从【挑战之路】入口挑战，商店蛋亚比只能从【亚比商店】购买，签到亚比仅可通过【至尊月签到】里程碑获取。
       </div>
       <div class="grid grid-cols-6 gap-1 md:gap-2 flex-1 overflow-y-auto pr-1 scrollbar">
-        <button v-for="entry in filteredDex" :key="'dex_'+entry.dexId" @click="canChallengeFromDex(entry) ? selectDex(entry.dexId) : null" class="dex-card rounded-xl border bg-white p-1.5 md:p-2 text-left min-h-[164px]" :class="canChallengeFromDex(entry) ? 'border-slate-200 hover:border-indigo-300' : 'border-amber-300 bg-amber-50 cursor-not-allowed'">
+        <button v-for="entry in filteredDex" :key="'dex_'+entry.dexId" @click="canChallengeFromDex(entry) ? selectDex(entry.dexId) : openLockedDexDialog(entry)" class="dex-card rounded-xl border bg-white p-1.5 md:p-2 text-left min-h-[164px] transition-all" :class="canChallengeFromDex(entry) ? 'border-slate-200 hover:border-indigo-300 cursor-pointer' : 'border-amber-300 bg-amber-50 cursor-pointer hover:border-amber-400'">
           <div class="dex-card-head flex items-center gap-1 mb-1">
             <div class="text-[10px] font-black text-slate-500">#{{ entry.dexId }}</div>
             <span class="element-icon" :style="petElementIconStyle(entry.element, 15)" :title="entry.element || ''"></span>
@@ -10332,6 +11420,9 @@
           <div class="dex-card-name text-[11px] md:text-sm font-black text-slate-800 text-center mt-1 truncate">{{ entry.name }}</div>
         </button>
       </div>
+    </div>
+    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
+      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
     </div>
   </div>
 
@@ -10391,6 +11482,39 @@
         </div>
       </div>
     </div>
+    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
+      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+    </div>
+  </div>
+
+  <div v-if="lockedDexEntry" class="fixed inset-0 z-[75] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeLockedDexDialog">
+    <div class="w-full max-w-md rounded-3xl border border-white bg-white p-5 shadow-2xl app-modal" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-black text-slate-900">{{ dexStatus(lockedDexEntry) }}详情</h3>
+        <button @click="closeLockedDexDialog" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="relative rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center flex-1">
+          <div class="absolute top-2 left-2 flex items-center gap-1">
+            <div class="text-[10px] font-black text-slate-500">#{{ lockedDexEntry.dexId }}</div>
+            <span class="element-icon" :style="petElementIconStyle(lockedDexEntry.element, 18)" :title="lockedDexEntry.element || ''"></span>
+            <span v-if="lockedDexEntry.subElement" class="element-icon" :style="petElementIconStyle(lockedDexEntry.subElement, 18)" :title="lockedDexEntry.subElement || ''"></span>
+          </div>
+          <img :src="lockedDexEntry.image" @error="withFallback" class="w-24 h-24 object-contain mx-auto">
+          <div class="mt-2 text-sm font-black text-slate-800 truncate">{{ lockedDexEntry.name }}</div>
+          <div class="mt-1 text-[11px] font-bold text-slate-500">{{ challengeLockMessage(lockedDexEntry) }}</div>
+        </div>
+      </div>
+      <div class="mt-4 flex items-center gap-2">
+        <button v-if="lockedDexCanViewDetail(lockedDexEntry)" @click="openDetailFromLockedDex(lockedDexEntry)" class="flex-1 h-11 rounded-xl border-2 border-emerald-600 bg-white text-emerald-600 text-sm font-black hover:bg-emerald-50 transition">查看详情</button>
+        <button v-if="lockedDexCanChallenge(lockedDexEntry) || dexStatus(lockedDexEntry) === '商店蛋'" @click="openChallengeFromLockedDex(lockedDexEntry)" class="flex-1 h-11 rounded-xl bg-indigo-600 text-white text-sm font-black hover:bg-indigo-700 transition shadow-lg ring-2 ring-indigo-300">
+          {{ dexStatus(lockedDexEntry) === '商店蛋' ? '前往商店' : '去挑战' }}
+        </button>
+      </div>
+    </div>
+    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
+      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+    </div>
   </div>
 
   <div v-if="showGlobalSettingsPanel" class="fixed inset-0 z-[95] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="showGlobalSettingsPanel = false">
@@ -10405,12 +11529,36 @@
           <button @click="settingsTab = 'scene'" :class="['w-full h-10 rounded-xl px-3 text-left text-sm font-black transition', settingsTab === 'scene' ? 'bg-cyan-500 text-white' : 'bg-white/5 text-slate-300 hover:bg-white/10']">场景</button>
         </div>
         <div class="space-y-3">
-          <div v-if="settingsTab === 'sound'" class="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <div class="flex items-center justify-between mb-2">
-              <div class="text-sm font-black text-white">BGM 音量</div>
-              <div class="text-xs font-black text-cyan-200">{{ bgmVolumePercent }}%</div>
+          <div v-if="settingsTab === 'sound'" class="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-4">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <div class="text-sm font-black text-white">BGM 音量</div>
+                <div class="text-xs font-black text-cyan-200">{{ bgmVolumePercent }}%</div>
+              </div>
+              <input :value="bgmVolume" @input="setBgmVolume($event.target.value)" type="range" min="0" max="1" step="0.05" class="w-full accent-sky-400">
             </div>
-            <input :value="bgmVolume" @input="setBgmVolume($event.target.value)" type="range" min="0" max="1" step="0.05" class="w-full accent-sky-400">
+            <div class="border-t border-white/10 pt-3">
+              <div class="text-sm font-black text-white mb-2">主页音乐</div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <label class="h-9 px-4 rounded-lg bg-violet-500 text-white text-sm font-black flex items-center justify-center cursor-pointer">
+                  替换音乐
+                  <input type="file" accept="audio/*" class="hidden" @change="onHomeBgmFilePick">
+                </label>
+                <button @click="resetHomeBgm" class="h-9 px-4 rounded-lg bg-white/10 text-white text-sm font-black">恢复默认</button>
+              </div>
+              <div class="mt-2 text-xs text-slate-400 truncate">当前：{{ state.customHomeBgm?.name || '默认主页音乐' }}</div>
+            </div>
+            <div class="border-t border-white/10 pt-3">
+              <div class="text-sm font-black text-white mb-2">战斗音乐</div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <label class="h-9 px-4 rounded-lg bg-violet-500 text-white text-sm font-black flex items-center justify-center cursor-pointer">
+                  替换音乐
+                  <input type="file" accept="audio/*" class="hidden" @change="onBattleBgmFilePick">
+                </label>
+                <button @click="resetBattleBgm" class="h-9 px-4 rounded-lg bg-white/10 text-white text-sm font-black">恢复默认</button>
+              </div>
+              <div class="mt-2 text-xs text-slate-400 truncate">当前：{{ state.customBattleBgm?.name || '默认战斗音乐' }}</div>
+            </div>
           </div>
           <div v-if="settingsTab === 'scene'" class="rounded-2xl border border-white/10 bg-white/5 p-4">
             <div class="text-sm font-black text-white mb-2">场景背景</div>
@@ -10734,7 +11882,7 @@
                   </div>
                   <div class="bag2-gear-list-actions">
                     <button v-if="gear.equippedOnBag2Pet" @click="unequipSelectedPetGear(petId(bag2DisplayPet), gear.slot)" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
-                    <button v-else @click="equipGearToSelectedPet(gear.id, petId(bag2DisplayPet))" :disabled="!gear.canEquip || !bag2DisplayPet" class="h-8 px-3 rounded-lg bg-sky-600 text-white font-black disabled:opacity-50">装备</button>
+                    <button v-else @click="equipGearToSelectedPet(gear.id, petId(bag2DisplayPet))" :disabled="!gear.canEquip || !bag2DisplayPet" class="h-8 px-3 rounded-lg text-white font-black" :class="{ 'bg-sky-600': gear.canEquip && bag2DisplayPet, 'bg-slate-400 text-slate-100': !gear.canEquip || !bag2DisplayPet }">装备</button>
                   </div>
                 </div>
                 <div v-if="filteredGearInventoryRows.length <= 0" class="text-center text-xs font-black text-sky-700 py-3">当前筛选下没有装备。</div>
@@ -10755,7 +11903,7 @@
         <button @click="bag2ReturnToWarehouse" class="bag2-action-btn" :class="{ disabled: !bag2DisplayPet }" title="回仓">
           <img src="./resource/背包ui/回仓.png" alt="回仓">
         </button>
-        <button @click="openWarehousePanel" class="bag2-action-btn" title="仓库">
+        <button @click="openNewWarehousePanel" class="bag2-action-btn" title="仓库">
           <img src="./resource/背包ui/仓库.png" alt="仓库">
         </button>
         <button @click="toggleBag2SortMode" class="bag2-action-btn bag2-sort-btn" :class="{ active: bag2SortMode }" title="排序">
@@ -10855,6 +12003,14 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
+      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+    </div>
+    <div v-cloak v-if="rewardFlyToast.show" class="absolute top-16 left-1/2 z-[10001] pointer-events-none">
+      <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
+        {{ rewardFlyToast.message }}
       </div>
     </div>
   </div>
@@ -11165,6 +12321,15 @@
           </button>
         </div>
       </div>
+      </div>
+    </div>
+    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
+      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+    </div>
+    <div v-cloak v-if="rewardFlyToast.show" class="absolute top-16 left-1/2 z-[10001] pointer-events-none">
+      <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
+        {{ rewardFlyToast.message }}
+      </div>
     </div>
   </div>
 
@@ -11380,6 +12545,254 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showNewWarehousePanel" class="app-top-overlay fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeNewWarehousePanel">
+    <div class="new-warehouse-panel" @click.stop="closeNewWarehouseDropdowns">
+      <img src="./resource-v9/仓库ui/仓库底图.png" class="new-warehouse-bg" alt="">
+      <button @click="closeNewWarehousePanel" class="new-warehouse-close-btn" title="退出仓库" aria-label="退出仓库">
+        <img src="./resource-v9/仓库ui/关闭仓库按钮.png" alt="退出">
+      </button>
+
+      <div class="new-warehouse-view-tabs">
+        <img src="./resource-v9/仓库ui/亚比仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'pet' }" @click="setNewWarehouseView('pet')" alt="亚比仓库">
+        <img src="./resource-v9/仓库ui/精英仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'elite' }" @click="setNewWarehouseView('elite')" alt="精英仓库">
+      </div>
+
+      <div class="new-warehouse-large-display" v-if="newWarehouseView === 'pet'">
+        <img src="./resource-v9/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
+        <template v-if="selectedNewWarehousePet">
+          <div class="new-warehouse-large-info">
+            <div class="new-warehouse-large-name">{{ petDisplayName(selectedNewWarehousePet) }}</div>
+            <div class="new-warehouse-large-level">Lv.{{ selectedNewWarehousePet.level }}</div>
+          </div>
+          <img :src="bagPetVisual(selectedNewWarehousePet).src" :style="warehousePetAnimImageStyle(selectedNewWarehousePet, 'action')" @error="withFallback" class="new-warehouse-large-pet">
+          <div class="new-warehouse-action-btns">
+            <img src="./resource-v9/仓库ui/设为精英.png" class="new-warehouse-action-btn" @click="movePetToElite(selectedNewWarehousePet)" alt="设为精英">
+            <img src="./resource-v9/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
+          </div>
+        </template>
+        <div v-else class="new-warehouse-large-empty">暂无亚比</div>
+      </div>
+
+      <div class="new-warehouse-large-display" v-if="newWarehouseView === 'elite'">
+        <img src="./resource-v9/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
+        <template v-if="selectedNewWarehousePet">
+          <div class="new-warehouse-large-info">
+            <div class="new-warehouse-large-name">{{ petDisplayName(selectedNewWarehousePet) }}</div>
+            <div class="new-warehouse-large-level">Lv.{{ selectedNewWarehousePet.level }}</div>
+          </div>
+          <img :src="bagPetVisual(selectedNewWarehousePet).src" :style="warehousePetAnimImageStyle(selectedNewWarehousePet, 'action')" @error="withFallback" class="new-warehouse-large-pet">
+          <div class="new-warehouse-action-btns">
+            <img src="./resource-v9/仓库ui/取消精英.png" class="new-warehouse-action-btn" @click="removePetFromElite(selectedNewWarehousePet)" alt="取消精英">
+            <img src="./resource-v9/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
+          </div>
+        </template>
+        <div v-else class="new-warehouse-large-empty">暂无精英亚比</div>
+      </div>
+
+      <div class="new-warehouse-skill-panel">
+        <div class="new-warehouse-skill-tabs">
+          <img src="./resource-v9/仓库ui/技能.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'skills' }" @click="setNewWarehouseInfoTab('skills')" alt="技能">
+          <img src="./resource-v9/仓库ui/信息.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'info' }" @click="setNewWarehouseInfoTab('info')" alt="信息">
+          <img src="./resource-v9/仓库ui/能力.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'ability' }" @click="setNewWarehouseInfoTab('ability')" alt="能力">
+        </div>
+        <template v-if="selectedNewWarehousePet">
+          <img src="./resource-v9/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
+          <div class="new-warehouse-skill-content">
+          <div v-if="newWarehouseInfoTab === 'skills'" class="new-warehouse-tab-panel">
+            <div class="new-warehouse-skill-header">
+              <div class="new-warehouse-skill-header-name">{{ petDisplayName(selectedNewWarehousePet) }}</div>
+              <div class="new-warehouse-skill-header-exp-bar">
+                <div class="new-warehouse-skill-header-exp-fill" :style="{ width: selectedNewWarehousePetExpPercent + '%' }"></div>
+              </div>
+              <div class="new-warehouse-skill-header-exp">EXP {{ Math.floor(selectedNewWarehousePetExpPercent) }}%</div>
+            </div>
+            <div class="new-warehouse-skill-header-stats">
+              <div class="new-warehouse-skill-stat new-warehouse-skill-stat-talent">
+                <img :src="selectedNewWarehousePetTalentImageSrc" @error="withFallback" class="new-warehouse-skill-talent-img" alt="">
+              </div>
+              <div class="new-warehouse-skill-stat new-warehouse-skill-stat-power">
+                <span class="new-warehouse-skill-stat-label">战斗力</span>
+                <span class="new-warehouse-skill-stat-power-value">{{ selectedNewWarehousePetBattlePower }}</span>
+              </div>
+              <div class="new-warehouse-skill-stat new-warehouse-skill-stat-study" :class="{ active: newWarehouseStudyPanel }" @click="toggleNewWarehouseStudyPanel">
+                <span class="new-warehouse-skill-stat-label">学习力</span>
+                <span class="new-warehouse-skill-stat-value">{{ selectedNewWarehousePetStudyTotal }}</span>
+              </div>
+            </div>
+            <div class="new-warehouse-skill-list">
+              <div v-for="(skillName, idx) in selectedNewWarehousePetSkills" :key="'nws_skill_'+idx" class="new-warehouse-skill-item">
+                <div class="new-warehouse-skill-name">
+                  <span class="new-warehouse-skill-type-dot" :style="petElementIconStyle(skillTypeMeta(safeSkillType(selectedPetSkillByName(skillName) || {})).label, 10)"></span>
+                  {{ skillName || '空白技能' }}
+                </div>
+                <div v-if="skillName" class="new-warehouse-skill-meta">威力 {{ safeSkillPower(selectedPetSkillByName(skillName) || {}) }} | PP {{ safeSkillPP(selectedPetSkillByName(skillName) || {}) }}</div>
+                <div v-if="skillName" class="new-warehouse-skill-desc">{{ skillDisplayDesc(selectedPetSkillByName(skillName) || {}) }}</div>
+              </div>
+            </div>
+          </div>
+          <div v-else-if="newWarehouseInfoTab === 'info'" class="new-warehouse-tab-panel">
+            <div class="new-warehouse-info-header">
+              <img :src="selectedNewWarehousePetTalentImageSrc" @error="withFallback" class="new-warehouse-info-talent-icon" alt="">
+              <span class="new-warehouse-info-talent-total">天赋总值 {{ selectedNewWarehousePetTalentTotal }}</span>
+            </div>
+            <div class="new-warehouse-info-talent-list">
+              <div v-for="row in [{k:'hp',n:'体力',v:selectedNewWarehousePetTalent.hp,c:'bg-emerald-400'},{k:'atk',n:'攻击',v:selectedNewWarehousePetTalent.atk,c:'bg-indigo-400'},{k:'def',n:'防御',v:selectedNewWarehousePetTalent.def,c:'bg-cyan-400'},{k:'spAtk',n:'特攻',v:selectedNewWarehousePetTalent.spAtk,c:'bg-fuchsia-400'},{k:'spDef',n:'特防',v:selectedNewWarehousePetTalent.spDef,c:'bg-violet-400'},{k:'speed',n:'速度',v:selectedNewWarehousePetTalent.speed,c:'bg-amber-400'}]" :key="'nws_info_'+row.k" class="new-warehouse-info-talent-row">
+                <span class="new-warehouse-info-talent-name">{{ row.n }}</span>
+                <span class="new-warehouse-info-talent-val">{{ row.v }}</span>
+                <div class="new-warehouse-info-talent-bar"><div class="h-full" :class="row.c" :style="{ width: Math.min(100, (row.v / 62) * 100) + '%' }"></div></div>
+              </div>
+            </div>
+          </div>
+          <div v-else-if="newWarehouseInfoTab === 'ability'" class="new-warehouse-tab-panel">
+            <div class="new-warehouse-ability-header">
+              <div class="new-warehouse-ability-stat-cell">
+                <span class="new-warehouse-ability-stat-label">能力值：</span>
+                <span class="new-warehouse-ability-stat-val">{{ selectedNewWarehousePetAbilityStats.total }}</span>
+              </div>
+              <div class="new-warehouse-ability-stat-cell">
+                <span class="new-warehouse-ability-stat-label">种族值：</span>
+                <span class="new-warehouse-ability-stat-val">{{ selectedNewWarehousePetRaceTotal }}</span>
+              </div>
+              <div class="new-warehouse-ability-view-btn" @click="toggleNewWarehouseSkillLearnPanel">查看技能</div>
+            </div>
+            <div class="new-warehouse-ability-detail-list">
+              <div class="new-warehouse-ability-section-title">种族值</div>
+              <div v-for="row in [{k:'hp',n:'体力',v:selectedNewWarehousePetRaceStats.hp,c:'bg-emerald-400'},{k:'atk',n:'攻击',v:selectedNewWarehousePetRaceStats.atk,c:'bg-indigo-400'},{k:'def',n:'防御',v:selectedNewWarehousePetRaceStats.def,c:'bg-cyan-400'},{k:'spAtk',n:'特攻',v:selectedNewWarehousePetRaceStats.spAtk,c:'bg-fuchsia-400'},{k:'spDef',n:'特防',v:selectedNewWarehousePetRaceStats.spDef,c:'bg-violet-400'},{k:'speed',n:'速度',v:selectedNewWarehousePetRaceStats.speed,c:'bg-amber-400'}]" :key="'nws_race_'+row.k" class="new-warehouse-ability-detail-row">
+                <span class="new-warehouse-ability-detail-name">{{ row.n }}</span>
+                <span class="new-warehouse-ability-detail-val">{{ row.v || 0 }}</span>
+                <div class="new-warehouse-ability-detail-bar"><div class="h-full" :class="row.c" :style="{ width: Math.min(100, ((row.v || 0) / 200) * 100) + '%' }"></div></div>
+              </div>
+              <div class="new-warehouse-ability-section-title">能力值</div>
+              <div v-for="row in [{k:'hp',n:'体力',v:selectedNewWarehousePetAbilityStats.hp,c:'bg-emerald-400'},{k:'atk',n:'攻击',v:selectedNewWarehousePetAbilityStats.atk,c:'bg-indigo-400'},{k:'def',n:'防御',v:selectedNewWarehousePetAbilityStats.def,c:'bg-cyan-400'},{k:'spAtk',n:'特攻',v:selectedNewWarehousePetAbilityStats.spAtk,c:'bg-fuchsia-400'},{k:'spDef',n:'特防',v:selectedNewWarehousePetAbilityStats.spDef,c:'bg-violet-400'},{k:'speed',n:'速度',v:selectedNewWarehousePetAbilityStats.speed,c:'bg-amber-400'}]" :key="'nws_ability_'+row.k" class="new-warehouse-ability-detail-row">
+                <span class="new-warehouse-ability-detail-name">{{ row.n }}</span>
+                <span class="new-warehouse-ability-detail-val">{{ row.v || 0 }}</span>
+                <div class="new-warehouse-ability-detail-bar"><div class="h-full" :class="row.c" :style="{ width: Math.min(100, ((row.v || 0) / 2000) * 100) + '%' }"></div></div>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <img src="./resource-v9/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
+          <div class="new-warehouse-skill-content">
+            <div class="new-warehouse-empty-state">仓库中没有亚比</div>
+          </div>
+        </template>
+      </div>
+
+      <div v-if="newWarehouseStudyPanel && selectedNewWarehousePet" class="app-top-dialog-overlay fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50" @click="toggleNewWarehouseStudyPanel">
+        <div class="w-full max-w-md rounded-3xl border-2 border-sky-300 bg-sky-50 p-6 shadow-2xl" @click.stop>
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-black text-sky-900">{{ petDisplayName(selectedNewWarehousePet) }} 学习力</h3>
+            <button @click="toggleNewWarehouseStudyPanel" class="h-9 px-4 rounded-xl bg-sky-200 text-sky-800 text-sm font-black hover:bg-sky-300 transition">关闭</button>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div v-for="row in [{k:'hp',n:'体力',v:selectedNewWarehousePetStudy.hp,c:'bg-emerald-400'},{k:'atk',n:'攻击',v:selectedNewWarehousePetStudy.atk,c:'bg-indigo-400'},{k:'def',n:'防御',v:selectedNewWarehousePetStudy.def,c:'bg-cyan-400'},{k:'spAtk',n:'特攻',v:selectedNewWarehousePetStudy.spAtk,c:'bg-fuchsia-400'},{k:'spDef',n:'特防',v:selectedNewWarehousePetStudy.spDef,c:'bg-violet-400'},{k:'speed',n:'速度',v:selectedNewWarehousePetStudy.speed,c:'bg-amber-400'}]" :key="'nws_study_'+row.k" class="rounded-2xl border border-sky-200 bg-white/80 p-3 text-center shadow-sm">
+              <div class="text-xs font-bold text-sky-600 mb-1">{{ row.n }}</div>
+              <div class="text-xl font-black text-sky-900">{{ row.v }}</div>
+              <div class="h-2 rounded-full bg-sky-100 overflow-hidden mt-2">
+                <div class="h-full rounded-full" :class="row.c" :style="{ width: Math.min(100, (row.v / 255) * 100) + '%' }"></div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 text-center text-base font-black text-sky-700">总计：{{ selectedNewWarehousePetStudyTotal }}</div>
+        </div>
+      </div>
+
+      <div v-if="newWarehouseSkillLearnPanel && selectedNewWarehousePet" class="app-top-dialog-overlay fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2 z-50" @click="toggleNewWarehouseSkillLearnPanel">
+        <div class="w-full max-w-sm rounded-xl border border-white bg-white p-3 shadow-2xl" @click.stop>
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-black text-slate-900">{{ petDisplayName(selectedNewWarehousePet) }} 可学习技能</h3>
+            <button @click="toggleNewWarehouseSkillLearnPanel" class="h-7 px-2 rounded-lg bg-slate-100 text-slate-700 text-xs font-black">关闭</button>
+          </div>
+          <div class="grid grid-cols-1 gap-1.5 max-h-[50vh] overflow-y-auto scrollbar">
+            <div v-for="(skill, idx) in availableSkillsForNewWarehousePet" :key="'nws_learn_'+idx" class="rounded-lg border border-sky-200 bg-sky-50 px-2 py-1.5">
+              <div class="flex items-center gap-1">
+                <span v-if="skill && skill.name" class="element-icon shrink-0" :style="petElementIconStyle(skillTypeMeta(safeSkillType(skill)).label, 12)"></span>
+                <div class="text-xs font-black text-sky-950 truncate">{{ skill ? (skill.name || '空白技能') : '空白技能' }}</div>
+              </div>
+              <div v-if="skill && skill.name" class="mt-0.5 text-[10px] font-black text-sky-700">
+                威力 {{ safeSkillPower(skill) }} | PP {{ safeSkillPP(skill) }}
+              </div>
+              <div v-if="skill && skill.name" class="mt-0.5 text-[10px] font-bold text-slate-600 leading-tight break-words">{{ skillDisplayDesc(skill) }}</div>
+              <div v-if="skill && skill.level" class="mt-0.5 text-[10px] font-bold text-amber-600">Lv.{{ skill.level }} 学习</div>
+            </div>
+            <div v-if="!availableSkillsForNewWarehousePet.length" class="text-center text-xs font-bold text-slate-500 py-4">暂无可用技能</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="new-warehouse-filter-bar" @click.stop>
+        <div class="new-warehouse-filter-group">
+          <img src="./resource-v9/仓库ui/属性按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter !== '全部系别' }" @click="toggleNewWarehouseElementPicker" alt="属性">
+          <img src="./resource-v9/仓库ui/全部按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter === '全部系别' }" @click="selectNewWarehouseElement('全部系别')" alt="全部">
+          <div class="new-warehouse-element-picker" v-if="newWarehouseShowElementPicker">
+            <div
+              v-for="el in newWarehouseElementOptions"
+              :key="'el_'+el"
+              class="new-warehouse-element-item"
+              :class="{ active: newWarehouseElementFilter === el }"
+              @click="selectNewWarehouseElement(el)"
+            >{{ el }}</div>
+          </div>
+        </div>
+        <div class="new-warehouse-search-wrap">
+          <input type="text" v-model="newWarehouseSearch" class="new-warehouse-search-input" placeholder="搜索亚比名称" @click.stop>
+          <img src="./resource-v9/仓库ui/搜索.png" class="new-warehouse-search-icon" alt="">
+        </div>
+        <div class="new-warehouse-filter-group">
+          <img src="./resource-v9/仓库ui/时间排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('time') }" @click="toggleNewWarehouseTimeMenu" alt="时间排序">
+          <img src="./resource-v9/仓库ui/等级排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('level') }" @click="toggleNewWarehouseLevelMenu" alt="等级排序">
+          <div class="new-warehouse-sort-menu" v-if="newWarehouseTimeMenuOpen">
+            <div class="new-warehouse-sort-item" :class="{ active: newWarehouseSortMode === 'time_desc' }" @click="setNewWarehouseSort('time_desc')">时间从新到旧</div>
+            <div class="new-warehouse-sort-item" :class="{ active: newWarehouseSortMode === 'time_asc' }" @click="setNewWarehouseSort('time_asc')">时间从旧到新</div>
+          </div>
+          <div class="new-warehouse-sort-menu" v-if="newWarehouseLevelMenuOpen">
+            <div class="new-warehouse-sort-item" :class="{ active: newWarehouseSortMode === 'level_desc' }" @click="setNewWarehouseSort('level_desc')">等级从高到低</div>
+            <div class="new-warehouse-sort-item" :class="{ active: newWarehouseSortMode === 'level_asc' }" @click="setNewWarehouseSort('level_asc')">等级从低到高</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="new-warehouse-grid-area" v-if="newWarehouseView === 'pet'">
+        <div
+          v-for="(slotPet, idx) in newWarehousePageSlots"
+          :key="'nws_'+idx"
+          class="new-warehouse-slot"
+          :class="{ 'is-empty': !slotPet, 'is-selected': slotPet && selectedNewWarehousePet && petId(slotPet) === petId(selectedNewWarehousePet) }"
+          @click="slotPet && selectNewWarehousePet(slotPet)"
+        >
+          <img src="./resource-v9/仓库ui/仓库亚比显示背景.png" class="new-warehouse-slot-bg" alt="">
+          <template v-if="slotPet">
+            <img :src="bagPetVisual(slotPet).src" :style="warehousePetAnimImageStyle(slotPet, 'action')" @error="withFallback" class="new-warehouse-slot-pet">
+            <div class="new-warehouse-slot-label">{{ petDisplayName(slotPet) }}</div>
+          </template>
+        </div>
+      </div>
+
+      <div class="new-warehouse-grid-area" v-if="newWarehouseView === 'elite'">
+        <div
+          v-for="(slotPet, idx) in eliteWarehousePageSlots"
+          :key="'nws_elite_'+idx"
+          class="new-warehouse-slot"
+          :class="{ 'is-empty': !slotPet, 'is-selected': slotPet && selectedNewWarehousePet && petId(slotPet) === petId(selectedNewWarehousePet) }"
+          @click="slotPet && selectNewWarehousePet(slotPet)"
+        >
+          <img src="./resource-v9/仓库ui/仓库亚比显示背景.png" class="new-warehouse-slot-bg" alt="">
+          <template v-if="slotPet">
+            <img :src="bagPetVisual(slotPet).src" :style="warehousePetAnimImageStyle(slotPet, 'idle')" @error="withFallback" class="new-warehouse-slot-pet">
+            <div class="new-warehouse-slot-label">{{ petDisplayName(slotPet) }}</div>
+          </template>
+        </div>
+      </div>
+
+      <div class="new-warehouse-page-nav">
+        <button @click="newWarehousePrevPage" :disabled="newWarehousePage <= 0">上一页</button>
+        <div class="new-warehouse-page-indicator">{{ newWarehousePage + 1 }} / {{ newWarehouseView === 'pet' ? newWarehouseTotalPages : eliteWarehouseTotalPages }}</div>
+        <button @click="newWarehouseNextPage" :disabled="newWarehousePage >= (newWarehouseView === 'pet' ? newWarehouseTotalPages : eliteWarehouseTotalPages) - 1">下一页</button>
       </div>
     </div>
   </div>
@@ -12170,7 +13583,7 @@
                 <path d="M8.1 14.2h7.8v4.1H8.1z"/>
               </svg>
             </button>
-            <button @click.stop="openWarehousePanel" class="time-env-tool-btn" title="亚比仓库" aria-label="亚比仓库">
+            <button @click.stop="openNewWarehousePanel" class="time-env-tool-btn" title="亚比仓库" aria-label="亚比仓库">
               <svg viewBox="0 0 24 24" class="fill-none stroke-current stroke-[1.9]" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3.4 10.2 12 4l8.6 6.2"/>
                 <path d="M5.2 9.2v10.5h13.6V9.2"/>
@@ -12250,7 +13663,7 @@
             <button type="button" @click.stop="openBagPanel" title="亚比背包" aria-label="亚比背包">
               <img src="./resource/ui/背景/亚比背包.png" @error="withFallback" alt="">
             </button>
-            <button type="button" @click.stop="openWarehousePanel" title="亚比仓库" aria-label="亚比仓库">
+            <button type="button" @click.stop="openNewWarehousePanel" title="亚比仓库" aria-label="亚比仓库">
               <img src="./resource/ui/背景/亚比仓库.png" @error="withFallback" alt="">
             </button>
             <span>仅背包前3只亚比出战，仓库亚比不参与本轮挑战</span>
@@ -12416,7 +13829,7 @@
               <path d="M19.6 12.4h1.5v4.2H20"/>
             </svg>
           </button>
-          <button @click.stop="openWarehousePanel" class="time-env-tool-btn" title="亚比仓库" aria-label="亚比仓库">
+          <button @click.stop="openNewWarehousePanel" class="time-env-tool-btn" title="亚比仓库" aria-label="亚比仓库">
             <svg viewBox="0 0 24 24" class="fill-none stroke-current stroke-[1.9]" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3.4 10.2 12 4l8.6 6.2"/>
               <path d="M5.2 9.2v10.5h13.6V9.2"/>
@@ -12527,8 +13940,12 @@
         <img src="./resource/指挥官_.png" alt="指挥官">
       </div>
 
-      <div class="team-recruit-btn" @click="onRecruitClick">
-        <img src="./resource/战队招募.png" alt="战队招募">
+      <div class="team-recruit-btn" @click="onTeamBossClick">
+        <img src="./resource-v9/战队boss/战队boss.png" alt="战队BOSS">
+      </div>
+
+      <div class="team-boss-btn" style="display:none;" @click="onTeamBossClick">
+        <span>战队BOSS</span>
       </div>
 
       <div class="team-leave-btn" @click="closeTeamPanel">
@@ -12832,6 +14249,52 @@
       </div>
       <button class="team-recruit-close" @click="showTeamRecruit = false">关闭</button>
     </div>
+
+    <div v-if="showTeamBoss" class="team-boss-panel">
+      <img src="./resource-v9/战队boss/战队boss底图.png" alt="战队BOSS" class="team-boss-bg">
+      <img src="./resource-v9/战队boss/战队boss关闭按钮.png" alt="关闭" class="team-boss-close" @click="showTeamBoss = false">
+      
+      <div class="team-boss-main">
+        <!-- 左侧排行榜 -->
+        <div class="team-boss-rank">
+          <img src="./resource-v9/战队boss/排行.png" alt="排行背景" class="team-boss-rank-bg">
+          <div class="team-boss-rank-tabs">
+            <span :class="['team-boss-rank-tab', { active: teamBossRankTab === 'inner' }]" @click="teamBossRankTab = 'inner'">队内排行</span>
+            <span :class="['team-boss-rank-tab', { active: teamBossRankTab === 'team' }]" @click="teamBossRankTab = 'team'">战队排行</span>
+          </div>
+          <div class="team-boss-rank-list">
+            <div v-for="(item, index) in currentTeamBossRankList" :key="index" class="team-boss-rank-item">
+              <span class="team-boss-rank-num">{{ index + 1 }}</span>
+              <span class="team-boss-rank-name">{{ item.name }}</span>
+              <span class="team-boss-ross-dmg">{{ item.damage }}</span>
+            </div>
+          </div>
+          <div class="team-boss-chest">
+            <img src="./resource-v9/战队boss/宝箱奖励.png" alt="宝箱奖励">
+          </div>
+        </div>
+
+        <!-- 右侧Boss区域 -->
+        <div class="team-boss-right">
+          <div class="team-boss-display">
+            <img src="./resource-v9/战队boss/boss背景框.png" alt="Boss背景" class="team-boss-frame">
+            <div class="team-boss-content">
+              <img src="./resource/地台boss/第四阶段/赤翼魔龙王.png" alt="Boss" class="team-boss-img">
+            </div>
+          </div>
+          <div class="team-boss-challenge" @click="challengeTeamBoss">
+            <img src="./resource-v9/战队boss/挑战.png" alt="挑战">
+          </div>
+          <div class="team-boss-hp">
+            <img src="./resource-v9/战队boss/boss血量框.png" alt="血量框" class="team-boss-hp-frame">
+            <div class="team-boss-hp-bar-wrap">
+              <img src="./resource-v9/战队boss/血量条.png" alt="血量条" class="team-boss-hp-bar" :style="{ width: teamBossHpPercent + '%' }">
+            </div>
+            <div class="team-boss-hp-text">HP {{ teamBossCurrentHp }} / {{ teamBossMaxHp }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div v-if="showTeamModal" class="team-modal-overlay">
@@ -12890,16 +14353,6 @@
       </div>
     </div>
   </div>
-
-  <div v-if="toast.show" class="fixed top-5 left-1/2 -translate-x-1/2 z-[120]">
-    <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
-  </div>
-  <div v-cloak v-if="rewardFlyToast.show" class="fixed top-16 left-1/2 z-[180] pointer-events-none">
-    <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
-      {{ rewardFlyToast.message }}
-    </div>
-  </div>
-</div>
 
 <div v-cloak v-if="battleScene && battleScene.open" class="battle-scene-overlay battle-render-safe fixed inset-0 z-[110] bg-slate-950/90 backdrop-blur-sm" @click="closeBattleScene">
   <div class="relative w-full h-full overflow-hidden bg-slate-950 battle-mobile-root" @click.stop>
