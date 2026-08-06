@@ -231,7 +231,7 @@ const BOSS_NAMES = [
   "真·烈焰凤凰", "龙·炎王", "真·赤色梦魇", "圣王麒麟", "圣·天伊", "冰罗皇", "奥天",
   "圣羽凌风", "噬星白虎", "夜羽银风", "飓焰朱雀", "断空翼皇",
   "天苍霜龙", "创世星灵", "克劳斯", "斗焰吉拉", "皇极兔", "圣渊露龙", "星宇侠X",
-  "龙·帝卡", "裂空菲洛", "爆裂侠X", "天辉侠X", "帝夜奇纳", "司马懿", "达力戈", "艾恩"
+  "龙·帝卡", "裂空菲洛", "爆裂侠X", "天辉侠X", "帝夜奇纳", "司马懿", "达力戈", "艾恩", "源"
 ];
 const BOSS_DEX_ENTRIES = [
   { dexId: 177, name: "骰子大王" }, { dexId: 215, name: "青龙灵兽" }, { dexId: 290, name: "七星神龙" }, { dexId: 305, name: "龙族大法师" },
@@ -263,7 +263,7 @@ const BOSS_DEX_ENTRIES = [
   { dexId: 1649, name: "可兰" }, { dexId: 1234, name: "拉诺斯" }, { dexId: 1282, name: "施瓦辛格" }, { dexId: 1336, name: "波塞冬" },
   { dexId: 1938, name: "冰晶凤凰" }, { dexId: 1950, name: "擎战" },
   { dexId: 1962, name: "圣羽凌风" }, { dexId: 1963, name: "噬星白虎" }, { dexId: 1972, name: "夜羽银风" },
-  { dexId: 1975, name: "飓焰朱雀" }, { dexId: 1985, name: "断空翼皇" },
+  { dexId: 1975, name: "飓焰朱雀" }, { dexId: 1977, name: "源" }, { dexId: 1985, name: "断空翼皇" },
   { dexId: 1994, name: "天苍霜龙" }, { dexId: 1999, name: "创世星灵" }, { dexId: 2001, name: "克劳斯" },
   { dexId: 2006, name: "斗焰吉拉" }, { dexId: 2010, name: "皇极兔" }, { dexId: 2011, name: "圣渊露龙" },
   { dexId: 2019, name: "星宇侠X" }, { dexId: 2020, name: "无念" },
@@ -381,7 +381,7 @@ const CHALLENGE_ROAD_TIERS = [
     subtitle: "终阶BOSS挑战",
     cover: CHALLENGE_ROAD_COVER_SRC_5,
     guardianNames: [],
-    bossNames: ["真苍炎", "真噬月武神", "真烈焰凤凰", "龙炎王", "真赤色梦魇", "帝皇圣龙", "圣王麒麟", "圣天伊", "冰罗皇", "奥天", "创世星灵", "星宇侠X", "龙·帝卡", "圣光X神兽", "斗士豪达"]
+    bossNames: ["真苍炎", "真噬月武神", "真烈焰凤凰", "龙炎王", "真赤色梦魄", "帝皇圣龙", "圣王麒麟", "圣天伊", "冰罗皇", "奥天", "创世星灵", "星宇侠X", "龙·帝卡", "圣光X神兽", "斗士豪达", "源"]
   }
 ];
 const QIXING_SEAL_ITEM_ID = "qixing_seal";
@@ -1364,8 +1364,8 @@ const CHALLENGE_ROAD_BOSS_SKILL_POOLS = {
     ]
   }
 };
-const LEGACY_BOSS_DEX_IDS = new Set([1977, 2020, 2033, 2036]);
-const LEGACY_BOSS_NAMES = new Set(["源", "无念", "风暴龙", "暗焰天龙"]);
+const LEGACY_BOSS_DEX_IDS = new Set([2020, 2033, 2036]);
+const LEGACY_BOSS_NAMES = new Set(["无念", "风暴龙", "暗焰天龙"]);
 const EXCLUDED_GUARDIAN_NAMES = ["魔灯鬼王"];
 const EXCLUDED_BOSS_NAMES = ["冰山修罗", "神照修罗王", "黯天凯撒皇"];
 const SHOP_EGG_NAMES = [
@@ -4603,12 +4603,19 @@ const applyDirectHpDamage = (scene, side, amount) => {
   scene[hpKey] = Math.max(hasLastStandEffect(scene, side) && before > 0 ? 1 : 0, before - Math.max(1, Math.floor(Number(amount) || 1)));
   const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
   recordBattleDamageTakenThisTurn(scene, side, actual);
+  if (side === "target") recordTeamBossDamage(scene, actual);
   if (side === "attacker" && Array.isArray(scene.team)) {
     syncActivePetFromBattleScene(scene);
   }
   if (actual > 0) clearSleepAfterDamage(scene, side);
   syncBattleUiHpForSide(scene, side);
   return actual;
+};
+const recordTeamBossDamage = (scene, amount) => {
+  if (!scene || !scene.guardianMeta || !scene.guardianMeta.teamBoss) return;
+  const actual = Math.max(0, Math.floor(Number(amount) || 0));
+  if (actual <= 0) return;
+  scene.totalDamageToTarget = Math.max(0, Math.floor(Number(scene.totalDamageToTarget) || 0)) + actual;
 };
 const applyDelayedDamageBuffer = (scene, side, amount) => {
   const state = getSideState(scene, side);
@@ -9816,6 +9823,7 @@ const applyEndTurnStatus = (scene, side) => {
     scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - dmg);
     state.statuses[status] = Math.max(0, state.statuses[status] - 1);
     totalDamage += actual;
+    if (side === "target") recordTeamBossDamage(scene, actual);
     if (actual > 0) damageStatusTriggered = true;
     pushBattleLog(scene, `${actorName}受到${label}伤害 ${actual}`);
     return actual;
@@ -9844,6 +9852,7 @@ const applyEndTurnStatus = (scene, side) => {
     scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - dmg);
     state.statuses.leech = Math.max(0, state.statuses.leech - 1);
     totalDamage += actual;
+    if (side === "target") recordTeamBossDamage(scene, actual);
     if (actual > 0) damageStatusTriggered = true;
     pushBattleLog(scene, `${actorName}受到寄生吸取 ${actual}`);
     if (side === "attacker") scene.damageOnAttacker = `-${actual}`;
@@ -9935,6 +9944,7 @@ const applyEndTurnStatus = (scene, side) => {
     const actual = Math.min(amount, Math.max(0, Number(scene[hpKey]) || 0));
     scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - amount);
     totalDamage += actual;
+    if (side === "target") recordTeamBossDamage(scene, actual);
     if (actual > 0) damageStatusTriggered = true;
     const label = normalize(d.label) || "持续伤害";
     if (side === "attacker") scene.damageOnAttacker = `-${actual}`;
@@ -9947,6 +9957,7 @@ const applyEndTurnStatus = (scene, side) => {
     const actual = Math.min(amount, Math.max(0, Number(scene[hpKey]) || 0));
     scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - amount);
     totalDamage += actual;
+    if (side === "target") recordTeamBossDamage(scene, actual);
     if (actual > 0) damageStatusTriggered = true;
     const label = normalize(e.data && e.data.label) || "持续伤害";
     if (side === "attacker") scene.damageOnAttacker = `-${actual}`;
@@ -9965,6 +9976,7 @@ const applyEndTurnStatus = (scene, side) => {
       const actual = Math.min(total, Math.max(0, Number(scene[hpKey]) || 0));
       scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - total);
       totalDamage += actual;
+      if (side === "target") recordTeamBossDamage(scene, actual);
       if (actual > 0) damageStatusTriggered = true;
       state.damageDelayBuffer = { total: 0, turns: 0, label: normalize(bucket.label) || "神谕盾" };
       if (side === "attacker") scene.damageOnAttacker = `-${actual}`;
@@ -9981,6 +9993,7 @@ const applyEndTurnStatus = (scene, side) => {
     const actual = Math.min(dmg, Math.max(0, Number(scene[hpKey]) || 0));
     scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - dmg);
     totalDamage += actual;
+    if (side === "target") recordTeamBossDamage(scene, actual);
     if (actual > 0) damageStatusTriggered = true;
     const casterSide = normalize(e.data && e.data.caster) === "target" ? "target" : "attacker";
     const casterName = casterSide === "attacker" ? scene.attackerName : scene.targetName;
@@ -10006,6 +10019,7 @@ const applyEndTurnStatus = (scene, side) => {
     const actual = Math.min(dmg, Math.max(0, Number(scene[hpKey]) || 0));
     scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - dmg);
     totalDamage += actual;
+    if (side === "target") recordTeamBossDamage(scene, actual);
     if (actual > 0) damageStatusTriggered = true;
     pushBattleLog(scene, `${label}：${actorName}受到${actual}点持续伤害。`);
   });
@@ -10017,6 +10031,7 @@ const applyEndTurnStatus = (scene, side) => {
     const actual = Math.min(amount, Math.max(0, Number(scene[hpKey]) || 0));
     scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - amount);
     totalDamage += actual;
+    if (side === "target") recordTeamBossDamage(scene, actual);
     if (actual > 0) damageStatusTriggered = true;
     const casterSide = normalize(e.data && e.data.caster) === "target" ? "target" : "attacker";
     const casterName = casterSide === "attacker" ? scene.attackerName : scene.targetName;
@@ -10035,6 +10050,7 @@ const applyEndTurnStatus = (scene, side) => {
     const actual = Math.min(amount, Math.max(0, Number(scene[hpKey]) || 0));
     scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - amount);
     totalDamage += actual;
+    if (side === "target") recordTeamBossDamage(scene, actual);
     if (actual > 0) damageStatusTriggered = true;
     pushBattleLog(scene, `${label}：${actorName}受到${actual}点伤害。`);
   });
@@ -12171,7 +12187,7 @@ createApp({
     };
     const isDoubleRewardTime = computed(() => isDoubleRewardTimeAt(nowTs.value));
     const doubleRewardNotice = "20:00—22:00开放双倍h币和双倍经验，可以和双倍经验器叠加！";
-    const sponsorThanksNotice = "Hub版本衷心感谢【317410809、阿雷斯特、823924601、al021231321、1597442226、Asuka、甘蔗、xiaoyaoiii、331xiaoqin、3257280254、473639550、1352206459、2322098465、1695992872、臭雨欣、210031wx、zhengdego、夜雨、Cyclone、3124524245、Vci、17667170163、BlackCat、2765180930、1597442226、48118997、爷傲奈我何、PEN1234567PEN】的倾情赞助，愿Hub与你们同辉！";
+    const sponsorThanksNotice = "Hub版本衷心感谢【别被情绪左右、317410809、阿雷斯特、823924601、al021231321、1597442226、Asuka、甘蔗、xiaoyaoiii、331xiaoqin、3257280254、473639550、1352206459、2322098465、1695992872、臭雨欣、210031wx、zhengdego、夜雨、Cyclone、3124524245、Vci、17667170163、BlackCat、2765180930、1597442226、48118997、爷傲奈我何、PEN1234567PEN、赛琳娜敲可爱、pokemm、星月夜、龙子澜、童年奥拉哇、无敌闲、28680864、1023441407、早早睡、2289650637】的倾情赞助，愿Hub与你们同辉！";
     const viewportSize = ref({
       width: typeof window === "undefined" ? 1700 : Math.max(1, Number(window.innerWidth) || 1700),
       height: typeof window === "undefined" ? 765 : Math.max(1, Number(window.innerHeight) || 765)
@@ -12254,31 +12270,19 @@ createApp({
     const showTeamRank = ref(false);
     const showTeamRecruit = ref(false);
     const showTeamBoss = ref(false);
+    const TEAM_BOSS_MAX_HP = 1000000;
+    const TEAM_BOSS_BATTLE_TURN_LIMIT = 15;
+    const TEAM_BOSS_DAILY_ATTEMPT_LIMIT = 3;
+    const TEAM_BOSS_DAILY_BOSS_KEY = "nine_tail_ice_fox";
+    const TEAM_BOSS_DAILY_BOSS_NAME = "九尾冰狐";
+    const TEAM_BOSS_DAILY_BOSS_IMAGE = encodeAssetSrc("./resource/地台boss/第四阶段/九尾冰狐.png");
+    const TEAM_BOSS_SKILL_SEQUENCE = ["霜冻护佑", "冰裂九重天", "极地效应", "九尾灵能", "冰裂九重天", "霜冻护佑", "冰裂九重天", "九尾魅惑", "冰裂九重天", "冰裂九重天", "冰裂九重天", "冰裂九重天", "九尾灵能", "冰裂九重天", "冰裂九重天"];
+    const TEAM_BOSS_SKILL_POOL = ["霜冻护佑", "冰裂九重天", "极地效应", "九尾灵能", "九尾魅惑"];
     const teamBossRankTab = ref('inner');
-    const teamBossMaxHp = ref(1000000);
-    const teamBossCurrentHp = ref(850000);
-    const teamBossInnerRankList = ref([
-      { name: '星辰·破晓', damage: 128500 },
-      { name: '星辰·银河', damage: 115200 },
-      { name: '星辰·暗夜', damage: 98700 },
-      { name: '星辰·晨曦', damage: 87600 },
-      { name: '星辰·苍穹', damage: 76300 },
-      { name: '星辰·琉璃', damage: 65400 },
-      { name: '星辰·疾风', damage: 52100 },
-      { name: '星辰·明月', damage: 43800 },
-      { name: '星辰·云海', damage: 35200 },
-      { name: '星辰·流光', damage: 28900 }
-    ]);
-    const teamBossTeamRankList = ref([
-      { name: '星辰战队', damage: 852000 },
-      { name: '烈焰战队', damage: 725000 },
-      { name: '暗影战队', damage: 618000 },
-      { name: '圣光战队', damage: 512000 },
-      { name: '风暴战队', damage: 438000 },
-      { name: '雷霆战队', damage: 356000 },
-      { name: '寒冰战队', damage: 289000 },
-      { name: '大地战队', damage: 215000 }
-    ]);
+    const teamBossMaxHp = ref(TEAM_BOSS_MAX_HP);
+    const teamBossCurrentHp = ref(TEAM_BOSS_MAX_HP);
+    const teamBossInnerRankList = ref([]);
+    const teamBossTeamRankList = ref([]);
     const showTeamButler = ref(false);
     const showTeamTask = ref(false);
     const showTeamShop = ref(false);
@@ -15745,9 +15749,6 @@ createApp({
       if (battleSpeed.value !== next) battleSpeed.value = next;
       if (battleScene.value && typeof battleScene.value === "object") battleScene.value.battleSpeed = next;
       writeBattleSpeed(next);
-    }, { immediate: true });
-    watch(authReady, (ready) => {
-      if (ready) openUnreadReleaseNotes();
     }, { immediate: true });
     let timer = null;
     let autoSaveTimer = null;
@@ -19280,6 +19281,7 @@ const applyBossChainFinalBuff = (scene) => {
         targetMaxHp: target.maxHp,
         uiTargetHp: target.hp,
         uiTargetMaxHp: target.maxHp,
+        totalDamageToTarget: 0,
         targetState: normalizeBattleState(target.battleState),
         globalTimedEffects: [],
         teamTimedEffects: [],
@@ -19876,6 +19878,14 @@ const applyBossChainFinalBuff = (scene) => {
           const weightedSkill = pickWeightedPoolSkill(scene.guardianMeta && scene.guardianMeta.weeklyBossSkillWeights);
           if (weightedSkill) return weightedSkill;
         }
+        if (scene.mode === "boss" && scene.guardianMeta && scene.guardianMeta.teamBoss) {
+          const sequence = Array.isArray(scene.guardianMeta.teamBossSkillSequence) ? scene.guardianMeta.teamBossSkillSequence : [];
+          if (sequence.length > 0) {
+            const turn = Math.max(1, Number(scene.turnCount) || 1);
+            const fixed = findUsableSkillByName(sequence[(turn - 1) % sequence.length], true);
+            if (fixed) return fixed;
+          }
+        }
         if (scene.mode === "boss") {
           const weightedSkill = pickWeightedPoolSkill(scene.guardianMeta && scene.guardianMeta.bossSkillWeights);
           if (weightedSkill) return weightedSkill;
@@ -20030,6 +20040,11 @@ const applyBossChainFinalBuff = (scene) => {
         battleScene.value._petAnimAttackerPlayLock = false;
         resetBattleAnimIdle(battleScene.value);
         battleScene.value.turnCount = Math.max(1, Number(battleScene.value.turnCount) || 1) + 1;
+        const turnLimit = Math.max(0, Math.floor(Number(battleScene.value.guardianMeta && battleScene.value.guardianMeta.battleTurnLimit) || 0));
+        if (turnLimit > 0 && battleScene.value.turnCount > turnLimit) {
+          finalizeBattleScene(battleScene.value, false, "回合数已达上限");
+          return;
+        }
         pushBattleLog(battleScene.value, `第${battleScene.value.turnCount}回合开始。`);
         triggerShengyuTurnStartPassives(battleScene.value).forEach((fx) => showBattleStatusEffectFx(battleScene.value, fx.side, [fx]));
         triggerWeeklyBossHuangyanArmorIfNeeded(battleScene.value).forEach((fx) => showBattleStatusEffectFx(battleScene.value, fx.side, [fx]));
@@ -20810,6 +20825,7 @@ const applyBossChainFinalBuff = (scene) => {
             } else {
               scene.targetHp = Math.max(hasLastStandEffect(scene, "target") && scene.targetHp > 0 ? 1 : 0, scene.targetHp - damage);
               recordBattleDamageTakenThisTurn(scene, "target", damage);
+              recordTeamBossDamage(scene, damage);
               if (damage > 0) clearSleepAfterDamage(scene, "target");
             }
           if (selfPowerDamage > 0) {
@@ -20843,6 +20859,7 @@ const applyBossChainFinalBuff = (scene) => {
               } else {
                 scene.targetHp = Math.max(hasLastStandEffect(scene, "target") && scene.targetHp > 0 ? 1 : 0, scene.targetHp - selfPowerDamage);
                 recordBattleDamageTakenThisTurn(scene, "target", selfPowerDamage);
+                recordTeamBossDamage(scene, selfPowerDamage);
                 clearSleepAfterDamage(scene, "target");
               }
               pushBattleLog(scene, `${actorName}也受到${skill.name}同威力伤害 ${selfPowerDamage}（${compareElementLabel(selfPowerElementFactor)}）。`);
@@ -21421,6 +21438,9 @@ const applyBossChainFinalBuff = (scene) => {
         repeatDexId: scene.mode === "normal" && !scene.autoBattleMeta ? Number(scene.targetDexId) || 0 : 0,
         repeatTargetLevel: scene.mode === "normal" && !scene.autoBattleMeta ? Math.max(1, Math.floor(Number(scene.targetLevel) || 1)) : 0
       };
+      if (scene.guardianMeta && scene.guardianMeta.teamBoss) {
+        submitTeamBossBattleResult(scene, win).catch(() => {});
+      }
       stopChallengeRecording();
       if (scene.autoBattleMeta) {
         if (!win) {
@@ -21576,6 +21596,9 @@ const applyBossChainFinalBuff = (scene) => {
         battleResult.value = null;
         setBattleReturnContext(null);
         showToast(text);
+      }
+      if (scene && scene.guardianMeta && scene.guardianMeta.teamBoss && !scene.ended) {
+        submitTeamBossBattleResult(scene, false).catch(() => {});
       }
       if (activeChallengeRecording.value) stopChallengeRecording();
       if (scene) {
@@ -21869,6 +21892,7 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const lockedDexCanChallenge = (entry) => {
       if (!entry) return false;
+      if (Number(entry.dexId) === 1977) return false;
       return isBossEntry(entry) || isGuardianName(entry.name) || isWeeklyBossEntry(entry);
     };
     const lockedDexChallengeLocation = (entry) => {
@@ -21911,6 +21935,10 @@ const applyBossChainFinalBuff = (scene) => {
       }
       if (isWeeklyBossEntry(entry)) {
         openWeeklyBossPanel();
+        return;
+      }
+      if (Number(entry.dexId) === 1977) {
+        showToast("该亚比暂不可挑战。");
         return;
       }
       if (!isDexIdInOpenChallengeRange(entry)) {
@@ -23661,6 +23689,84 @@ const applyBossChainFinalBuff = (scene) => {
       currentContribution: Math.max(0, Math.floor(Number(team && (team.currentContribution ?? team.contribution)) || 0)),
       shopPurchases: team && team.shopPurchases && typeof team.shopPurchases === "object" ? team.shopPurchases : {}
     });
+    const syncTeamBossPanelFromServerTeam = (team) => {
+      const boss = team && team.teamBoss && typeof team.teamBoss === "object" && !Array.isArray(team.teamBoss) ? team.teamBoss : null;
+      if (!boss) {
+        teamBossMaxHp.value = TEAM_BOSS_MAX_HP;
+        teamBossCurrentHp.value = TEAM_BOSS_MAX_HP;
+        teamBossInnerRankList.value = [];
+        return;
+      }
+      const memberRows = Array.isArray(team.memberRows) ? team.memberRows : [];
+      const memberNames = new Map(memberRows.map((row) => [normalize(row && row.userId), normalize(row && row.name) || "未知玩家"]));
+      const memberIds = new Set([
+        ...memberRows.map((row) => normalize(row && row.userId)).filter(Boolean),
+        ...Object.keys(boss.memberBestDamage || {}).map((userId) => normalize(userId)).filter(Boolean),
+        ...Object.keys(boss.memberAttempts || {}).map((userId) => normalize(userId)).filter(Boolean)
+      ]);
+      teamBossMaxHp.value = TEAM_BOSS_MAX_HP;
+      teamBossCurrentHp.value = Math.max(0, TEAM_BOSS_MAX_HP - safeNonNegInt(boss.teamDailyTotalDamage, 0));
+      teamBossInnerRankList.value = Array.from(memberIds)
+        .map((userId) => ({
+          userId,
+          name: memberNames.get(normalize(userId)) || "未知玩家",
+          damage: safeNonNegInt(boss.memberBestDamage[userId], 0),
+          attempts: safeNonNegInt(boss.memberAttempts && boss.memberAttempts[userId], 0)
+        }))
+        .sort((a, b) => b.damage - a.damage || b.attempts - a.attempts || String(a.name).localeCompare(String(b.name), "zh-Hans-CN"))
+        .slice(0, 20);
+    };
+    const refreshTeamBossRankFromServer = async (options = {}) => {
+      try {
+        const data = await apiJson("/api/teams/boss/rank");
+        teamBossTeamRankList.value = (Array.isArray(data.teams) ? data.teams : [])
+          .map((row) => ({
+            id: normalize(row && row.id),
+            name: normalize(row && row.name) || "未知玩家",
+            damage: safeNonNegInt(row && row.damage, 0)
+          }))
+          .sort((a, b) => b.damage - a.damage || String(a.name).localeCompare(String(b.name), "zh-Hans-CN"))
+          .slice(0, 10);
+        return true;
+      } catch (err) {
+        if (!(options && options.silent)) showToast(err && err.message ? err.message : "加载战队BOSS排行失败。");
+        return false;
+      }
+    };
+    const submitTeamBossBattleResult = async (scene, win) => {
+      if (!scene || !scene.guardianMeta || !scene.guardianMeta.teamBoss || !authUser.value || !hasTeam.value) return false;
+      if (scene._teamBossRecordPromise) return scene._teamBossRecordPromise;
+      const damage = Math.max(0, Math.floor(Number(scene.totalDamageToTarget) || 0));
+      scene._teamBossRecordPromise = (async () => {
+        try {
+          const data = await apiJson("/api/teams/boss/record", {
+            method: "POST",
+            body: JSON.stringify({ damage })
+          });
+          if (data.team) {
+            applyMyServerTeamData(data.team);
+            await refreshMyTeamFromServer({ silent: true, records: true });
+          }
+          if (Array.isArray(data.teams)) {
+            teamBossTeamRankList.value = data.teams
+              .map((row) => ({
+                id: normalize(row && row.id),
+                name: normalize(row && row.name) || "未知玩家",
+                damage: safeNonNegInt(row && row.damage, 0)
+              }))
+              .slice(0, 10);
+          } else {
+            await refreshTeamBossRankFromServer({ silent: true });
+          }
+          return true;
+        } catch (_) {
+          return false;
+        } finally {
+          scene._teamBossRecordPromise = null;
+        }
+      })();
+      return scene._teamBossRecordPromise;
+    };
     const applyMyServerTeamData = (team) => {
       if (!team) {
         hasTeam.value = false;
@@ -23670,6 +23776,7 @@ const applyBossChainFinalBuff = (scene) => {
         teamMembers.value = [];
         teamApplications.value = [];
         if (isViewingOwnTeam.value) currentTeam.value = {};
+        syncTeamBossPanelFromServerTeam(null);
         syncTeamProfileToState();
         return;
       }
@@ -23684,6 +23791,7 @@ const applyBossChainFinalBuff = (scene) => {
       }
       if (Array.isArray(team.memberRows)) teamMembers.value = team.memberRows;
       if (Array.isArray(team.applications)) teamApplications.value = team.applications;
+      syncTeamBossPanelFromServerTeam(team);
       syncTeamProfileToState();
     };
     const refreshMyTeamFromServer = async (options = {}) => {
@@ -23808,6 +23916,18 @@ const applyBossChainFinalBuff = (scene) => {
     const openElementPanel = () => { showElementPanel.value = true; };
     const closeElementPanel = () => { showElementPanel.value = false; };
     const openTeamPanel = async () => {
+      showTeamModal.value = false;
+      showCreateTeamModal.value = false;
+      showTeamInfo.value = false;
+      showTeamRank.value = false;
+      showTeamRecruit.value = false;
+      showTeamBoss.value = false;
+      showTeamButler.value = false;
+      showTeamTask.value = false;
+      showTeamShop.value = false;
+      showTeamRecord.value = false;
+      showJoinTeamList.value = false;
+      showTeamMemberInfo.value = false;
       showTeamPanel.value = true;
       playSceneBgm(TEAM_BGM_SRC);
       teamLoading.value = true;
@@ -23935,42 +24055,48 @@ const applyBossChainFinalBuff = (scene) => {
       }
       showTeamRecruit.value = true;
     };
-    const onTeamBossClick = () => {
+    const onTeamBossClick = async () => {
       if (!hasTeam.value) {
-        showToast("请先创建或加入战队！");
+        showToast("请先创建或加入战队。");
         return;
       }
+      await refreshMyTeamFromServer({ silent: true, records: true });
+      syncTeamBossPanelFromServerTeam(hasTeam.value ? myTeam.value : null);
+      await refreshTeamBossRankFromServer({ silent: true });
       showTeamBoss.value = true;
     };
-    const challengeTeamBoss = () => {
-      if (teamBossCurrentHp.value <= 0) {
-        showToast("战队BOSS已被击败！等待下次刷新。");
+    const challengeTeamBoss = async () => {
+      if (!hasTeam.value) {
+        showToast("请先创建或加入战队。");
         return;
       }
-      const damage = Math.floor(Math.random() * 8000) + 5000;
-      teamBossCurrentHp.value = Math.max(0, teamBossCurrentHp.value - damage);
-      showToast(`对BOSS造成 ${damage.toLocaleString()} 点伤害！`);
-      if (teamBossRankTab.value === 'inner') {
-        const name = myTeam.value?.name ? myTeam.value.name.split('·')[0] + '·' + (myTeam.value?.leader || '玩家') : '玩家';
-        const existing = teamBossInnerRankList.value.find(item => item.name === name);
-        if (existing) {
-          existing.damage += damage;
-        } else {
-          teamBossInnerRankList.value.push({ name, damage });
+      await refreshMyTeamFromServer({ silent: true, records: true });
+      syncTeamBossPanelFromServerTeam(hasTeam.value ? myTeam.value : null);
+      const entry = dexById.get(1414) || {
+        dexId: 1414,
+        name: TEAM_BOSS_DAILY_BOSS_NAME,
+        image: TEAM_BOSS_DAILY_BOSS_IMAGE,
+        staticImage: TEAM_BOSS_DAILY_BOSS_IMAGE,
+        element: "冰",
+        subElement: ""
+      };
+      showTeamBoss.value = false;
+      startBattlePrepare("正在挑战战队BOSS " + TEAM_BOSS_DAILY_BOSS_NAME + "...", entry, 100, () => setupBattleScene({
+        targetEntry: entry,
+        targetLevel: 100,
+        targetTalentOverride: createUniformTalent60(),
+        targetStudyOverride: createGuardianStudy(),
+        mode: "boss",
+        guardianMeta: {
+          teamBoss: true,
+          fixedHp: TEAM_BOSS_MAX_HP,
+          damageReductionRatio: 0.6,
+          statBoostRatio: 0.5,
+          battleTurnLimit: TEAM_BOSS_BATTLE_TURN_LIMIT,
+          bossSkillNames: TEAM_BOSS_SKILL_POOL,
+          teamBossSkillSequence: TEAM_BOSS_SKILL_SEQUENCE
         }
-        teamBossInnerRankList.value.sort((a, b) => b.damage - a.damage);
-        if (teamBossInnerRankList.value.length > 10) teamBossInnerRankList.value = teamBossInnerRankList.value.slice(0, 10);
-      } else {
-        const teamName = myTeam.value?.name || '我的战队';
-        const existing = teamBossTeamRankList.value.find(item => item.name === teamName);
-        if (existing) {
-          existing.damage += damage;
-        } else {
-          teamBossTeamRankList.value.push({ name: teamName, damage });
-        }
-        teamBossTeamRankList.value.sort((a, b) => b.damage - a.damage);
-        if (teamBossTeamRankList.value.length > 10) teamBossTeamRankList.value = teamBossTeamRankList.value.slice(0, 10);
-      }
+      }));
     };
     const handleCreateTeam = () => {
       showTeamModal.value = false;

@@ -428,7 +428,7 @@
     .home-save-actions .is-logout { background: #334155; }
     .home-status-badge-slot {
       position: absolute;
-      z-index: 6;
+      z-index: 8;
       left: 70.4%;
       top: 2.7%;
       width: 15.7%;
@@ -928,8 +928,8 @@
     .home-double-reward {
       position: absolute;
       z-index: 7;
-      left: 22%;
-      right: 22%;
+      left: 0;
+      right: 29.6%;
       top: 8.3%;
     }
     .home-main-content {
@@ -980,8 +980,8 @@
       .home-action-element { --x: 3%; --y: 37%; --w: 13%; }
       .home-action-team { --x: 3%; --y: 50%; --w: 13%; }
       .home-double-reward {
-        left: 3%;
-        right: 3%;
+        left: 0;
+        right: 32%;
         top: auto;
         bottom: 16%;
       }
@@ -2391,7 +2391,7 @@
     }
     .team-boss-hp {
       position: relative;
-      width: 100%;
+      width: 120%;
       aspect-ratio: 16 / 3;
     }
     .team-boss-hp-frame {
@@ -2412,7 +2412,7 @@
       border-radius: 2px;
       overflow: hidden;
       z-index: 1;
-      transform: translate(15%, -2%) scale(1.323, 1.68714);
+      transform: translate(0, -2%) scale(1, 1.68714);
       transform-origin: center center;
     }
     .team-boss-hp-bar {
@@ -12551,18 +12551,18 @@
 
   <div v-if="showNewWarehousePanel" class="app-top-overlay fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeNewWarehousePanel">
     <div class="new-warehouse-panel" @click.stop="closeNewWarehouseDropdowns">
-      <img src="./resource-v9/仓库ui/仓库底图.png" class="new-warehouse-bg" alt="">
+      <img src="./resource/仓库ui/仓库底图.png" class="new-warehouse-bg" alt="">
       <button @click="closeNewWarehousePanel" class="new-warehouse-close-btn" title="退出仓库" aria-label="退出仓库">
-        <img src="./resource-v9/仓库ui/关闭仓库按钮.png" alt="退出">
+        <img src="./resource/仓库ui/关闭仓库按钮.png" alt="退出">
       </button>
 
       <div class="new-warehouse-view-tabs">
-        <img src="./resource-v9/仓库ui/亚比仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'pet' }" @click="setNewWarehouseView('pet')" alt="亚比仓库">
-        <img src="./resource-v9/仓库ui/精英仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'elite' }" @click="setNewWarehouseView('elite')" alt="精英仓库">
+        <img src="./resource/仓库ui/亚比仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'pet' }" @click="setNewWarehouseView('pet')" alt="亚比仓库">
+        <img src="./resource/仓库ui/精英仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'elite' }" @click="setNewWarehouseView('elite')" alt="精英仓库">
       </div>
 
       <div class="new-warehouse-large-display" v-if="newWarehouseView === 'pet'">
-        <img src="./resource-v9/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
+        <img src="./resource/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
         <template v-if="selectedNewWarehousePet">
           <div class="new-warehouse-large-info">
             <div class="new-warehouse-large-name">{{ petDisplayName(selectedNewWarehousePet) }}</div>
@@ -12570,15 +12570,15 @@
           </div>
           <img :src="bagPetVisual(selectedNewWarehousePet).src" :style="warehousePetAnimImageStyle(selectedNewWarehousePet, 'action')" @error="withFallback" class="new-warehouse-large-pet">
           <div class="new-warehouse-action-btns">
-            <img src="./resource-v9/仓库ui/设为精英.png" class="new-warehouse-action-btn" @click="movePetToElite(selectedNewWarehousePet)" alt="设为精英">
-            <img src="./resource-v9/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
+            <img src="./resource/仓库ui/设为精英.png" class="new-warehouse-action-btn" @click="movePetToElite(selectedNewWarehousePet)" alt="设为精英">
+            <img src="./resource/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
           </div>
         </template>
         <div v-else class="new-warehouse-large-empty">暂无亚比</div>
       </div>
 
       <div class="new-warehouse-large-display" v-if="newWarehouseView === 'elite'">
-        <img src="./resource-v9/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
+        <img src="./resource/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
         <template v-if="selectedNewWarehousePet">
           <div class="new-warehouse-large-info">
             <div class="new-warehouse-large-name">{{ petDisplayName(selectedNewWarehousePet) }}</div>
@@ -12586,8 +12586,8 @@
           </div>
           <img :src="bagPetVisual(selectedNewWarehousePet).src" :style="warehousePetAnimImageStyle(selectedNewWarehousePet, 'action')" @error="withFallback" class="new-warehouse-large-pet">
           <div class="new-warehouse-action-btns">
-            <img src="./resource-v9/仓库ui/取消精英.png" class="new-warehouse-action-btn" @click="removePetFromElite(selectedNewWarehousePet)" alt="取消精英">
-            <img src="./resource-v9/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
+            <img src="./resource/仓库ui/取消精英.png" class="new-warehouse-action-btn" @click="removePetFromElite(selectedNewWarehousePet)" alt="取消精英">
+            <img src="./resource/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
           </div>
         </template>
         <div v-else class="new-warehouse-large-empty">暂无精英亚比</div>
@@ -12595,12 +12595,12 @@
 
       <div class="new-warehouse-skill-panel">
         <div class="new-warehouse-skill-tabs">
-          <img src="./resource-v9/仓库ui/技能.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'skills' }" @click="setNewWarehouseInfoTab('skills')" alt="技能">
-          <img src="./resource-v9/仓库ui/信息.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'info' }" @click="setNewWarehouseInfoTab('info')" alt="信息">
-          <img src="./resource-v9/仓库ui/能力.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'ability' }" @click="setNewWarehouseInfoTab('ability')" alt="能力">
+          <img src="./resource/仓库ui/技能.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'skills' }" @click="setNewWarehouseInfoTab('skills')" alt="技能">
+          <img src="./resource/仓库ui/信息.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'info' }" @click="setNewWarehouseInfoTab('info')" alt="信息">
+          <img src="./resource/仓库ui/能力.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'ability' }" @click="setNewWarehouseInfoTab('ability')" alt="能力">
         </div>
         <template v-if="selectedNewWarehousePet">
-          <img src="./resource-v9/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
+          <img src="./resource/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
           <div class="new-warehouse-skill-content">
           <div v-if="newWarehouseInfoTab === 'skills'" class="new-warehouse-tab-panel">
             <div class="new-warehouse-skill-header">
@@ -12676,7 +12676,7 @@
           </div>
         </template>
         <template v-else>
-          <img src="./resource-v9/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
+          <img src="./resource/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
           <div class="new-warehouse-skill-content">
             <div class="new-warehouse-empty-state">仓库中没有亚比</div>
           </div>
@@ -12727,8 +12727,8 @@
 
       <div class="new-warehouse-filter-bar" @click.stop>
         <div class="new-warehouse-filter-group">
-          <img src="./resource-v9/仓库ui/属性按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter !== '全部系别' }" @click="toggleNewWarehouseElementPicker" alt="属性">
-          <img src="./resource-v9/仓库ui/全部按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter === '全部系别' }" @click="selectNewWarehouseElement('全部系别')" alt="全部">
+          <img src="./resource/仓库ui/属性按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter !== '全部系别' }" @click="toggleNewWarehouseElementPicker" alt="属性">
+          <img src="./resource/仓库ui/全部按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter === '全部系别' }" @click="selectNewWarehouseElement('全部系别')" alt="全部">
           <div class="new-warehouse-element-picker" v-if="newWarehouseShowElementPicker">
             <div
               v-for="el in newWarehouseElementOptions"
@@ -12741,11 +12741,11 @@
         </div>
         <div class="new-warehouse-search-wrap">
           <input type="text" v-model="newWarehouseSearch" class="new-warehouse-search-input" placeholder="搜索亚比名称" @click.stop>
-          <img src="./resource-v9/仓库ui/搜索.png" class="new-warehouse-search-icon" alt="">
+          <img src="./resource/仓库ui/搜索.png" class="new-warehouse-search-icon" alt="">
         </div>
         <div class="new-warehouse-filter-group">
-          <img src="./resource-v9/仓库ui/时间排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('time') }" @click="toggleNewWarehouseTimeMenu" alt="时间排序">
-          <img src="./resource-v9/仓库ui/等级排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('level') }" @click="toggleNewWarehouseLevelMenu" alt="等级排序">
+          <img src="./resource/仓库ui/时间排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('time') }" @click="toggleNewWarehouseTimeMenu" alt="时间排序">
+          <img src="./resource/仓库ui/等级排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('level') }" @click="toggleNewWarehouseLevelMenu" alt="等级排序">
           <div class="new-warehouse-sort-menu" v-if="newWarehouseTimeMenuOpen">
             <div class="new-warehouse-sort-item" :class="{ active: newWarehouseSortMode === 'time_desc' }" @click="setNewWarehouseSort('time_desc')">时间从新到旧</div>
             <div class="new-warehouse-sort-item" :class="{ active: newWarehouseSortMode === 'time_asc' }" @click="setNewWarehouseSort('time_asc')">时间从旧到新</div>
@@ -12765,7 +12765,7 @@
           :class="{ 'is-empty': !slotPet, 'is-selected': slotPet && selectedNewWarehousePet && petId(slotPet) === petId(selectedNewWarehousePet) }"
           @click="slotPet && selectNewWarehousePet(slotPet)"
         >
-          <img src="./resource-v9/仓库ui/仓库亚比显示背景.png" class="new-warehouse-slot-bg" alt="">
+          <img src="./resource/仓库ui/仓库亚比显示背景.png" class="new-warehouse-slot-bg" alt="">
           <template v-if="slotPet">
             <img :src="bagPetVisual(slotPet).src" :style="warehousePetAnimImageStyle(slotPet, 'action')" @error="withFallback" class="new-warehouse-slot-pet">
             <div class="new-warehouse-slot-label">{{ petDisplayName(slotPet) }}</div>
@@ -12781,7 +12781,7 @@
           :class="{ 'is-empty': !slotPet, 'is-selected': slotPet && selectedNewWarehousePet && petId(slotPet) === petId(selectedNewWarehousePet) }"
           @click="slotPet && selectNewWarehousePet(slotPet)"
         >
-          <img src="./resource-v9/仓库ui/仓库亚比显示背景.png" class="new-warehouse-slot-bg" alt="">
+          <img src="./resource/仓库ui/仓库亚比显示背景.png" class="new-warehouse-slot-bg" alt="">
           <template v-if="slotPet">
             <img :src="bagPetVisual(slotPet).src" :style="warehousePetAnimImageStyle(slotPet, 'idle')" @error="withFallback" class="new-warehouse-slot-pet">
             <div class="new-warehouse-slot-label">{{ petDisplayName(slotPet) }}</div>
@@ -13941,7 +13941,7 @@
       </div>
 
       <div class="team-recruit-btn" @click="onTeamBossClick">
-        <img src="./resource-v9/战队boss/战队boss.png" alt="战队BOSS">
+        <img src="./resource/战队boss/战队boss.png" alt="战队BOSS">
       </div>
 
       <div class="team-boss-btn" style="display:none;" @click="onTeamBossClick">
@@ -14251,13 +14251,13 @@
     </div>
 
     <div v-if="showTeamBoss" class="team-boss-panel">
-      <img src="./resource-v9/战队boss/战队boss底图.png" alt="战队BOSS" class="team-boss-bg">
-      <img src="./resource-v9/战队boss/战队boss关闭按钮.png" alt="关闭" class="team-boss-close" @click="showTeamBoss = false">
+      <img src="./resource/战队boss/战队boss底图.png" alt="战队BOSS" class="team-boss-bg">
+      <img src="./resource/战队boss/战队boss关闭按钮.png" alt="关闭" class="team-boss-close" @click="showTeamBoss = false">
       
       <div class="team-boss-main">
         <!-- 左侧排行榜 -->
         <div class="team-boss-rank">
-          <img src="./resource-v9/战队boss/排行.png" alt="排行背景" class="team-boss-rank-bg">
+          <img src="./resource/战队boss/排行.png" alt="排行背景" class="team-boss-rank-bg">
           <div class="team-boss-rank-tabs">
             <span :class="['team-boss-rank-tab', { active: teamBossRankTab === 'inner' }]" @click="teamBossRankTab = 'inner'">队内排行</span>
             <span :class="['team-boss-rank-tab', { active: teamBossRankTab === 'team' }]" @click="teamBossRankTab = 'team'">战队排行</span>
@@ -14270,25 +14270,25 @@
             </div>
           </div>
           <div class="team-boss-chest">
-            <img src="./resource-v9/战队boss/宝箱奖励.png" alt="宝箱奖励">
+            <img src="./resource/战队boss/宝箱奖励.png" alt="宝箱奖励">
           </div>
         </div>
 
         <!-- 右侧Boss区域 -->
         <div class="team-boss-right">
           <div class="team-boss-display">
-            <img src="./resource-v9/战队boss/boss背景框.png" alt="Boss背景" class="team-boss-frame">
+            <img src="./resource/战队boss/boss背景框.png" alt="Boss背景" class="team-boss-frame">
             <div class="team-boss-content">
-              <img src="./resource/地台boss/第四阶段/赤翼魔龙王.png" alt="Boss" class="team-boss-img">
+              <img src="./resource/地台boss/第四阶段/九尾冰狐.png" alt="Boss" class="team-boss-img">
             </div>
           </div>
           <div class="team-boss-challenge" @click="challengeTeamBoss">
-            <img src="./resource-v9/战队boss/挑战.png" alt="挑战">
+            <img src="./resource/战队boss/挑战.png" alt="挑战">
           </div>
           <div class="team-boss-hp">
-            <img src="./resource-v9/战队boss/boss血量框.png" alt="血量框" class="team-boss-hp-frame">
+            <img src="./resource/战队boss/boss血量框.png" alt="血量框" class="team-boss-hp-frame">
             <div class="team-boss-hp-bar-wrap">
-              <img src="./resource-v9/战队boss/血量条.png" alt="血量条" class="team-boss-hp-bar" :style="{ width: teamBossHpPercent + '%' }">
+              <img src="./resource/战队boss/血量条.png" alt="血量条" class="team-boss-hp-bar" :style="{ width: teamBossHpPercent + '%' }">
             </div>
             <div class="team-boss-hp-text">HP {{ teamBossCurrentHp }} / {{ teamBossMaxHp }}</div>
           </div>

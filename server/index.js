@@ -64,6 +64,15 @@ const writeJsonFile = (file, data) => {
 };
 
 const toPosixPath = (value) => String(value || "").replace(/\\/g, "/");
+const localDateKey = (date = new Date()) => {
+  const value = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(value.getTime())) return "";
+  return [
+    value.getFullYear(),
+    String(value.getMonth() + 1).padStart(2, "0"),
+    String(value.getDate()).padStart(2, "0")
+  ].join("-");
+};
 
 const usersDb = () => {
   const raw = readJsonFile(USERS_FILE, { users: [] });
@@ -964,9 +973,53 @@ function normalizeTeamRow(team) {
     createdAt: String(team && team.createdAt || new Date().toISOString()),
     updatedAt: String(team && team.updatedAt || new Date().toISOString()),
     members: normalizedMembers,
-    applications
+    applications,
+    teamBoss: normalizeTeamBossRow(team && team.teamBoss)
   };
 }
+
+const TEAM_BOSS_DAILY_ATTEMPT_LIMIT = 3;
+const TEAM_BOSS_DEFAULT_KEY = "nine_tail_ice_fox";
+const normalizeTeamBossMap = (source, parser = (value) => Math.max(0, Math.floor(Number(value) || 0))) => {
+  const out = {};
+  if (!source || typeof source !== "object" || Array.isArray(source)) return out;
+  Object.keys(source).forEach((rawKey) => {
+    const key = String(rawKey || "");
+    if (!key) return;
+    out[key] = parser(source[rawKey]);
+  });
+  return out;
+};
+
+const normalizeTeamBossMapText = (source) => {
+  const out = {};
+  if (!source || typeof source !== "object" || Array.isArray(source)) return out;
+  Object.keys(source).forEach((rawKey) => {
+    const key = String(rawKey || "");
+    if (!key) return;
+    out[key] = String(source[rawKey] || "");
+  });
+  return out;
+};
+
+const normalizeTeamBossRow = (teamBoss) => {
+  const source = teamBoss && typeof teamBoss === "object" && !Array.isArray(teamBoss) ? teamBoss : {};
+  const today = localDateKey();
+  const sameDay = String(source.date || "") === today;
+  const memberAttempts = sameDay ? normalizeTeamBossMap(source.memberAttempts) : {};
+  const memberBestDamage = sameDay ? normalizeTeamBossMap(source.memberBestDamage) : {};
+  const memberBestDamageAt = sameDay ? normalizeTeamBossMapText(source.memberBestDamageAt) : {};
+  const teamDailyTotalDamage = Object.values(memberBestDamage).reduce((sum, value) => sum + Math.max(0, Math.floor(Number(value) || 0)), 0);
+  return {
+    date: today,
+    bossKey: String(source.bossKey || TEAM_BOSS_DEFAULT_KEY),
+    memberAttempts,
+    memberBestDamage,
+    memberBestDamageAt,
+    teamDailyTotalDamage,
+    updatedAt: sameDay ? String(source.updatedAt || "") : ""
+  };
+};
 
 const teamTotalHonor = (team) => (Array.isArray(team && team.members) ? team.members : [])
   .reduce((sum, member) => sum + safeNonNegInt(member && member.honor, 0), 0);
@@ -1022,6 +1075,19 @@ const publicTeamApplication = (app, names) => ({
   appliedAt: app.appliedAt
 });
 
+const publicTeamBoss = (teamBoss) => {
+  const state = normalizeTeamBossRow(teamBoss);
+  return {
+    date: state.date,
+    bossKey: state.bossKey,
+    memberAttempts: state.memberAttempts,
+    memberBestDamage: state.memberBestDamage,
+    memberBestDamageAt: state.memberBestDamageAt,
+    teamDailyTotalDamage: state.teamDailyTotalDamage,
+    updatedAt: state.updatedAt
+  };
+};
+
 const publicTeam = (team, options = {}) => {
   const names = options.names || userNameByIdMap();
   const honor = teamTotalHonor(team);
@@ -1049,9 +1115,53 @@ const publicTeam = (team, options = {}) => {
     contribution: viewerMember ? safeNonNegInt(viewerMember.contribution, 0) : 0,
     currentContribution: viewerMember ? safeNonNegInt(viewerMember.currentContribution, 0) : 0,
     shopPurchases: viewerMember && viewerMember.shopPurchases && typeof viewerMember.shopPurchases === "object" ? viewerMember.shopPurchases : {},
+    teamBoss: publicTeamBoss(team.teamBoss),
     applications: options.includeRecords ? (team.applications || []).map((app) => publicTeamApplication(app, names)) : [],
     memberRows: options.includeRecords ? (team.members || []).map((member) => publicTeamMember(member, names)) : []
   };
+};
+
+const rankedPublicTeamBossRows = () => {
+  const db = teamsDb();
+  const names = userNameByIdMap();
+  return db.teams
+    .map((team) => {
+      const boss = publicTeamBoss(team.teamBoss);
+      const leaderName = names.get(team.leaderId) || "匿名玩家";
+      return {
+        id: team.id,
+        name: team.name,
+        leaderId: team.leaderId,
+        leader: leaderName,
+        leaderName,
+        damage: safeNonNegInt(boss.teamDailyTotalDamage, 0),
+        teamBoss: boss
+      };
+    })
+    .sort((a, b) => safeNonNegInt(b.damage, 0) - safeNonNegInt(a.damage, 0) || String(a.name).localeCompare(String(b.name), "zh-Hans-CN"))
+    .map((row, index) => ({ ...row, rank: index + 1 }));
+};
+
+const updateTeamBossBattleResult = (team, userId, damage) => {
+  if (!team || !userId) return { ok: false, message: "战队不存在。" };
+  const boss = normalizeTeamBossRow(team.teamBoss);
+  const attempts = safeNonNegInt(boss.memberAttempts[userId], 0);
+  if (attempts >= TEAM_BOSS_DAILY_ATTEMPT_LIMIT) {
+    return { ok: false, message: "今日战队BOSS挑战次数已用完。" };
+  }
+  const actualDamage = Math.max(0, Math.floor(Number(damage) || 0));
+  boss.memberAttempts[userId] = attempts + 1;
+  if (actualDamage > safeNonNegInt(boss.memberBestDamage[userId], 0)) {
+    boss.memberBestDamage[userId] = actualDamage;
+    boss.memberBestDamageAt[userId] = new Date().toISOString();
+  } else if (!boss.memberBestDamageAt[userId]) {
+    boss.memberBestDamageAt[userId] = new Date().toISOString();
+  }
+  boss.teamDailyTotalDamage = Object.values(boss.memberBestDamage).reduce((sum, value) => sum + safeNonNegInt(value, 0), 0);
+  boss.updatedAt = new Date().toISOString();
+  team.teamBoss = boss;
+  team.updatedAt = boss.updatedAt;
+  return { ok: true, boss };
 };
 
 const rankedPublicTeams = (viewerUserId = "", includeRecords = false) => {
@@ -1216,6 +1326,26 @@ const handleApi = async (req, res) => {
       const team = findUserTeam(db, user.id);
       if (!team) return sendJson(res, 200, { ok: true, team: null });
       return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, includeRecords) });
+    }
+    if (req.method === "GET" && pathname === "/api/teams/boss/rank") {
+      return sendJson(res, 200, { ok: true, teams: rankedPublicTeamBossRows() });
+    }
+    if (req.method === "POST" && pathname === "/api/teams/boss/record") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const damage = Math.max(0, Math.floor(Number(body.damage) || 0));
+      const db = teamsDb();
+      const team = findUserTeam(db, user.id);
+      if (!team) return sendJson(res, 404, { ok: false, message: "当前账号未加入战队。" });
+      const result = updateTeamBossBattleResult(team, user.id, damage);
+      if (!result.ok) return sendJson(res, 409, { ok: false, message: result.message });
+      saveTeamsDb(db);
+      return sendJson(res, 200, {
+        ok: true,
+        team: publicTeamWithRank(team, user.id, true),
+        teams: rankedPublicTeamBossRows()
+      });
     }
     if (req.method === "GET" && pathname.startsWith("/api/teams/")) {
       const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
