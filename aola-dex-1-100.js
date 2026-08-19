@@ -21346,5 +21346,77 @@ window.AOLA_DEX_1_100 = [
       "element": "上古系",
       "subElement": "",
       "sourceUrl": "http://aola.100bt.com/tujian/2387.html"
+  },
+  {
+      "dexId": 2382,
+      "petId": 2382,
+      "name": "辉月战骑",
+      "image": "./resource/pet-img/pet2382_1_1_cropped.png",
+      "element": "圣灵系",
+      "subElement": "神秘系",
+      "sourceUrl": "http://aola.100bt.com/tujian/2382.html"
+  },
+  {
+      "dexId": 2383,
+      "petId": 2383,
+      "name": "辉月战骑",
+      "image": "./resource/pet-img/pet2383_1_1_cropped.png",
+      "element": "圣灵系",
+      "subElement": "神秘系",
+      "sourceUrl": "http://aola.100bt.com/tujian/2383.html"
+  },
+  {
+      "dexId": 2395,
+      "petId": 2395,
+      "name": "虎烈张飞",
+      "image": "./resource/pet-img/pet2395_1_1_cropped.png",
+      "element": "电系",
+      "subElement": "火系",
+      "sourceUrl": "http://aola.100bt.com/tujian/2395.html"
+  },
+  {
+      "dexId": 2396,
+      "petId": 2396,
+      "name": "虎烈张飞",
+      "image": "./resource/pet-img/pet2396_1_1_cropped.png",
+      "element": "电系",
+      "subElement": "火系",
+      "sourceUrl": "http://aola.100bt.com/tujian/2396.html"
+  },
+  {
+      "dexId": 2509,
+      "petId": 2509,
+      "name": "太二",
+      "image": "./resource/pet-img/pet2509_1_1_cropped.png",
+      "element": "上古系",
+      "subElement": "",
+      "sourceUrl": "http://aola.100bt.com/tujian/2509.html"
+  },
+  {
+      "dexId": 2544,
+      "petId": 2544,
+      "name": "逍遥子",
+      "image": "./resource/pet-img/pet2544_1_1_cropped.png",
+      "element": "超光系",
+      "subElement": "",
+      "sourceUrl": "http://aola.100bt.com/tujian/2544.html"
+  },
+  {
+      "dexId": 2545,
+      "petId": 2545,
+      "name": "逍遥",
+      "image": "./resource/pet-img/pet2545_1_1_cropped.png",
+      "element": "超光系",
+      "subElement": "",
+      "sourceUrl": "http://aola.100bt.com/tujian/2545.html"
+  },
+  {
+      "dexId": 2591,
+      "petId": 2591,
+      "name": "东皇太一",
+      "image": "./resource/pet-img/pet2591_1_1_cropped.png",
+      "element": "上古系",
+      "subElement": "",
+      "sourceUrl": "http://aola.100bt.com/tujian/2591.html"
   }
 ];

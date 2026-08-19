@@ -74,6 +74,14 @@ const localDateKey = (date = new Date()) => {
   ].join("-");
 };
 
+const effectiveTeamBossDateKey = (date = new Date()) => {
+  const value = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(value.getTime())) return "";
+  const effective = new Date(value.getTime());
+  if (effective.getHours() >= 22) effective.setDate(effective.getDate() + 1);
+  return localDateKey(effective);
+};
+
 const usersDb = () => {
   const raw = readJsonFile(USERS_FILE, { users: [] });
   return { users: Array.isArray(raw.users) ? raw.users : [] };
@@ -104,7 +112,7 @@ const TEST_USER_ID = "test-account-all-pets-1-1960";
 const LEGACY_TEST_USER_IDS = ["test-account-all-pets-1-1928", "test-account-all-pets-1-796"];
 const TEST_USERNAME = "test";
 const TEST_PASSWORD = "test123456";
-const LEADERBOARD_MAX_OPEN_DEX_ID = 2072;
+const LEADERBOARD_MAX_OPEN_DEX_ID = 3000;
 const LEADERBOARD_MAX_HCOINS = 100000000;
 const LEADERBOARD_METRICS = new Set(["battlePower", "activatedDexCount", "hCoins", "timeTunnelMaxClearedFloor", "equipmentDungeonBestScore"]);
 const LEADERBOARD_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
@@ -907,10 +915,24 @@ const buildRankedLeaderboardRows = (metric) => buildQualifiedLeaderboardRows()
   })
   .map((row, idx) => ({ ...row, rank: idx + 1 }));
 
-const teamsDb = () => {
+const teamsDb = ({ teamBossDate = effectiveTeamBossDateKey() } = {}) => {
   const raw = readJsonFile(TEAMS_FILE, { teams: [] });
   const teams = Array.isArray(raw.teams) ? raw.teams : [];
-  return { teams: teams.map(normalizeTeamRow).filter((team) => team.id && team.name) };
+  const today = String(teamBossDate || effectiveTeamBossDateKey());
+  teams.forEach((team) => {
+    const boss = team && team.teamBoss && typeof team.teamBoss === "object" && !Array.isArray(team.teamBoss) ? team.teamBoss : null;
+    if (!boss) return;
+    const rawDate = String(boss.date || "");
+    if (!rawDate || rawDate === today) return;
+    if (team.bossDayArchive && team.bossDayArchive.date === rawDate) return;
+    const prevBest = normalizeTeamBossMap(boss.memberBestDamage);
+    team.bossDayArchive = {
+      date: rawDate,
+      memberBestDamage: prevBest,
+      teamDailyTotalDamage: Object.values(prevBest).reduce((sum, value) => sum + safeNonNegInt(value, 0), 0)
+    };
+  });
+  return { teams: teams.map((team) => normalizeTeamRow(team, today)).filter((team) => team.id && team.name) };
 };
 
 const saveTeamsDb = (db) => writeJsonFile(TEAMS_FILE, { teams: Array.isArray(db && db.teams) ? db.teams : [] });
@@ -952,7 +974,7 @@ const normalizeTeamMember = (member) => ({
   joinedAt: String(member && member.joinedAt || new Date().toISOString())
 });
 
-function normalizeTeamRow(team) {
+function normalizeTeamRow(team, teamBossDate = effectiveTeamBossDateKey()) {
   const members = (Array.isArray(team && team.members) ? team.members : []).map(normalizeTeamMember).filter((member) => member.userId);
   const leaderId = String((team && team.leaderId) || (members.find((member) => member.role === "leader") || {}).userId || "");
   const normalizedMembers = members.map((member) => ({
@@ -974,12 +996,87 @@ function normalizeTeamRow(team) {
     updatedAt: String(team && team.updatedAt || new Date().toISOString()),
     members: normalizedMembers,
     applications,
-    teamBoss: normalizeTeamBossRow(team && team.teamBoss)
+    teamBoss: normalizeTeamBossRow(team && team.teamBoss, teamBossDate),
+    bossDayArchive: team && team.bossDayArchive && typeof team.bossDayArchive === "object" && !Array.isArray(team.bossDayArchive)
+      ? {
+          date: String(team.bossDayArchive.date || ""),
+          memberBestDamage: normalizeTeamBossMap(team.bossDayArchive.memberBestDamage),
+          teamDailyTotalDamage: safeNonNegInt(team.bossDayArchive.teamDailyTotalDamage, 0)
+        }
+      : undefined
   };
 }
 
 const TEAM_BOSS_DAILY_ATTEMPT_LIMIT = 3;
 const TEAM_BOSS_DEFAULT_KEY = "nine_tail_ice_fox";
+const MAILS_FILE = path.join(DATA_DIR, "mails.json");
+const MAIL_ITEM_DIVINE_PET_KEY = "divine_pet_key";
+const MAIL_ITEM_DUNGEON_CRYSTAL = "equipment_dungeon_crystal";
+const TEAM_BOSS_INNER_RANK_REWARDS = [
+  { min: 1, max: 1, contribution: 300, hCoins: 100000, divinePetKey: 50, dungeonCrystal: 30, label: "第1名" },
+  { min: 2, max: 2, contribution: 250, hCoins: 80000, divinePetKey: 40, dungeonCrystal: 24, label: "第2名" },
+  { min: 3, max: 3, contribution: 200, hCoins: 60000, divinePetKey: 30, dungeonCrystal: 20, label: "第3名" },
+  { min: 4, max: 10, contribution: 150, hCoins: 50000, divinePetKey: 20, dungeonCrystal: 15, label: "第4-10名" },
+  { min: 11, max: 30, contribution: 100, hCoins: 30000, divinePetKey: 10, dungeonCrystal: 10, label: "第11-30名" },
+  { min: 31, max: 999999999, contribution: 50, hCoins: 10000, divinePetKey: 5, dungeonCrystal: 5, label: "30名之后" }
+];
+const TEAM_BOSS_TEAM_RANK_REWARDS = [
+  { min: 1, max: 1, hCoins: 100000, divinePetKey: 30, dungeonCrystal: 30, label: "第1名" },
+  { min: 2, max: 2, hCoins: 80000, divinePetKey: 24, dungeonCrystal: 24, label: "第2名" },
+  { min: 3, max: 3, hCoins: 60000, divinePetKey: 20, dungeonCrystal: 20, label: "第3名" },
+  { min: 4, max: 10, hCoins: 50000, divinePetKey: 15, dungeonCrystal: 15, label: "第4-10名" },
+  { min: 11, max: 30, hCoins: 30000, divinePetKey: 10, dungeonCrystal: 10, label: "第11-30名" },
+  { min: 31, max: 999999999, hCoins: 10000, divinePetKey: 5, dungeonCrystal: 5, label: "30名之后" }
+];
+const mailsDb = () => {
+  const raw = readJsonFile(MAILS_FILE, { lastSettledDate: "", mails: {} });
+  const mails = raw && raw.mails && typeof raw.mails === "object" && !Array.isArray(raw.mails) ? raw.mails : {};
+  const settledDates = new Set(Array.isArray(raw && raw.settledDates) ? raw.settledDates.map(String).filter(Boolean) : []);
+  if (!Array.isArray(raw && raw.settledDates)) {
+    Object.values(mails).forEach((list) => {
+      (Array.isArray(list) ? list : []).forEach((mail) => {
+        const date = String(mail && mail.settlementDate || "");
+        if (date) settledDates.add(date);
+      });
+    });
+    const legacyDate = String(raw && raw.lastSettledDate || "");
+    if (legacyDate && legacyDate < localDateKey()) settledDates.add(legacyDate);
+  }
+  return {
+    lastSettledDate: String(raw && raw.lastSettledDate || ""),
+    settledDates: Array.from(settledDates),
+    mails
+  };
+};
+const saveMailsDb = (db) => writeJsonFile(MAILS_FILE, {
+  lastSettledDate: String(db && db.lastSettledDate || ""),
+  settledDates: Array.isArray(db && db.settledDates) ? db.settledDates.map(String).filter(Boolean) : [],
+  mails: (db && db.mails) || {}
+});
+const userMails = (db, userId) => {
+  const key = String(userId || "");
+  if (!Array.isArray(db.mails[key])) db.mails[key] = [];
+  return db.mails[key];
+};
+const teamBossRewardForRank = (table, rank) => table.find((row) => rank >= row.min && rank <= row.max) || null;
+const mailRewardItemsOf = (reward) => {
+  const items = [];
+  if (!reward) return items;
+  if (safeNonNegInt(reward.contribution, 0) > 0) items.push({ type: "contribution", amount: safeNonNegInt(reward.contribution, 0) });
+  if (safeNonNegInt(reward.hCoins, 0) > 0) items.push({ type: "hCoins", amount: safeNonNegInt(reward.hCoins, 0) });
+  if (safeNonNegInt(reward.divinePetKey, 0) > 0) items.push({ type: "item", itemId: MAIL_ITEM_DIVINE_PET_KEY, amount: safeNonNegInt(reward.divinePetKey, 0) });
+  if (safeNonNegInt(reward.dungeonCrystal, 0) > 0) items.push({ type: "item", itemId: MAIL_ITEM_DUNGEON_CRYSTAL, amount: safeNonNegInt(reward.dungeonCrystal, 0) });
+  return items;
+};
+const mailRewardTextOf = (reward) => {
+  if (!reward) return "";
+  const parts = [];
+  if (safeNonNegInt(reward.contribution, 0) > 0) parts.push(`${safeNonNegInt(reward.contribution, 0)}贡献`);
+  if (safeNonNegInt(reward.hCoins, 0) > 0) parts.push(`${safeNonNegInt(reward.hCoins, 0)}H币`);
+  if (safeNonNegInt(reward.divinePetKey, 0) > 0) parts.push(`${safeNonNegInt(reward.divinePetKey, 0)}神宠之匙`);
+  if (safeNonNegInt(reward.dungeonCrystal, 0) > 0) parts.push(`${safeNonNegInt(reward.dungeonCrystal, 0)}秘境晶石`);
+  return parts.join("、");
+};
 const normalizeTeamBossMap = (source, parser = (value) => Math.max(0, Math.floor(Number(value) || 0))) => {
   const out = {};
   if (!source || typeof source !== "object" || Array.isArray(source)) return out;
@@ -1002,9 +1099,9 @@ const normalizeTeamBossMapText = (source) => {
   return out;
 };
 
-const normalizeTeamBossRow = (teamBoss) => {
+const normalizeTeamBossRow = (teamBoss, dateKey = effectiveTeamBossDateKey()) => {
   const source = teamBoss && typeof teamBoss === "object" && !Array.isArray(teamBoss) ? teamBoss : {};
-  const today = localDateKey();
+  const today = String(dateKey || effectiveTeamBossDateKey());
   const sameDay = String(source.date || "") === today;
   const memberAttempts = sameDay ? normalizeTeamBossMap(source.memberAttempts) : {};
   const memberBestDamage = sameDay ? normalizeTeamBossMap(source.memberBestDamage) : {};
@@ -1164,6 +1261,85 @@ const updateTeamBossBattleResult = (team, userId, damage) => {
   return { ok: true, boss };
 };
 
+const settleTeamBossDailyRewards = (force = false) => {
+  try {
+    const now = new Date();
+    const today = localDateKey(now);
+    const todayClosed = Boolean(force) || now.getHours() >= 22;
+    const db = mailsDb();
+    const settledDates = new Set(Array.isArray(db.settledDates) ? db.settledDates.map(String).filter(Boolean) : []);
+    const teamsDbData = teamsDb({ teamBossDate: todayClosed ? today : effectiveTeamBossDateKey(now) });
+    const teams = Array.isArray(teamsDbData.teams) ? teamsDbData.teams : [];
+    const names = userNameByIdMap();
+    const candidateDates = [];
+    teams.forEach((team) => {
+      const archive = team && team.bossDayArchive && typeof team.bossDayArchive === "object" ? team.bossDayArchive : null;
+      const boss = team && team.teamBoss && typeof team.teamBoss === "object" ? team.teamBoss : null;
+      if (archive && String(archive.date || "")) candidateDates.push(String(archive.date));
+      if (boss && String(boss.date || "")) candidateDates.push(String(boss.date));
+    });
+    const pendingDates = candidateDates.filter((date) => date && !settledDates.has(date) && (date < today || (todayClosed && date === today)));
+    const settleDate = pendingDates.length > 0 ? pendingDates.sort()[0] : "";
+    if (!settleDate) {
+      return { settled: false };
+    }
+    const teamDayData = teams.map((team) => {
+      const archive = team && team.bossDayArchive && team.bossDayArchive.date === settleDate ? team.bossDayArchive : null;
+      const raw = team && team.teamBoss && String(team.teamBoss.date || "") === settleDate ? team.teamBoss : null;
+      const boss = archive || raw || null;
+      return { team, boss };
+    });
+    const membersWithDamage = [];
+    teamDayData.forEach(({ team, boss }) => {
+      const best = boss && boss.memberBestDamage && typeof boss.memberBestDamage === "object" ? boss.memberBestDamage : {};
+      (team.members || []).forEach((member) => {
+        membersWithDamage.push({ team, member, damage: safeNonNegInt(best[member.userId], 0) });
+      });
+    });
+    membersWithDamage.sort((a, b) => b.damage - a.damage || String(names.get(a.member.userId) || "").localeCompare(String(names.get(b.member.userId) || ""), "zh-Hans-CN"));
+    const innerRankByUserId = new Map();
+    membersWithDamage.forEach((row, idx) => {
+      if (!innerRankByUserId.has(row.member.userId)) innerRankByUserId.set(row.member.userId, { rank: idx + 1, row });
+    });
+    const teamRows = teamDayData
+      .map(({ team, boss }) => ({ team, damage: boss ? safeNonNegInt(boss.teamDailyTotalDamage, 0) : 0 }))
+      .sort((a, b) => b.damage - a.damage || String(a.team.name || "").localeCompare(String(b.team.name || ""), "zh-Hans-CN"))
+      .map((row, idx) => ({ ...row, rank: idx + 1 }));
+    const teamRankByTeamId = new Map(teamRows.map((row) => [row.team.id, row]));
+    let sentCount = 0;
+    innerRankByUserId.forEach(({ rank, row }) => {
+      const teamRankRow = teamRankByTeamId.get(row.team.id);
+      const innerReward = teamBossRewardForRank(TEAM_BOSS_INNER_RANK_REWARDS, rank);
+      const teamReward = teamRankRow ? teamBossRewardForRank(TEAM_BOSS_TEAM_RANK_REWARDS, teamRankRow.rank) : null;
+      const items = [...mailRewardItemsOf(innerReward), ...mailRewardItemsOf(teamReward)];
+      if (items.length <= 0) return;
+      const innerText = innerReward ? `${innerReward.label}：${mailRewardTextOf(innerReward)}` : "";
+      const teamText = teamReward ? `战队排名${teamRankRow.rank}名（${teamReward.label}）：${mailRewardTextOf(teamReward)}` : "";
+      const body = [`战队BOSS ${settleDate} 排名奖励已结算`, innerText, teamText].filter(Boolean).join("；") + "。";
+      const mails = userMails(db, row.member.userId);
+      if (mails.some((mail) => String(mail && mail.settlementDate || "") === settleDate)) return;
+      mails.push({
+        id: `${settleDate}_${row.member.userId}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        title: `战队BOSS排名奖励（${settleDate}）`,
+        body,
+        items,
+        settlementDate: settleDate,
+        createdAt: new Date().toISOString(),
+        claimed: false
+      });
+      sentCount += 1;
+    });
+    settledDates.add(settleDate);
+    db.settledDates = Array.from(settledDates).sort();
+    db.lastSettledDate = db.settledDates[db.settledDates.length - 1] || settleDate;
+    saveMailsDb(db);
+    if (todayClosed) saveTeamsDb(teamsDb());
+    return { settled: true, date: settleDate, sentCount };
+  } catch (_) {
+    return { settled: false, error: true };
+  }
+};
+
 const rankedPublicTeams = (viewerUserId = "", includeRecords = false) => {
   const db = teamsDb();
   const names = userNameByIdMap();
@@ -1249,6 +1425,7 @@ const requireUser = (req, res) => {
 
 const handleApi = async (req, res) => {
   try {
+    settleTeamBossDailyRewards();
     const apiUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
     const pathname = apiUrl.pathname;
     if (req.method === "POST" && req.url === "/api/auth/register") {
@@ -1346,6 +1523,70 @@ const handleApi = async (req, res) => {
         team: publicTeamWithRank(team, user.id, true),
         teams: rankedPublicTeamBossRows()
       });
+    }
+    if (req.method === "GET" && pathname === "/api/mail/list") {
+      const user = currentUser(req);
+      if (!user) return sendJson(res, 200, { ok: true, mails: [] });
+      const db = mailsDb();
+      const list = (userMails(db, user.id) || []).slice().sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+      return sendJson(res, 200, { ok: true, mails: list });
+    }
+    if (req.method === "POST" && pathname === "/api/mail/claim-all") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const db = mailsDb();
+      const list = userMails(db, user.id);
+      const unclaimed = list.filter((mail) => mail && !mail.claimed);
+      if (unclaimed.length <= 0) return sendJson(res, 200, { ok: true, claimed: 0 });
+      const saveFile = userSaveFile(user.id);
+      const payload = readJsonFile(saveFile, null);
+      const save = extractGameSaveState(payload);
+      if (!save || typeof save !== "object" || Array.isArray(save)) {
+        return sendJson(res, 409, { ok: false, message: "请先创建服务器存档后再领取邮件奖励。" });
+      }
+      save.hCoins = safeNonNegInt(save.hCoins, 0);
+      if (!save.items || typeof save.items !== "object" || Array.isArray(save.items)) save.items = {};
+      let contributionTotal = 0;
+      unclaimed.forEach((mail) => {
+        (Array.isArray(mail.items) ? mail.items : []).forEach((item) => {
+          if (!item || typeof item !== "object") return;
+          const amount = safeNonNegInt(item.amount, 0);
+          if (item.type === "hCoins") save.hCoins += amount;
+          else if (item.type === "item" && String(item.itemId || "")) save.items[String(item.itemId)] = safeNonNegInt(save.items[String(item.itemId)], 0) + amount;
+          else if (item.type === "contribution") contributionTotal += amount;
+        });
+        mail.claimed = true;
+        mail.claimedAt = new Date().toISOString();
+      });
+      const payloadOut = payload && typeof payload === "object" && !Array.isArray(payload)
+        ? payload
+        : { userId: user.id, username: user.username, savedAt: new Date().toISOString(), save };
+      payloadOut.save = save;
+      payloadOut.savedAt = new Date().toISOString();
+      writeJsonFile(saveFile, payloadOut);
+      if (contributionTotal > 0) {
+        const teams = teamsDb();
+        const team = findUserTeam(teams, user.id);
+        if (team) {
+          const member = (team.members || []).find((row) => row.userId === user.id);
+          if (member) {
+            member.contribution = safeNonNegInt(member.contribution, 0) + contributionTotal;
+            member.currentContribution = safeNonNegInt(member.currentContribution, 0) + contributionTotal;
+            team.updatedAt = new Date().toISOString();
+            saveTeamsDb(teams);
+          }
+        }
+      }
+      saveMailsDb(db);
+      return sendJson(res, 200, { ok: true, claimed: unclaimed.length });
+    }
+    if (req.method === "POST" && pathname === "/api/mail/delete-all") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const db = mailsDb();
+      userMails(db, user.id).length = 0;
+      saveMailsDb(db);
+      return sendJson(res, 200, { ok: true });
     }
     if (req.method === "GET" && pathname.startsWith("/api/teams/")) {
       const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
@@ -1625,12 +1866,19 @@ const handleApi = async (req, res) => {
   }
 };
 
+let teamBossSettleTimer = null;
+
 const startServer = (port = PORT, callback = null) => {
   ensureDir(DATA_DIR);
   ensureDir(SAVE_ROOT);
   if (!fs.existsSync(USERS_FILE)) writeJsonFile(USERS_FILE, { users: [] });
   if (!fs.existsSync(TEAMS_FILE)) writeJsonFile(TEAMS_FILE, { teams: [] });
   ensureTestAccount();
+  if (teamBossSettleTimer) clearInterval(teamBossSettleTimer);
+  teamBossSettleTimer = setInterval(() => {
+    if (new Date().getHours() >= 22) settleTeamBossDailyRewards(true);
+  }, 60 * 1000);
+  settleTeamBossDailyRewards();
   const server = http.createServer((req, res) => {
     const pathname = new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname;
     if (req.method === "OPTIONS") {

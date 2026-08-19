@@ -61,6 +61,8 @@
       "resource/装备/**/*",
       "resource/skill-effect/*.gif",
       "resource/skill-effect-fullscreen/*.gif",
+      "resource/战斗背景.png",
+      "resource/东皇太初印.jpg",
       "electron/**/*",
       "server/index.js",
       "server/README.md",

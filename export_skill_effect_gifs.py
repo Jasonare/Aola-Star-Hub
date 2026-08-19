@@ -2,8 +2,8 @@
 """Export Aola skill effect SWF files to GIF with JPEXS FFDec.
 
 Default workflow:
-  input : ./skill-effect/swf/effect{skill_id}.swf
-  output: ./skill-effect/effect{skill_id}.gif
+  input : ./resource/skill-effect/swf/effect{skill_id}.swf
+  output: ./resource/skill-effect/effect{skill_id}.gif
 
 The script is resumable. Existing GIF files are skipped unless --force is used.
 """
@@ -45,13 +45,13 @@ def parse_args() -> argparse.Namespace:
         "--swf-dir",
         default=None,
         type=Path,
-        help="Directory containing effect*.swf. Defaults to skill-effect/swf.",
+        help="Directory containing effect*.swf. Defaults to resource/skill-effect/swf.",
     )
     parser.add_argument(
         "--out-dir",
         default=None,
         type=Path,
-        help="Directory for effect*.gif. Defaults to skill-effect.",
+        help="Directory for effect*.gif. Defaults to resource/skill-effect.",
     )
     parser.add_argument(
         "--tmp-dir",
@@ -70,6 +70,18 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=0,
         help="Only process N pending SWF files. 0 means all pending files.",
+    )
+    parser.add_argument(
+        "--id-min",
+        type=int,
+        default=26231,
+        help="Minimum skill id to convert (inclusive).",
+    )
+    parser.add_argument(
+        "--id-max",
+        type=int,
+        default=26240,
+        help="Maximum skill id to convert (inclusive).",
     )
     parser.add_argument(
         "--timeout",
@@ -230,7 +242,7 @@ def main() -> int:
     args = parse_args()
     project_root = args.project_root.resolve()
     ffdec = args.ffdec.resolve()
-    base_dir = project_root / "skill-effect"
+    base_dir = project_root / "resource" / "skill-effect"
     swf_dir = (args.swf_dir or base_dir / "swf").resolve()
     out_dir = (args.out_dir or base_dir).resolve()
     tmp_dir = (args.tmp_dir or base_dir / "_tmp_export_skill_gifs").resolve()
@@ -253,6 +265,13 @@ def main() -> int:
         [path for path in swf_dir.glob("effect*.swf") if skill_id_from_swf(path)],
         key=lambda path: skill_id_from_swf(path) or 0,
     )
+    id_min = max(1, int(args.id_min) or 1)
+    id_max = max(id_min, int(args.id_max) or id_min)
+    all_swfs = [
+        path
+        for path in all_swfs
+        if id_min <= (skill_id_from_swf(path) or 0) <= id_max
+    ]
     pending = [
         path
         for path in all_swfs

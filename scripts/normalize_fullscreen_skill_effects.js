@@ -3,8 +3,11 @@ const path = require("path");
 const { spawnSync } = require("child_process");
 
 const ROOT = path.resolve(__dirname, "..");
-const INPUT_DIR = path.join(ROOT, "skill-effect");
-const OUTPUT_DIR = path.join(ROOT, "skill-effect-fullscreen");
+const INPUT_DIR = path.join(ROOT, "resource", "skill-effect");
+const OUTPUT_DIR = path.join(ROOT, "resource", "skill-effect-fullscreen");
+const FULLSCREEN_CANVAS_WIDTH = 1280;
+const FULLSCREEN_CANVAS_HEIGHT = 720;
+const WINDOW_DETECTOR_PATH = path.join(__dirname, "detect_fullscreen_gif_window.py");
 
 const FULLSCREEN_EFFECT_IDS = [
   16254, // 飓风·雷电
@@ -44,24 +47,19 @@ const run = (args) => spawnSync("ffmpeg", args, {
 });
 
 const detectCrop = (input) => {
-  const result = run([
-    "-hide_banner",
-    "-i", input,
-    "-vf", "alphaextract,cropdetect=limit=1:round=2:reset=0",
-    "-frames:v", "120",
-    "-f", "null",
-    "-"
-  ]);
-  const text = `${result.stdout || ""}\n${result.stderr || ""}`;
-  const matches = [...text.matchAll(/crop=(\d+):(\d+):(\d+):(\d+)/g)];
-  if (!matches.length) return null;
-  const last = matches[matches.length - 1];
-  return {
-    w: Number(last[1]),
-    h: Number(last[2]),
-    x: Number(last[3]),
-    y: Number(last[4])
-  };
+  const result = spawnSync("python", [WINDOW_DETECTOR_PATH, input], {
+    cwd: ROOT,
+    encoding: "utf8",
+    windowsHide: true
+  });
+  if (result.status !== 0) return null;
+  try {
+    const crop = JSON.parse(String(result.stdout || "").trim());
+    if (![crop.w, crop.h, crop.x, crop.y].every(Number.isFinite) || crop.w <= 0 || crop.h <= 0) return null;
+    return crop;
+  } catch (_) {
+    return null;
+  }
 };
 
 const normalizeOne = (skillId) => {
@@ -72,7 +70,7 @@ const normalizeOne = (skillId) => {
   if (!crop || crop.w <= 0 || crop.h <= 0) return { skillId, status: "crop_failed", input };
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   const tmp = path.join(OUTPUT_DIR, `effect${skillId}.tmp.gif`);
-  const vf = `crop=${crop.w}:${crop.h}:${crop.x}:${crop.y},split[s0][s1];[s0]palettegen=reserve_transparent=1:transparency_color=000000[p];[s1][p]paletteuse=alpha_threshold=64`;
+  const vf = `crop=${crop.w}:${crop.h}:${crop.x}:${crop.y},scale=${FULLSCREEN_CANVAS_WIDTH}:${FULLSCREEN_CANVAS_HEIGHT}:flags=lanczos,split[s0][s1];[s0]palettegen=reserve_transparent=1:transparency_color=000000[p];[s1][p]paletteuse=alpha_threshold=64`;
   const result = run([
     "-hide_banner",
     "-y",
@@ -85,19 +83,31 @@ const normalizeOne = (skillId) => {
     try { if (fs.existsSync(tmp)) fs.unlinkSync(tmp); } catch {}
     return { skillId, status: "ffmpeg_failed", crop, log: (result.stderr || "").slice(-1200) };
   }
+  fs.rmSync(output, { force: true });
   fs.renameSync(tmp, output);
   return {
     skillId,
     status: "ok",
     crop,
+    canvas: { width: FULLSCREEN_CANVAS_WIDTH, height: FULLSCREEN_CANVAS_HEIGHT },
     inputBytes: fs.statSync(input).size,
     outputBytes: fs.statSync(output).size,
     output: path.relative(ROOT, output)
   };
 };
 
+const resolveFullscreenEffectIds = () => {
+  if (!fs.existsSync(OUTPUT_DIR)) return FULLSCREEN_EFFECT_IDS;
+  const ids = fs.readdirSync(OUTPUT_DIR)
+    .map((name) => /^effect(\d+)\.gif$/i.exec(name))
+    .filter(Boolean)
+    .map((match) => Number(match[1]))
+    .filter((id) => Number.isFinite(id) && id > 0);
+  return ids.length > 0 ? ids : FULLSCREEN_EFFECT_IDS;
+};
+
 const main = () => {
-  const results = FULLSCREEN_EFFECT_IDS.map(normalizeOne);
+  const results = resolveFullscreenEffectIds().map(normalizeOne);
   fs.writeFileSync(
     path.join(OUTPUT_DIR, "_normalize_results.json"),
     JSON.stringify({ generatedAt: new Date().toISOString(), results }, null, 2),

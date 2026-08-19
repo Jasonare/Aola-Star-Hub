@@ -504,6 +504,25 @@
       --w: 10%;
     }
     .home-action-gift { --x: 1.2%; --y: 83.4%; --w: 7.1%; }
+    .home-action-mail { --x: 9.6%; --y: 83.4%; --w: 7.5%; }
+    .home-mail-btn-face {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      aspect-ratio: 1 / 1.25;
+      border-radius: 14px;
+      background: linear-gradient(160deg, #fef3c7, #f59e0b 55%, #d97706);
+      border: 2px solid rgba(255, 255, 255, .8);
+      box-shadow: 0 4px 10px rgba(120, 53, 15, .35);
+      color: #7c2d12;
+      font-weight: 900;
+      font-size: clamp(11px, 1vw, 16px);
+      white-space: nowrap;
+      letter-spacing: 1px;
+      pointer-events: none;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
+    }
     .home-action-dragonboat { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
     .home-action-rank { --x: 22%; --y: 86.2%; --w: 7.8%; }
     .home-action-tunnel { --x: 34.0%; --y: 86.0%; --w: 8.4%; }
@@ -961,6 +980,7 @@
         width: min(520px, calc(100vw - 32px));
       }
       .home-action-gift { --x: 2%; --y: 76%; --w: 18%; }
+      .home-action-mail { --x: 21%; --y: 76%; --w: 18%; }
       .home-action-monthly { --x: 2%; --y: 58.5%; --w: 24.3%; }
       .home-action-dragonboat { --x: 2%; --y: 60%; --w: 18%; }
       .home-action-rank { --x: 18%; --y: 82%; --w: 18%; }
@@ -1241,11 +1261,11 @@
     .bag2-close-btn:active { filter: brightness(0.9); transform: scale(0.95); }
     .new-warehouse-panel {
       position: relative;
-      width: 900px !important;
-      --ui-px: 1px;
-      --warehouse-card-pet-size: 70px;
-      --warehouse-action-pet-size: 58px;
-      font-size: 14px;
+      width: min(calc(100vw - 24px), calc((100vh - 24px) * 1497 / 1106)) !important;
+      --ui-px: calc(min(calc(100vw - 24px), calc((100vh - 24px) * 1497 / 1106)) / 900);
+      --warehouse-card-pet-size: calc(70 * var(--ui-px));
+      --warehouse-action-pet-size: calc(58 * var(--ui-px));
+      font-size: calc(14 * var(--ui-px));
       background: transparent;
       border: none;
       padding: 0;
@@ -1294,41 +1314,41 @@
       top: 63%;
       left: 48.5%;
       transform: translate(-50%, -50%);
-      max-width: 75%;
-      max-height: 70%;
+      width: 74%;
+      height: 68%;
       object-fit: contain;
       pointer-events: none;
       z-index: 1;
-      filter: drop-shadow(0 6px 10px rgba(15, 23, 42, .45));
+      filter: drop-shadow(0 calc(6 * var(--ui-px)) calc(10 * var(--ui-px)) rgba(15, 23, 42, .45));
     }
     .new-warehouse-large-empty {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 18px;
+      font-size: calc(18 * var(--ui-px));
       font-weight: 900;
       color: #94a3b8;
-      text-shadow: 0 2px 6px rgba(0,0,0,.5);
+      text-shadow: 0 calc(2 * var(--ui-px)) calc(6 * var(--ui-px)) rgba(0,0,0,.5);
       z-index: 2;
     }
     .new-warehouse-large-name {
-      font-size: 15px;
+      font-size: calc(15 * var(--ui-px));
       font-weight: 950;
       color: #fff;
-      text-shadow: 0 2px 8px rgba(0,0,0,.75), 0 0 10px rgba(56,189,248,.55);
+      text-shadow: 0 calc(2 * var(--ui-px)) calc(8 * var(--ui-px)) rgba(0,0,0,.75), 0 0 calc(10 * var(--ui-px)) rgba(56,189,248,.55);
       line-height: 1.2;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding: 0 8px;
+      padding: 0 calc(8 * var(--ui-px));
     }
     .new-warehouse-large-level {
-      font-size: 12px;
+      font-size: calc(12 * var(--ui-px));
       font-weight: 900;
       color: #fde68a;
-      text-shadow: 0 2px 6px rgba(0,0,0,.65);
-      margin-top: 2px;
+      text-shadow: 0 calc(2 * var(--ui-px)) calc(6 * var(--ui-px)) rgba(0,0,0,.65);
+      margin-top: calc(2 * var(--ui-px));
     }
     .new-warehouse-action-btns {
       position: absolute;
@@ -1343,7 +1363,7 @@
     }
     .new-warehouse-action-btn {
       width: 25.6%;
-      max-width: 88px;
+      max-width: calc(88 * var(--ui-px));
       height: auto;
       object-fit: contain;
       cursor: pointer;
@@ -1353,7 +1373,7 @@
     }
     .new-warehouse-action-btn:hover {
       transform: scale(1.06);
-      filter: brightness(1.1) drop-shadow(0 0 6px rgba(56, 189, 248, .6));
+      filter: brightness(1.1) drop-shadow(0 0 calc(6 * var(--ui-px)) rgba(56, 189, 248, .6));
     }
     .new-warehouse-action-btn:active {
       transform: scale(0.96);
@@ -1371,7 +1391,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 15px;
+      font-size: calc(15 * var(--ui-px));
       font-weight: 900;
       color: #0c4a6e;
       text-align: center;
@@ -1413,7 +1433,7 @@
     }
     .new-warehouse-skill-header-name {
       font-weight: 900;
-      font-size: 12px;
+      font-size: calc(12 * var(--ui-px));
       color: #0c4a6e;
       line-height: 1.2;
       overflow: hidden;
@@ -1423,15 +1443,15 @@
       min-width: 0;
     }
     .new-warehouse-skill-header-exp {
-      font-size: 9px;
+      font-size: calc(9 * var(--ui-px));
       font-weight: 700;
       color: #0369a1;
       white-space: nowrap;
       flex-shrink: 0;
     }
     .new-warehouse-skill-header-exp-bar {
-      width: 30px;
-      height: 4px;
+      width: calc(30 * var(--ui-px));
+      height: calc(4 * var(--ui-px));
       background: rgba(148, 163, 184, 0.4);
       border-radius: 999px;
       overflow: hidden;
@@ -1453,18 +1473,18 @@
     .new-warehouse-skill-stat {
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 2px 8px;
+      gap: calc(4 * var(--ui-px));
+      padding: calc(2 * var(--ui-px)) calc(8 * var(--ui-px));
       background: rgba(255, 255, 255, 0.6);
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      border-radius: 10px;
-      font-size: 9px;
+      border: calc(1 * var(--ui-px)) solid rgba(56, 189, 248, 0.4);
+      border-radius: calc(10 * var(--ui-px));
+      font-size: calc(9 * var(--ui-px));
       font-weight: 700;
     }
     .new-warehouse-skill-stat-talent {
       background: rgba(255, 255, 255, 0.7);
       border-color: rgba(251, 191, 36, 0.5);
-      padding: 2px 6px;
+      padding: calc(2 * var(--ui-px)) calc(6 * var(--ui-px));
     }
     .new-warehouse-skill-stat-power {
       background: rgba(255, 255, 255, 0.6);
@@ -1498,7 +1518,7 @@
       color: #0c4a6e;
     }
     .new-warehouse-skill-talent-img {
-      height: 18px;
+      height: calc(18 * var(--ui-px));
       width: auto;
       object-fit: contain;
     }
@@ -1514,28 +1534,28 @@
       scrollbar-color: rgba(56, 189, 248, .5) transparent;
     }
     .new-warehouse-skill-list::-webkit-scrollbar {
-      width: 4px;
+      width: calc(4 * var(--ui-px));
     }
     .new-warehouse-skill-list::-webkit-scrollbar-thumb {
       background: rgba(56, 189, 248, .5);
-      border-radius: 2px;
+      border-radius: calc(2 * var(--ui-px));
     }
     .new-warehouse-skill-item {
       background: rgba(224, 242, 254, 0.72);
-      border: 1px solid rgba(56, 189, 248, 0.55);
-      border-radius: 8px;
-      padding: 8px 10px 6px;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.32);
+      border: calc(1 * var(--ui-px)) solid rgba(56, 189, 248, 0.55);
+      border-radius: calc(8 * var(--ui-px));
+      padding: calc(8 * var(--ui-px)) calc(10 * var(--ui-px)) calc(6 * var(--ui-px));
+      box-shadow: inset 0 0 0 calc(1 * var(--ui-px)) rgba(255,255,255,0.32);
       display: flex;
       flex-direction: column;
       min-height: 0;
     }
     .new-warehouse-skill-name {
       font-weight: 900;
-      font-size: 11px;
+      font-size: calc(11 * var(--ui-px));
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: calc(4 * var(--ui-px));
       color: #0c4a6e;
       line-height: 1.2;
       overflow: hidden;
@@ -1546,20 +1566,20 @@
       display: inline-block;
       border-radius: 999px;
       flex-shrink: 0;
-      width: 10px;
-      height: 10px;
+      width: calc(10 * var(--ui-px));
+      height: calc(10 * var(--ui-px));
     }
     .new-warehouse-skill-meta {
-      font-size: 9px;
+      font-size: calc(9 * var(--ui-px));
       font-weight: 700;
       color: #0369a1;
-      margin-top: 3px;
+      margin-top: calc(3 * var(--ui-px));
     }
     .new-warehouse-skill-desc {
-      font-size: 8px;
+      font-size: calc(8 * var(--ui-px));
       font-weight: 600;
       color: #475569;
-      margin-top: 3px;
+      margin-top: calc(3 * var(--ui-px));
       line-height: 1.3;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -1577,7 +1597,7 @@
     }
     .new-warehouse-skill-tab-btn {
       width: 26%;
-      max-width: 104px;
+      max-width: calc(104 * var(--ui-px));
       height: auto;
       object-fit: contain;
       cursor: pointer;
@@ -1589,7 +1609,7 @@
       transform: translateY(-2px);
     }
     .new-warehouse-skill-tab-btn.active {
-      filter: brightness(1.2) drop-shadow(0 0 6px rgba(250, 204, 21, .7));
+      filter: brightness(1.2) drop-shadow(0 0 calc(6 * var(--ui-px)) rgba(250, 204, 21, .7));
       transform: translateY(-3px);
     }
     .new-warehouse-info-header {
@@ -1600,23 +1620,23 @@
       flex-shrink: 0;
     }
     .new-warehouse-info-talent-icon {
-      height: 21px;
+      height: calc(21 * var(--ui-px));
       width: auto;
       object-fit: contain;
     }
     .new-warehouse-info-talent-total {
       font-weight: 900;
-      font-size: 11px;
+      font-size: calc(11 * var(--ui-px));
       color: #0c4a6e;
     }
     .new-warehouse-info-talent-grade {
       font-weight: 900;
-      font-size: 10px;
+      font-size: calc(10 * var(--ui-px));
       color: #d97706;
       background: rgba(255,255,255,.6);
-      padding: 2px 6px;
-      border-radius: 6px;
-      border: 1px solid rgba(251, 191, 36, .5);
+      padding: calc(2 * var(--ui-px)) calc(6 * var(--ui-px));
+      border-radius: calc(6 * var(--ui-px));
+      border: calc(1 * var(--ui-px)) solid rgba(251, 191, 36, .5);
     }
     .new-warehouse-info-talent-list {
       display: flex;
@@ -1629,29 +1649,29 @@
       scrollbar-color: rgba(56, 189, 248, .5) transparent;
     }
     .new-warehouse-info-talent-list::-webkit-scrollbar {
-      width: 4px;
+      width: calc(4 * var(--ui-px));
     }
     .new-warehouse-info-talent-list::-webkit-scrollbar-thumb {
       background: rgba(56, 189, 248, .5);
-      border-radius: 2px;
+      border-radius: calc(2 * var(--ui-px));
     }
     .new-warehouse-info-talent-row {
       display: flex;
       align-items: center;
       gap: 4%;
-      padding: 4px 6px;
+      padding: calc(4 * var(--ui-px)) calc(6 * var(--ui-px));
       background: rgba(224, 242, 254, 0.6);
-      border-radius: 6px;
+      border-radius: calc(6 * var(--ui-px));
     }
     .new-warehouse-info-talent-name {
-      font-size: 10px;
+      font-size: calc(10 * var(--ui-px));
       font-weight: 700;
       color: #0369a1;
       width: 14%;
       flex-shrink: 0;
     }
     .new-warehouse-info-talent-val {
-      font-size: 10px;
+      font-size: calc(10 * var(--ui-px));
       font-weight: 900;
       color: #0c4a6e;
       width: 10%;
@@ -1660,7 +1680,7 @@
     }
     .new-warehouse-info-talent-bar {
       flex: 1;
-      height: 6px;
+      height: calc(6 * var(--ui-px));
       background: rgba(148, 163, 184, 0.3);
       border-radius: 999px;
       overflow: hidden;
@@ -1676,19 +1696,19 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      padding: 3px 6px;
+      gap: calc(4 * var(--ui-px));
+      padding: calc(3 * var(--ui-px)) calc(6 * var(--ui-px));
       background: rgba(255, 255, 255, 0.6);
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      border-radius: 8px;
+      border: calc(1 * var(--ui-px)) solid rgba(56, 189, 248, 0.4);
+      border-radius: calc(8 * var(--ui-px));
     }
     .new-warehouse-ability-stat-label {
-      font-size: 10px;
+      font-size: calc(10 * var(--ui-px));
       font-weight: 700;
       color: #0369a1;
     }
     .new-warehouse-ability-stat-val {
-      font-size: 13px;
+      font-size: calc(13 * var(--ui-px));
       font-weight: 900;
       color: #0c4a6e;
     }
@@ -1696,13 +1716,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 4px 6px;
+      padding: calc(4 * var(--ui-px)) calc(6 * var(--ui-px));
       background: linear-gradient(180deg, rgba(14, 116, 144, .9), rgba(7, 89, 133, .9));
       color: #fde68a;
-      font-size: 9px;
+      font-size: calc(9 * var(--ui-px));
       font-weight: 900;
-      border-radius: 8px;
-      border: 1px solid rgba(125, 211, 252, .5);
+      border-radius: calc(8 * var(--ui-px));
+      border: calc(1 * var(--ui-px)) solid rgba(125, 211, 252, .5);
       cursor: pointer;
       transition: filter .15s;
       pointer-events: auto;
@@ -1721,19 +1741,19 @@
       scrollbar-color: rgba(56, 189, 248, .5) transparent;
     }
     .new-warehouse-ability-detail-list::-webkit-scrollbar {
-      width: 4px;
+      width: calc(4 * var(--ui-px));
     }
     .new-warehouse-ability-detail-list::-webkit-scrollbar-thumb {
       background: rgba(56, 189, 248, .5);
-      border-radius: 2px;
+      border-radius: calc(2 * var(--ui-px));
     }
     .new-warehouse-ability-section-title {
-      font-size: 9px;
+      font-size: calc(9 * var(--ui-px));
       font-weight: 900;
       color: #075985;
-      padding: 1px 5px;
+      padding: calc(1 * var(--ui-px)) calc(5 * var(--ui-px));
       background: rgba(56, 189, 248, 0.15);
-      border-radius: 4px;
+      border-radius: calc(4 * var(--ui-px));
       margin-top: 1%;
       flex-shrink: 0;
     }
@@ -1741,33 +1761,33 @@
       display: flex;
       align-items: center;
       gap: 3%;
-      padding: 1px 3px;
+      padding: calc(1 * var(--ui-px)) calc(3 * var(--ui-px));
       background: rgba(224, 242, 254, 0.6);
-      border-radius: 6px;
+      border-radius: calc(6 * var(--ui-px));
       flex-shrink: 0;
     }
     .new-warehouse-ability-detail-name {
-      font-size: 8px;
+      font-size: calc(8 * var(--ui-px));
       font-weight: 700;
       color: #0369a1;
       width: 16%;
       flex-shrink: 0;
     }
     .new-warehouse-ability-detail-label {
-      font-size: 8px;
+      font-size: calc(8 * var(--ui-px));
       font-weight: 600;
       color: #64748b;
       flex-shrink: 0;
     }
     .new-warehouse-ability-detail-val {
-      font-size: 9px;
+      font-size: calc(9 * var(--ui-px));
       font-weight: 900;
       color: #0c4a6e;
       flex-shrink: 0;
     }
     .new-warehouse-ability-detail-bar {
       flex: 1;
-      height: 5px;
+      height: calc(5 * var(--ui-px));
       background: rgba(148, 163, 184, 0.3);
       border-radius: 999px;
       overflow: hidden;
@@ -1815,7 +1835,7 @@
       pointer-events: none;
     }
     .new-warehouse-slot.is-selected .new-warehouse-slot-bg {
-      filter: brightness(1.3) drop-shadow(0 0 6px rgba(250, 204, 21, .8));
+      filter: brightness(1.3) drop-shadow(0 0 calc(6 * var(--ui-px)) rgba(250, 204, 21, .8));
     }
     .new-warehouse-slot-pet {
       position: absolute;
@@ -1823,8 +1843,8 @@
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 1;
-      max-width: 62%;
-      max-height: 60%;
+      width: 62%;
+      height: 60%;
       object-fit: contain;
       pointer-events: none;
     }
@@ -1832,10 +1852,10 @@
       position: relative;
       z-index: 2;
       margin-bottom: 5%;
-      font-size: 11px;
+      font-size: calc(11 * var(--ui-px));
       font-weight: 900;
       color: #000;
-      text-shadow: 0 1px 2px rgba(255,255,255,.6);
+      text-shadow: 0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(255,255,255,.6);
       white-space: nowrap;
       max-width: 90%;
       overflow: hidden;
@@ -1856,7 +1876,7 @@
     }
     .new-warehouse-view-tab-btn {
       width: 54.43%;
-      max-width: 242px;
+      max-width: calc(242 * var(--ui-px));
       height: auto;
       object-fit: contain;
       cursor: pointer;
@@ -1869,7 +1889,7 @@
       transform: scale(1.05);
     }
     .new-warehouse-view-tab-btn.active {
-      filter: brightness(1.2) drop-shadow(0 0 6px rgba(56, 189, 248, .8));
+      filter: brightness(1.2) drop-shadow(0 0 calc(6 * var(--ui-px)) rgba(56, 189, 248, .8));
     }
     .new-warehouse-page-nav {
       position: absolute;
@@ -1878,18 +1898,18 @@
       transform: translateX(-50%);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: calc(6 * var(--ui-px));
       z-index: 11;
     }
     .new-warehouse-page-nav button {
-      min-width: 23px;
-      height: 21px;
-      padding: 0 7px;
-      border-radius: 6px;
-      border: 1px solid rgba(125, 211, 252, .6);
+      min-width: calc(23 * var(--ui-px));
+      height: calc(21 * var(--ui-px));
+      padding: 0 calc(7 * var(--ui-px));
+      border-radius: calc(6 * var(--ui-px));
+      border: calc(1 * var(--ui-px)) solid rgba(125, 211, 252, .6);
       background: linear-gradient(180deg, rgba(14, 116, 144, .9), rgba(7, 89, 133, .9));
       color: #fff;
-      font-size: 9px;
+      font-size: calc(9 * var(--ui-px));
       font-weight: 900;
       cursor: pointer;
       transition: filter .14s ease;
@@ -1897,14 +1917,14 @@
     .new-warehouse-page-nav button:hover { filter: brightness(1.15); }
     .new-warehouse-page-nav button:disabled { opacity: .35; cursor: not-allowed; }
     .new-warehouse-page-indicator {
-      padding: 2px 17px;
+      padding: calc(2 * var(--ui-px)) calc(17 * var(--ui-px));
       border-radius: 999px;
       background: linear-gradient(180deg, rgba(14, 116, 144, .92), rgba(7, 89, 133, .92));
       color: #fde68a;
-      font-size: 9px;
+      font-size: calc(9 * var(--ui-px));
       font-weight: 900;
-      border: 1px solid rgba(125, 211, 252, .5);
-      box-shadow: 0 2px 6px rgba(0,0,0,.35);
+      border: calc(1 * var(--ui-px)) solid rgba(125, 211, 252, .5);
+      box-shadow: 0 calc(2 * var(--ui-px)) calc(6 * var(--ui-px)) rgba(0,0,0,.35);
     }
     .new-warehouse-filter-bar {
       position: absolute;
@@ -1927,7 +1947,7 @@
     .new-warehouse-filter-btn {
       width: auto;
       height: 100%;
-      max-height: 28px;
+      max-height: calc(28 * var(--ui-px));
       object-fit: contain;
       cursor: pointer;
       transition: filter .15s ease, transform .15s ease;
@@ -1940,28 +1960,28 @@
       transform: scale(1.05);
     }
     .new-warehouse-filter-btn.active {
-      filter: brightness(1.25) drop-shadow(0 0 8px rgba(56, 189, 248, .9));
+      filter: brightness(1.25) drop-shadow(0 0 calc(8 * var(--ui-px)) rgba(56, 189, 248, .9));
     }
     .new-warehouse-element-picker {
       position: absolute;
       top: 110%;
       left: 0;
-      min-width: 120px;
-      max-height: 180px;
+      min-width: calc(120 * var(--ui-px));
+      max-height: calc(180 * var(--ui-px));
       overflow-y: auto;
       background: linear-gradient(180deg, rgba(14, 116, 144, .95), rgba(7, 89, 133, .95));
-      border: 1px solid rgba(125, 211, 252, .6);
-      border-radius: 8px;
-      padding: 6px;
+      border: calc(1 * var(--ui-px)) solid rgba(125, 211, 252, .6);
+      border-radius: calc(8 * var(--ui-px));
+      padding: calc(6 * var(--ui-px));
       z-index: 40;
-      box-shadow: 0 4px 12px rgba(0,0,0,.5);
+      box-shadow: 0 calc(4 * var(--ui-px)) calc(12 * var(--ui-px)) rgba(0,0,0,.5);
     }
     .new-warehouse-element-item {
-      padding: 4px 8px;
-      font-size: 10px;
+      padding: calc(4 * var(--ui-px)) calc(8 * var(--ui-px));
+      font-size: calc(10 * var(--ui-px));
       font-weight: 800;
       color: #e0f2fe;
-      border-radius: 4px;
+      border-radius: calc(4 * var(--ui-px));
       cursor: pointer;
       white-space: nowrap;
     }
@@ -1975,19 +1995,19 @@
     .new-warehouse-search-wrap {
       position: relative;
       flex: 1;
-      max-width: 160px;
-      height: 24px;
+      max-width: calc(160 * var(--ui-px));
+      height: calc(24 * var(--ui-px));
     }
     .new-warehouse-search-input {
       width: 100%;
       height: 100%;
-      border: 1px solid rgba(125, 211, 252, .5);
-      border-radius: 12px;
+      border: calc(1 * var(--ui-px)) solid rgba(125, 211, 252, .5);
+      border-radius: calc(12 * var(--ui-px));
       background: rgba(14, 116, 144, .6);
       color: #fff;
-      font-size: 10px;
+      font-size: calc(10 * var(--ui-px));
       font-weight: 700;
-      padding: 0 28px 0 8px;
+      padding: 0 calc(28 * var(--ui-px)) 0 calc(8 * var(--ui-px));
       outline: none;
     }
     .new-warehouse-search-input::placeholder {
@@ -1996,11 +2016,11 @@
     }
     .new-warehouse-search-icon {
       position: absolute;
-      right: 4px;
+      right: calc(4 * var(--ui-px));
       top: 50%;
       transform: translateY(-50%);
-      width: 18px;
-      height: 18px;
+      width: calc(18 * var(--ui-px));
+      height: calc(18 * var(--ui-px));
       object-fit: contain;
       pointer-events: none;
     }
@@ -2008,20 +2028,20 @@
       position: absolute;
       top: 110%;
       right: 0;
-      min-width: 110px;
+      min-width: calc(110 * var(--ui-px));
       background: linear-gradient(180deg, rgba(14, 116, 144, .95), rgba(7, 89, 133, .95));
-      border: 1px solid rgba(125, 211, 252, .6);
-      border-radius: 8px;
-      padding: 6px;
+      border: calc(1 * var(--ui-px)) solid rgba(125, 211, 252, .6);
+      border-radius: calc(8 * var(--ui-px));
+      padding: calc(6 * var(--ui-px));
       z-index: 40;
-      box-shadow: 0 4px 12px rgba(0,0,0,.5);
+      box-shadow: 0 calc(4 * var(--ui-px)) calc(12 * var(--ui-px)) rgba(0,0,0,.5);
     }
     .new-warehouse-sort-item {
-      padding: 4px 8px;
-      font-size: 10px;
+      padding: calc(4 * var(--ui-px)) calc(8 * var(--ui-px));
+      font-size: calc(10 * var(--ui-px));
       font-weight: 800;
       color: #e0f2fe;
-      border-radius: 4px;
+      border-radius: calc(4 * var(--ui-px));
       cursor: pointer;
       white-space: nowrap;
     }
@@ -2330,6 +2350,34 @@
     .team-boss-chest:hover {
       transform: translateX(-50%) scale(1.05);
     }
+    .team-boss-desc {
+      position: absolute;
+      bottom: -18%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid rgba(250, 204, 21, 0.35);
+      border-radius: 12px;
+      padding: 10px 12px;
+      text-align: left;
+      z-index: 5;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    }
+    .team-boss-desc-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: #fbbf24;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .team-boss-desc-line {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fef3c7;
+      line-height: 1.55;
+    }
     .team-boss-right {
       flex: 1;
       display: flex;
@@ -2392,7 +2440,7 @@
     .team-boss-hp {
       position: relative;
       width: 120%;
-      aspect-ratio: 16 / 3;
+      aspect-ratio: 949 / 114;
     }
     .team-boss-hp-frame {
       width: 100%;
@@ -2404,16 +2452,14 @@
     }
     .team-boss-hp-bar-wrap {
       position: absolute;
-      top: 30%;
-      left: 10%;
-      right: 10%;
-      height: 40%;
+      top: 16%;
+      left: 11%;
+      right: 2%;
+      height: 66%;
       background: transparent;
       border-radius: 2px;
       overflow: hidden;
       z-index: 1;
-      transform: translate(0, -2%) scale(1, 1.68714);
-      transform-origin: center center;
     }
     .team-boss-hp-bar {
       height: 100%;
@@ -5999,8 +6045,10 @@
       z-index: 0;
     }
     .battle-shengyu-bg-layer {
-      position: absolute;
+      position: fixed;
       inset: 0;
+      width: 100vw;
+      height: 100vh;
       z-index: 0;
       pointer-events: none;
       overflow: hidden;
@@ -6008,8 +6056,8 @@
     }
     .battle-shengyu-bg-layer > object,
     .battle-shengyu-bg-layer > img {
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       max-width: none !important;
       max-height: none !important;
       object-fit: cover;
@@ -8154,6 +8202,7 @@
       background-repeat: no-repeat !important;
     }
     html.android-webview.android-landscape header.home-hub-scene .home-action-gift { --x: 1.2%; --y: 68.8%; --w: 6.5%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-mail { --x: 8.5%; --y: 68.8%; --w: 6.5%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-monthly { --x: 1.2%; --y: 55.8%; --w: 9.2%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-dragonboat { --x: 8.5%; --y: 67.6%; --w: 7.3%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-rank { --x: 22%; --y: 86.2%; --w: 7.8%; }
@@ -11094,6 +11143,7 @@
     </div>
     <div class="home-action-grid">
       <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./resource/ui/背景/赠礼.png" alt=""></button>
+      <button @click="openMailPanel" class="home-action-btn home-action-mail" title="邮件" aria-label="邮件"><img src="./resource/邮件.png" alt=""></button>
       <button @click="openMonthlySignPanel" class="home-action-btn home-action-monthly" title="月签到" aria-label="月签到"><img src="./resource/button/签到.png" alt=""></button>
       <button @click.stop.prevent="openLeaderboardPanel" class="home-action-btn home-action-rank" title="排行榜" aria-label="排行榜"><img src="./resource/ui/背景/排行榜.png" alt=""></button>
       <button @click="openStrongRoadPanel" class="home-action-btn home-action-strong-road" title="变强之路" aria-label="变强之路"><img src="./resource/界面ui/变强之路.png" alt=""></button>
@@ -11109,7 +11159,7 @@
       <button @click="openQixingGachaPanel" class="home-action-btn home-action-gacha" title="启星转盘" aria-label="启星转盘"><img src="./resource/ui/背景/转盘.png" alt=""></button>
       <button @click="openChallengeRecordPanel" class="home-action-btn home-action-record" title="挑战录像" aria-label="挑战录像"><img src="./resource/界面ui/录像.png" alt=""></button>
       <button @click="openElementPanel" class="home-action-btn home-action-element" title="属性克制" aria-label="属性克制"><img src="./resource/界面ui/属性.png" alt=""></button>
-      <button v-if="!isMobileClient" @click="openTeamPanel" class="home-action-btn home-action-team" title="战队" aria-label="战队"><img src="./resource/战队基地.png" alt=""></button>
+      <button v-if="!isMobileClient" @pointerdown="markTeamPanelInteraction" @keydown="markTeamPanelInteraction" @click="openTeamPanel" class="home-action-btn home-action-team" title="战队" aria-label="战队"><img src="./resource/战队基地.png" alt=""></button>
       <button
         @click="showGlobalSettingsPanel = true"
         class="home-settings-btn"
@@ -11242,7 +11292,7 @@
                     <button @click="unequipPetSkin(petId(selectedPet))" class="h-7 px-3 rounded-lg bg-white text-violet-700 border border-violet-200 font-black">卸下皮肤</button>
                   </div>
                   <div class="mt-3 grid grid-cols-3 md:grid-cols-6 gap-2">
-                    <button v-for="seal in qixingSealRows" :key="'bag_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
+                    <button v-for="seal in qixingSealRows" :key="'bag_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.restrictionText ? '｜仅限' + seal.restrictionText : ''}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
                       <img :src="seal.image" @error="withFallback" class="qixing-seal-grid-img mx-auto" :class="{ 'is-legacy': seal.isLegacy }">
                       <div class="qixing-seal-grid-meta">{{ seal.name }} Lv.{{ seal.level }}</div>
                       <div class="qixing-seal-grid-equipped">{{ seal.equippedPetName || '未装配' }}</div>
@@ -11857,7 +11907,7 @@
               </div>
               <div class="bag2-enhance-section-title">特性仓库</div>
               <div class="bag2-enhance-seals">
-                <button v-for="seal in qixingSealRows" :key="'bag2_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="bag2-seal-card" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
+                <button v-for="seal in qixingSealRows" :key="'bag2_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="bag2-seal-card" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.restrictionText ? '｜仅限' + seal.restrictionText : ''}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
                   <img :src="seal.image" @error="withFallback" class="bag2-seal-img" :class="{ 'is-legacy': seal.isLegacy }">
                   <div class="bag2-seal-name">{{ seal.name }} Lv.{{ seal.level }}</div>
                   <div class="bag2-seal-owner">{{ seal.equippedPetName || '未装配' }}</div>
@@ -12008,9 +12058,11 @@
     <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
       <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
     </div>
-    <div v-cloak v-if="rewardFlyToast.show" class="absolute top-16 left-1/2 z-[10001] pointer-events-none">
-      <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
-        {{ rewardFlyToast.message }}
+    <div v-cloak v-if="rewardFlyToast.show" class="fixed inset-0 z-[10001] pointer-events-none overflow-hidden">
+      <div class="absolute top-16 left-1/2">
+        <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
+          {{ rewardFlyToast.message }}
+        </div>
       </div>
     </div>
   </div>
@@ -12248,7 +12300,7 @@
                     <button @click="unequipPetSkin(petId(selectedPet))" class="h-7 px-3 rounded-lg bg-white text-violet-700 border border-violet-200 font-black">卸下皮肤</button>
                   </div>
                   <div class="mt-3 grid grid-cols-3 md:grid-cols-6 gap-2">
-                    <button v-for="seal in qixingSealRows" :key="'bag_modal_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
+                  <button v-for="seal in qixingSealRows" :key="'bag_modal_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.restrictionText ? '｜仅限' + seal.restrictionText : ''}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
                       <img :src="seal.image" @error="withFallback" class="qixing-seal-grid-img mx-auto" :class="{ 'is-legacy': seal.isLegacy }">
                       <div class="qixing-seal-grid-meta">{{ seal.name }} Lv.{{ seal.level }}</div>
                       <div class="qixing-seal-grid-equipped">{{ seal.equippedPetName || '未装配' }}</div>
@@ -12326,9 +12378,38 @@
     <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
       <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
     </div>
-    <div v-cloak v-if="rewardFlyToast.show" class="absolute top-16 left-1/2 z-[10001] pointer-events-none">
-      <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
-        {{ rewardFlyToast.message }}
+    <div v-cloak v-if="rewardFlyToast.show" class="fixed inset-0 z-[10001] pointer-events-none overflow-hidden">
+      <div class="absolute top-16 left-1/2">
+        <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
+          {{ rewardFlyToast.message }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-cloak v-if="showMailPanel" class="fixed inset-0 z-[10050] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeMailPanel">
+    <div class="w-full max-w-2xl rounded-3xl border border-amber-200/30 bg-slate-900 p-4 shadow-2xl text-white max-h-[82vh] flex flex-col" @click.stop>
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-lg font-black text-amber-300">邮件</div>
+        <button @click="closeMailPanel" class="h-9 px-4 rounded-xl bg-slate-800 text-slate-200 text-sm font-black border border-slate-700">关闭</button>
+      </div>
+      <div v-if="mailLoading" class="py-10 text-center text-sm font-bold text-slate-400">加载中...</div>
+      <div v-else-if="mailList.length === 0" class="py-10 text-center text-sm font-bold text-slate-400">当前没有邮件。</div>
+      <div v-else class="space-y-2 flex-1 overflow-y-auto pr-1 scrollbar mb-3">
+        <div v-for="mail in mailList" :key="mail.id" class="rounded-2xl border border-amber-200/20 bg-slate-800/70 p-3">
+          <div class="flex items-center justify-between gap-2">
+            <div class="text-sm font-black text-amber-200">{{ mail.title }}</div>
+            <span v-if="mail.claimed" class="shrink-0 rounded-lg bg-slate-700 px-2 py-0.5 text-[10px] font-black text-slate-300">已领取</span>
+            <span v-else class="shrink-0 rounded-lg bg-amber-500 px-2 py-0.5 text-[10px] font-black text-slate-900">待领取</span>
+          </div>
+          <div class="mt-1 text-xs font-bold text-slate-300 leading-5">{{ mail.body }}</div>
+          <div v-if="mail.rewardText" class="mt-1 text-xs font-black text-amber-300">奖励：{{ mail.rewardText }}</div>
+          <div class="mt-1 text-[10px] font-bold text-slate-500">{{ formatMailTime(mail.createdAt) }}</div>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button @click="claimAllMails" :disabled="mailLoading || mailList.length === 0" class="flex-1 h-10 rounded-xl bg-amber-500 text-slate-950 text-sm font-black disabled:opacity-45">全部领取</button>
+        <button @click="deleteAllMails" :disabled="mailLoading || mailList.length === 0" class="flex-1 h-10 rounded-xl bg-rose-600 text-white text-sm font-black disabled:opacity-45">全部删除</button>
       </div>
     </div>
   </div>
@@ -13004,6 +13085,7 @@
             <div class="text-sm font-black text-amber-950">{{ it.name }}</div>
             <div class="text-[11px] font-bold text-amber-800">{{ it.desc }}</div>
             <div class="text-[11px] font-black text-rose-700 mt-1">{{ it.price }} H&#24065;</div>
+            <div v-if="skillStoneCredentialNeed(it.id)" class="text-[11px] font-black text-violet-700 mt-1">需要{{ skillStoneCredentialNeed(it.id).name }} x{{ shopItemMaxBuyQuantity(it) > 0 ? Math.min(shopBuyQuantity(it.id), shopItemMaxBuyQuantity(it)) : 1 }}（持有 {{ skillStoneCredentialNeed(it.id).count }}）</div>
             <div v-if="it.purchaseLimit" class="text-[11px] font-black text-orange-700 mt-1">&#38480;&#36141;&#21097;&#20313; {{ shopItemRemainingLimited(it) }}/{{ it.purchaseLimit }}</div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
@@ -13016,7 +13098,7 @@
               @input="setShopBuyQuantity(it.id, $event.target.value)"
               class="w-20 h-9 rounded-xl border border-amber-200 bg-white px-2 text-sm font-black text-amber-950"
             >
-            <button @click="buySkillShopItem(it.id)" :disabled="!shopItemCanBuy(it)" class="h-9 px-4 rounded-xl bg-amber-500 text-slate-950 text-sm font-black disabled:opacity-45">&#36141;&#20080;</button>
+            <button @click="buySkillShopItem(it.id)" :disabled="!shopItemCanBuy(it) || (skillStoneCredentialNeed(it.id) && skillStoneCredentialNeed(it.id).count <= 0)" class="h-9 px-4 rounded-xl bg-amber-500 text-slate-950 text-sm font-black disabled:opacity-45">&#36141;&#20080;</button>
           </div>
         </div>
       </div>
@@ -13116,6 +13198,7 @@
         <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">&#21629;&#20013;: {{ selectedSkillStoneDetail.skill.accuracy }}</div>
         <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">PP: {{ selectedSkillStoneDetail.skill.pp }}</div>
         <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-amber-800">&#20215;&#26684;: {{ selectedSkillStoneDetail.item.price }} H&#24065;</div>
+        <div v-if="skillStoneCredentialNeed(selectedSkillStoneDetail.item.id)" class="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-violet-800">需要{{ skillStoneCredentialNeed(selectedSkillStoneDetail.item.id).name }}（持有 {{ skillStoneCredentialNeed(selectedSkillStoneDetail.item.id).count }}）</div>
       </div>
       <div class="mt-3 rounded-xl border border-amber-100 bg-amber-50 px-3 py-3 text-sm font-bold leading-6 text-amber-950 break-words">{{ selectedSkillStoneDetail.skill.desc }}</div>
     </div>
@@ -13204,7 +13287,16 @@
         </div>
         <button @click="closeChallengeRoadPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
-      <div class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-3 scrollbar">
+      <div class="flex items-center gap-2 mb-3">
+        <button
+          v-for="tab in challengeRoadTabs"
+          :key="'challenge_road_tab_' + tab.key"
+          @click="challengeRoadTab = tab.key"
+          class="h-9 px-4 rounded-xl text-sm font-black transition"
+          :class="challengeRoadTab === tab.key ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+        >{{ tab.label }}</button>
+      </div>
+      <div v-if="challengeRoadTab === 'hero'" class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-3 scrollbar">
         <div class="challenge-road-cover-track flex items-stretch gap-4 pr-2">
           <button
             v-for="tier in challengeRoadTiers"
@@ -13230,6 +13322,21 @@
                 <div class="challenge-road-tier-progress-fill" :style="{ width: tier.percent + '%' }"></div>
               </div>
               <div class="challenge-road-tier-progress-lock mt-2 text-[10px] font-black leading-tight text-slate-600">{{ tier.unlocked ? '' : tier.lockText }}</div>
+            </div>
+          </button>
+        </div>
+      </div>
+      <div v-else class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-3 scrollbar">
+        <div class="challenge-road-cover-track flex items-stretch gap-4 pr-2">
+          <button
+            @click="openRetroGloryChallenge"
+            class="challenge-road-tier-card relative overflow-hidden rounded-2xl border text-left transition bg-slate-900 hover:border-sky-300"
+          >
+            <img :src="retroGloryCoverSrc" @error="withFallback" class="challenge-road-tier-cover absolute inset-0 w-full h-full opacity-95">
+            <div class="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-white/72 via-white/30 to-transparent"></div>
+            <span class="challenge-road-tier-status rounded-full px-2.5 py-1 text-[11px] font-black bg-white/90 text-slate-900">挑战</span>
+            <div class="challenge-road-tier-progress">
+              <div class="text-sm font-black text-center truncate">重铸荣光</div>
             </div>
           </button>
         </div>
@@ -13288,6 +13395,37 @@
             <div v-if="filteredChallengeRoadItems.length === 0" class="col-span-full rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm font-black text-slate-400">
               当前筛选没有挑战目标
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template v-if="showRetroGloryPanel">
+    <div class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeRetroGloryPanel">
+      <div class="w-full max-w-6xl h-[86vh] rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl flex flex-col app-panel-modal" @click.stop>
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <div>
+            <div class="text-lg font-black text-slate-900">重铸荣光</div>
+            <div class="text-xs font-bold text-slate-500">怀旧之旅 · 选择BOSS挑战</div>
+          </div>
+          <button @click="closeRetroGloryPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">返回</button>
+        </div>
+        <div class="flex-1 min-h-0 challenge-road-entry-scroll scrollbar">
+          <div class="challenge-road-entry-track">
+            <button
+              v-for="boss in retroGloryBossCards"
+              :key="'retro_glory_boss_' + boss.dexId"
+              @click="openRetroGloryBoss(boss.dexId)"
+              class="challenge-road-entry-card relative overflow-hidden rounded-2xl border text-left transition border-slate-200 bg-white hover:border-sky-300"
+            >
+              <img :src="boss.image" @error="withFallback" class="challenge-road-entry-cover absolute inset-0 w-full h-full opacity-95">
+              <div class="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-white/72 via-white/30 to-transparent"></div>
+              <span class="challenge-road-entry-badge rounded-full px-2.5 py-1 text-[11px] font-black bg-white/90 text-slate-900">BOSS</span>
+              <div class="challenge-road-entry-name">
+                <div class="text-sm font-black text-center truncate">{{ boss.name }}</div>
+              </div>
+            </button>
           </div>
         </div>
       </div>
@@ -13724,7 +13862,7 @@
             </div>
           </div>
           <div class="rounded-xl border border-cyan-200/20 bg-slate-950/35 p-3 text-xs font-bold text-cyan-50 leading-5">
-            第一阶段在通关挑战之路第一梯度后解锁，寒冰公主亚比蛋150抽保底且本阶段只可获取一次，获取后奖池卡片置灰，后续抽到会自动转为启星碎片。第二阶段在拥有第五梯度任意BOSS亚比或亚比蛋后解锁，未来计划·神秘战无炎皮肤500抽保底且只可获取一次；第二阶段寒冰公主亚比蛋同样只可获取一次。能量核心转盘消耗H币，单抽2000H币，十连18000H币；200抽保底一个未获取能量核心，获得后置灰且不再重复获取，再200抽保底另一个未获取能量核心。
+            第一阶段在通关挑战之路第一梯度后解锁，寒冰公主亚比蛋150抽保底且本阶段只可获取一次，获取后奖池卡片置灰，后续抽到会自动转为启星碎片。第二阶段在拥有第五梯度任意BOSS亚比或亚比蛋后解锁，东皇太一亚比蛋500抽保底且只可获取一次；第二阶段寒冰公主亚比蛋同样只可获取一次。能量核心转盘消耗H币，单抽2000H币，十连18000H币；200抽保底一个未获取能量核心，获得后置灰且不再重复获取，再200抽保底另一个未获取能量核心。
           </div>
           <div v-if="!selectedQixingGachaPhaseUnlocked" class="rounded-xl border border-amber-200/35 bg-amber-300/10 p-3 text-xs font-black text-amber-100 leading-5">
             {{ qixingGachaPhaseLockText }}
@@ -14052,7 +14190,7 @@
             <img src="./resource/战队任务.png" alt="战队任务">
             <span>战队任务</span>
           </button>
-          <button class="team-butler-btn-item shop" @click="showTeamButler = false; showTeamShop = true">
+          <button class="team-butler-btn-item shop" @click="openTeamShop">
             <img src="./resource/战队商店.png" alt="战队商店">
             <span>战队商店</span>
           </button>
@@ -14269,8 +14407,12 @@
               <span class="team-boss-ross-dmg">{{ item.damage }}</span>
             </div>
           </div>
-          <div class="team-boss-chest">
-            <img src="./resource/战队boss/宝箱奖励.png" alt="宝箱奖励">
+          <div class="team-boss-desc">
+            <div class="team-boss-desc-title">挑战说明</div>
+            <div class="team-boss-desc-line">每日限挑战3次，取伤害最高的一次计入排行。</div>
+            <div class="team-boss-desc-line">BOSS每回合有50%概率提升特攻1级。</div>
+            <div class="team-boss-desc-line">我方每阵亡1只亚比，九尾冰狐增伤50%。</div>
+            <div class="team-boss-desc-line">战队BOSS减伤20%，每次攻击有10%概率令对方陷入冰冻。</div>
           </div>
         </div>
 
@@ -14302,7 +14444,7 @@
       <div class="team-modal-title">选择操作</div>
       <div class="team-modal-buttons">
         <button class="team-modal-btn create" @click="handleCreateTeam">创建战队</button>
-        <button class="team-modal-btn join" @click="showTeamModal = false; showJoinTeamList = true">申请加入</button>
+        <button class="team-modal-btn join" @click="openJoinTeamList">申请加入</button>
         <button class="team-modal-btn cancel" @click="showTeamModal = false">取消</button>
       </div>
     </div>
@@ -14732,7 +14874,7 @@
 <div v-cloak v-if="battleResult" class="fixed inset-0 z-[130] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBattleResult">
   <div class="w-full max-w-3xl rounded-3xl border border-white bg-white p-4 shadow-2xl app-modal" @click.stop>
     <div class="flex items-center justify-between mb-3">
-      <div class="text-lg font-black" :class="battleResult.win ? 'text-emerald-700' : 'text-rose-700'">{{ battleResult.win ? '挑战胜利结算' : '挑战失败结算' }}</div>
+      <div class="text-lg font-black" :class="battleResult.teamBossSettle || battleResult.win ? 'text-emerald-700' : 'text-rose-700'">{{ battleResult.teamBossSettle ? '挑战成功结算' : (battleResult.win ? '挑战胜利结算' : '挑战失败结算') }}</div>
       <div class="flex items-center gap-2">
         <button v-if="battleResult.repeatDexId" @click="repeatLastDexChallenge" class="h-9 px-4 rounded-xl bg-rose-500 text-white text-sm font-black">再次挑战</button>
         <button @click="closeBattleResult" class="h-9 px-4 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">确认</button>
@@ -14741,6 +14883,15 @@
     <div class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
       <div v-if="battleResult.hCoinGain > 0" class="rounded-2xl border border-yellow-200 bg-yellow-50 p-3 text-sm font-black text-yellow-800">
         获得 H币 +{{ battleResult.hCoinGain }}
+      </div>
+      <div v-if="battleResult.teamBossSettle" class="rounded-2xl border border-orange-200 bg-orange-50 p-3">
+        <div class="text-sm font-black text-orange-800 mb-1">本次挑战各亚比伤害：</div>
+        <div v-for="(row, idx) in (battleResult.teamBossDamageByPet || [])" :key="'tbd_'+(row.id || idx)" class="flex items-center gap-2 py-1 border-t border-orange-100 first:border-t-0">
+          <img :src="row.image" @error="withFallback" class="w-9 h-9 object-contain rounded-lg border border-slate-200 bg-white shrink-0">
+          <span class="min-w-0 flex-1 text-sm font-black text-slate-800 truncate">{{ row.name }}</span>
+          <span class="text-sm font-black text-orange-700">{{ row.damage }}</span>
+        </div>
+        <div class="mt-2 pt-2 border-t border-orange-200 text-sm font-black text-orange-800">本次挑战总伤害：{{ battleResult.teamBossDamage }}</div>
       </div>
       <div v-if="battleResult.expMultiplier > 1" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-black text-emerald-800">
         经验倍率：本场经验 ×{{ battleResult.expMultiplier }}
