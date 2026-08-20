@@ -14523,6 +14523,7 @@
       <img :src="battleScene.skillEffectFx.src" alt="">
     </div>
     <div v-if="battleScene.fxSkillText" class="hidden absolute top-6 right-6 z-30 rounded-2xl border border-cyan-300/60 bg-cyan-400/25 px-3 py-1 text-[11px] font-black text-cyan-100 whitespace-nowrap shadow-[0_8px_24px_rgba(34,211,238,0.25)] battle-skill-float">{{ battleScene.fxSkillText }}</div>
+    <div v-if="battleScene.shengyuDomainLabel" class="absolute top-4 left-1/2 z-30 -translate-x-1/2 rounded-full border border-amber-200/70 bg-slate-950/75 px-3 py-1 text-xs font-black text-amber-100 shadow-lg whitespace-nowrap">当前圣域：{{ battleScene.shengyuDomainLabel }}</div>
 
     <div class="absolute left-3 right-3 md:left-8 md:right-auto top-3 md:top-8 w-auto md:w-[22%] md:min-w-[280px] battle-mobile-wrap battle-mobile-target">
       <div class="battle-target-card-row">

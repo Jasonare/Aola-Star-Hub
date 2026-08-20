@@ -1730,6 +1730,8 @@ const SHENGYU_PET_CONFIG_BY_DEX_ID = new Map(SHENGYU_PET_CONFIGS.map((config) =>
 const shengyuPetConfigByDexId = (dexId) => SHENGYU_PET_CONFIG_BY_DEX_ID.get(Number(dexId) || 0) || null;
 const SHENGYU_DOMAIN_YANGYAN = "yangyan";
 const SHENGYU_DOMAIN_JIANDI = "jiandi";
+const SHENGYU_DOMAIN_LEVEL_INTERMEDIATE = "intermediate";
+const SHENGYU_DOMAIN_LEVEL_ADVANCED = "advanced";
 const SHENGYU_YANZHUO_BAHUANG_FX_SRC = encodeAssetSrc("./resource/shengyu/skill/炎灼八荒.gif");
 const SHENGYU_JIANDI_STATE_FX_SRC = encodeAssetSrc("./resource/shengyu/skill/帝王剑心.gif");
 const SHENGYU_JIANXIN_BG_SRC = encodeAssetSrc("./resource/shengyu/剑心-battle-bg-once.gif");
@@ -1737,6 +1739,7 @@ const SHENGYU_PASSIVE_CONFIG_BY_DEX_ID = {
   2050: {
     domain: SHENGYU_DOMAIN_YANGYAN,
     domainLabel: "阳炎",
+    domainLevel: SHENGYU_DOMAIN_LEVEL_ADVANCED,
     passives: [
       { key: "yangyan", label: "阳炎" },
       { key: "yanzhuoBahuang", label: "炎灼八荒" }
@@ -1744,7 +1747,8 @@ const SHENGYU_PASSIVE_CONFIG_BY_DEX_ID = {
   },
   2082: {
     domain: SHENGYU_DOMAIN_JIANDI,
-    domainLabel: "剑帝",
+    domainLabel: "剑心",
+    domainLevel: SHENGYU_DOMAIN_LEVEL_INTERMEDIATE,
     passives: [
       { key: "jianxin", label: "剑心" },
       { key: "jiandiState", label: "帝王剑心" }
@@ -4696,6 +4700,9 @@ const getEffectiveBattleElements = (scene, side) => {
     ? getElementList(scene.attackerElement, scene.attackerSubElement)
     : getElementList(scene.targetElement, scene.targetSubElement);
 };
+const getShengyuPassiveConfigByDexIds = (ids) => (Array.isArray(ids) ? ids : [])
+  .map((id) => SHENGYU_PASSIVE_CONFIG_BY_DEX_ID[Number(id) || 0])
+  .find(Boolean) || null;
 const getBattleSidePassiveShengyuConfig = (scene, side) => {
   const ids = side === "attacker"
     ? [
@@ -4711,7 +4718,61 @@ const getBattleSidePassiveShengyuConfig = (scene, side) => {
       scene && scene.targetBattleVisualDexId,
       scene && scene.targetOriginalBattleVisualDexId
     ];
-  return ids.map((id) => SHENGYU_PASSIVE_CONFIG_BY_DEX_ID[Number(id) || 0]).find(Boolean) || null;
+  return getShengyuPassiveConfigByDexIds(ids);
+};
+const getBattleUnitPassiveShengyuConfig = (unit) => getShengyuPassiveConfigByDexIds([
+  unit && unit.dexId,
+  unit && unit.baseDexId,
+  unit && unit.battleVisualDexId,
+  unit && unit.originalBattleVisualDexId,
+  unit && unit.skinBattleVisualDexId
+]);
+const shengyuDomainLevel = (config) => normalize(config && config.domainLevel);
+const isAdvancedShengyuDomain = (config) => shengyuDomainLevel(config) === SHENGYU_DOMAIN_LEVEL_ADVANCED;
+const setBattleShengyuDomain = (scene, side, options = {}) => {
+  if (!scene) return false;
+  const config = getBattleSidePassiveShengyuConfig(scene, side);
+  if (!config || !normalize(config.domain)) return false;
+  const domain = normalize(config.domain);
+  const changed = normalize(scene.shengyuDomain) !== domain || normalize(scene.shengyuDomainOwner) !== side;
+  scene.shengyuDomain = domain;
+  scene.shengyuDomainOwner = side;
+  scene.shengyuDomainLabel = `${config.domainLabel || domain}圣域`;
+  scene.shengyuDomainState = {
+    domain,
+    owner: side,
+    level: shengyuDomainLevel(config),
+    activatedTurn: Math.max(1, Number(scene.turnCount) || 1)
+  };
+  if (changed && options.log !== false) {
+    const who = side === "attacker" ? scene.attackerName : scene.targetName;
+    const reason = normalize(options.reason);
+    pushBattleLog(scene, `${who}的${scene.shengyuDomainLabel}${reason ? `${reason}` : "触发"}。`);
+  }
+  return changed;
+};
+const updateBattleShengyuDomainForTurn = (scene) => {
+  if (!scene) return false;
+  const turn = Math.max(1, Number(scene.turnCount) || 1);
+  if (turn <= 1 || (turn - 1) % 3 !== 0) return false;
+  const attackerConfig = getBattleSidePassiveShengyuConfig(scene, "attacker");
+  const targetConfig = getBattleSidePassiveShengyuConfig(scene, "target");
+  const attackerAdvanced = isAdvancedShengyuDomain(attackerConfig);
+  const targetAdvanced = isAdvancedShengyuDomain(targetConfig);
+  if (!attackerAdvanced && !targetAdvanced) return false;
+  let side = "";
+  if (attackerAdvanced && targetAdvanced) {
+    const nextOwner = normalize(scene.shengyuDomainScheduleNextOwner);
+    side = nextOwner === "target" ? "target" : "attacker";
+    scene.shengyuDomainScheduleNextOwner = side === "attacker" ? "target" : "attacker";
+  } else {
+    side = attackerAdvanced ? "attacker" : "target";
+  }
+  return setBattleShengyuDomain(scene, side, { reason: "每3回合覆盖当前圣域" });
+};
+const shouldForceAttackerShengyuOnSwitch = (scene) => {
+  if (!scene || !Array.isArray(scene.team)) return false;
+  return scene.team.filter((unit) => Boolean(getBattleUnitPassiveShengyuConfig(unit))).length >= 2;
 };
 const isYangyanBurnProtectedSide = (scene, side) => {
   if (!scene) return false;
@@ -4743,18 +4804,14 @@ const hasBattleTimedEffectKind = (scene, side, kind) => {
 const isBattleShengyuDomainActive = (scene, domain = SHENGYU_DOMAIN_YANGYAN) => {
   const expected = normalize(domain);
   if (!scene || !expected) return false;
-  return normalize(scene.shengyuDomain) === expected || ["attacker", "target"].some((side) => {
-    const config = getBattleSidePassiveShengyuConfig(scene, side);
-    return normalize(config && config.domain) === expected;
-  });
+  return normalize(scene.shengyuDomain) === expected;
 };
-const applyShengyuEntryPassives = (scene) => {
+const applyShengyuEntryPassives = (scene, options = {}) => {
   if (!scene) return [];
   const fxList = [];
   ["attacker", "target"].forEach((side) => {
     const config = getBattleSidePassiveShengyuConfig(scene, side);
     if (!config) return;
-    if (!scene.shengyuDomain) scene.shengyuDomain = normalize(config.domain);
     const state = getSideState(scene, side);
     if (!state.shengyuPassiveKeys || typeof state.shengyuPassiveKeys !== "object") state.shengyuPassiveKeys = {};
     (config.passives || []).forEach((passive) => {
@@ -4767,6 +4824,17 @@ const applyShengyuEntryPassives = (scene) => {
       if (key === "jiandiState") addTimedEffect(scene, side, { kind: "shengyuPassiveJiandiState", turns: 999, data: { label: passive.label || "帝王剑心", permanent: true } });
     });
   });
+  if (!normalize(scene.shengyuDomain)) {
+    const initialSide = getBattleSidePassiveShengyuConfig(scene, "target") ? "target" : "attacker";
+    setBattleShengyuDomain(scene, initialSide, { reason: "开场触发" });
+    const attackerConfig = getBattleSidePassiveShengyuConfig(scene, "attacker");
+    const targetConfig = getBattleSidePassiveShengyuConfig(scene, "target");
+    if (isAdvancedShengyuDomain(attackerConfig) && isAdvancedShengyuDomain(targetConfig)) {
+      scene.shengyuDomainScheduleNextOwner = initialSide === "attacker" ? "target" : "attacker";
+    }
+  } else if (options.forceAttackerDomain && shouldForceAttackerShengyuOnSwitch(scene)) {
+    setBattleShengyuDomain(scene, "attacker", { reason: "换宠后立即覆盖当前圣域" });
+  }
   return fxList;
 };
 const isYangyanBurnEligibleSide = (scene, side) => {
@@ -20306,6 +20374,10 @@ const applyBossChainFinalBuff = (scene) => {
         skillEffectFx: null,
         shengyuBackground: null,
         shengyuDomain: "",
+        shengyuDomainOwner: "",
+        shengyuDomainLabel: "",
+        shengyuDomainState: null,
+        shengyuDomainScheduleNextOwner: "",
         ppOnAttacker: "",
         ppOnTarget: "",
         comboHitsOnAttacker: [],
@@ -20384,6 +20456,7 @@ const applyBossChainFinalBuff = (scene) => {
         pushBattleLog(battleScene.value, `${battleScene.value.targetName}获得挑战减伤：普通/特殊攻击造成的伤害减少${Math.round(battleScene.value.targetChallengeDamageReductionRatio * 100)}%${counteredText}。`);
       }
       pushBattleLog(battleScene.value, "第1回合开始。");
+      updateBattleShengyuDomainForTurn(battleScene.value);
       triggerShengyuTurnStartPassives(battleScene.value).forEach((fx) => showBattleStatusEffectFx(battleScene.value, fx.side, [fx]));
       triggerWeeklyBossTurnStartEffectIfNeeded(battleScene.value).forEach((fx) => showBattleStatusEffectFx(battleScene.value, fx.side, [fx]));
       triggerTeamBossTurnStartEffectIfNeeded(battleScene.value).forEach((fx) => showBattleStatusEffectFx(battleScene.value, fx.side, [fx]));
@@ -21097,6 +21170,7 @@ const applyBossChainFinalBuff = (scene) => {
           return;
         }
         pushBattleLog(battleScene.value, `第${battleScene.value.turnCount}回合开始。`);
+        updateBattleShengyuDomainForTurn(battleScene.value);
         triggerShengyuTurnStartPassives(battleScene.value).forEach((fx) => showBattleStatusEffectFx(battleScene.value, fx.side, [fx]));
         triggerWeeklyBossTurnStartEffectIfNeeded(battleScene.value).forEach((fx) => showBattleStatusEffectFx(battleScene.value, fx.side, [fx]));
         triggerTeamBossTurnStartEffectIfNeeded(battleScene.value).forEach((fx) => showBattleStatusEffectFx(battleScene.value, fx.side, [fx]));
@@ -21317,16 +21391,6 @@ const applyBossChainFinalBuff = (scene) => {
       let targetSide = isAttacker ? "target" : "attacker";
       const actorElement = getEffectiveBattleElement(scene, actorSide);
       let targetElements = getEffectiveBattleElements(scene, targetSide);
-      if (!isAttacker && (Number(scene && scene.targetDexId) === 2082 || /剑帝修纳/.test(normalize(scene && scene.targetName))) && Math.random() <= 0.3) {
-        scene.shengyuDomain = SHENGYU_DOMAIN_JIANDI;
-        scene.shengyuBackground = {
-          src: SHENGYU_JIANXIN_BG_SRC,
-          name: "剑心圣域",
-          seq: Date.now() + Math.random(),
-          durationMs: battleSceneDelayMs(scene, SHENGYU_ENTRY_ANIMATION_DURATION_MS, 120)
-        };
-        pushBattleLog(scene, `${actorName}触发剑心圣域！`);
-      }
       const suppressDirectDamage = hasDirectDamageSuppressedEffect(skill);
       const hasDiminishingSelfEffect = hasDiminishingGateEffect(skill);
       const beforeAct = beforeActionCheck(scene, actorSide);
@@ -22759,7 +22823,7 @@ const applyBossChainFinalBuff = (scene) => {
         pushBattleLog(scene, `${next.name}获得生灵之息，阵亡时将复活一次。`);
       }
       applyWeeklyBossCounterPetBuff(scene);
-      applyShengyuEntryPassives(scene);
+      applyShengyuEntryPassives(scene, { forceAttackerDomain: true });
       clearBattleFloatTextIfExpired(scene, true);
       resetBattleVisualHold(scene);
       scene.fxAttackerDefeated = false;
