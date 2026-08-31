@@ -4,7 +4,7 @@ const { spawnSync } = require("child_process");
 
 const ROOT = path.resolve(__dirname, "..");
 const INPUT_DIR = path.join(ROOT, "resource", "skill-effect");
-const OUTPUT_DIR = path.join(ROOT, "resource", "skill-effect-fullscreen");
+const OUTPUT_DIR = path.join(ROOT, "resource", "skill-effect-fullscreen-v2");
 const FULLSCREEN_CANVAS_WIDTH = 1280;
 const FULLSCREEN_CANVAS_HEIGHT = 720;
 const WINDOW_DETECTOR_PATH = path.join(__dirname, "detect_fullscreen_gif_window.py");

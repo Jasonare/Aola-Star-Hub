@@ -1127,6 +1127,26 @@
     .gear-shop-buy:disabled {
       opacity: .45;
     }
+    .battle-prepare-overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 2147483646 !important;
+      isolation: isolate;
+      transform: translateZ(0);
+    }
+    .reward-fly-overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 2147483647 !important;
+    }
+    .app-toast-overlay {
+      position: fixed !important;
+      top: 20px !important;
+      left: 50% !important;
+      z-index: 2147483647 !important;
+      pointer-events: none !important;
+      transform: translateX(-50%) !important;
+    }
     .app-top-dialog-overlay,
     .bag-item-use-overlay.app-top-dialog-overlay {
       position: fixed !important;
@@ -5658,6 +5678,9 @@
       grid-template-columns: auto auto minmax(0, 1fr) auto auto;
       align-items: center;
       gap: calc(6 * var(--ui-px));
+      touch-action: manipulation;
+      -webkit-touch-callout: none;
+      user-select: none;
       min-height: calc(56 * var(--ui-px));
       border-radius: calc(14 * var(--ui-px));
       background: linear-gradient(90deg, rgba(8, 145, 178, 0.24), rgba(14, 165, 233, 0.12)) !important;
@@ -5832,6 +5855,7 @@
       mix-blend-mode: screen;
       filter: drop-shadow(0 0 calc(18 * var(--ui-px)) rgba(34,211,238,.58));
       overflow: hidden;
+      opacity: 1 !important;
     }
     .battle-skill-effect-fullscreen > img {
       position: absolute;
@@ -5843,6 +5867,7 @@
       max-height: none !important;
       object-fit: fill;
       display: block;
+      opacity: 1 !important;
       transform: translate(var(--skill-fx-fullscreen-translate-x, -50%), var(--skill-fx-fullscreen-translate-y, -50%));
     }
     @keyframes battleStageChangeFloat {
@@ -10996,24 +11021,19 @@
     html:not(.android-webview) .battle-scene-overlay .battle-mobile-root .battle-mobile-log {
       width: clamp(calc(440 * var(--ui-px)), 32vw, calc(720 * var(--ui-px))) !important;
       max-width: clamp(calc(440 * var(--ui-px)), 32vw, calc(720 * var(--ui-px))) !important;
-      min-height: calc(130 * var(--ui-px)) !important;
-      max-height: clamp(calc(230 * var(--ui-px)), 34vh, calc(390 * var(--ui-px))) !important;
-      overflow: hidden !important;
+      min-height: calc(145 * var(--ui-px)) !important;
+      max-height: clamp(calc(145 * var(--ui-px)), 21vh, calc(225 * var(--ui-px))) !important;
+      overflow-y: auto !important;
+      overscroll-behavior: contain;
     }
     html:not(.android-webview) .battle-scene-overlay .battle-mobile-root .battle-mobile-log .battle-log-body,
     html:not(.android-webview) .battle-scene-overlay .battle-mobile-root .battle-mobile-log .max-h-\[220px\] {
-      max-height: clamp(calc(170 * var(--ui-px)), 27vh, calc(320 * var(--ui-px))) !important;
+      max-height: clamp(calc(65 * var(--ui-px)), 12vh, calc(128 * var(--ui-px))) !important;
       overflow-y: auto !important;
     }
     html.android-webview .battle-scene-overlay .battle-mobile-root .battle-mobile-log {
       display: none !important;
     }
-    html.android-webview .battle-scene-overlay .battle-mobile-root .battle-stage-hover-zone .battle-stage-popover {
-      opacity: 1 !important;
-      transform: translate(0, 0) !important;
-    }
-
-
     .battle-scene-overlay .battle-mobile-root .battle-target-status-outside {
       order: 3 !important;
       position: relative !important;
@@ -11424,6 +11444,18 @@
     </div>
   </div>
 
+  <div v-if="showDesktopCloseSaveFailureModal" class="fixed inset-0 z-[2147483647] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-3xl border border-rose-200 bg-white p-6 shadow-2xl" @click.stop>
+      <h2 class="text-lg font-black text-rose-700">当前存档异常</h2>
+      <p class="mt-3 text-sm font-bold leading-6 text-slate-700">关闭前已连续 5 次存档失败。是否继续退出应用？</p>
+      <p class="mt-2 text-xs font-bold leading-5 text-slate-500">点击确认将直接关闭应用；点击取消可回到游戏继续操作。</p>
+      <div class="mt-6 flex justify-end gap-3">
+        <button @click="cancelDesktopCloseAfterSaveFailure" class="h-10 rounded-xl bg-slate-200 px-5 text-sm font-black text-slate-700">取消</button>
+        <button @click="finishDesktopCloseAfterSaveFailure" class="h-10 rounded-xl bg-rose-600 px-5 text-sm font-black text-white">确认退出</button>
+      </div>
+    </div>
+  </div>
+
   <div v-if="showGameplayGuideModal" class="fixed inset-0 z-[120] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-6">
     <div class="w-full max-w-3xl max-h-[92vh] rounded-3xl border border-indigo-100 bg-white shadow-2xl flex flex-col app-modal" @click.stop>
       <div class="shrink-0 border-b border-slate-100 px-4 py-4 md:px-6">
@@ -11471,9 +11503,11 @@
         </button>
       </div>
     </div>
-    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
-      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
-    </div>
+    <teleport to="body">
+      <div v-if="toast.show" class="app-toast-overlay">
+        <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+      </div>
+    </teleport>
   </div>
 
   <div v-if="selectedDexEntry" class="fixed inset-0 z-[75] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="state.selectedDexId = null">
@@ -11532,9 +11566,11 @@
         </div>
       </div>
     </div>
-    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
-      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
-    </div>
+    <teleport to="body">
+      <div v-if="toast.show" class="app-toast-overlay">
+        <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+      </div>
+    </teleport>
   </div>
 
   <div v-if="lockedDexEntry" class="fixed inset-0 z-[75] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeLockedDexDialog">
@@ -11562,9 +11598,11 @@
         </button>
       </div>
     </div>
-    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
-      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
-    </div>
+    <teleport to="body">
+      <div v-if="toast.show" class="app-toast-overlay">
+        <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+      </div>
+    </teleport>
   </div>
 
   <div v-if="showGlobalSettingsPanel" class="fixed inset-0 z-[95] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="showGlobalSettingsPanel = false">
@@ -12055,16 +12093,20 @@
         </div>
       </div>
     </div>
-    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
-      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
-    </div>
-    <div v-cloak v-if="rewardFlyToast.show" class="fixed inset-0 z-[10001] pointer-events-none overflow-hidden">
-      <div class="absolute top-16 left-1/2">
-        <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
-          {{ rewardFlyToast.message }}
+    <teleport to="body">
+      <div v-if="toast.show" class="app-toast-overlay">
+        <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+      </div>
+    </teleport>
+    <teleport to="body">
+      <div v-cloak v-if="rewardFlyToast.show" class="reward-fly-overlay fixed inset-0 z-[10001] pointer-events-none overflow-hidden">
+        <div class="absolute top-16 left-1/2">
+          <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
+            {{ rewardFlyToast.message }}
+          </div>
         </div>
       </div>
-    </div>
+    </teleport>
   </div>
 
   <div v-if="showDragonBoatShopPanel" class="fixed inset-0 z-[131] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeDragonBoatShopPanel">
@@ -12100,6 +12142,7 @@
     </div>
   </div>
 
+  <teleport to="body">
   <div v-if="battlePrepare && battlePrepare.open" class="battle-prepare-overlay fixed inset-0 z-[109] bg-slate-950/95 backdrop-blur-sm">
     <div class="battle-prepare-root relative w-full h-full overflow-hidden bg-slate-950">
       <div class="battle-bg-layer battle-prepare-layer" :style="{ backgroundImage: `url(${battleBackground.src})` }"></div>
@@ -12178,6 +12221,7 @@
       </div>
     </div>
   </div>
+  </teleport>
 
   <div v-show="showBagPanel" style="display:none" class="app-top-overlay fixed inset-0 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBagPanel">
     <div class="w-full max-w-6xl h-[90vh] md:h-[780px] rounded-3xl border border-white bg-sky-50 p-3 md:p-4 shadow-2xl app-panel-modal bag-mobile-panel bag-responsive-modal overflow-hidden" @click.stop>
@@ -12375,20 +12419,24 @@
       </div>
       </div>
     </div>
-    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
-      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
-    </div>
-    <div v-cloak v-if="rewardFlyToast.show" class="fixed inset-0 z-[10001] pointer-events-none overflow-hidden">
-      <div class="absolute top-16 left-1/2">
-        <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
-          {{ rewardFlyToast.message }}
+    <teleport to="body">
+      <div v-if="toast.show" class="app-toast-overlay">
+        <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+      </div>
+    </teleport>
+    <teleport to="body">
+      <div v-cloak v-if="rewardFlyToast.show" class="reward-fly-overlay fixed inset-0 z-[10001] pointer-events-none overflow-hidden">
+        <div class="absolute top-16 left-1/2">
+          <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
+            {{ rewardFlyToast.message }}
+          </div>
         </div>
       </div>
-    </div>
+    </teleport>
   </div>
 
   <div v-cloak v-if="showMailPanel" class="fixed inset-0 z-[10050] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeMailPanel">
-    <div class="w-full max-w-2xl rounded-3xl border border-amber-200/30 bg-slate-900 p-4 shadow-2xl text-white max-h-[82vh] flex flex-col" @click.stop>
+    <div class="w-full max-w-6xl h-[90vh] md:h-[760px] rounded-3xl border border-amber-200/30 bg-slate-900 p-4 md:p-5 shadow-2xl text-white flex flex-col" @click.stop>
       <div class="flex items-center justify-between mb-3">
         <div class="text-lg font-black text-amber-300">邮件</div>
         <button @click="closeMailPanel" class="h-9 px-4 rounded-xl bg-slate-800 text-slate-200 text-sm font-black border border-slate-700">关闭</button>
@@ -13702,7 +13750,7 @@
             </div>
             <div class="rounded-xl border border-yellow-200 bg-yellow-50 p-3">
               <div class="text-[10px] font-black text-yellow-700">当周BOSS勋章</div>
-              <div class="text-2xl font-black text-slate-900">{{ weeklyBossMedalCount }}/100</div>
+              <div class="text-2xl font-black text-slate-900">{{ weeklyBossMedalCount }}/50</div>
             </div>
             <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 col-span-2">
               <div class="text-[10px] font-black text-emerald-700">勋章兑换</div>
@@ -13742,6 +13790,10 @@
       <div class="equipment-dungeon-scorebar">
         <span>当前累积分数：{{ equipmentDungeonScore }}</span>
         <span>今日机会：{{ equipmentDungeonAttemptsLeft }}/6</span>
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          <span class="text-[11px] text-amber-200">SSS通关卡：{{ equipmentDungeonSssClearCardCount }}</span>
+          <button @click.stop="useEquipmentDungeonSssClearCard" :disabled="equipmentDungeonSssClearCardCount<=0 || equipmentDungeonAttemptsLeft<=0" class="h-7 rounded-lg bg-fuchsia-400 px-3 text-[11px] font-black text-slate-950 shadow disabled:opacity-45">使用SSS通关卡</button>
+        </div>
         <div v-if="equipmentDungeonCanSweep" class="mt-2 flex flex-wrap gap-2">
           <button @click.stop="sweepEquipmentDungeon(1)" class="h-7 rounded-lg bg-cyan-400 px-3 text-[11px] font-black text-slate-950 shadow">扫荡1次</button>
           <button @click.stop="sweepEquipmentDungeon(equipmentDungeonAttemptsLeft)" class="h-7 rounded-lg bg-amber-300 px-3 text-[11px] font-black text-slate-950 shadow">扫荡剩余</button>
@@ -13844,7 +13896,8 @@
             >
               <div class="flex items-start justify-between gap-2">
                 <div class="text-sm font-black text-cyan-50 leading-5">{{ row.label }}</div>
-                <div v-if="row.disabled" class="rounded-full bg-slate-700 px-2 py-0.5 text-[10px] font-black text-slate-300">已获取</div>
+                <div v-if="row.obtained" class="rounded-full bg-slate-700 px-2 py-0.5 text-[10px] font-black text-slate-300">已获取</div>
+                <div v-else-if="row.locked" class="rounded-full bg-slate-700 px-2 py-0.5 text-[10px] font-black text-slate-300">未解锁</div>
               </div>
               <div class="mt-2 text-xs font-black text-cyan-200">概率 {{ row.probability }}%</div>
             </div>
@@ -13862,7 +13915,7 @@
             </div>
           </div>
           <div class="rounded-xl border border-cyan-200/20 bg-slate-950/35 p-3 text-xs font-bold text-cyan-50 leading-5">
-            第一阶段在通关挑战之路第一梯度后解锁，寒冰公主亚比蛋150抽保底且本阶段只可获取一次，获取后奖池卡片置灰，后续抽到会自动转为启星碎片。第二阶段在拥有第五梯度任意BOSS亚比或亚比蛋后解锁，东皇太一亚比蛋500抽保底且只可获取一次；第二阶段寒冰公主亚比蛋同样只可获取一次。能量核心转盘消耗H币，单抽2000H币，十连18000H币；200抽保底一个未获取能量核心，获得后置灰且不再重复获取，再200抽保底另一个未获取能量核心。
+            第一阶段在通关挑战之路第一梯度后解锁，寒冰公主亚比蛋150抽保底且本阶段只可获取一次，获取后奖池卡片置灰，后续抽到会自动转为启星碎片。第二阶段在拥有第五梯度任意BOSS亚比或亚比蛋后解锁：先由东皇太一亚比蛋500抽保底，获得后才开启东皇太初印500抽保底；两项奖励均只可获取一次。第二阶段寒冰公主亚比蛋同样只可获取一次。能量核心转盘消耗H币，单抽2000H币，十连18000H币；200抽保底一个未获取能量核心，获得后置灰且不再重复获取，再200抽保底另一个未获取能量核心。
           </div>
           <div v-if="!selectedQixingGachaPhaseUnlocked" class="rounded-xl border border-amber-200/35 bg-amber-300/10 p-3 text-xs font-black text-amber-100 leading-5">
             {{ qixingGachaPhaseLockText }}
@@ -14074,7 +14127,7 @@
         <svg viewBox="0 0 24 24" class="w-6 h-6 fill-none stroke-white stroke-width-2"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
 
-      <div class="team-commander" @click="onCommanderClick">
+      <div class="team-commander" @click="onCommanderClick($event)">
         <img src="./resource/指挥官_.png" alt="指挥官">
       </div>
 
@@ -14409,7 +14462,7 @@
           </div>
           <div class="team-boss-desc">
             <div class="team-boss-desc-title">挑战说明</div>
-            <div class="team-boss-desc-line">每日限挑战3次，取伤害最高的一次计入排行。</div>
+            <div class="team-boss-desc-line">每日可无限次挑战，取伤害最高的一次计入排行。</div>
             <div class="team-boss-desc-line">BOSS每回合有50%概率提升特攻1级。</div>
             <div class="team-boss-desc-line">我方每阵亡1只亚比，九尾冰狐增伤50%。</div>
             <div class="team-boss-desc-line">战队BOSS减伤20%，每次攻击有10%概率令对方陷入冰冻。</div>
@@ -14439,18 +14492,18 @@
     </div>
   </div>
 
-  <div v-if="showTeamModal" class="team-modal-overlay">
+  <div v-cloak v-if="showTeamPanel && teamActionModalTriggered && showTeamModal" class="team-modal-overlay">
     <div class="team-modal">
       <div class="team-modal-title">选择操作</div>
       <div class="team-modal-buttons">
-        <button class="team-modal-btn create" @click="handleCreateTeam">创建战队</button>
+        <button class="team-modal-btn create" @click="handleCreateTeam($event)">创建战队</button>
         <button class="team-modal-btn join" @click="openJoinTeamList">申请加入</button>
         <button class="team-modal-btn cancel" @click="showTeamModal = false">取消</button>
       </div>
     </div>
   </div>
 
-  <div v-if="showCreateTeamModal" class="team-modal-overlay">
+  <div v-cloak v-if="showTeamPanel && showCreateTeamModal" class="team-modal-overlay">
     <div class="team-create-modal">
       <div class="team-modal-title">创建战队</div>
       <div class="team-create-form">
@@ -14465,7 +14518,7 @@
       </div>
       <div class="team-modal-buttons">
         <button class="team-modal-btn create" @click="submitCreateTeam">确认创建</button>
-        <button class="team-modal-btn cancel" @click="cancelCreateTeam">取消</button>
+        <button class="team-modal-btn cancel" @click="cancelCreateTeam($event)">取消</button>
       </div>
     </div>
   </div>
@@ -14498,6 +14551,11 @@
 
 <div v-cloak v-if="battleScene && battleScene.open" class="battle-scene-overlay battle-render-safe fixed inset-0 z-[110] bg-slate-950/90 backdrop-blur-sm" @click="closeBattleScene">
   <div class="relative w-full h-full overflow-hidden bg-slate-950 battle-mobile-root" @click.stop>
+    <button v-if="battleSkillLongPressTip.show" type="button" @click.stop="hideBattleSkillLongPressTip" class="absolute left-1/2 top-[7%] z-[500] w-[min(88vw,560px)] -translate-x-1/2 rounded-2xl border border-cyan-200/70 bg-slate-950/95 px-4 py-3 text-left shadow-2xl">
+      <div class="text-sm font-black text-cyan-200">{{ battleSkillLongPressTip.name }}</div>
+      <div class="mt-1 text-xs font-bold leading-5 text-white break-words">{{ battleSkillLongPressTip.description }}</div>
+      <div class="mt-2 text-[10px] font-bold text-slate-400">点击关闭</div>
+    </button>
     <div class="battle-bg-layer" :style="{ backgroundImage: `url(${battleBackground.src})` }"></div>
     <div v-if="battleScene.shengyuBackground" :key="'shengyu_bg_' + battleScene.shengyuBackground.seq" :class="['battle-shengyu-bg-layer', { 'battle-shengyu-bg-layer-mobile': isMobileClient }]" :style="battleShengyuBackgroundStyle()">
       <img :src="battleScene.shengyuBackground.src" alt="">
@@ -14657,13 +14715,15 @@
               <button
                 v-for="row in battleSceneSkillRows"
                 :key="row.key"
-                @click="row.skill ? castBattleSkill(row.name) : null"
-                @touchstart="row.skill ? onBattleSkillTouchStart(row.skill) : null"
+                @click="row.skill ? onBattleSkillClick(row.skill) : null"
+                @touchstart="row.skill ? onBattleSkillTouchStart(row.skill, $event) : null"
                 @touchend="onBattleSkillTouchEnd"
                 @touchcancel="onBattleSkillTouchEnd"
-                @mousedown="row.skill ? onBattleSkillTouchStart(row.skill) : null"
+                @touchmove.stop
+                @mousedown="row.skill ? onBattleSkillTouchStart(row.skill, $event) : null"
                 @mouseup="onBattleSkillTouchEnd"
                 @mouseleave="onBattleSkillTouchEnd"
+                @contextmenu.prevent
                 :disabled="row.disabled"
                 :title="row.title"
                 class="battle-skill-row w-full rounded-xl border text-xs font-black text-left px-3 py-1.5"
@@ -14918,7 +14978,7 @@
   </div>
 </div>
 
-<div v-cloak v-if="activeEvolution" class="fixed inset-0 z-[131] bg-slate-950/88 backdrop-blur-md flex items-center justify-center p-4" @click="closeEvolutionModal">
+<div v-cloak v-if="activeEvolution" class="fixed inset-0 z-[131] bg-slate-950/88 backdrop-blur-md flex items-center justify-center p-4" :class="{ 'app-top-dialog-overlay': activeEvolution.kind === 'qixingSealUpgrade' }" @click="closeEvolutionModal">
   <div class="w-full max-w-2xl rounded-3xl border border-indigo-300/40 bg-slate-900 p-4 shadow-2xl shadow-indigo-900/40 relative overflow-hidden app-modal" @click.stop>
     <div class="absolute -top-10 -left-10 w-48 h-48 rounded-full bg-indigo-500/20 blur-2xl pointer-events-none"></div>
     <div class="absolute -bottom-10 -right-8 w-56 h-56 rounded-full bg-cyan-400/20 blur-2xl pointer-events-none"></div>
@@ -14944,6 +15004,6 @@
 </div>
 
 <script src="./aola-dex-1-100.js?v=20260617_fix_weekly_and_action_fx"></script>
-<script src="./aola-star-app.js?v=20260723_team_sign_bosses"></script>
+<script src="./aola-star-app.js?v=20260826_team_boss_damage_limit_fix"></script>
 </body>
 </html>

@@ -18,7 +18,7 @@ const STATIC_RESOURCE_PREFIXES = [
   "resource/pet-img/",
   "resource/pet-state/",
   "resource/skill-effect/",
-  "resource/skill-effect-fullscreen/",
+  "resource/skill-effect-fullscreen-v2/",
   "resource/scene/",
   "resource/shengyu/",
   "resource/time-tunnel-environments/",
@@ -1007,7 +1007,6 @@ function normalizeTeamRow(team, teamBossDate = effectiveTeamBossDateKey()) {
   };
 }
 
-const TEAM_BOSS_DAILY_ATTEMPT_LIMIT = 3;
 const TEAM_BOSS_DEFAULT_KEY = "nine_tail_ice_fox";
 const MAILS_FILE = path.join(DATA_DIR, "mails.json");
 const MAIL_ITEM_DIVINE_PET_KEY = "divine_pet_key";
@@ -1243,9 +1242,6 @@ const updateTeamBossBattleResult = (team, userId, damage) => {
   if (!team || !userId) return { ok: false, message: "战队不存在。" };
   const boss = normalizeTeamBossRow(team.teamBoss);
   const attempts = safeNonNegInt(boss.memberAttempts[userId], 0);
-  if (attempts >= TEAM_BOSS_DAILY_ATTEMPT_LIMIT) {
-    return { ok: false, message: "今日战队BOSS挑战次数已用完。" };
-  }
   const actualDamage = Math.max(0, Math.floor(Number(damage) || 0));
   boss.memberAttempts[userId] = attempts + 1;
   if (actualDamage > safeNonNegInt(boss.memberBestDamage[userId], 0)) {
@@ -1738,6 +1734,34 @@ const handleApi = async (req, res) => {
       team.updatedAt = new Date().toISOString();
       saveTeamsDb(db);
       return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
+    }
+    if (req.method === "POST" && pathname === "/api/teams/leave") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const db = teamsDb();
+      const team = findUserTeam(db, user.id);
+      if (!team) return sendJson(res, 404, { ok: false, message: "当前账号未加入战队。" });
+      const leavingIndex = (team.members || []).findIndex((member) => member.userId === user.id);
+      if (leavingIndex < 0) return sendJson(res, 404, { ok: false, message: "成员不存在。" });
+      const [leavingMember] = team.members.splice(leavingIndex, 1);
+      if (leavingMember.role === "leader" && team.members.length > 0) {
+        const nextLeader = team.members.slice().sort((a, b) => {
+          const joinedDiff = String(a.joinedAt || "").localeCompare(String(b.joinedAt || ""));
+          return joinedDiff || String(a.userId || "").localeCompare(String(b.userId || ""));
+        })[0];
+        team.members.forEach((member) => {
+          if (member.userId === nextLeader.userId) member.role = "leader";
+          else if (member.role === "leader") member.role = "member";
+        });
+        team.leaderId = nextLeader.userId;
+      }
+      if (team.members.length === 0) {
+        db.teams = (db.teams || []).filter((row) => row.id !== team.id);
+      } else {
+        team.updatedAt = new Date().toISOString();
+      }
+      saveTeamsDb(db);
+      return sendJson(res, 200, { ok: true });
     }
     if (req.method === "POST" && pathname === "/api/teams/contribution") {
       const user = requireUser(req, res);

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, desktopCapturer } = require("electron");
+const { app, BrowserWindow, ipcMain, desktopCapturer, dialog } = require("electron");
 const net = require("net");
 const path = require("path");
 
@@ -6,6 +6,7 @@ let localServer = null;
 
 const DEFAULT_BACKEND_PORT = 3030;
 const MAX_PORT_ATTEMPTS = 50;
+const DESKTOP_SAVE_MAX_ATTEMPTS = 5;
 
 const normalizePort = (value) => {
   const port = Number(value) || DEFAULT_BACKEND_PORT;
@@ -82,21 +83,53 @@ const createWindow = (targetUrl) => {
   });
   configureDisplayMediaCapture(win);
   win.__allowCloseAfterSave = false;
+  win.__closeSavePending = false;
   win.on("close", (event) => {
     if (win.__allowCloseAfterSave || win.isDestroyed()) return;
     event.preventDefault();
+    if (win.__closeSavePending) return;
+    win.__closeSavePending = true;
     let finished = false;
+    const doneChannel = `aola:auto-save-done:${win.id}`;
+    const cancelChannel = `aola:auto-save-cancel:${win.id}`;
+    const cleanup = () => {
+      ipcMain.removeListener(doneChannel, handleSaveResult);
+      ipcMain.removeListener(cancelChannel, cancelClose);
+    };
     const finishClose = () => {
       if (finished || win.isDestroyed()) return;
       finished = true;
+      cleanup();
       win.__allowCloseAfterSave = true;
       win.close();
     };
-    const timeout = setTimeout(finishClose, 5000);
-    ipcMain.once(`aola:auto-save-done:${win.id}`, () => {
-      clearTimeout(timeout);
-      finishClose();
-    });
+    const cancelClose = () => {
+      if (finished || win.isDestroyed()) return;
+      cleanup();
+      win.__closeSavePending = false;
+      win.focus();
+    };
+    const handleSaveResult = async (_event, result = {}) => {
+      if (result && result.ok === true) {
+        finishClose();
+        return;
+      }
+      const attempts = Math.min(DESKTOP_SAVE_MAX_ATTEMPTS, Math.max(1, Number(result && result.attempts) || DESKTOP_SAVE_MAX_ATTEMPTS));
+      const detail = result && result.error ? `\n\n错误信息：${result.error}` : "";
+      const confirmation = await dialog.showMessageBox(win, {
+        type: "warning",
+        buttons: ["取消", "确认退出"],
+        defaultId: 0,
+        cancelId: 0,
+        title: "存档异常",
+        message: `存档已连续失败 ${attempts} 次，是否仍要退出应用？`,
+        detail: `选择“取消”将返回应用，您可以检查网络或手动存档后再退出。${detail}`
+      });
+      if (confirmation.response === 1) finishClose();
+      else cancelClose();
+    };
+    ipcMain.once(doneChannel, handleSaveResult);
+    ipcMain.once(cancelChannel, cancelClose);
     win.webContents.send("aola:auto-save-before-close", { windowId: win.id });
   });
   win.webContents.on("console-message", (_event, level, message, line, sourceId) => {
@@ -117,8 +150,8 @@ const createWindow = (targetUrl) => {
 app.whenReady().then(async () => {
   try {
     const backendPort = await startLocalBackend();
-    const localAppUrl = `http://127.0.0.1:${backendPort}/aola-star-dev.html`;
-    console.log(`[main:local-app] ${localAppUrl}`);
+    const localAppUrl = `http://127.0.0.1:${backendPort}/aola-star.html`;
+    console.log(`[main:local-app] mode=production ${localAppUrl}`);
     createWindow(localAppUrl);
   } catch (err) {
     console.error("[main:backend-start-failed]", err);
