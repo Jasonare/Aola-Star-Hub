@@ -428,7 +428,7 @@
     .home-save-actions .is-logout { background: #334155; }
     .home-status-badge-slot {
       position: absolute;
-      z-index: 8;
+      z-index: 6;
       left: 70.4%;
       top: 2.7%;
       width: 15.7%;
@@ -504,25 +504,6 @@
       --w: 10%;
     }
     .home-action-gift { --x: 1.2%; --y: 83.4%; --w: 7.1%; }
-    .home-action-mail { --x: 9.6%; --y: 83.4%; --w: 7.5%; }
-    .home-mail-btn-face {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      aspect-ratio: 1 / 1.25;
-      border-radius: 14px;
-      background: linear-gradient(160deg, #fef3c7, #f59e0b 55%, #d97706);
-      border: 2px solid rgba(255, 255, 255, .8);
-      box-shadow: 0 4px 10px rgba(120, 53, 15, .35);
-      color: #7c2d12;
-      font-weight: 900;
-      font-size: clamp(11px, 1vw, 16px);
-      white-space: nowrap;
-      letter-spacing: 1px;
-      pointer-events: none;
-      text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
-    }
     .home-action-dragonboat { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
     .home-action-rank { --x: 22%; --y: 86.2%; --w: 7.8%; }
     .home-action-tunnel { --x: 34.0%; --y: 86.0%; --w: 8.4%; }
@@ -739,29 +720,6 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
     }
-    .equipment-dungeon-card-close {
-      position: absolute;
-      right: -10px;
-      top: -12px;
-      z-index: 2;
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      border: 2px solid rgba(255, 255, 255, .7);
-      background: linear-gradient(135deg, rgba(248, 113, 113, .96), rgba(220, 38, 38, .96));
-      color: #fff;
-      font-size: 22px;
-      line-height: 1;
-      font-weight: 1000;
-      box-shadow: 0 8px 18px rgba(2, 6, 23, .42);
-      cursor: pointer;
-    }
-    .equipment-dungeon-card-close:hover {
-      filter: brightness(1.08);
-    }
-    .equipment-dungeon-card-close:active {
-      transform: scale(.95);
-    }
     .equipment-dungeon-card {
       border: 1px solid rgba(125, 211, 252, .34);
       border-radius: 10px;
@@ -947,8 +905,8 @@
     .home-double-reward {
       position: absolute;
       z-index: 7;
-      left: 0;
-      right: 29.6%;
+      left: 22%;
+      right: 22%;
       top: 8.3%;
     }
     .home-main-content {
@@ -980,7 +938,6 @@
         width: min(520px, calc(100vw - 32px));
       }
       .home-action-gift { --x: 2%; --y: 76%; --w: 18%; }
-      .home-action-mail { --x: 21%; --y: 76%; --w: 18%; }
       .home-action-monthly { --x: 2%; --y: 58.5%; --w: 24.3%; }
       .home-action-dragonboat { --x: 2%; --y: 60%; --w: 18%; }
       .home-action-rank { --x: 18%; --y: 82%; --w: 18%; }
@@ -1000,8 +957,8 @@
       .home-action-element { --x: 3%; --y: 37%; --w: 13%; }
       .home-action-team { --x: 3%; --y: 50%; --w: 13%; }
       .home-double-reward {
-        left: 0;
-        right: 32%;
+        left: 3%;
+        right: 3%;
         top: auto;
         bottom: 16%;
       }
@@ -1126,26 +1083,6 @@
     }
     .gear-shop-buy:disabled {
       opacity: .45;
-    }
-    .battle-prepare-overlay {
-      position: fixed !important;
-      inset: 0 !important;
-      z-index: 2147483646 !important;
-      isolation: isolate;
-      transform: translateZ(0);
-    }
-    .reward-fly-overlay {
-      position: fixed !important;
-      inset: 0 !important;
-      z-index: 2147483647 !important;
-    }
-    .app-toast-overlay {
-      position: fixed !important;
-      top: 20px !important;
-      left: 50% !important;
-      z-index: 2147483647 !important;
-      pointer-events: none !important;
-      transform: translateX(-50%) !important;
     }
     .app-top-dialog-overlay,
     .bag-item-use-overlay.app-top-dialog-overlay {
@@ -1281,11 +1218,11 @@
     .bag2-close-btn:active { filter: brightness(0.9); transform: scale(0.95); }
     .new-warehouse-panel {
       position: relative;
-      width: min(calc(100vw - 24px), calc((100vh - 24px) * 1497 / 1106)) !important;
-      --ui-px: calc(min(calc(100vw - 24px), calc((100vh - 24px) * 1497 / 1106)) / 900);
-      --warehouse-card-pet-size: calc(70 * var(--ui-px));
-      --warehouse-action-pet-size: calc(58 * var(--ui-px));
-      font-size: calc(14 * var(--ui-px));
+      width: 900px !important;
+      --ui-px: 1px;
+      --warehouse-card-pet-size: 70px;
+      --warehouse-action-pet-size: 58px;
+      font-size: 14px;
       background: transparent;
       border: none;
       padding: 0;
@@ -1334,41 +1271,41 @@
       top: 63%;
       left: 48.5%;
       transform: translate(-50%, -50%);
-      width: 74%;
-      height: 68%;
+      max-width: 75%;
+      max-height: 70%;
       object-fit: contain;
       pointer-events: none;
       z-index: 1;
-      filter: drop-shadow(0 calc(6 * var(--ui-px)) calc(10 * var(--ui-px)) rgba(15, 23, 42, .45));
+      filter: drop-shadow(0 6px 10px rgba(15, 23, 42, .45));
     }
     .new-warehouse-large-empty {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: calc(18 * var(--ui-px));
+      font-size: 18px;
       font-weight: 900;
       color: #94a3b8;
-      text-shadow: 0 calc(2 * var(--ui-px)) calc(6 * var(--ui-px)) rgba(0,0,0,.5);
+      text-shadow: 0 2px 6px rgba(0,0,0,.5);
       z-index: 2;
     }
     .new-warehouse-large-name {
-      font-size: calc(15 * var(--ui-px));
+      font-size: 15px;
       font-weight: 950;
       color: #fff;
-      text-shadow: 0 calc(2 * var(--ui-px)) calc(8 * var(--ui-px)) rgba(0,0,0,.75), 0 0 calc(10 * var(--ui-px)) rgba(56,189,248,.55);
+      text-shadow: 0 2px 8px rgba(0,0,0,.75), 0 0 10px rgba(56,189,248,.55);
       line-height: 1.2;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding: 0 calc(8 * var(--ui-px));
+      padding: 0 8px;
     }
     .new-warehouse-large-level {
-      font-size: calc(12 * var(--ui-px));
+      font-size: 12px;
       font-weight: 900;
       color: #fde68a;
-      text-shadow: 0 calc(2 * var(--ui-px)) calc(6 * var(--ui-px)) rgba(0,0,0,.65);
-      margin-top: calc(2 * var(--ui-px));
+      text-shadow: 0 2px 6px rgba(0,0,0,.65);
+      margin-top: 2px;
     }
     .new-warehouse-action-btns {
       position: absolute;
@@ -1383,7 +1320,7 @@
     }
     .new-warehouse-action-btn {
       width: 25.6%;
-      max-width: calc(88 * var(--ui-px));
+      max-width: 88px;
       height: auto;
       object-fit: contain;
       cursor: pointer;
@@ -1393,7 +1330,7 @@
     }
     .new-warehouse-action-btn:hover {
       transform: scale(1.06);
-      filter: brightness(1.1) drop-shadow(0 0 calc(6 * var(--ui-px)) rgba(56, 189, 248, .6));
+      filter: brightness(1.1) drop-shadow(0 0 6px rgba(56, 189, 248, .6));
     }
     .new-warehouse-action-btn:active {
       transform: scale(0.96);
@@ -1411,7 +1348,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: calc(15 * var(--ui-px));
+      font-size: 15px;
       font-weight: 900;
       color: #0c4a6e;
       text-align: center;
@@ -1453,7 +1390,7 @@
     }
     .new-warehouse-skill-header-name {
       font-weight: 900;
-      font-size: calc(12 * var(--ui-px));
+      font-size: 12px;
       color: #0c4a6e;
       line-height: 1.2;
       overflow: hidden;
@@ -1463,15 +1400,15 @@
       min-width: 0;
     }
     .new-warehouse-skill-header-exp {
-      font-size: calc(9 * var(--ui-px));
+      font-size: 9px;
       font-weight: 700;
       color: #0369a1;
       white-space: nowrap;
       flex-shrink: 0;
     }
     .new-warehouse-skill-header-exp-bar {
-      width: calc(30 * var(--ui-px));
-      height: calc(4 * var(--ui-px));
+      width: 30px;
+      height: 4px;
       background: rgba(148, 163, 184, 0.4);
       border-radius: 999px;
       overflow: hidden;
@@ -1493,18 +1430,18 @@
     .new-warehouse-skill-stat {
       display: flex;
       align-items: center;
-      gap: calc(4 * var(--ui-px));
-      padding: calc(2 * var(--ui-px)) calc(8 * var(--ui-px));
+      gap: 4px;
+      padding: 2px 8px;
       background: rgba(255, 255, 255, 0.6);
-      border: calc(1 * var(--ui-px)) solid rgba(56, 189, 248, 0.4);
-      border-radius: calc(10 * var(--ui-px));
-      font-size: calc(9 * var(--ui-px));
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 10px;
+      font-size: 9px;
       font-weight: 700;
     }
     .new-warehouse-skill-stat-talent {
       background: rgba(255, 255, 255, 0.7);
       border-color: rgba(251, 191, 36, 0.5);
-      padding: calc(2 * var(--ui-px)) calc(6 * var(--ui-px));
+      padding: 2px 6px;
     }
     .new-warehouse-skill-stat-power {
       background: rgba(255, 255, 255, 0.6);
@@ -1538,7 +1475,7 @@
       color: #0c4a6e;
     }
     .new-warehouse-skill-talent-img {
-      height: calc(18 * var(--ui-px));
+      height: 18px;
       width: auto;
       object-fit: contain;
     }
@@ -1554,28 +1491,28 @@
       scrollbar-color: rgba(56, 189, 248, .5) transparent;
     }
     .new-warehouse-skill-list::-webkit-scrollbar {
-      width: calc(4 * var(--ui-px));
+      width: 4px;
     }
     .new-warehouse-skill-list::-webkit-scrollbar-thumb {
       background: rgba(56, 189, 248, .5);
-      border-radius: calc(2 * var(--ui-px));
+      border-radius: 2px;
     }
     .new-warehouse-skill-item {
       background: rgba(224, 242, 254, 0.72);
-      border: calc(1 * var(--ui-px)) solid rgba(56, 189, 248, 0.55);
-      border-radius: calc(8 * var(--ui-px));
-      padding: calc(8 * var(--ui-px)) calc(10 * var(--ui-px)) calc(6 * var(--ui-px));
-      box-shadow: inset 0 0 0 calc(1 * var(--ui-px)) rgba(255,255,255,0.32);
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      border-radius: 8px;
+      padding: 8px 10px 6px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.32);
       display: flex;
       flex-direction: column;
       min-height: 0;
     }
     .new-warehouse-skill-name {
       font-weight: 900;
-      font-size: calc(11 * var(--ui-px));
+      font-size: 11px;
       display: flex;
       align-items: center;
-      gap: calc(4 * var(--ui-px));
+      gap: 4px;
       color: #0c4a6e;
       line-height: 1.2;
       overflow: hidden;
@@ -1586,20 +1523,20 @@
       display: inline-block;
       border-radius: 999px;
       flex-shrink: 0;
-      width: calc(10 * var(--ui-px));
-      height: calc(10 * var(--ui-px));
+      width: 10px;
+      height: 10px;
     }
     .new-warehouse-skill-meta {
-      font-size: calc(9 * var(--ui-px));
+      font-size: 9px;
       font-weight: 700;
       color: #0369a1;
-      margin-top: calc(3 * var(--ui-px));
+      margin-top: 3px;
     }
     .new-warehouse-skill-desc {
-      font-size: calc(8 * var(--ui-px));
+      font-size: 8px;
       font-weight: 600;
       color: #475569;
-      margin-top: calc(3 * var(--ui-px));
+      margin-top: 3px;
       line-height: 1.3;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -1617,7 +1554,7 @@
     }
     .new-warehouse-skill-tab-btn {
       width: 26%;
-      max-width: calc(104 * var(--ui-px));
+      max-width: 104px;
       height: auto;
       object-fit: contain;
       cursor: pointer;
@@ -1629,7 +1566,7 @@
       transform: translateY(-2px);
     }
     .new-warehouse-skill-tab-btn.active {
-      filter: brightness(1.2) drop-shadow(0 0 calc(6 * var(--ui-px)) rgba(250, 204, 21, .7));
+      filter: brightness(1.2) drop-shadow(0 0 6px rgba(250, 204, 21, .7));
       transform: translateY(-3px);
     }
     .new-warehouse-info-header {
@@ -1640,23 +1577,23 @@
       flex-shrink: 0;
     }
     .new-warehouse-info-talent-icon {
-      height: calc(21 * var(--ui-px));
+      height: 21px;
       width: auto;
       object-fit: contain;
     }
     .new-warehouse-info-talent-total {
       font-weight: 900;
-      font-size: calc(11 * var(--ui-px));
+      font-size: 11px;
       color: #0c4a6e;
     }
     .new-warehouse-info-talent-grade {
       font-weight: 900;
-      font-size: calc(10 * var(--ui-px));
+      font-size: 10px;
       color: #d97706;
       background: rgba(255,255,255,.6);
-      padding: calc(2 * var(--ui-px)) calc(6 * var(--ui-px));
-      border-radius: calc(6 * var(--ui-px));
-      border: calc(1 * var(--ui-px)) solid rgba(251, 191, 36, .5);
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(251, 191, 36, .5);
     }
     .new-warehouse-info-talent-list {
       display: flex;
@@ -1669,29 +1606,29 @@
       scrollbar-color: rgba(56, 189, 248, .5) transparent;
     }
     .new-warehouse-info-talent-list::-webkit-scrollbar {
-      width: calc(4 * var(--ui-px));
+      width: 4px;
     }
     .new-warehouse-info-talent-list::-webkit-scrollbar-thumb {
       background: rgba(56, 189, 248, .5);
-      border-radius: calc(2 * var(--ui-px));
+      border-radius: 2px;
     }
     .new-warehouse-info-talent-row {
       display: flex;
       align-items: center;
       gap: 4%;
-      padding: calc(4 * var(--ui-px)) calc(6 * var(--ui-px));
+      padding: 4px 6px;
       background: rgba(224, 242, 254, 0.6);
-      border-radius: calc(6 * var(--ui-px));
+      border-radius: 6px;
     }
     .new-warehouse-info-talent-name {
-      font-size: calc(10 * var(--ui-px));
+      font-size: 10px;
       font-weight: 700;
       color: #0369a1;
       width: 14%;
       flex-shrink: 0;
     }
     .new-warehouse-info-talent-val {
-      font-size: calc(10 * var(--ui-px));
+      font-size: 10px;
       font-weight: 900;
       color: #0c4a6e;
       width: 10%;
@@ -1700,7 +1637,7 @@
     }
     .new-warehouse-info-talent-bar {
       flex: 1;
-      height: calc(6 * var(--ui-px));
+      height: 6px;
       background: rgba(148, 163, 184, 0.3);
       border-radius: 999px;
       overflow: hidden;
@@ -1716,19 +1653,19 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: calc(4 * var(--ui-px));
-      padding: calc(3 * var(--ui-px)) calc(6 * var(--ui-px));
+      gap: 4px;
+      padding: 3px 6px;
       background: rgba(255, 255, 255, 0.6);
-      border: calc(1 * var(--ui-px)) solid rgba(56, 189, 248, 0.4);
-      border-radius: calc(8 * var(--ui-px));
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 8px;
     }
     .new-warehouse-ability-stat-label {
-      font-size: calc(10 * var(--ui-px));
+      font-size: 10px;
       font-weight: 700;
       color: #0369a1;
     }
     .new-warehouse-ability-stat-val {
-      font-size: calc(13 * var(--ui-px));
+      font-size: 13px;
       font-weight: 900;
       color: #0c4a6e;
     }
@@ -1736,13 +1673,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: calc(4 * var(--ui-px)) calc(6 * var(--ui-px));
+      padding: 4px 6px;
       background: linear-gradient(180deg, rgba(14, 116, 144, .9), rgba(7, 89, 133, .9));
       color: #fde68a;
-      font-size: calc(9 * var(--ui-px));
+      font-size: 9px;
       font-weight: 900;
-      border-radius: calc(8 * var(--ui-px));
-      border: calc(1 * var(--ui-px)) solid rgba(125, 211, 252, .5);
+      border-radius: 8px;
+      border: 1px solid rgba(125, 211, 252, .5);
       cursor: pointer;
       transition: filter .15s;
       pointer-events: auto;
@@ -1761,19 +1698,19 @@
       scrollbar-color: rgba(56, 189, 248, .5) transparent;
     }
     .new-warehouse-ability-detail-list::-webkit-scrollbar {
-      width: calc(4 * var(--ui-px));
+      width: 4px;
     }
     .new-warehouse-ability-detail-list::-webkit-scrollbar-thumb {
       background: rgba(56, 189, 248, .5);
-      border-radius: calc(2 * var(--ui-px));
+      border-radius: 2px;
     }
     .new-warehouse-ability-section-title {
-      font-size: calc(9 * var(--ui-px));
+      font-size: 9px;
       font-weight: 900;
       color: #075985;
-      padding: calc(1 * var(--ui-px)) calc(5 * var(--ui-px));
+      padding: 1px 5px;
       background: rgba(56, 189, 248, 0.15);
-      border-radius: calc(4 * var(--ui-px));
+      border-radius: 4px;
       margin-top: 1%;
       flex-shrink: 0;
     }
@@ -1781,33 +1718,33 @@
       display: flex;
       align-items: center;
       gap: 3%;
-      padding: calc(1 * var(--ui-px)) calc(3 * var(--ui-px));
+      padding: 1px 3px;
       background: rgba(224, 242, 254, 0.6);
-      border-radius: calc(6 * var(--ui-px));
+      border-radius: 6px;
       flex-shrink: 0;
     }
     .new-warehouse-ability-detail-name {
-      font-size: calc(8 * var(--ui-px));
+      font-size: 8px;
       font-weight: 700;
       color: #0369a1;
       width: 16%;
       flex-shrink: 0;
     }
     .new-warehouse-ability-detail-label {
-      font-size: calc(8 * var(--ui-px));
+      font-size: 8px;
       font-weight: 600;
       color: #64748b;
       flex-shrink: 0;
     }
     .new-warehouse-ability-detail-val {
-      font-size: calc(9 * var(--ui-px));
+      font-size: 9px;
       font-weight: 900;
       color: #0c4a6e;
       flex-shrink: 0;
     }
     .new-warehouse-ability-detail-bar {
       flex: 1;
-      height: calc(5 * var(--ui-px));
+      height: 5px;
       background: rgba(148, 163, 184, 0.3);
       border-radius: 999px;
       overflow: hidden;
@@ -1855,7 +1792,7 @@
       pointer-events: none;
     }
     .new-warehouse-slot.is-selected .new-warehouse-slot-bg {
-      filter: brightness(1.3) drop-shadow(0 0 calc(6 * var(--ui-px)) rgba(250, 204, 21, .8));
+      filter: brightness(1.3) drop-shadow(0 0 6px rgba(250, 204, 21, .8));
     }
     .new-warehouse-slot-pet {
       position: absolute;
@@ -1863,8 +1800,8 @@
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 1;
-      width: 62%;
-      height: 60%;
+      max-width: 62%;
+      max-height: 60%;
       object-fit: contain;
       pointer-events: none;
     }
@@ -1872,10 +1809,10 @@
       position: relative;
       z-index: 2;
       margin-bottom: 5%;
-      font-size: calc(11 * var(--ui-px));
+      font-size: 11px;
       font-weight: 900;
       color: #000;
-      text-shadow: 0 calc(1 * var(--ui-px)) calc(2 * var(--ui-px)) rgba(255,255,255,.6);
+      text-shadow: 0 1px 2px rgba(255,255,255,.6);
       white-space: nowrap;
       max-width: 90%;
       overflow: hidden;
@@ -1896,7 +1833,7 @@
     }
     .new-warehouse-view-tab-btn {
       width: 54.43%;
-      max-width: calc(242 * var(--ui-px));
+      max-width: 242px;
       height: auto;
       object-fit: contain;
       cursor: pointer;
@@ -1909,7 +1846,7 @@
       transform: scale(1.05);
     }
     .new-warehouse-view-tab-btn.active {
-      filter: brightness(1.2) drop-shadow(0 0 calc(6 * var(--ui-px)) rgba(56, 189, 248, .8));
+      filter: brightness(1.2) drop-shadow(0 0 6px rgba(56, 189, 248, .8));
     }
     .new-warehouse-page-nav {
       position: absolute;
@@ -1918,18 +1855,18 @@
       transform: translateX(-50%);
       display: flex;
       align-items: center;
-      gap: calc(6 * var(--ui-px));
+      gap: 6px;
       z-index: 11;
     }
     .new-warehouse-page-nav button {
-      min-width: calc(23 * var(--ui-px));
-      height: calc(21 * var(--ui-px));
-      padding: 0 calc(7 * var(--ui-px));
-      border-radius: calc(6 * var(--ui-px));
-      border: calc(1 * var(--ui-px)) solid rgba(125, 211, 252, .6);
+      min-width: 23px;
+      height: 21px;
+      padding: 0 7px;
+      border-radius: 6px;
+      border: 1px solid rgba(125, 211, 252, .6);
       background: linear-gradient(180deg, rgba(14, 116, 144, .9), rgba(7, 89, 133, .9));
       color: #fff;
-      font-size: calc(9 * var(--ui-px));
+      font-size: 9px;
       font-weight: 900;
       cursor: pointer;
       transition: filter .14s ease;
@@ -1937,14 +1874,14 @@
     .new-warehouse-page-nav button:hover { filter: brightness(1.15); }
     .new-warehouse-page-nav button:disabled { opacity: .35; cursor: not-allowed; }
     .new-warehouse-page-indicator {
-      padding: calc(2 * var(--ui-px)) calc(17 * var(--ui-px));
+      padding: 2px 17px;
       border-radius: 999px;
       background: linear-gradient(180deg, rgba(14, 116, 144, .92), rgba(7, 89, 133, .92));
       color: #fde68a;
-      font-size: calc(9 * var(--ui-px));
+      font-size: 9px;
       font-weight: 900;
-      border: calc(1 * var(--ui-px)) solid rgba(125, 211, 252, .5);
-      box-shadow: 0 calc(2 * var(--ui-px)) calc(6 * var(--ui-px)) rgba(0,0,0,.35);
+      border: 1px solid rgba(125, 211, 252, .5);
+      box-shadow: 0 2px 6px rgba(0,0,0,.35);
     }
     .new-warehouse-filter-bar {
       position: absolute;
@@ -1967,7 +1904,7 @@
     .new-warehouse-filter-btn {
       width: auto;
       height: 100%;
-      max-height: calc(28 * var(--ui-px));
+      max-height: 28px;
       object-fit: contain;
       cursor: pointer;
       transition: filter .15s ease, transform .15s ease;
@@ -1980,28 +1917,28 @@
       transform: scale(1.05);
     }
     .new-warehouse-filter-btn.active {
-      filter: brightness(1.25) drop-shadow(0 0 calc(8 * var(--ui-px)) rgba(56, 189, 248, .9));
+      filter: brightness(1.25) drop-shadow(0 0 8px rgba(56, 189, 248, .9));
     }
     .new-warehouse-element-picker {
       position: absolute;
       top: 110%;
       left: 0;
-      min-width: calc(120 * var(--ui-px));
-      max-height: calc(180 * var(--ui-px));
+      min-width: 120px;
+      max-height: 180px;
       overflow-y: auto;
       background: linear-gradient(180deg, rgba(14, 116, 144, .95), rgba(7, 89, 133, .95));
-      border: calc(1 * var(--ui-px)) solid rgba(125, 211, 252, .6);
-      border-radius: calc(8 * var(--ui-px));
-      padding: calc(6 * var(--ui-px));
+      border: 1px solid rgba(125, 211, 252, .6);
+      border-radius: 8px;
+      padding: 6px;
       z-index: 40;
-      box-shadow: 0 calc(4 * var(--ui-px)) calc(12 * var(--ui-px)) rgba(0,0,0,.5);
+      box-shadow: 0 4px 12px rgba(0,0,0,.5);
     }
     .new-warehouse-element-item {
-      padding: calc(4 * var(--ui-px)) calc(8 * var(--ui-px));
-      font-size: calc(10 * var(--ui-px));
+      padding: 4px 8px;
+      font-size: 10px;
       font-weight: 800;
       color: #e0f2fe;
-      border-radius: calc(4 * var(--ui-px));
+      border-radius: 4px;
       cursor: pointer;
       white-space: nowrap;
     }
@@ -2015,19 +1952,19 @@
     .new-warehouse-search-wrap {
       position: relative;
       flex: 1;
-      max-width: calc(160 * var(--ui-px));
-      height: calc(24 * var(--ui-px));
+      max-width: 160px;
+      height: 24px;
     }
     .new-warehouse-search-input {
       width: 100%;
       height: 100%;
-      border: calc(1 * var(--ui-px)) solid rgba(125, 211, 252, .5);
-      border-radius: calc(12 * var(--ui-px));
+      border: 1px solid rgba(125, 211, 252, .5);
+      border-radius: 12px;
       background: rgba(14, 116, 144, .6);
       color: #fff;
-      font-size: calc(10 * var(--ui-px));
+      font-size: 10px;
       font-weight: 700;
-      padding: 0 calc(28 * var(--ui-px)) 0 calc(8 * var(--ui-px));
+      padding: 0 28px 0 8px;
       outline: none;
     }
     .new-warehouse-search-input::placeholder {
@@ -2036,11 +1973,11 @@
     }
     .new-warehouse-search-icon {
       position: absolute;
-      right: calc(4 * var(--ui-px));
+      right: 4px;
       top: 50%;
       transform: translateY(-50%);
-      width: calc(18 * var(--ui-px));
-      height: calc(18 * var(--ui-px));
+      width: 18px;
+      height: 18px;
       object-fit: contain;
       pointer-events: none;
     }
@@ -2048,20 +1985,20 @@
       position: absolute;
       top: 110%;
       right: 0;
-      min-width: calc(110 * var(--ui-px));
+      min-width: 110px;
       background: linear-gradient(180deg, rgba(14, 116, 144, .95), rgba(7, 89, 133, .95));
-      border: calc(1 * var(--ui-px)) solid rgba(125, 211, 252, .6);
-      border-radius: calc(8 * var(--ui-px));
-      padding: calc(6 * var(--ui-px));
+      border: 1px solid rgba(125, 211, 252, .6);
+      border-radius: 8px;
+      padding: 6px;
       z-index: 40;
-      box-shadow: 0 calc(4 * var(--ui-px)) calc(12 * var(--ui-px)) rgba(0,0,0,.5);
+      box-shadow: 0 4px 12px rgba(0,0,0,.5);
     }
     .new-warehouse-sort-item {
-      padding: calc(4 * var(--ui-px)) calc(8 * var(--ui-px));
-      font-size: calc(10 * var(--ui-px));
+      padding: 4px 8px;
+      font-size: 10px;
       font-weight: 800;
       color: #e0f2fe;
-      border-radius: calc(4 * var(--ui-px));
+      border-radius: 4px;
       cursor: pointer;
       white-space: nowrap;
     }
@@ -2370,34 +2307,6 @@
     .team-boss-chest:hover {
       transform: translateX(-50%) scale(1.05);
     }
-    .team-boss-desc {
-      position: absolute;
-      bottom: -18%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      box-sizing: border-box;
-      background: rgba(15, 23, 42, 0.82);
-      border: 1px solid rgba(250, 204, 21, 0.35);
-      border-radius: 12px;
-      padding: 10px 12px;
-      text-align: left;
-      z-index: 5;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-    }
-    .team-boss-desc-title {
-      font-size: 14px;
-      font-weight: 900;
-      color: #fbbf24;
-      text-align: center;
-      margin-bottom: 6px;
-    }
-    .team-boss-desc-line {
-      font-size: 11px;
-      font-weight: 700;
-      color: #fef3c7;
-      line-height: 1.55;
-    }
     .team-boss-right {
       flex: 1;
       display: flex;
@@ -2459,8 +2368,8 @@
     }
     .team-boss-hp {
       position: relative;
-      width: 120%;
-      aspect-ratio: 949 / 114;
+      width: 100%;
+      aspect-ratio: 16 / 3;
     }
     .team-boss-hp-frame {
       width: 100%;
@@ -2472,14 +2381,16 @@
     }
     .team-boss-hp-bar-wrap {
       position: absolute;
-      top: 16%;
-      left: 11%;
-      right: 2%;
-      height: 66%;
+      top: 30%;
+      left: 10%;
+      right: 10%;
+      height: 40%;
       background: transparent;
       border-radius: 2px;
       overflow: hidden;
       z-index: 1;
+      transform: translate(15%, -2%) scale(1.323, 1.68714);
+      transform-origin: center center;
     }
     .team-boss-hp-bar {
       height: 100%;
@@ -4086,11 +3997,44 @@
         height: min(90vh, calc(98vw * 1137 / 1848)) !important;
       }
     }
-    html.android-webview.android-landscape .bag2-panel.bag-responsive-modal {
-      width: min(96vw, calc((100vh - 16px) * 1848 / 1137), calc(1152 * var(--ui-px))) !important;
-      max-width: min(96vw, calc((100vh - 16px) * 1848 / 1137), calc(1152 * var(--ui-px))) !important;
-      height: auto !important;
-      max-height: calc(100vh - 16px) !important;
+    html.android-webview.android-landscape .bag2-panel {
+      width: min(82vw, calc(84vh * 1848 / 1137), calc(720 * var(--ui-px)));
+      max-height: 84vh;
+    }
+    html.android-webview.android-landscape .bag2-panel {
+      width: min(97vw, calc((100vh - 16px) * 1848 / 1137));
+      max-width: 97vw;
+      max-height: calc(100vh - 16px);
+    }
+    html.android-webview.android-landscape .bag2-pet-display {
+      top: 12.5%;
+      left: 4%;
+      width: 42%;
+      height: 52%;
+    }
+    html.android-webview.android-landscape .bag2-side-tabs {
+      top: 13.5%;
+      left: 47.2%;
+      width: 4.4%;
+      height: 47%;
+    }
+    html.android-webview.android-landscape .bag2-content-area {
+      top: 14.5%;
+      left: 51.5%;
+      right: 5.2%;
+      height: 48%;
+      padding: 0 9px;
+    }
+    html.android-webview.android-landscape .bag2-action-btns {
+      bottom: 34.5%;
+      left: 8.5%;
+      right: 6%;
+    }
+    html.android-webview.android-landscape .bag2-slots {
+      bottom: 4.2%;
+      left: 6.5%;
+      right: 6.5%;
+      height: 24%;
     }
     html.android-webview.android-landscape .bag-mobile-panel {
       width: min(86vw, calc(820 * var(--ui-px))) !important;
@@ -4188,6 +4132,129 @@
       font-weight: bold;
       color: white;
       text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    .strong-road-item img.strong-road-item-img-fate {
+      transform: translate(10px, 12px);
+    }
+    .fate-gate-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 133;
+      background: rgba(2,6,23,0.78);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .fate-gate-panel {
+      position: relative;
+      width: min(94vw, calc((100vh - 32px) * 2056 / 1204));
+      aspect-ratio: 2056 / 1204;
+    }
+    .fate-gate-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 18px;
+    }
+    .fate-gate-close-btn {
+      position: absolute;
+      top: 4%;
+      right: 2.8%;
+      width: 7.6%;
+      aspect-ratio: 176 / 150;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      z-index: 10;
+      transition: transform 0.14s ease, filter 0.14s ease;
+    }
+    .fate-gate-close-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .fate-gate-close-btn:hover {
+      transform: scale(1.06);
+      filter: brightness(1.12) drop-shadow(0 0 6px rgba(255,255,255,0.65));
+    }
+    .fate-gate-close-btn:active {
+      transform: scale(0.96);
+      filter: brightness(1.18);
+    }
+    .fate-gate-door {
+      position: absolute;
+      object-fit: contain;
+    }
+    .fate-gate-door-1 { width: 16.5%; left: 7.9%; top: 26.7%; }
+    .fate-gate-door-2 { width: 17%; left: 29.6%; top: 26.6%; }
+    .fate-gate-door-3 { width: 17.8%; left: 51.2%; top: 26%; }
+    .fate-gate-door-4 { width: 20.9%; left: 71.6%; top: 25.3%; }
+    .fate-gate-arrow {
+      position: absolute;
+      width: 5.8%;
+      object-fit: contain;
+    }
+    .fate-gate-arrow-1 { left: 24.2%; top: 42.3%; }
+    .fate-gate-arrow-2 { left: 46.2%; top: 42.3%; }
+    .fate-gate-arrow-3 { left: 68.2%; top: 42.3%; }
+    .fate-gate-trait-panel {
+      position: absolute;
+      left: 5.2%;
+      top: 61.5%;
+      width: 90.5%;
+      aspect-ratio: 1860 / 448;
+      background: url('./resource-v10/命运之门/特性背景.png') center / 100% 100% no-repeat;
+    }
+    .fate-gate-trait-grid {
+      position: absolute;
+      left: 3.4%;
+      top: 14.7%;
+      width: 58.5%;
+      aspect-ratio: 1088 / 316;
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+    }
+    .fate-gate-trait-cell {
+      background: url('./resource-v10/命运之门/特性单框.png') center / 100% 100% no-repeat;
+    }
+    .fate-gate-actions {
+      position: absolute;
+      right: 10.5%;
+      top: 14%;
+      width: 21.5%;
+      height: 72%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .fate-gate-action-btn {
+      border: none;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.14s ease, filter 0.14s ease;
+    }
+    .fate-gate-action-btn img {
+      width: 100%;
+      display: block;
+      object-fit: contain;
+    }
+    .fate-gate-action-btn:hover {
+      transform: scale(1.06);
+      filter: brightness(1.12) drop-shadow(0 0 6px rgba(255,255,255,0.65));
+    }
+    .fate-gate-action-btn:active {
+      transform: scale(0.96);
+      filter: brightness(1.18);
     }
     .bag2-top-tabs {
       position: absolute;
@@ -5678,9 +5745,6 @@
       grid-template-columns: auto auto minmax(0, 1fr) auto auto;
       align-items: center;
       gap: calc(6 * var(--ui-px));
-      touch-action: manipulation;
-      -webkit-touch-callout: none;
-      user-select: none;
       min-height: calc(56 * var(--ui-px));
       border-radius: calc(14 * var(--ui-px));
       background: linear-gradient(90deg, rgba(8, 145, 178, 0.24), rgba(14, 165, 233, 0.12)) !important;
@@ -5855,20 +5919,18 @@
       mix-blend-mode: screen;
       filter: drop-shadow(0 0 calc(18 * var(--ui-px)) rgba(34,211,238,.58));
       overflow: hidden;
-      opacity: 1 !important;
     }
     .battle-skill-effect-fullscreen > img {
       position: absolute;
-      left: var(--skill-fx-fullscreen-left, 50%);
-      top: var(--skill-fx-fullscreen-top, 50%);
-      width: var(--skill-fx-fullscreen-width, 100vw);
-      height: var(--skill-fx-fullscreen-height, 100vh);
+      left: 35%;
+      top: 40%;
+      width: 150vw;
+      height: 150vh;
       max-width: none !important;
       max-height: none !important;
       object-fit: fill;
       display: block;
-      opacity: 1 !important;
-      transform: translate(var(--skill-fx-fullscreen-translate-x, -50%), var(--skill-fx-fullscreen-translate-y, -50%));
+      transform: translate(-50%, -50%);
     }
     @keyframes battleStageChangeFloat {
       0% {
@@ -5947,17 +6009,12 @@
       mix-blend-mode: normal !important;
       filter: none !important;
     }
-    .battle-render-safe .battle-skill-effect-fullscreen {
+    .battle-render-safe .battle-skill-effect-fullscreen,
+    .battle-render-safe .battle-skill-effect-fullscreen > img {
       width: 100vw !important;
       height: 100vh !important;
-      max-width: none !important;
-      max-height: none !important;
-    }
-    .battle-render-safe .battle-skill-effect-fullscreen > img {
-      width: var(--skill-fx-fullscreen-width, 150vw) !important;
-      height: var(--skill-fx-fullscreen-height, 150vh) !important;
-      max-width: none !important;
-      max-height: none !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
     }
     .battle-defeated-exit { animation: battleDefeatedExit 1.2s ease-in forwards; pointer-events: none; }
     .reward-fly-toast {
@@ -6070,19 +6127,16 @@
       z-index: 0;
     }
     .battle-shengyu-bg-layer {
-      position: fixed;
+      position: absolute;
       inset: 0;
-      width: 100vw;
-      height: 100vh;
       z-index: 0;
       pointer-events: none;
       overflow: hidden;
       background: #020617;
     }
-    .battle-shengyu-bg-layer > object,
-    .battle-shengyu-bg-layer > img {
-      width: 100vw;
-      height: 100vh;
+    .battle-shengyu-bg-layer > object {
+      width: 100%;
+      height: 100%;
       max-width: none !important;
       max-height: none !important;
       object-fit: cover;
@@ -6092,11 +6146,14 @@
     }
     .battle-shengyu-bg-layer-mobile {
       background: #07152d;
-      animation: none;
-      will-change: auto;
+      animation: battle-shengyu-mobile-flash var(--shengyu-bg-duration, 1100ms) ease-out both;
+      will-change: opacity, transform;
     }
     .battle-shengyu-bg-layer-mobile::before {
-      display: none;
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(251, 146, 60, .18), rgba(250, 204, 21, .32) 46%, rgba(56, 189, 248, .12));
     }
     @keyframes battle-shengyu-mobile-flash {
       0% { opacity: 0; transform: scale(1.015); }
@@ -8227,7 +8284,6 @@
       background-repeat: no-repeat !important;
     }
     html.android-webview.android-landscape header.home-hub-scene .home-action-gift { --x: 1.2%; --y: 68.8%; --w: 6.5%; }
-    html.android-webview.android-landscape header.home-hub-scene .home-action-mail { --x: 8.5%; --y: 68.8%; --w: 6.5%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-monthly { --x: 1.2%; --y: 55.8%; --w: 9.2%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-dragonboat { --x: 8.5%; --y: 67.6%; --w: 7.3%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-rank { --x: 22%; --y: 86.2%; --w: 7.8%; }
@@ -8401,35 +8457,386 @@
     html.android-webview.android-landscape .bag-info-scroll .grid.grid-cols-3.md\:grid-cols-6 {
       grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     }
-    html.android-webview.android-landscape .dex-card {
-      display: grid !important;
-      grid-template-rows: auto minmax(0, 1fr) auto !important;
-      min-height: clamp(0px, 26vh, calc(190 * var(--ui-px))) !important;
-      padding: calc(7 * var(--ui-px)) !important;
-      overflow: hidden !important;
+    /* ===== 亚比图鉴（新UI：底图 + 展示背景卡片） ===== */
+    .dex-new-panel {
+      position: relative;
+      width: 900px;
+      aspect-ratio: 2272 / 1855;
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin: 0;
+      box-shadow: none;
+      font-size: 14px;
+      user-select: none;
     }
-    html.android-webview.android-landscape .dex-card-head {
-      min-height: calc(20 * var(--ui-px)) !important;
-      margin-bottom: calc(3 * var(--ui-px)) !important;
-      overflow: hidden !important;
+    .dex-new-bg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
     }
-    html.android-webview.android-landscape .dex-card-image-wrap {
-      min-height: 0 !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      overflow: hidden !important;
+    .dex-new-close-btn {
+      position: absolute;
+      left: 88.7%;
+      top: 8.6%;
+      width: 4.6%;
+      height: 5.8%;
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      z-index: 6;
+      border-radius: 50%;
+      transition: filter .15s ease, transform .15s ease;
     }
-    html.android-webview.android-landscape .dex-card-image {
-      width: clamp(calc(56 * var(--ui-px)), 9.5vh, calc(86 * var(--ui-px))) !important;
-      height: clamp(calc(56 * var(--ui-px)), 9.5vh, calc(86 * var(--ui-px))) !important;
-      max-width: 100% !important;
+    .dex-new-close-btn:hover { filter: brightness(1.15) drop-shadow(0 0 6px rgba(56, 189, 248, .65)); transform: scale(1.06); }
+    .dex-new-close-btn:active { transform: scale(.94); filter: brightness(.95); }
+    .dex-new-arrow-btn {
+      position: absolute;
+      top: 40%;
+      width: 6.4%;
+      height: 10%;
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      z-index: 6;
+      transition: filter .15s ease, transform .15s ease;
     }
-    html.android-webview.android-landscape .dex-card-name {
-      min-height: calc(18 * var(--ui-px)) !important;
-      margin-top: calc(3 * var(--ui-px)) !important;
-      line-height: 1.12 !important;
+    .dex-new-arrow-left { left: .4%; }
+    .dex-new-arrow-right { right: .4%; }
+    .dex-new-arrow-btn:hover { filter: brightness(1.18) drop-shadow(0 0 6px rgba(56, 189, 248, .6)); transform: scale(1.07); }
+    .dex-new-arrow-btn:active { transform: scale(.95); filter: brightness(.95); }
+    .dex-new-toolbar {
+      position: absolute;
+      left: 14.6%;
+      right: 14.6%;
+      top: 12.8%;
+      height: 7.2%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 5;
     }
+    .dex-new-search {
+      flex: 1;
+      min-width: 0;
+      height: 76%;
+      border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, .85);
+      background: rgba(255, 255, 255, .92);
+      padding: 0 12px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+      outline: none;
+    }
+    .dex-new-search::placeholder { color: #64748b; }
+    .dex-new-search:focus { border-color: #67e8f9; box-shadow: 0 0 8px rgba(34, 211, 238, .55); }
+    .dex-new-select {
+      height: 76%;
+      border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, .85);
+      background: rgba(255, 255, 255, .92);
+      padding: 0 6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+      outline: none;
+      cursor: pointer;
+    }
+    .dex-new-progress {
+      position: absolute;
+      right: 8.6%;
+      top: 22.4%;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .dex-new-progress-text {
+      font-size: 11px;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(2, 8, 20, .85);
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .dex-new-progress-bar {
+      display: block;
+      width: 118px;
+      height: 9px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, .45);
+      border: 1px solid rgba(255, 255, 255, .65);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(2, 8, 20, .4);
+    }
+    .dex-new-progress-fill {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #22d3ee, #34d399);
+      transition: width .3s ease;
+    }
+    .dex-chal-panel {
+      position: relative;
+      width: min(92vw, calc(88vh * 1.6618));
+      max-height: 88vh;
+      aspect-ratio: 2064 / 1242;
+    }
+    .dex-chal-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .dex-chal-close {
+      position: absolute;
+      right: 0%;
+      top: 6.8%;
+      width: 8.6%;
+      aspect-ratio: 1;
+      padding: 0;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 6;
+      transition: filter .15s ease, transform .15s ease;
+    }
+    .dex-chal-close img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .dex-chal-close:hover {
+      filter: brightness(1.12) drop-shadow(0 0 6px rgba(34, 211, 238, .8));
+      transform: scale(1.06);
+    }
+    .dex-chal-close:active {
+      filter: brightness(1.18);
+      transform: scale(.96);
+    }
+    .dex-chal-pet {
+      position: absolute;
+      left: 7.6%;
+      top: 29.5%;
+      width: 29.6%;
+      height: 42.5%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2%;
+    }
+    .dex-chal-pet-meta {
+      position: absolute;
+      left: 5%;
+      top: 4%;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .dex-chal-pet-name {
+      max-width: 90%;
+      font-size: clamp(12px, 1.5vw, 18px);
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(2, 8, 20, .7);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .dex-chal-detail-btn {
+      padding: 3.5% 9%;
+      border-radius: 999px;
+      border: none;
+      background: rgba(255, 255, 255, .92);
+      color: #0f766e;
+      font-size: clamp(10px, 1vw, 13px);
+      font-weight: 900;
+      cursor: pointer;
+      transition: filter .15s ease, transform .15s ease;
+    }
+    .dex-chal-detail-btn:hover {
+      filter: brightness(1.08);
+      transform: scale(1.04);
+    }
+    .dex-chal-level {
+      position: absolute;
+      left: 44.5%;
+      top: 22.2%;
+      width: 22.2%;
+      height: 36%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4%;
+    }
+    .dex-chal-level-btn {
+      flex: 1 1 0;
+      min-height: 0;
+      width: 100%;
+      border-radius: 8px;
+      border: 2px solid rgba(255, 255, 255, .35);
+      background: rgba(46, 58, 178, .55);
+      color: #fff;
+      font-weight: 900;
+      font-size: clamp(12px, 1.2vw, 16px);
+      cursor: pointer;
+      transition: filter .15s ease, transform .15s ease, box-shadow .15s ease;
+    }
+    .dex-chal-level-btn:hover {
+      filter: brightness(1.15);
+      box-shadow: 0 0 8px rgba(103, 232, 249, .55);
+    }
+    .dex-chal-level-btn:active {
+      filter: brightness(1.2);
+      transform: scale(.97);
+    }
+    .dex-chal-level-btn-active {
+      border-color: #67e8f9;
+      background: rgba(72, 92, 220, .8);
+      box-shadow: 0 0 10px rgba(103, 232, 249, .65);
+    }
+    .dex-chal-level-btn:disabled {
+      filter: grayscale(.9) brightness(.55);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+    .dex-chal-elems {
+      position: absolute;
+      left: 69.6%;
+      top: 21%;
+      width: 23.8%;
+      height: 36%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 7%;
+      padding: 0 4%;
+    }
+    .dex-chal-elem-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: clamp(10px, .95vw, 13px);
+      font-weight: 900;
+    }
+    .dex-chal-strong { color: #fecdd3; }
+    .dex-chal-weak { color: #bae6fd; }
+    .dex-chal-immune { color: #e2e8f0; }
+    .dex-chal-actions {
+      position: absolute;
+      left: 44.5%;
+      top: 66%;
+      width: 49%;
+      height: 20.5%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .dex-new-tip {
+      position: absolute;
+      left: 11.5%;
+      right: 11.5%;
+      top: 25%;
+      z-index: 4;
+      font-size: 10.5px;
+      font-weight: 800;
+      line-height: 1.35;
+      color: #f0f9ff;
+      text-shadow: 0 1px 3px rgba(2, 8, 20, .85);
+      pointer-events: none;
+    }
+    .dex-new-grid {
+      position: absolute;
+      left: 11%;
+      right: 11%;
+      top: 30%;
+      bottom: 5%;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px 12px;
+      align-content: space-evenly;
+      overflow-y: auto;
+      z-index: 3;
+      padding: 2px 4px;
+    }
+    .dex-new-card {
+      position: relative;
+      aspect-ratio: 276 / 336;
+      background: url('./resource-v10/亚比图鉴/亚比图鉴展示背景.png') center / 100% 100% no-repeat;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: transform .15s ease, filter .15s ease;
+    }
+    .dex-new-card:hover { transform: translateY(-2px) scale(1.03); filter: brightness(1.08) drop-shadow(0 0 8px rgba(56, 189, 248, .55)); }
+    .dex-new-card:active { transform: scale(.97); filter: brightness(.96); }
+    .dex-new-card-head {
+      position: absolute;
+      left: 9%;
+      right: 9%;
+      top: 8.5%;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      min-height: 13px;
+      z-index: 2;
+    }
+    .dex-new-card-id { font-size: 10px; font-weight: 900; color: #475569; line-height: 1; }
+    .dex-new-win {
+      margin-left: auto;
+      background: #10b981;
+      color: #fff;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 1px 5px;
+      border-radius: 6px;
+      line-height: 1.4;
+    }
+    .dex-new-status { margin-left: auto; font-size: 10px; font-weight: 900; line-height: 1; }
+    .dex-new-win-hidden { margin-left: 0; }
+    .dex-new-card-imgwrap {
+      position: absolute;
+      left: 11%;
+      right: 11%;
+      top: 18%;
+      bottom: 30%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+    .dex-new-card-img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 3px 5px rgba(15, 23, 42, .25)); }
+    .dex-new-card-name {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 74.5%;
+      height: 17%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+      color: #14336e;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      z-index: 2;
+    }
+    .dex-new-card.is-locked .dex-new-card-img { opacity: .55; }
     html.android-webview.android-landscape .warehouse-list-pet-frame {
       width: clamp(calc(42 * var(--ui-px)), 7vw, calc(58 * var(--ui-px)));
       height: clamp(calc(42 * var(--ui-px)), 7vw, calc(58 * var(--ui-px)));
@@ -11021,19 +11428,24 @@
     html:not(.android-webview) .battle-scene-overlay .battle-mobile-root .battle-mobile-log {
       width: clamp(calc(440 * var(--ui-px)), 32vw, calc(720 * var(--ui-px))) !important;
       max-width: clamp(calc(440 * var(--ui-px)), 32vw, calc(720 * var(--ui-px))) !important;
-      min-height: calc(145 * var(--ui-px)) !important;
-      max-height: clamp(calc(145 * var(--ui-px)), 21vh, calc(225 * var(--ui-px))) !important;
-      overflow-y: auto !important;
-      overscroll-behavior: contain;
+      min-height: calc(130 * var(--ui-px)) !important;
+      max-height: clamp(calc(230 * var(--ui-px)), 34vh, calc(390 * var(--ui-px))) !important;
+      overflow: hidden !important;
     }
     html:not(.android-webview) .battle-scene-overlay .battle-mobile-root .battle-mobile-log .battle-log-body,
     html:not(.android-webview) .battle-scene-overlay .battle-mobile-root .battle-mobile-log .max-h-\[220px\] {
-      max-height: clamp(calc(65 * var(--ui-px)), 12vh, calc(128 * var(--ui-px))) !important;
+      max-height: clamp(calc(170 * var(--ui-px)), 27vh, calc(320 * var(--ui-px))) !important;
       overflow-y: auto !important;
     }
     html.android-webview .battle-scene-overlay .battle-mobile-root .battle-mobile-log {
       display: none !important;
     }
+    html.android-webview .battle-scene-overlay .battle-mobile-root .battle-stage-hover-zone .battle-stage-popover {
+      opacity: 1 !important;
+      transform: translate(0, 0) !important;
+    }
+
+
     .battle-scene-overlay .battle-mobile-root .battle-target-status-outside {
       order: 3 !important;
       position: relative !important;
@@ -11085,7 +11497,6 @@
 </div>
 <div id="app" v-cloak>
   <input ref="guestImportInput" type="file" accept="application/json,.json" class="hidden" @change="importGuestLocalSave">
-  <input ref="userImportInput" type="file" accept="application/json,.json" class="hidden" @change="importUserLocalSave">
   <div v-if="!authReady" class="min-h-screen flex items-center justify-center bg-slate-950 text-cyan-100 font-black">
     正在准备登录环境...
   </div>
@@ -11163,7 +11574,6 @@
     </div>
     <div class="home-action-grid">
       <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./resource/ui/背景/赠礼.png" alt=""></button>
-      <button @click="openMailPanel" class="home-action-btn home-action-mail" title="邮件" aria-label="邮件"><img src="./resource/邮件.png" alt=""></button>
       <button @click="openMonthlySignPanel" class="home-action-btn home-action-monthly" title="月签到" aria-label="月签到"><img src="./resource/button/签到.png" alt=""></button>
       <button @click.stop.prevent="openLeaderboardPanel" class="home-action-btn home-action-rank" title="排行榜" aria-label="排行榜"><img src="./resource/ui/背景/排行榜.png" alt=""></button>
       <button @click="openStrongRoadPanel" class="home-action-btn home-action-strong-road" title="变强之路" aria-label="变强之路"><img src="./resource/界面ui/变强之路.png" alt=""></button>
@@ -11179,7 +11589,7 @@
       <button @click="openQixingGachaPanel" class="home-action-btn home-action-gacha" title="启星转盘" aria-label="启星转盘"><img src="./resource/ui/背景/转盘.png" alt=""></button>
       <button @click="openChallengeRecordPanel" class="home-action-btn home-action-record" title="挑战录像" aria-label="挑战录像"><img src="./resource/界面ui/录像.png" alt=""></button>
       <button @click="openElementPanel" class="home-action-btn home-action-element" title="属性克制" aria-label="属性克制"><img src="./resource/界面ui/属性.png" alt=""></button>
-      <button v-if="!isMobileClient" @pointerdown="markTeamPanelInteraction" @keydown="markTeamPanelInteraction" @click="openTeamPanel" class="home-action-btn home-action-team" title="战队" aria-label="战队"><img src="./resource/战队基地.png" alt=""></button>
+      <button v-if="!isMobileClient" @click="openTeamPanel" class="home-action-btn home-action-team" title="战队" aria-label="战队"><img src="./resource/创建战队.png" alt=""></button>
       <button
         @click="showGlobalSettingsPanel = true"
         class="home-settings-btn"
@@ -11312,7 +11722,7 @@
                     <button @click="unequipPetSkin(petId(selectedPet))" class="h-7 px-3 rounded-lg bg-white text-violet-700 border border-violet-200 font-black">卸下皮肤</button>
                   </div>
                   <div class="mt-3 grid grid-cols-3 md:grid-cols-6 gap-2">
-                    <button v-for="seal in qixingSealRows" :key="'bag_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.restrictionText ? '｜仅限' + seal.restrictionText : ''}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
+                    <button v-for="seal in qixingSealRows" :key="'bag_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
                       <img :src="seal.image" @error="withFallback" class="qixing-seal-grid-img mx-auto" :class="{ 'is-legacy': seal.isLegacy }">
                       <div class="qixing-seal-grid-meta">{{ seal.name }} Lv.{{ seal.level }}</div>
                       <div class="qixing-seal-grid-equipped">{{ seal.equippedPetName || '未装配' }}</div>
@@ -11444,18 +11854,6 @@
     </div>
   </div>
 
-  <div v-if="showDesktopCloseSaveFailureModal" class="fixed inset-0 z-[2147483647] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="w-full max-w-md rounded-3xl border border-rose-200 bg-white p-6 shadow-2xl" @click.stop>
-      <h2 class="text-lg font-black text-rose-700">当前存档异常</h2>
-      <p class="mt-3 text-sm font-bold leading-6 text-slate-700">关闭前已连续 5 次存档失败。是否继续退出应用？</p>
-      <p class="mt-2 text-xs font-bold leading-5 text-slate-500">点击确认将直接关闭应用；点击取消可回到游戏继续操作。</p>
-      <div class="mt-6 flex justify-end gap-3">
-        <button @click="cancelDesktopCloseAfterSaveFailure" class="h-10 rounded-xl bg-slate-200 px-5 text-sm font-black text-slate-700">取消</button>
-        <button @click="finishDesktopCloseAfterSaveFailure" class="h-10 rounded-xl bg-rose-600 px-5 text-sm font-black text-white">确认退出</button>
-      </div>
-    </div>
-  </div>
-
   <div v-if="showGameplayGuideModal" class="fixed inset-0 z-[120] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-6">
     <div class="w-full max-w-3xl max-h-[92vh] rounded-3xl border border-indigo-100 bg-white shadow-2xl flex flex-col app-modal" @click.stop>
       <div class="shrink-0 border-b border-slate-100 px-4 py-4 md:px-6">
@@ -11471,106 +11869,111 @@
   </div>
 
   <div v-show="state.showDexPanel" style="display:none" class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeDexPanel">
-    <div class="w-full max-w-6xl h-[90vh] md:h-[760px] rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl flex flex-col app-panel-modal" @click.stop>
-      <div class="flex items-center gap-2 mb-3">
-        <input v-model="dexSearch" placeholder="搜索亚比名称" class="flex-1 h-9 rounded-lg border border-slate-300 px-3 text-sm font-bold">
-        <select v-model="dexElementFilter" class="h-9 rounded-lg border border-slate-300 px-2 text-sm font-bold">
+    <div class="dex-new-panel" @click.stop>
+      <img src="./resource-v10/亚比图鉴/亚比图鉴底图.png" class="dex-new-bg" alt="">
+      <button @click="closeDexPanel" class="dex-new-close-btn" title="关闭图鉴" aria-label="关闭图鉴"></button>
+      <button class="dex-new-arrow-btn dex-new-arrow-left" title="上一页" aria-label="上一页" onclick="var el=document.getElementById('dexNewGrid'); if(el){el.scrollBy({top:-el.clientHeight*0.9,behavior:'smooth'});}"></button>
+      <button class="dex-new-arrow-btn dex-new-arrow-right" title="下一页" aria-label="下一页" onclick="var el=document.getElementById('dexNewGrid'); if(el){el.scrollBy({top:el.clientHeight*0.9,behavior:'smooth'});}"></button>
+      <div class="dex-new-toolbar">
+        <input v-model="dexSearch" placeholder="搜索亚比名称" class="dex-new-search">
+        <select v-model="dexElementFilter" class="dex-new-select">
           <option v-for="opt in dexElementOptions" :key="opt" :value="opt">{{ opt }}</option>
         </select>
-        <select v-model="dexDefeatFilter" class="h-9 rounded-lg border border-slate-300 px-2 text-sm font-bold">
+        <select v-model="dexDefeatFilter" class="dex-new-select">
           <option value="全部战绩">全部战绩</option>
           <option value="已击败">已击败</option>
           <option value="未击败">未击败</option>
         </select>
-        <button @click="closeDexPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
-      <div class="rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2 text-[11px] font-black text-indigo-700 mb-3">
+      <div class="dex-new-progress" title="亚比图鉴收集进度（已激活/总数）">
+        <span class="dex-new-progress-text">图鉴收集 {{ activatedDexCount }}/{{ dexTotal }}</span>
+        <span class="dex-new-progress-bar"><i class="dex-new-progress-fill" :style="{ width: (dexTotal > 0 ? Math.round(activatedDexCount / dexTotal * 100) : 0) + '%' }"></i></span>
+      </div>
+      <div class="dex-new-tip" title="图鉴提示：只有击败某亚比的最终形态，才会获得该亚比蛋。守护者和BOSS请从【挑战之路】入口挑战，商店蛋亚比只能从【亚比商店】购买，签到亚比仅可通过【至尊月签到】里程碑获取。">
         图鉴提示：只有击败某亚比的最终形态，才会获得该亚比蛋。守护者和BOSS请从【挑战之路】入口挑战，商店蛋亚比只能从【亚比商店】购买，签到亚比仅可通过【至尊月签到】里程碑获取。
       </div>
-      <div class="grid grid-cols-6 gap-1 md:gap-2 flex-1 overflow-y-auto pr-1 scrollbar">
-        <button v-for="entry in filteredDex" :key="'dex_'+entry.dexId" @click="canChallengeFromDex(entry) ? selectDex(entry.dexId) : openLockedDexDialog(entry)" class="dex-card rounded-xl border bg-white p-1.5 md:p-2 text-left min-h-[164px] transition-all" :class="canChallengeFromDex(entry) ? 'border-slate-200 hover:border-indigo-300 cursor-pointer' : 'border-amber-300 bg-amber-50 cursor-pointer hover:border-amber-400'">
-          <div class="dex-card-head flex items-center gap-1 mb-1">
-            <div class="text-[10px] font-black text-slate-500">#{{ entry.dexId }}</div>
-            <span class="element-icon" :style="petElementIconStyle(entry.element, 15)" :title="entry.element || ''"></span>
-            <span v-if="entry.subElement" class="element-icon" :style="petElementIconStyle(entry.subElement, 15)" :title="entry.subElement || ''"></span>
-            <span v-if="hasDefeatedDex(entry.dexId)" class="rounded bg-emerald-500 px-1.5 py-0.5 text-[9px] font-black text-white" :class="canChallengeFromDex(entry) ? 'ml-auto' : ''">WIN</span>
-            <span v-if="!canChallengeFromDex(entry)" class="ml-auto text-[10px] font-black" :class="dexStatus(entry)==='BOSS' ? 'text-rose-700' : (dexStatus(entry)==='绝版BOSS' ? 'text-slate-700' : (dexStatus(entry)==='商店蛋' ? 'text-violet-700' : (dexStatus(entry)==='签到' ? 'text-fuchsia-700' : 'text-amber-700')))">{{ dexStatus(entry) }}</span>
+      <div class="dex-new-grid scrollbar" id="dexNewGrid">
+        <button v-for="entry in filteredDex" :key="'dex_'+entry.dexId" @click="canChallengeFromDex(entry) ? selectDex(entry.dexId) : openLockedDexDialog(entry)" class="dex-new-card" :class="{ 'is-locked': !canChallengeFromDex(entry) }">
+          <div class="dex-new-card-head">
+            <div class="dex-new-card-id">#{{ entry.dexId }}</div>
+            <span class="element-icon" :style="petElementIconStyle(entry.element, 14)" :title="entry.element || ''"></span>
+            <span v-if="entry.subElement" class="element-icon" :style="petElementIconStyle(entry.subElement, 14)" :title="entry.subElement || ''"></span>
+            <span v-if="hasDefeatedDex(entry.dexId)" class="dex-new-win" :class="canChallengeFromDex(entry) ? '' : 'dex-new-win-hidden'">WIN</span>
+            <span v-if="!canChallengeFromDex(entry)" class="dex-new-status" :class="dexStatus(entry)==='BOSS' ? 'text-rose-700' : (dexStatus(entry)==='绝版BOSS' ? 'text-slate-700' : (dexStatus(entry)==='商店蛋' ? 'text-violet-700' : (dexStatus(entry)==='签到' ? 'text-fuchsia-700' : 'text-amber-700')))">{{ dexStatus(entry) }}</span>
           </div>
-          <div class="dex-card-image-wrap">
-            <img :src="entry.image" @error="withFallback" class="dex-card-image w-20 h-20 object-contain mx-auto">
+          <div class="dex-new-card-imgwrap">
+            <img :src="entry.image" @error="withFallback" class="dex-new-card-img">
           </div>
-          <div class="dex-card-name text-[11px] md:text-sm font-black text-slate-800 text-center mt-1 truncate">{{ entry.name }}</div>
+          <div class="dex-new-card-name">{{ entry.name }}</div>
         </button>
       </div>
     </div>
-    <teleport to="body">
-      <div v-if="toast.show" class="app-toast-overlay">
-        <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
-      </div>
-    </teleport>
+    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
+      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+    </div>
   </div>
 
   <div v-if="selectedDexEntry" class="fixed inset-0 z-[75] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="state.selectedDexId = null">
-    <div class="w-full max-w-[92vw] md:max-w-3xl rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl max-h-[88vh] overflow-y-auto app-modal" @click.stop>
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-black text-slate-900">图鉴挑战信息</h3>
-        <button @click="state.selectedDexId = null" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
-      </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        <div class="relative rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center">
-          <div class="absolute top-2 left-2 flex items-center gap-1">
-            <div class="text-[10px] font-black text-slate-500">#{{ selectedDexEntry.dexId }}</div>
-            <span class="element-icon" :style="petElementIconStyle(selectedDexEntry.element, 18)" :title="selectedDexEntry.element || ''"></span>
-            <span v-if="selectedDexEntry.subElement" class="element-icon" :style="petElementIconStyle(selectedDexEntry.subElement, 18)" :title="selectedDexEntry.subElement || ''"></span>
-          </div>
-          <img :src="selectedDexBattleImage" @error="withFallback" class="w-20 h-20 md:w-28 md:h-28 object-contain mx-auto">
-          <div class="mt-2 text-sm font-black text-slate-800 truncate">{{ selectedDexEntry.name }}</div>
-          <button @click="openSelectedDexDetail" class="mt-2 h-8 px-3 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-black">查看详情</button>
+    <div class="dex-chal-panel" @click.stop>
+      <img src="resource-v10/亚比图鉴/图鉴挑战底图.png" class="dex-chal-bg" alt="">
+      <div class="dex-chal-pet">
+        <div class="dex-chal-pet-meta">
+          <div class="text-[10px] font-black text-white/90">#{{ selectedDexEntry.dexId }}</div>
+          <span class="element-icon" :style="petElementIconStyle(selectedDexEntry.element, 18)" :title="selectedDexEntry.element || ''"></span>
+          <span v-if="selectedDexEntry.subElement" class="element-icon" :style="petElementIconStyle(selectedDexEntry.subElement, 18)" :title="selectedDexEntry.subElement || ''"></span>
         </div>
-        <div class="space-y-3">
-          <label class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-500">
-            目标等级 ({{ selectedChallengeLevelRange.min }}-{{ selectedChallengeLevelRange.max }})
-            <input v-model="targetLevelInput" type="text" inputmode="numeric" class="mt-1 w-full text-sm font-black bg-transparent focus:outline-none">
-            <div v-if="targetLevelValidationText" class="mt-1 text-[10px] font-black text-rose-500">{{ targetLevelValidationText }}</div>
-          </label>
-          <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
-            <div class="flex items-center gap-2 text-xs font-black text-rose-700">
-              <span class="w-20 shrink-0">克制目标</span>
-              <span v-for="el in selectedDexElementGroups.strong" :key="'dex_strong_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
-              <span v-if="selectedDexElementGroups.strong.length===0" class="text-[11px] font-bold text-slate-400">无</span>
-            </div>
-            <div class="flex items-center gap-2 text-xs font-black text-sky-700">
-              <span class="w-20 shrink-0">对目标微弱</span>
-              <span v-for="el in selectedDexElementGroups.weak" :key="'dex_weak_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
-              <span v-if="selectedDexElementGroups.weak.length===0" class="text-[11px] font-bold text-slate-400">无</span>
-            </div>
-            <div class="flex items-center gap-2 text-xs font-black text-slate-700">
-              <span class="w-20 shrink-0">对目标无效</span>
-              <span v-for="el in selectedDexElementGroups.immune" :key="'dex_immune_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
-              <span v-if="selectedDexElementGroups.immune.length===0" class="text-[11px] font-bold text-slate-400">无</span>
-            </div>
-          </div>
-          <button @click="startChallenge" :disabled="bagPets.length === 0 || challengeRecordingBusy" class="w-full h-11 rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white font-black disabled:opacity-50 disabled:cursor-not-allowed">发起挑战</button>
-          <div class="rounded-xl border border-slate-200 bg-slate-50 p-2">
-            <div class="mb-2 grid grid-cols-3 gap-2">
-              <button
-                v-for="n in autoBattleCountOptions"
-                :key="'auto_battle_count_'+n"
-                @click="selectedAutoBattleCount = n"
-                class="h-8 rounded-lg border text-xs font-black"
-                :class="selectedAutoBattleCount === n ? 'border-indigo-500 bg-indigo-600 text-white' : 'border-slate-200 bg-white text-slate-700'"
-              >{{ n }}次</button>
-            </div>
-            <button @click="startAutoBattleFromDex" :disabled="bagPets.length === 0 || autoBattleDeviceCount <= 0" class="w-full h-10 rounded-xl bg-slate-800 text-white text-sm font-black disabled:opacity-50 disabled:cursor-not-allowed">自动挑战{{ selectedAutoBattleCount }}次（剩余 {{ autoBattleDeviceCount }} 次）</button>
-          </div>
+        <img :src="selectedDexBattleImage" @error="withFallback" class="w-20 h-20 md:w-28 md:h-28 object-contain">
+        <div class="dex-chal-pet-name">{{ selectedDexEntry.name }}</div>
+        <button @click="openSelectedDexDetail" class="dex-chal-detail-btn">查看详情</button>
+      </div>
+      <div class="dex-chal-level">
+        <button
+          v-for="lv in [40, 60, 80, 100]"
+          :key="'dex_level_'+lv"
+          @click="targetLevelInput = String(lv)"
+          :disabled="lv < selectedChallengeLevelRange.min"
+          class="dex-chal-level-btn"
+          :class="targetLevelInput === String(lv) ? 'dex-chal-level-btn-active' : ''"
+        >{{ lv }}级</button>
+        <div v-if="targetLevelValidationText" class="text-[10px] font-black" style="color:#fda4af">{{ targetLevelValidationText }}</div>
+      </div>
+      <div class="dex-chal-elems">
+        <div class="dex-chal-elem-row dex-chal-strong">
+          <span class="w-20 shrink-0">克制目标</span>
+          <span v-for="el in selectedDexElementGroups.strong" :key="'dex_strong_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+          <span v-if="selectedDexElementGroups.strong.length===0" class="text-[11px] font-bold text-white/60">无</span>
+        </div>
+        <div class="dex-chal-elem-row dex-chal-weak">
+          <span class="w-20 shrink-0">对目标微弱</span>
+          <span v-for="el in selectedDexElementGroups.weak" :key="'dex_weak_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+          <span v-if="selectedDexElementGroups.weak.length===0" class="text-[11px] font-bold text-white/60">无</span>
+        </div>
+        <div class="dex-chal-elem-row dex-chal-immune">
+          <span class="w-20 shrink-0">对目标无效</span>
+          <span v-for="el in selectedDexElementGroups.immune" :key="'dex_immune_'+el" class="element-icon" :style="petElementIconStyle(el, 18)" :title="el"></span>
+          <span v-if="selectedDexElementGroups.immune.length===0" class="text-[11px] font-bold text-white/60">无</span>
         </div>
       </div>
+      <div class="dex-chal-actions">
+        <button @click="startChallenge" :disabled="bagPets.length === 0 || challengeRecordingBusy" class="w-full rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white font-black disabled:opacity-50 disabled:cursor-not-allowed" style="height:34%">发起挑战</button>
+        <div class="grid grid-cols-3 gap-2" style="height:28%">
+          <button
+            v-for="n in autoBattleCountOptions"
+            :key="'auto_battle_count_'+n"
+            @click="selectedAutoBattleCount = n"
+            class="h-full rounded-lg border text-xs font-black"
+            :class="selectedAutoBattleCount === n ? 'border-indigo-500 bg-indigo-600 text-white' : 'border-white/60 bg-white/85 text-slate-700'"
+          >{{ n }}次</button>
+        </div>
+        <button @click="startAutoBattleFromDex" :disabled="bagPets.length === 0 || autoBattleDeviceCount <= 0" class="w-full rounded-xl bg-slate-800 text-white text-sm font-black disabled:opacity-50 disabled:cursor-not-allowed" style="height:30%">自动挑战{{ selectedAutoBattleCount }}次（剩余 {{ autoBattleDeviceCount }} 次）</button>
+      </div>
+      <button @click="state.selectedDexId = null" class="dex-chal-close" title="关闭">
+        <img src="resource-v10/亚比图鉴/图鉴挑战关闭按钮.png" alt="关闭">
+      </button>
     </div>
-    <teleport to="body">
-      <div v-if="toast.show" class="app-toast-overlay">
-        <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
-      </div>
-    </teleport>
+    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
+      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+    </div>
   </div>
 
   <div v-if="lockedDexEntry" class="fixed inset-0 z-[75] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeLockedDexDialog">
@@ -11598,11 +12001,9 @@
         </button>
       </div>
     </div>
-    <teleport to="body">
-      <div v-if="toast.show" class="app-toast-overlay">
-        <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
-      </div>
-    </teleport>
+    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
+      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+    </div>
   </div>
 
   <div v-if="showGlobalSettingsPanel" class="fixed inset-0 z-[95] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="showGlobalSettingsPanel = false">
@@ -11945,7 +12346,7 @@
               </div>
               <div class="bag2-enhance-section-title">特性仓库</div>
               <div class="bag2-enhance-seals">
-                <button v-for="seal in qixingSealRows" :key="'bag2_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="bag2-seal-card" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.restrictionText ? '｜仅限' + seal.restrictionText : ''}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
+                <button v-for="seal in qixingSealRows" :key="'bag2_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="bag2-seal-card" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
                   <img :src="seal.image" @error="withFallback" class="bag2-seal-img" :class="{ 'is-legacy': seal.isLegacy }">
                   <div class="bag2-seal-name">{{ seal.name }} Lv.{{ seal.level }}</div>
                   <div class="bag2-seal-owner">{{ seal.equippedPetName || '未装配' }}</div>
@@ -12093,20 +12494,14 @@
         </div>
       </div>
     </div>
-    <teleport to="body">
-      <div v-if="toast.show" class="app-toast-overlay">
-        <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
+      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+    </div>
+    <div v-cloak v-if="rewardFlyToast.show" class="absolute top-16 left-1/2 z-[10001] pointer-events-none">
+      <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
+        {{ rewardFlyToast.message }}
       </div>
-    </teleport>
-    <teleport to="body">
-      <div v-cloak v-if="rewardFlyToast.show" class="reward-fly-overlay fixed inset-0 z-[10001] pointer-events-none overflow-hidden">
-        <div class="absolute top-16 left-1/2">
-          <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
-            {{ rewardFlyToast.message }}
-          </div>
-        </div>
-      </div>
-    </teleport>
+    </div>
   </div>
 
   <div v-if="showDragonBoatShopPanel" class="fixed inset-0 z-[131] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeDragonBoatShopPanel">
@@ -12142,7 +12537,6 @@
     </div>
   </div>
 
-  <teleport to="body">
   <div v-if="battlePrepare && battlePrepare.open" class="battle-prepare-overlay fixed inset-0 z-[109] bg-slate-950/95 backdrop-blur-sm">
     <div class="battle-prepare-root relative w-full h-full overflow-hidden bg-slate-950">
       <div class="battle-bg-layer battle-prepare-layer" :style="{ backgroundImage: `url(${battleBackground.src})` }"></div>
@@ -12221,7 +12615,6 @@
       </div>
     </div>
   </div>
-  </teleport>
 
   <div v-show="showBagPanel" style="display:none" class="app-top-overlay fixed inset-0 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBagPanel">
     <div class="w-full max-w-6xl h-[90vh] md:h-[780px] rounded-3xl border border-white bg-sky-50 p-3 md:p-4 shadow-2xl app-panel-modal bag-mobile-panel bag-responsive-modal overflow-hidden" @click.stop>
@@ -12344,7 +12737,7 @@
                     <button @click="unequipPetSkin(petId(selectedPet))" class="h-7 px-3 rounded-lg bg-white text-violet-700 border border-violet-200 font-black">卸下皮肤</button>
                   </div>
                   <div class="mt-3 grid grid-cols-3 md:grid-cols-6 gap-2">
-                  <button v-for="seal in qixingSealRows" :key="'bag_modal_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.restrictionText ? '｜仅限' + seal.restrictionText : ''}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
+                    <button v-for="seal in qixingSealRows" :key="'bag_modal_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
                       <img :src="seal.image" @error="withFallback" class="qixing-seal-grid-img mx-auto" :class="{ 'is-legacy': seal.isLegacy }">
                       <div class="qixing-seal-grid-meta">{{ seal.name }} Lv.{{ seal.level }}</div>
                       <div class="qixing-seal-grid-equipped">{{ seal.equippedPetName || '未装配' }}</div>
@@ -12419,45 +12812,12 @@
       </div>
       </div>
     </div>
-    <teleport to="body">
-      <div v-if="toast.show" class="app-toast-overlay">
-        <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
-      </div>
-    </teleport>
-    <teleport to="body">
-      <div v-cloak v-if="rewardFlyToast.show" class="reward-fly-overlay fixed inset-0 z-[10001] pointer-events-none overflow-hidden">
-        <div class="absolute top-16 left-1/2">
-          <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
-            {{ rewardFlyToast.message }}
-          </div>
-        </div>
-      </div>
-    </teleport>
-  </div>
-
-  <div v-cloak v-if="showMailPanel" class="fixed inset-0 z-[10050] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeMailPanel">
-    <div class="w-full max-w-6xl h-[90vh] md:h-[760px] rounded-3xl border border-amber-200/30 bg-slate-900 p-4 md:p-5 shadow-2xl text-white flex flex-col" @click.stop>
-      <div class="flex items-center justify-between mb-3">
-        <div class="text-lg font-black text-amber-300">邮件</div>
-        <button @click="closeMailPanel" class="h-9 px-4 rounded-xl bg-slate-800 text-slate-200 text-sm font-black border border-slate-700">关闭</button>
-      </div>
-      <div v-if="mailLoading" class="py-10 text-center text-sm font-bold text-slate-400">加载中...</div>
-      <div v-else-if="mailList.length === 0" class="py-10 text-center text-sm font-bold text-slate-400">当前没有邮件。</div>
-      <div v-else class="space-y-2 flex-1 overflow-y-auto pr-1 scrollbar mb-3">
-        <div v-for="mail in mailList" :key="mail.id" class="rounded-2xl border border-amber-200/20 bg-slate-800/70 p-3">
-          <div class="flex items-center justify-between gap-2">
-            <div class="text-sm font-black text-amber-200">{{ mail.title }}</div>
-            <span v-if="mail.claimed" class="shrink-0 rounded-lg bg-slate-700 px-2 py-0.5 text-[10px] font-black text-slate-300">已领取</span>
-            <span v-else class="shrink-0 rounded-lg bg-amber-500 px-2 py-0.5 text-[10px] font-black text-slate-900">待领取</span>
-          </div>
-          <div class="mt-1 text-xs font-bold text-slate-300 leading-5">{{ mail.body }}</div>
-          <div v-if="mail.rewardText" class="mt-1 text-xs font-black text-amber-300">奖励：{{ mail.rewardText }}</div>
-          <div class="mt-1 text-[10px] font-bold text-slate-500">{{ formatMailTime(mail.createdAt) }}</div>
-        </div>
-      </div>
-      <div class="flex gap-2">
-        <button @click="claimAllMails" :disabled="mailLoading || mailList.length === 0" class="flex-1 h-10 rounded-xl bg-amber-500 text-slate-950 text-sm font-black disabled:opacity-45">全部领取</button>
-        <button @click="deleteAllMails" :disabled="mailLoading || mailList.length === 0" class="flex-1 h-10 rounded-xl bg-rose-600 text-white text-sm font-black disabled:opacity-45">全部删除</button>
+    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
+      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
+    </div>
+    <div v-cloak v-if="rewardFlyToast.show" class="absolute top-16 left-1/2 z-[10001] pointer-events-none">
+      <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
+        {{ rewardFlyToast.message }}
       </div>
     </div>
   </div>
@@ -12566,8 +12926,38 @@
             <img src="./resource/界面ui/能力突破机.png" alt="能力突破机">
             <div class="strong-road-item-label">能力突破机</div>
           </button>
+          <button @click="openFateGatePanel(); closeStrongRoadPanel()" class="strong-road-item">
+            <img src="./resource-v10/命运之门/ui命运之门.png" alt="命运之门" class="strong-road-item-img-fate">
+            <div class="strong-road-item-label">命运之门</div>
+          </button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div v-if="showFateGatePanel" class="fate-gate-overlay" @click="closeFateGatePanel">
+    <div class="fate-gate-panel" @click.stop>
+      <img src="./resource-v10/命运之门/背景2.png" alt="命运之门" class="fate-gate-bg">
+      <img src="./resource-v10/命运之门/一级.png" alt="一级之门" class="fate-gate-door fate-gate-door-1">
+      <img src="./resource-v10/命运之门/二级.png" alt="二级之门" class="fate-gate-door fate-gate-door-2">
+      <img src="./resource-v10/命运之门/三级.png" alt="三级之门" class="fate-gate-door fate-gate-door-3">
+      <img src="./resource-v10/命运之门/四级.png" alt="四级之门" class="fate-gate-door fate-gate-door-4">
+      <img src="./resource-v10/命运之门/过度.png" alt="" class="fate-gate-arrow fate-gate-arrow-1">
+      <img src="./resource-v10/命运之门/过度.png" alt="" class="fate-gate-arrow fate-gate-arrow-2">
+      <img src="./resource-v10/命运之门/过度.png" alt="" class="fate-gate-arrow fate-gate-arrow-3">
+      <div class="fate-gate-trait-panel">
+        <div class="fate-gate-trait-grid">
+          <div v-for="n in 16" :key="'fate_gate_trait_' + n" class="fate-gate-trait-cell"></div>
+        </div>
+        <div class="fate-gate-actions">
+          <button class="fate-gate-action-btn" title="拾取"><img src="./resource-v10/命运之门/拾取.png" alt="拾取"></button>
+          <button class="fate-gate-action-btn" title="卖出"><img src="./resource-v10/命运之门/卖出.png" alt="卖出"></button>
+          <button class="fate-gate-action-btn" title="获取"><img src="./resource-v10/命运之门/获取.png" alt="获取"></button>
+        </div>
+      </div>
+      <button @click="closeFateGatePanel" class="fate-gate-close-btn" title="关闭">
+        <img src="./resource-v10/命运之门/关闭按钮.png" alt="关闭">
+      </button>
     </div>
   </div>
 
@@ -12680,18 +13070,18 @@
 
   <div v-if="showNewWarehousePanel" class="app-top-overlay fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeNewWarehousePanel">
     <div class="new-warehouse-panel" @click.stop="closeNewWarehouseDropdowns">
-      <img src="./resource/仓库ui/仓库底图.png" class="new-warehouse-bg" alt="">
+      <img src="./resource-v9/仓库ui/仓库底图.png" class="new-warehouse-bg" alt="">
       <button @click="closeNewWarehousePanel" class="new-warehouse-close-btn" title="退出仓库" aria-label="退出仓库">
-        <img src="./resource/仓库ui/关闭仓库按钮.png" alt="退出">
+        <img src="./resource-v9/仓库ui/关闭仓库按钮.png" alt="退出">
       </button>
 
       <div class="new-warehouse-view-tabs">
-        <img src="./resource/仓库ui/亚比仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'pet' }" @click="setNewWarehouseView('pet')" alt="亚比仓库">
-        <img src="./resource/仓库ui/精英仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'elite' }" @click="setNewWarehouseView('elite')" alt="精英仓库">
+        <img src="./resource-v9/仓库ui/亚比仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'pet' }" @click="setNewWarehouseView('pet')" alt="亚比仓库">
+        <img src="./resource-v9/仓库ui/精英仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'elite' }" @click="setNewWarehouseView('elite')" alt="精英仓库">
       </div>
 
       <div class="new-warehouse-large-display" v-if="newWarehouseView === 'pet'">
-        <img src="./resource/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
+        <img src="./resource-v9/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
         <template v-if="selectedNewWarehousePet">
           <div class="new-warehouse-large-info">
             <div class="new-warehouse-large-name">{{ petDisplayName(selectedNewWarehousePet) }}</div>
@@ -12699,15 +13089,15 @@
           </div>
           <img :src="bagPetVisual(selectedNewWarehousePet).src" :style="warehousePetAnimImageStyle(selectedNewWarehousePet, 'action')" @error="withFallback" class="new-warehouse-large-pet">
           <div class="new-warehouse-action-btns">
-            <img src="./resource/仓库ui/设为精英.png" class="new-warehouse-action-btn" @click="movePetToElite(selectedNewWarehousePet)" alt="设为精英">
-            <img src="./resource/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
+            <img src="./resource-v9/仓库ui/设为精英.png" class="new-warehouse-action-btn" @click="movePetToElite(selectedNewWarehousePet)" alt="设为精英">
+            <img src="./resource-v9/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
           </div>
         </template>
         <div v-else class="new-warehouse-large-empty">暂无亚比</div>
       </div>
 
       <div class="new-warehouse-large-display" v-if="newWarehouseView === 'elite'">
-        <img src="./resource/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
+        <img src="./resource-v9/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
         <template v-if="selectedNewWarehousePet">
           <div class="new-warehouse-large-info">
             <div class="new-warehouse-large-name">{{ petDisplayName(selectedNewWarehousePet) }}</div>
@@ -12715,8 +13105,8 @@
           </div>
           <img :src="bagPetVisual(selectedNewWarehousePet).src" :style="warehousePetAnimImageStyle(selectedNewWarehousePet, 'action')" @error="withFallback" class="new-warehouse-large-pet">
           <div class="new-warehouse-action-btns">
-            <img src="./resource/仓库ui/取消精英.png" class="new-warehouse-action-btn" @click="removePetFromElite(selectedNewWarehousePet)" alt="取消精英">
-            <img src="./resource/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
+            <img src="./resource-v9/仓库ui/取消精英.png" class="new-warehouse-action-btn" @click="removePetFromElite(selectedNewWarehousePet)" alt="取消精英">
+            <img src="./resource-v9/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
           </div>
         </template>
         <div v-else class="new-warehouse-large-empty">暂无精英亚比</div>
@@ -12724,12 +13114,12 @@
 
       <div class="new-warehouse-skill-panel">
         <div class="new-warehouse-skill-tabs">
-          <img src="./resource/仓库ui/技能.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'skills' }" @click="setNewWarehouseInfoTab('skills')" alt="技能">
-          <img src="./resource/仓库ui/信息.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'info' }" @click="setNewWarehouseInfoTab('info')" alt="信息">
-          <img src="./resource/仓库ui/能力.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'ability' }" @click="setNewWarehouseInfoTab('ability')" alt="能力">
+          <img src="./resource-v9/仓库ui/技能.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'skills' }" @click="setNewWarehouseInfoTab('skills')" alt="技能">
+          <img src="./resource-v9/仓库ui/信息.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'info' }" @click="setNewWarehouseInfoTab('info')" alt="信息">
+          <img src="./resource-v9/仓库ui/能力.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'ability' }" @click="setNewWarehouseInfoTab('ability')" alt="能力">
         </div>
         <template v-if="selectedNewWarehousePet">
-          <img src="./resource/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
+          <img src="./resource-v9/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
           <div class="new-warehouse-skill-content">
           <div v-if="newWarehouseInfoTab === 'skills'" class="new-warehouse-tab-panel">
             <div class="new-warehouse-skill-header">
@@ -12805,7 +13195,7 @@
           </div>
         </template>
         <template v-else>
-          <img src="./resource/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
+          <img src="./resource-v9/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
           <div class="new-warehouse-skill-content">
             <div class="new-warehouse-empty-state">仓库中没有亚比</div>
           </div>
@@ -12856,8 +13246,8 @@
 
       <div class="new-warehouse-filter-bar" @click.stop>
         <div class="new-warehouse-filter-group">
-          <img src="./resource/仓库ui/属性按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter !== '全部系别' }" @click="toggleNewWarehouseElementPicker" alt="属性">
-          <img src="./resource/仓库ui/全部按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter === '全部系别' }" @click="selectNewWarehouseElement('全部系别')" alt="全部">
+          <img src="./resource-v9/仓库ui/属性按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter !== '全部系别' }" @click="toggleNewWarehouseElementPicker" alt="属性">
+          <img src="./resource-v9/仓库ui/全部按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter === '全部系别' }" @click="selectNewWarehouseElement('全部系别')" alt="全部">
           <div class="new-warehouse-element-picker" v-if="newWarehouseShowElementPicker">
             <div
               v-for="el in newWarehouseElementOptions"
@@ -12870,11 +13260,11 @@
         </div>
         <div class="new-warehouse-search-wrap">
           <input type="text" v-model="newWarehouseSearch" class="new-warehouse-search-input" placeholder="搜索亚比名称" @click.stop>
-          <img src="./resource/仓库ui/搜索.png" class="new-warehouse-search-icon" alt="">
+          <img src="./resource-v9/仓库ui/搜索.png" class="new-warehouse-search-icon" alt="">
         </div>
         <div class="new-warehouse-filter-group">
-          <img src="./resource/仓库ui/时间排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('time') }" @click="toggleNewWarehouseTimeMenu" alt="时间排序">
-          <img src="./resource/仓库ui/等级排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('level') }" @click="toggleNewWarehouseLevelMenu" alt="等级排序">
+          <img src="./resource-v9/仓库ui/时间排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('time') }" @click="toggleNewWarehouseTimeMenu" alt="时间排序">
+          <img src="./resource-v9/仓库ui/等级排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('level') }" @click="toggleNewWarehouseLevelMenu" alt="等级排序">
           <div class="new-warehouse-sort-menu" v-if="newWarehouseTimeMenuOpen">
             <div class="new-warehouse-sort-item" :class="{ active: newWarehouseSortMode === 'time_desc' }" @click="setNewWarehouseSort('time_desc')">时间从新到旧</div>
             <div class="new-warehouse-sort-item" :class="{ active: newWarehouseSortMode === 'time_asc' }" @click="setNewWarehouseSort('time_asc')">时间从旧到新</div>
@@ -12894,7 +13284,7 @@
           :class="{ 'is-empty': !slotPet, 'is-selected': slotPet && selectedNewWarehousePet && petId(slotPet) === petId(selectedNewWarehousePet) }"
           @click="slotPet && selectNewWarehousePet(slotPet)"
         >
-          <img src="./resource/仓库ui/仓库亚比显示背景.png" class="new-warehouse-slot-bg" alt="">
+          <img src="./resource-v9/仓库ui/仓库亚比显示背景.png" class="new-warehouse-slot-bg" alt="">
           <template v-if="slotPet">
             <img :src="bagPetVisual(slotPet).src" :style="warehousePetAnimImageStyle(slotPet, 'action')" @error="withFallback" class="new-warehouse-slot-pet">
             <div class="new-warehouse-slot-label">{{ petDisplayName(slotPet) }}</div>
@@ -12910,7 +13300,7 @@
           :class="{ 'is-empty': !slotPet, 'is-selected': slotPet && selectedNewWarehousePet && petId(slotPet) === petId(selectedNewWarehousePet) }"
           @click="slotPet && selectNewWarehousePet(slotPet)"
         >
-          <img src="./resource/仓库ui/仓库亚比显示背景.png" class="new-warehouse-slot-bg" alt="">
+          <img src="./resource-v9/仓库ui/仓库亚比显示背景.png" class="new-warehouse-slot-bg" alt="">
           <template v-if="slotPet">
             <img :src="bagPetVisual(slotPet).src" :style="warehousePetAnimImageStyle(slotPet, 'idle')" @error="withFallback" class="new-warehouse-slot-pet">
             <div class="new-warehouse-slot-label">{{ petDisplayName(slotPet) }}</div>
@@ -13133,7 +13523,6 @@
             <div class="text-sm font-black text-amber-950">{{ it.name }}</div>
             <div class="text-[11px] font-bold text-amber-800">{{ it.desc }}</div>
             <div class="text-[11px] font-black text-rose-700 mt-1">{{ it.price }} H&#24065;</div>
-            <div v-if="skillStoneCredentialNeed(it.id)" class="text-[11px] font-black text-violet-700 mt-1">需要{{ skillStoneCredentialNeed(it.id).name }} x{{ shopItemMaxBuyQuantity(it) > 0 ? Math.min(shopBuyQuantity(it.id), shopItemMaxBuyQuantity(it)) : 1 }}（持有 {{ skillStoneCredentialNeed(it.id).count }}）</div>
             <div v-if="it.purchaseLimit" class="text-[11px] font-black text-orange-700 mt-1">&#38480;&#36141;&#21097;&#20313; {{ shopItemRemainingLimited(it) }}/{{ it.purchaseLimit }}</div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
@@ -13146,7 +13535,7 @@
               @input="setShopBuyQuantity(it.id, $event.target.value)"
               class="w-20 h-9 rounded-xl border border-amber-200 bg-white px-2 text-sm font-black text-amber-950"
             >
-            <button @click="buySkillShopItem(it.id)" :disabled="!shopItemCanBuy(it) || (skillStoneCredentialNeed(it.id) && skillStoneCredentialNeed(it.id).count <= 0)" class="h-9 px-4 rounded-xl bg-amber-500 text-slate-950 text-sm font-black disabled:opacity-45">&#36141;&#20080;</button>
+            <button @click="buySkillShopItem(it.id)" :disabled="!shopItemCanBuy(it)" class="h-9 px-4 rounded-xl bg-amber-500 text-slate-950 text-sm font-black disabled:opacity-45">&#36141;&#20080;</button>
           </div>
         </div>
       </div>
@@ -13246,7 +13635,6 @@
         <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">&#21629;&#20013;: {{ selectedSkillStoneDetail.skill.accuracy }}</div>
         <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">PP: {{ selectedSkillStoneDetail.skill.pp }}</div>
         <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-amber-800">&#20215;&#26684;: {{ selectedSkillStoneDetail.item.price }} H&#24065;</div>
-        <div v-if="skillStoneCredentialNeed(selectedSkillStoneDetail.item.id)" class="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-violet-800">需要{{ skillStoneCredentialNeed(selectedSkillStoneDetail.item.id).name }}（持有 {{ skillStoneCredentialNeed(selectedSkillStoneDetail.item.id).count }}）</div>
       </div>
       <div class="mt-3 rounded-xl border border-amber-100 bg-amber-50 px-3 py-3 text-sm font-bold leading-6 text-amber-950 break-words">{{ selectedSkillStoneDetail.skill.desc }}</div>
     </div>
@@ -13335,16 +13723,7 @@
         </div>
         <button @click="closeChallengeRoadPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
-      <div class="flex items-center gap-2 mb-3">
-        <button
-          v-for="tab in challengeRoadTabs"
-          :key="'challenge_road_tab_' + tab.key"
-          @click="challengeRoadTab = tab.key"
-          class="h-9 px-4 rounded-xl text-sm font-black transition"
-          :class="challengeRoadTab === tab.key ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-        >{{ tab.label }}</button>
-      </div>
-      <div v-if="challengeRoadTab === 'hero'" class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-3 scrollbar">
+      <div class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-3 scrollbar">
         <div class="challenge-road-cover-track flex items-stretch gap-4 pr-2">
           <button
             v-for="tier in challengeRoadTiers"
@@ -13370,21 +13749,6 @@
                 <div class="challenge-road-tier-progress-fill" :style="{ width: tier.percent + '%' }"></div>
               </div>
               <div class="challenge-road-tier-progress-lock mt-2 text-[10px] font-black leading-tight text-slate-600">{{ tier.unlocked ? '' : tier.lockText }}</div>
-            </div>
-          </button>
-        </div>
-      </div>
-      <div v-else class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-3 scrollbar">
-        <div class="challenge-road-cover-track flex items-stretch gap-4 pr-2">
-          <button
-            @click="openRetroGloryChallenge"
-            class="challenge-road-tier-card relative overflow-hidden rounded-2xl border text-left transition bg-slate-900 hover:border-sky-300"
-          >
-            <img :src="retroGloryCoverSrc" @error="withFallback" class="challenge-road-tier-cover absolute inset-0 w-full h-full opacity-95">
-            <div class="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-white/72 via-white/30 to-transparent"></div>
-            <span class="challenge-road-tier-status rounded-full px-2.5 py-1 text-[11px] font-black bg-white/90 text-slate-900">挑战</span>
-            <div class="challenge-road-tier-progress">
-              <div class="text-sm font-black text-center truncate">重铸荣光</div>
             </div>
           </button>
         </div>
@@ -13443,37 +13807,6 @@
             <div v-if="filteredChallengeRoadItems.length === 0" class="col-span-full rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm font-black text-slate-400">
               当前筛选没有挑战目标
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </template>
-
-  <template v-if="showRetroGloryPanel">
-    <div class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeRetroGloryPanel">
-      <div class="w-full max-w-6xl h-[86vh] rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl flex flex-col app-panel-modal" @click.stop>
-        <div class="flex items-center justify-between gap-3 mb-3">
-          <div>
-            <div class="text-lg font-black text-slate-900">重铸荣光</div>
-            <div class="text-xs font-bold text-slate-500">怀旧之旅 · 选择BOSS挑战</div>
-          </div>
-          <button @click="closeRetroGloryPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">返回</button>
-        </div>
-        <div class="flex-1 min-h-0 challenge-road-entry-scroll scrollbar">
-          <div class="challenge-road-entry-track">
-            <button
-              v-for="boss in retroGloryBossCards"
-              :key="'retro_glory_boss_' + boss.dexId"
-              @click="openRetroGloryBoss(boss.dexId)"
-              class="challenge-road-entry-card relative overflow-hidden rounded-2xl border text-left transition border-slate-200 bg-white hover:border-sky-300"
-            >
-              <img :src="boss.image" @error="withFallback" class="challenge-road-entry-cover absolute inset-0 w-full h-full opacity-95">
-              <div class="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-white/72 via-white/30 to-transparent"></div>
-              <span class="challenge-road-entry-badge rounded-full px-2.5 py-1 text-[11px] font-black bg-white/90 text-slate-900">BOSS</span>
-              <div class="challenge-road-entry-name">
-                <div class="text-sm font-black text-center truncate">{{ boss.name }}</div>
-              </div>
-            </button>
           </div>
         </div>
       </div>
@@ -13750,7 +14083,7 @@
             </div>
             <div class="rounded-xl border border-yellow-200 bg-yellow-50 p-3">
               <div class="text-[10px] font-black text-yellow-700">当周BOSS勋章</div>
-              <div class="text-2xl font-black text-slate-900">{{ weeklyBossMedalCount }}/50</div>
+              <div class="text-2xl font-black text-slate-900">{{ weeklyBossMedalCount }}/100</div>
             </div>
             <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 col-span-2">
               <div class="text-[10px] font-black text-emerald-700">勋章兑换</div>
@@ -13790,10 +14123,6 @@
       <div class="equipment-dungeon-scorebar">
         <span>当前累积分数：{{ equipmentDungeonScore }}</span>
         <span>今日机会：{{ equipmentDungeonAttemptsLeft }}/6</span>
-        <div class="mt-2 flex flex-wrap items-center gap-2">
-          <span class="text-[11px] text-amber-200">SSS通关卡：{{ equipmentDungeonSssClearCardCount }}</span>
-          <button @click.stop="useEquipmentDungeonSssClearCard" :disabled="equipmentDungeonSssClearCardCount<=0 || equipmentDungeonAttemptsLeft<=0" class="h-7 rounded-lg bg-fuchsia-400 px-3 text-[11px] font-black text-slate-950 shadow disabled:opacity-45">使用SSS通关卡</button>
-        </div>
         <div v-if="equipmentDungeonCanSweep" class="mt-2 flex flex-wrap gap-2">
           <button @click.stop="sweepEquipmentDungeon(1)" class="h-7 rounded-lg bg-cyan-400 px-3 text-[11px] font-black text-slate-950 shadow">扫荡1次</button>
           <button @click.stop="sweepEquipmentDungeon(equipmentDungeonAttemptsLeft)" class="h-7 rounded-lg bg-amber-300 px-3 text-[11px] font-black text-slate-950 shadow">扫荡剩余</button>
@@ -13842,7 +14171,6 @@
         <img :src="equipmentDungeonBossAnimSrc" @error="withFallback" alt="">
       </button>
       <div v-if="equipmentDungeonBossCardsVisible" class="equipment-dungeon-card-panel">
-        <button type="button" class="equipment-dungeon-card-close" @click.stop="closeEquipmentDungeonBossCards" title="关闭" aria-label="关闭">×</button>
         <div v-for="card in equipmentDungeonDifficultyCards" :key="'equipment_dungeon_card_'+card.key" class="equipment-dungeon-card" :class="'is-'+card.key">
           <div class="equipment-dungeon-card-title">
             <span>{{ card.label }}</span>
@@ -13896,8 +14224,7 @@
             >
               <div class="flex items-start justify-between gap-2">
                 <div class="text-sm font-black text-cyan-50 leading-5">{{ row.label }}</div>
-                <div v-if="row.obtained" class="rounded-full bg-slate-700 px-2 py-0.5 text-[10px] font-black text-slate-300">已获取</div>
-                <div v-else-if="row.locked" class="rounded-full bg-slate-700 px-2 py-0.5 text-[10px] font-black text-slate-300">未解锁</div>
+                <div v-if="row.disabled" class="rounded-full bg-slate-700 px-2 py-0.5 text-[10px] font-black text-slate-300">已获取</div>
               </div>
               <div class="mt-2 text-xs font-black text-cyan-200">概率 {{ row.probability }}%</div>
             </div>
@@ -13915,7 +14242,7 @@
             </div>
           </div>
           <div class="rounded-xl border border-cyan-200/20 bg-slate-950/35 p-3 text-xs font-bold text-cyan-50 leading-5">
-            第一阶段在通关挑战之路第一梯度后解锁，寒冰公主亚比蛋150抽保底且本阶段只可获取一次，获取后奖池卡片置灰，后续抽到会自动转为启星碎片。第二阶段在拥有第五梯度任意BOSS亚比或亚比蛋后解锁：先由东皇太一亚比蛋500抽保底，获得后才开启东皇太初印500抽保底；两项奖励均只可获取一次。第二阶段寒冰公主亚比蛋同样只可获取一次。能量核心转盘消耗H币，单抽2000H币，十连18000H币；200抽保底一个未获取能量核心，获得后置灰且不再重复获取，再200抽保底另一个未获取能量核心。
+            第一阶段在通关挑战之路第一梯度后解锁，寒冰公主亚比蛋150抽保底且本阶段只可获取一次，获取后奖池卡片置灰，后续抽到会自动转为启星碎片。第二阶段在拥有第五梯度任意BOSS亚比或亚比蛋后解锁，未来计划·神秘战无炎皮肤500抽保底且只可获取一次；第二阶段寒冰公主亚比蛋同样只可获取一次。能量核心转盘消耗H币，单抽2000H币，十连18000H币；200抽保底一个未获取能量核心，获得后置灰且不再重复获取，再200抽保底另一个未获取能量核心。
           </div>
           <div v-if="!selectedQixingGachaPhaseUnlocked" class="rounded-xl border border-amber-200/35 bg-amber-300/10 p-3 text-xs font-black text-amber-100 leading-5">
             {{ qixingGachaPhaseLockText }}
@@ -14127,12 +14454,12 @@
         <svg viewBox="0 0 24 24" class="w-6 h-6 fill-none stroke-white stroke-width-2"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
 
-      <div class="team-commander" @click="onCommanderClick($event)">
+      <div class="team-commander" @click="onCommanderClick">
         <img src="./resource/指挥官_.png" alt="指挥官">
       </div>
 
       <div class="team-recruit-btn" @click="onTeamBossClick">
-        <img src="./resource/战队boss/战队boss.png" alt="战队BOSS">
+        <img src="./resource-v9/战队boss/战队boss.png" alt="战队BOSS">
       </div>
 
       <div class="team-boss-btn" style="display:none;" @click="onTeamBossClick">
@@ -14243,7 +14570,7 @@
             <img src="./resource/战队任务.png" alt="战队任务">
             <span>战队任务</span>
           </button>
-          <button class="team-butler-btn-item shop" @click="openTeamShop">
+          <button class="team-butler-btn-item shop" @click="showTeamButler = false; showTeamShop = true">
             <img src="./resource/战队商店.png" alt="战队商店">
             <span>战队商店</span>
           </button>
@@ -14262,7 +14589,7 @@
         <div v-for="task in teamTaskRows" :key="'team_task_'+task.key" class="team-task-row">
           <div>
             <div class="team-task-name">{{ task.name }}</div>
-            <div class="team-task-reward">贡献 +{{ task.contribution }} ｜ 荣誉 +{{ task.honor }}<span v-if="task.progressText"> ｜ {{ task.progressText }}</span></div>
+            <div class="team-task-reward">贡献 +{{ task.contribution }} ｜ 荣誉 +{{ task.honor }}</div>
           </div>
           <button
             v-if="!task.completed"
@@ -14358,11 +14685,6 @@
                   :disabled="!canSetTeamElder(member)"
                   @click="setTeamMemberRole(member, 'elder')"
                 >设为元老</button>
-                <button
-                  v-if="canKickTeamMember(member)"
-                  class="team-record-mini-btn"
-                  @click="kickTeamMember(member)"
-                >踢出</button>
               </span>
             </div>
           </div>
@@ -14442,13 +14764,13 @@
     </div>
 
     <div v-if="showTeamBoss" class="team-boss-panel">
-      <img src="./resource/战队boss/战队boss底图.png" alt="战队BOSS" class="team-boss-bg">
-      <img src="./resource/战队boss/战队boss关闭按钮.png" alt="关闭" class="team-boss-close" @click="showTeamBoss = false">
+      <img src="./resource-v9/战队boss/战队boss底图.png" alt="战队BOSS" class="team-boss-bg">
+      <img src="./resource-v9/战队boss/战队boss关闭按钮.png" alt="关闭" class="team-boss-close" @click="showTeamBoss = false">
       
       <div class="team-boss-main">
         <!-- 左侧排行榜 -->
         <div class="team-boss-rank">
-          <img src="./resource/战队boss/排行.png" alt="排行背景" class="team-boss-rank-bg">
+          <img src="./resource-v9/战队boss/排行.png" alt="排行背景" class="team-boss-rank-bg">
           <div class="team-boss-rank-tabs">
             <span :class="['team-boss-rank-tab', { active: teamBossRankTab === 'inner' }]" @click="teamBossRankTab = 'inner'">队内排行</span>
             <span :class="['team-boss-rank-tab', { active: teamBossRankTab === 'team' }]" @click="teamBossRankTab = 'team'">战队排行</span>
@@ -14460,30 +14782,26 @@
               <span class="team-boss-ross-dmg">{{ item.damage }}</span>
             </div>
           </div>
-          <div class="team-boss-desc">
-            <div class="team-boss-desc-title">挑战说明</div>
-            <div class="team-boss-desc-line">每日可无限次挑战，取伤害最高的一次计入排行。</div>
-            <div class="team-boss-desc-line">BOSS每回合有50%概率提升特攻1级。</div>
-            <div class="team-boss-desc-line">我方每阵亡1只亚比，九尾冰狐增伤50%。</div>
-            <div class="team-boss-desc-line">战队BOSS减伤20%，每次攻击有10%概率令对方陷入冰冻。</div>
+          <div class="team-boss-chest">
+            <img src="./resource-v9/战队boss/宝箱奖励.png" alt="宝箱奖励">
           </div>
         </div>
 
         <!-- 右侧Boss区域 -->
         <div class="team-boss-right">
           <div class="team-boss-display">
-            <img src="./resource/战队boss/boss背景框.png" alt="Boss背景" class="team-boss-frame">
+            <img src="./resource-v9/战队boss/boss背景框.png" alt="Boss背景" class="team-boss-frame">
             <div class="team-boss-content">
-              <img src="./resource/地台boss/第四阶段/九尾冰狐.png" alt="Boss" class="team-boss-img">
+              <img src="./resource/地台boss/第四阶段/赤翼魔龙王.png" alt="Boss" class="team-boss-img">
             </div>
           </div>
           <div class="team-boss-challenge" @click="challengeTeamBoss">
-            <img src="./resource/战队boss/挑战.png" alt="挑战">
+            <img src="./resource-v9/战队boss/挑战.png" alt="挑战">
           </div>
           <div class="team-boss-hp">
-            <img src="./resource/战队boss/boss血量框.png" alt="血量框" class="team-boss-hp-frame">
+            <img src="./resource-v9/战队boss/boss血量框.png" alt="血量框" class="team-boss-hp-frame">
             <div class="team-boss-hp-bar-wrap">
-              <img src="./resource/战队boss/血量条.png" alt="血量条" class="team-boss-hp-bar" :style="{ width: teamBossHpPercent + '%' }">
+              <img src="./resource-v9/战队boss/血量条.png" alt="血量条" class="team-boss-hp-bar" :style="{ width: teamBossHpPercent + '%' }">
             </div>
             <div class="team-boss-hp-text">HP {{ teamBossCurrentHp }} / {{ teamBossMaxHp }}</div>
           </div>
@@ -14492,18 +14810,18 @@
     </div>
   </div>
 
-  <div v-cloak v-if="showTeamPanel && teamActionModalTriggered && showTeamModal" class="team-modal-overlay">
+  <div v-if="showTeamModal" class="team-modal-overlay">
     <div class="team-modal">
       <div class="team-modal-title">选择操作</div>
       <div class="team-modal-buttons">
-        <button class="team-modal-btn create" @click="handleCreateTeam($event)">创建战队</button>
-        <button class="team-modal-btn join" @click="openJoinTeamList">申请加入</button>
+        <button class="team-modal-btn create" @click="handleCreateTeam">创建战队</button>
+        <button class="team-modal-btn join" @click="showTeamModal = false; showJoinTeamList = true">申请加入</button>
         <button class="team-modal-btn cancel" @click="showTeamModal = false">取消</button>
       </div>
     </div>
   </div>
 
-  <div v-cloak v-if="showTeamPanel && showCreateTeamModal" class="team-modal-overlay">
+  <div v-if="showCreateTeamModal" class="team-modal-overlay">
     <div class="team-create-modal">
       <div class="team-modal-title">创建战队</div>
       <div class="team-create-form">
@@ -14518,7 +14836,7 @@
       </div>
       <div class="team-modal-buttons">
         <button class="team-modal-btn create" @click="submitCreateTeam">确认创建</button>
-        <button class="team-modal-btn cancel" @click="cancelCreateTeam($event)">取消</button>
+        <button class="team-modal-btn cancel" @click="cancelCreateTeam">取消</button>
       </div>
     </div>
   </div>
@@ -14551,14 +14869,9 @@
 
 <div v-cloak v-if="battleScene && battleScene.open" class="battle-scene-overlay battle-render-safe fixed inset-0 z-[110] bg-slate-950/90 backdrop-blur-sm" @click="closeBattleScene">
   <div class="relative w-full h-full overflow-hidden bg-slate-950 battle-mobile-root" @click.stop>
-    <button v-if="battleSkillLongPressTip.show" type="button" @click.stop="hideBattleSkillLongPressTip" class="absolute left-1/2 top-[7%] z-[500] w-[min(88vw,560px)] -translate-x-1/2 rounded-2xl border border-cyan-200/70 bg-slate-950/95 px-4 py-3 text-left shadow-2xl">
-      <div class="text-sm font-black text-cyan-200">{{ battleSkillLongPressTip.name }}</div>
-      <div class="mt-1 text-xs font-bold leading-5 text-white break-words">{{ battleSkillLongPressTip.description }}</div>
-      <div class="mt-2 text-[10px] font-bold text-slate-400">点击关闭</div>
-    </button>
     <div class="battle-bg-layer" :style="{ backgroundImage: `url(${battleBackground.src})` }"></div>
     <div v-if="battleScene.shengyuBackground" :key="'shengyu_bg_' + battleScene.shengyuBackground.seq" :class="['battle-shengyu-bg-layer', { 'battle-shengyu-bg-layer-mobile': isMobileClient }]" :style="battleShengyuBackgroundStyle()">
-      <img :src="battleScene.shengyuBackground.src" alt="">
+      <object v-if="!isMobileClient" :data="battleScene.shengyuBackground.src" type="image/svg+xml" aria-label=""></object>
     </div>
     <div class="battle-bg-shade"></div>
     <div class="battle-speed-floating">
@@ -14577,7 +14890,6 @@
       <img :src="battleScene.skillEffectFx.src" alt="">
     </div>
     <div v-if="battleScene.fxSkillText" class="hidden absolute top-6 right-6 z-30 rounded-2xl border border-cyan-300/60 bg-cyan-400/25 px-3 py-1 text-[11px] font-black text-cyan-100 whitespace-nowrap shadow-[0_8px_24px_rgba(34,211,238,0.25)] battle-skill-float">{{ battleScene.fxSkillText }}</div>
-    <div v-if="battleScene.shengyuDomainLabel" class="absolute top-4 left-1/2 z-30 -translate-x-1/2 rounded-full border border-amber-200/70 bg-slate-950/75 px-3 py-1 text-xs font-black text-amber-100 shadow-lg whitespace-nowrap">当前圣域：{{ battleScene.shengyuDomainLabel }}</div>
 
     <div class="absolute left-3 right-3 md:left-8 md:right-auto top-3 md:top-8 w-auto md:w-[22%] md:min-w-[280px] battle-mobile-wrap battle-mobile-target">
       <div class="battle-target-card-row">
@@ -14715,15 +15027,13 @@
               <button
                 v-for="row in battleSceneSkillRows"
                 :key="row.key"
-                @click="row.skill ? onBattleSkillClick(row.skill) : null"
-                @touchstart="row.skill ? onBattleSkillTouchStart(row.skill, $event) : null"
+                @click="row.skill ? castBattleSkill(row.name) : null"
+                @touchstart="row.skill ? onBattleSkillTouchStart(row.skill) : null"
                 @touchend="onBattleSkillTouchEnd"
                 @touchcancel="onBattleSkillTouchEnd"
-                @touchmove.stop
-                @mousedown="row.skill ? onBattleSkillTouchStart(row.skill, $event) : null"
+                @mousedown="row.skill ? onBattleSkillTouchStart(row.skill) : null"
                 @mouseup="onBattleSkillTouchEnd"
                 @mouseleave="onBattleSkillTouchEnd"
-                @contextmenu.prevent
                 :disabled="row.disabled"
                 :title="row.title"
                 class="battle-skill-row w-full rounded-xl border text-xs font-black text-left px-3 py-1.5"
@@ -14935,7 +15245,7 @@
 <div v-cloak v-if="battleResult" class="fixed inset-0 z-[130] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBattleResult">
   <div class="w-full max-w-3xl rounded-3xl border border-white bg-white p-4 shadow-2xl app-modal" @click.stop>
     <div class="flex items-center justify-between mb-3">
-      <div class="text-lg font-black" :class="battleResult.teamBossSettle || battleResult.win ? 'text-emerald-700' : 'text-rose-700'">{{ battleResult.teamBossSettle ? '挑战成功结算' : (battleResult.win ? '挑战胜利结算' : '挑战失败结算') }}</div>
+      <div class="text-lg font-black" :class="battleResult.win ? 'text-emerald-700' : 'text-rose-700'">{{ battleResult.win ? '挑战胜利结算' : '挑战失败结算' }}</div>
       <div class="flex items-center gap-2">
         <button v-if="battleResult.repeatDexId" @click="repeatLastDexChallenge" class="h-9 px-4 rounded-xl bg-rose-500 text-white text-sm font-black">再次挑战</button>
         <button @click="closeBattleResult" class="h-9 px-4 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">确认</button>
@@ -14944,15 +15254,6 @@
     <div class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
       <div v-if="battleResult.hCoinGain > 0" class="rounded-2xl border border-yellow-200 bg-yellow-50 p-3 text-sm font-black text-yellow-800">
         获得 H币 +{{ battleResult.hCoinGain }}
-      </div>
-      <div v-if="battleResult.teamBossSettle" class="rounded-2xl border border-orange-200 bg-orange-50 p-3">
-        <div class="text-sm font-black text-orange-800 mb-1">本次挑战各亚比伤害：</div>
-        <div v-for="(row, idx) in (battleResult.teamBossDamageByPet || [])" :key="'tbd_'+(row.id || idx)" class="flex items-center gap-2 py-1 border-t border-orange-100 first:border-t-0">
-          <img :src="row.image" @error="withFallback" class="w-9 h-9 object-contain rounded-lg border border-slate-200 bg-white shrink-0">
-          <span class="min-w-0 flex-1 text-sm font-black text-slate-800 truncate">{{ row.name }}</span>
-          <span class="text-sm font-black text-orange-700">{{ row.damage }}</span>
-        </div>
-        <div class="mt-2 pt-2 border-t border-orange-200 text-sm font-black text-orange-800">本次挑战总伤害：{{ battleResult.teamBossDamage }}</div>
       </div>
       <div v-if="battleResult.expMultiplier > 1" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-black text-emerald-800">
         经验倍率：本场经验 ×{{ battleResult.expMultiplier }}
@@ -14978,7 +15279,7 @@
   </div>
 </div>
 
-<div v-cloak v-if="activeEvolution" class="fixed inset-0 z-[131] bg-slate-950/88 backdrop-blur-md flex items-center justify-center p-4" :class="{ 'app-top-dialog-overlay': activeEvolution.kind === 'qixingSealUpgrade' }" @click="closeEvolutionModal">
+<div v-cloak v-if="activeEvolution" class="fixed inset-0 z-[131] bg-slate-950/88 backdrop-blur-md flex items-center justify-center p-4" @click="closeEvolutionModal">
   <div class="w-full max-w-2xl rounded-3xl border border-indigo-300/40 bg-slate-900 p-4 shadow-2xl shadow-indigo-900/40 relative overflow-hidden app-modal" @click.stop>
     <div class="absolute -top-10 -left-10 w-48 h-48 rounded-full bg-indigo-500/20 blur-2xl pointer-events-none"></div>
     <div class="absolute -bottom-10 -right-8 w-56 h-56 rounded-full bg-cyan-400/20 blur-2xl pointer-events-none"></div>
@@ -15004,6 +15305,6 @@
 </div>
 
 <script src="./aola-dex-1-100.js?v=20260617_fix_weekly_and_action_fx"></script>
-<script src="./aola-star-app.js?v=20260826_team_boss_damage_limit_fix"></script>
+<script src="./aola-star-app.js?v=20260723_team_sign_bosses"></script>
 </body>
 </html>

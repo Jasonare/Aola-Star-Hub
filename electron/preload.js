@@ -8,10 +8,7 @@ contextBridge.exposeInMainWorld("aolaDesktop", {
     ipcRenderer.on("aola:auto-save-before-close", listener);
     return () => ipcRenderer.removeListener("aola:auto-save-before-close", listener);
   },
-  autoSaveDone(windowId, result = {}) {
-    ipcRenderer.send(`aola:auto-save-done:${windowId}`, result);
-  },
-  cancelAutoSaveClose(windowId) {
-    ipcRenderer.send(`aola:auto-save-cancel:${windowId}`);
+  autoSaveDone(windowId) {
+    ipcRenderer.send(`aola:auto-save-done:${windowId}`);
   }
 });
