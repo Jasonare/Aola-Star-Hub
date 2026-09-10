@@ -22,10 +22,17 @@
       window.addEventListener("orientationchange", syncAndroidViewportClass);
     })();
   </script>
+  <script>document.documentElement.classList.add("vue-loading");</script>
   <link rel="stylesheet" href="./vendor/tailwind.css">
   <script src="./vendor/vue.global.prod.js"></script>
   <style>
     [v-cloak] { display: none !important; }
+    html.vue-loading #app .fixed.inset-0,
+    html.vue-loading #app .app-top-overlay,
+    html.vue-loading #app .app-top-dialog-overlay,
+    html.vue-loading #app [class*="overlay"],
+    html.vue-loading #app [class*="modal"],
+    html.vue-loading #app .team-modal-overlay { display: none !important; }
     .preboot-login-page {
       position: fixed;
       inset: 0;
@@ -504,6 +511,7 @@
       --w: 10%;
     }
     .home-action-gift { --x: 1.2%; --y: 83.4%; --w: 7.1%; }
+    .home-action-mail { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
     .home-action-dragonboat { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
     .home-action-rank { --x: 22%; --y: 86.2%; --w: 7.8%; }
     .home-action-tunnel { --x: 34.0%; --y: 86.0%; --w: 8.4%; }
@@ -528,6 +536,119 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,.72), 0 14px 30px rgba(14, 116, 144, .16);
     }
     .home-action-team { --x: 2.2%; --y: 42.6%; --w: 5.2%; }
+    .home-action-elite-tournament { --x: 1.3%; --y: 54.4%; --w: 7.1%; }
+    .home-action-pvp-room { --x: 1.3%; --y: 64%; --w: 7.1%; }
+    .home-elite-tournament-face {
+      display: flex; min-height: 46px; align-items: center; justify-content: center; padding: 6px 8px;
+      border: 2px solid #fef3c7; border-radius: 13px; color: #fff7d6; font-size: clamp(10px, .9vw, 15px);
+      font-weight: 900; line-height: 1.15; text-align: center; background: linear-gradient(145deg, #7c2d12, #ea580c 52%, #fbbf24);
+      box-shadow: 0 5px 13px rgba(124,45,18,.48); text-shadow: 0 2px 1px rgba(69,26,3,.7);
+    }
+    .home-pvp-room-face {
+      position: relative; isolation: isolate; display: flex; width: 100%; aspect-ratio: 1 / 1; overflow: hidden;
+      align-items: center; justify-content: center; border: 2px solid rgba(211, 239, 255, .92); border-radius: 24%;
+      background: radial-gradient(circle at 28% 16%, rgba(185, 226, 255, .72), transparent 24%), linear-gradient(145deg, #57799f 0%, #132741 47%, #0a1328 100%);
+      box-shadow: 0 0 0 3px rgba(13, 34, 70, .9), 0 0 0 5px rgba(91, 195, 255, .68), -5px 0 12px rgba(27, 154, 255, .75), 5px 0 12px rgba(255, 45, 85, .68), inset 0 2px 2px rgba(255,255,255,.74), inset 0 -12px 18px rgba(2,8,25,.72);
+      pointer-events: none;
+    }
+    .home-pvp-room-face::before {
+      content: ''; position: absolute; z-index: 0; inset: 6%; border-radius: 20%; border: 2px solid rgba(178, 217, 255, .72);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 0 0 2px rgba(8,18,42,.82), -3px 0 0 rgba(40,140,255,.9), 3px 0 0 rgba(255,55,83,.9);
+      background: linear-gradient(135deg, rgba(179, 211, 244, .24), transparent 37%, rgba(20, 33, 64, .66) 56%, rgba(11, 19, 37, .88));
+    }
+    .home-pvp-room-vs {
+      position: relative; z-index: 1; display: block; margin-top: -5%; color: #f7fbff; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-size: clamp(30px, 3.2vw, 58px); font-style: italic; font-weight: 1000; letter-spacing: -.09em; line-height: .78;
+      -webkit-text-stroke: 2px #071b52; text-shadow: -3px 3px 0 #e11d48, 3px 3px 0 #075bd2, 0 7px 8px rgba(0,0,0,.72), 0 0 10px rgba(255,255,255,.48);
+    }
+    .home-pvp-room-label {
+      position: absolute; z-index: 1; bottom: 8%; left: 50%; transform: translateX(-50%); padding: 2px 7px; border: 1px solid rgba(205,238,255,.72); border-radius: 999px;
+      color: #e7f7ff; background: rgba(4,18,44,.84); box-shadow: 0 2px 5px rgba(0,0,0,.55); font-size: clamp(8px, .7vw, 12px); font-weight: 900; letter-spacing: .08em; line-height: 1.15; white-space: nowrap;
+    }
+    .elite-tournament-panel { position: relative; width: min(1360px, 97vw); height: min(840px, 95vh); display: flex; flex-direction: column; overflow: hidden; border: 2px solid rgba(250,204,21,.78); border-radius: 28px; background: radial-gradient(circle at 12% 0, rgba(56,189,248,.28), transparent 28%), radial-gradient(circle at 88% 8%, rgba(250,204,21,.20), transparent 26%), linear-gradient(150deg, #061b3a, #0b2b55 58%, #071d3d); box-shadow: 0 26px 70px rgba(0,0,0,.64), inset 0 1px 0 rgba(255,255,255,.16); }
+    .elite-tournament-panel::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 120%, rgba(250,204,21,.12), transparent 42%); pointer-events: none; }
+    .elite-tournament-panel > * { position: relative; z-index: 1; }
+    .elite-tournament-panel, .elite-tournament-panel * { color: #fff0b0 !important; }
+    .elite-tournament-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 22px; border-bottom: 1px solid rgba(125,211,252,.24); background: linear-gradient(90deg, rgba(8,47,73,.72), rgba(12,74,110,.30)); }
+    .elite-tournament-title { color: #fff9db; font-size: 22px; font-weight: 1000; letter-spacing: .08em; text-shadow: 0 0 16px rgba(251,191,36,.55), 0 2px 0 rgba(0,0,0,.35); }
+    .elite-tournament-subtitle { margin-top: 3px; color: #a7dcff; font-size: 12px; font-weight: 800; }
+    .elite-tournament-cup { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 999px; color: #7c2d12; background: radial-gradient(circle at 32% 25%, #fff7c2, #fbbf24 52%, #b45309); box-shadow: 0 0 22px rgba(251,191,36,.62), inset 0 -3px 7px rgba(120,53,15,.55); font-size: 25px; }
+    .elite-tabs { display: flex; align-items: center; gap: 8px; padding: 12px 20px 0; }
+    .elite-tab { height: 40px; padding: 0 22px; border: 1px solid rgba(125,211,252,.36); border-radius: 14px; color: #cbeafe; background: linear-gradient(180deg, rgba(15,23,42,.72), rgba(12,74,110,.32)); box-shadow: inset 0 1px 0 rgba(255,255,255,.12); font-size: 14px; font-weight: 1000; transition: transform .16s ease, box-shadow .16s ease; }
+    .elite-tab:hover { transform: translateY(-1px); }
+    .elite-tab.is-active { color: #172554; border-color: #fde68a; background: linear-gradient(180deg, #fef3c7, #f59e0b); box-shadow: 0 7px 18px rgba(245,158,11,.34); }
+    .elite-bracket-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 20px 10px; }
+    .elite-group-tabs { display: flex; flex-wrap: wrap; gap: 7px; }
+    .elite-group-tab { min-width: 40px; height: 34px; padding: 0 10px; border: 1px solid rgba(125,211,252,.28); border-radius: 11px; color: #bae6fd; background: rgba(8,47,73,.55); font-size: 13px; font-weight: 1000; transition: transform .15s ease, border-color .15s ease; }
+    .elite-group-tab.is-active { color: #052e4a; border-color: #7dd3fc; background: linear-gradient(180deg, #e0f2fe, #38bdf8); box-shadow: 0 6px 15px rgba(56,189,248,.28); }
+    .elite-group-tab.is-done::after { content: '✓'; margin-left: 4px; color: #86efac; }
+    .elite-group-tab.is-done.is-active::after { color: #052e4a; }
+    .elite-bracket-title { margin-left: auto; color: #fde68a; font-size: 15px; font-weight: 1000; text-shadow: 0 0 12px rgba(251,191,36,.45); }
+    .elite-bracket-overview { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px 8px; font-size: 14px; font-weight: 800; }
+    .elite-bracket-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-left: auto; }
+    .elite-bracket-scroll { min-height: 0; flex: 1; display: grid; place-items: center; overflow: hidden; padding: 4px 18px 20px; container-type: size; }
+    .elite-bracket-board { display: grid; width: min(100cqw, 238.71cqh); height: auto; min-width: 0; min-height: 0; aspect-ratio: 1480 / 620; align-items: stretch; gap: clamp(2px, .7vw, 10px); padding: clamp(4px, .85vw, 12px); border: 1px solid rgba(125,211,252,.18); border-radius: 20px; background: radial-gradient(circle at 50% 50%, rgba(14,116,144,.16), rgba(3,18,36,.72)); }
+    .elite-bracket-board.is-final { width: min(100cqw, 265.12cqh); aspect-ratio: 1140 / 430; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(50px, .88fr) repeat(3, minmax(0, 1fr)); }
+    .elite-bracket-board:not(.is-final) { grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(56px, .92fr) repeat(4, minmax(0, 1fr)); }
+    .elite-bracket-column { display: grid; grid-template-rows: auto 1fr; min-width: 0; }
+    .elite-bracket-column-head { padding: clamp(2px,.5vw,7px) 3px; color: #93c5fd; font-size: clamp(7px,.82vw,11px); font-weight: 1000; text-align: center; white-space: nowrap; }
+    .elite-bracket-slots { display: grid; min-height: 0; }
+    .elite-bracket-slot { position: relative; display: flex; min-height: 0; align-items: center; justify-content: center; margin: clamp(1px,.38vh,5px) 0; padding: clamp(2px,.55vw,8px) clamp(3px,.7vw,10px); border: 1px solid rgba(125,211,252,.26); border-radius: clamp(6px,.9vw,12px); color: #e0f2fe; background: linear-gradient(145deg, rgba(15,23,42,.82), rgba(30,64,105,.46)); box-shadow: inset 0 1px 0 rgba(255,255,255,.07); text-align: center; font-size: clamp(7px,.85vw,12px); font-weight: 900; overflow: hidden; }
+    .elite-bracket-slot.is-empty { border-style: dashed; border-color: rgba(148,163,184,.27); color: rgba(148,163,184,.68); background: rgba(255,255,255,.025); }
+    .elite-bracket-slot.is-winner { border-color: rgba(251,191,36,.78); color: #fef3c7; background: linear-gradient(145deg, rgba(120,53,15,.44), rgba(15,23,42,.82)); box-shadow: 0 0 14px rgba(251,191,36,.20); }
+    .elite-bracket-slot.is-mine { border-color: rgba(125,211,252,.88); box-shadow: 0 0 15px rgba(56,189,248,.26); }
+    .elite-bracket-slot.is-left::after { content: ''; position: absolute; right: -11px; top: 50%; width: 10px; height: 2px; background: linear-gradient(90deg, rgba(125,211,252,.05), rgba(125,211,252,.58)); }
+    .elite-bracket-slot.is-right::before { content: ''; position: absolute; left: -11px; top: 50%; width: 10px; height: 2px; background: linear-gradient(270deg, rgba(125,211,252,.05), rgba(125,211,252,.58)); }
+    .elite-bracket-slot-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .elite-bracket-ready { display: inline-block; width: 6px; height: 6px; margin-right: 5px; border-radius: 999px; background: #4ade80; box-shadow: 0 0 7px rgba(74,222,128,.85); }
+    .elite-bracket-bot { margin-left: 5px; padding: 1px 4px; border-radius: 5px; color: #bff3ff; background: rgba(14,116,144,.62); font-size: 9px; }
+    .elite-bracket-center { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; padding: 12px 8px; border: 1px solid rgba(251,191,36,.66); border-radius: 18px; background: radial-gradient(circle at 50% 20%, rgba(253,224,71,.20), rgba(15,23,42,.78)); color: #fde68a; text-align: center; box-shadow: inset 0 0 22px rgba(251,191,36,.14); }
+    .elite-bracket-cup { width: clamp(28px,4vw,62px); height: clamp(28px,4vw,62px); display: flex; align-items: center; justify-content: center; border-radius: 999px; font-size: clamp(16px,2.3vw,34px); background: radial-gradient(circle at 34% 24%, #fff7c2, #fbbf24 52%, #b45309); box-shadow: 0 0 26px rgba(251,191,36,.65); }
+    .elite-bracket-center-label { color: #a7dcff; font-size: 11px; font-weight: 900; }
+    .elite-ready-arena { display: grid; grid-template-columns: 1fr minmax(86px, auto) 1fr; gap: 16px; align-items: stretch; max-width: 1150px; margin: 0 auto; }
+    .elite-ready-team { position: relative; overflow: hidden; border: 1px solid rgba(125,211,252,.34); border-radius: 20px; padding: 15px; background: linear-gradient(155deg, rgba(8,47,73,.80), rgba(15,23,42,.82)); box-shadow: inset 0 1px 0 rgba(255,255,255,.10); }
+    .elite-ready-team::after { content: ''; position: absolute; right: -34px; top: -34px; width: 100px; height: 100px; border-radius: 999px; background: radial-gradient(circle, rgba(125,211,252,.16), transparent 68%); }
+    .elite-ready-team.is-self { border-color: rgba(251,191,36,.78); box-shadow: 0 0 22px rgba(251,191,36,.16), inset 0 1px 0 rgba(255,255,255,.12); }
+    .elite-ready-trainer { display: flex; align-items: center; gap: 10px; }
+    .elite-ready-avatar { width: 42px; height: 42px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; border-radius: 13px; color: #052e4a; background: linear-gradient(145deg, #e0f2fe, #38bdf8); font-size: 18px; font-weight: 1000; box-shadow: 0 6px 14px rgba(14,116,144,.30); }
+    .elite-ready-name { color: #fff7d6; font-size: 17px; font-weight: 1000; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .elite-ready-state { margin-top: 2px; color: #a7dcff; font-size: 12px; font-weight: 900; }
+    .elite-ready-pets { position: relative; display: grid; grid-template-columns: 1fr; gap: 9px; margin-top: 13px; }
+    .elite-ready-pet { min-height: 176px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px solid rgba(186,230,253,.22); border-radius: 14px; background: linear-gradient(180deg, rgba(15,23,42,.70), rgba(8,47,73,.54)); text-align: center; }
+    .elite-ready-pet.is-first { border-color: rgba(251,191,36,.65); box-shadow: 0 0 13px rgba(251,191,36,.14); }
+    .elite-ready-pet-head { display: flex; align-items: center; gap: 6px; color: #a7dcff; font-size: 11px; font-weight: 1000; }
+    .elite-ready-pet-static { width: min(142px, 82%); height: 118px; object-fit: contain; filter: drop-shadow(0 7px 10px rgba(0,0,0,.42)); }
+    .elite-ready-first-tag { padding: 2px 7px; border-radius: 999px; color: #172554; background: linear-gradient(180deg, #fde68a, #f59e0b); font-size: 10px; font-weight: 1000; }
+    .elite-ready-pet.is-empty { border-style: dashed; border-color: rgba(148,163,184,.26); color: rgba(148,163,184,.65); background: rgba(255,255,255,.025); }
+    .elite-ready-vs { align-self: center; color: #fde68a; font-size: 34px; font-weight: 1000; text-shadow: 0 0 18px rgba(251,191,36,.75); }
+    .elite-ready-self-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; }
+    .elite-ready-action { min-width: 84px; height: 39px; border: 1px solid rgba(254,243,199,.62); border-radius: 11px; padding: 0 13px; font-size: 13px; font-weight: 1000; background: linear-gradient(180deg, rgba(30,64,105,.88), rgba(8,47,73,.92)); }
+    .elite-ready-action.is-primary { background: linear-gradient(180deg, #eab308, #a16207); box-shadow: 0 5px 14px rgba(234,179,8,.25); }
+    .pvp-room-panel { position: fixed; inset: 0; width: 100vw; width: 100dvw; height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; border: 0; border-radius: 0; background: radial-gradient(circle at 12% 0, rgba(34,211,238,.28), transparent 28%), linear-gradient(150deg, #061b3a, #0c386a 58%, #071d3d); box-shadow: none; }
+    .pvp-room-panel, .pvp-room-panel * { color: #c7efff !important; }
+    .pvp-room-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 22px; border-bottom: 1px solid rgba(125,211,252,.28); }
+    .pvp-room-title { font-size: 23px; font-weight: 1000; letter-spacing: .08em; text-shadow: 0 0 15px rgba(56,189,248,.65); }
+    .pvp-room-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+    .pvp-room-btn { min-height: 38px; border: 1px solid rgba(186,230,253,.64); border-radius: 11px; padding: 0 14px; font-size: 13px; font-weight: 1000; background: linear-gradient(180deg, rgba(14,116,144,.88), rgba(8,47,73,.94)); }
+    .pvp-room-btn.is-primary { background: linear-gradient(180deg, #38bdf8, #0369a1); box-shadow: 0 5px 14px rgba(14,165,233,.32); }
+    .pvp-room-code-input { width: 120px; height: 38px; border: 1px solid rgba(186,230,253,.6); border-radius: 11px; padding: 0 10px; color: #dff7ff; background: rgba(2,23,52,.65); font-weight: 900; outline: none; }
+    .pvp-room-body { min-height: 0; flex: 1; overflow: auto; padding: 20px; }
+    .pvp-room-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 13px; }
+    .pvp-room-card { border: 1px solid rgba(125,211,252,.38); border-radius: 17px; padding: 15px; background: linear-gradient(145deg, rgba(8,47,73,.85), rgba(15,23,42,.78)); box-shadow: inset 0 1px 0 rgba(255,255,255,.09); }
+    .pvp-room-card-code { font-size: 20px; font-weight: 1000; letter-spacing: .1em; }
+    .pvp-room-player { display: flex; align-items: center; gap: 7px; min-height: 28px; margin-top: 8px; font-size: 13px; font-weight: 900; }
+    .pvp-room-seat { display: inline-flex; width: 23px; height: 23px; align-items: center; justify-content: center; border-radius: 999px; color: #082f49 !important; background: #bae6fd; font-size: 11px; }
+    .pvp-room-ready { display: inline-block; width: 7px; height: 7px; border-radius: 999px; background: #67e8f9; box-shadow: 0 0 8px #67e8f9; }
+    .pvp-room-arena { display: grid; grid-template-columns: 1fr minmax(70px, auto) 1fr; gap: 16px; align-items: stretch; max-width: 1050px; margin: 20px auto; }
+    .pvp-room-team { border: 1px solid rgba(125,211,252,.42); border-radius: 20px; padding: 16px; background: linear-gradient(155deg, rgba(8,47,73,.84), rgba(15,23,42,.84)); }
+    .pvp-room-team.is-self { border-color: rgba(103,232,249,.86); box-shadow: 0 0 20px rgba(34,211,238,.20); }
+    .pvp-room-pet { min-height: 176px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; margin-top: 13px; border: 1px solid rgba(186,230,253,.28); border-radius: 15px; background: rgba(2,23,52,.48); }
+    .pvp-room-vs { align-self: center; font-size: 35px; font-weight: 1000; text-shadow: 0 0 18px rgba(34,211,238,.8); }
+    .monthly-sign-card {
+      background: linear-gradient(180deg, rgba(240, 249, 255, .96), rgba(224, 242, 254, .96));
+      border: 1px solid rgba(14, 165, 233, .28);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.72), 0 14px 30px rgba(14, 116, 144, .16);
+    }
     .equipment-map-hotspot {
       position: absolute;
       border: 0;
@@ -938,6 +1059,7 @@
         width: min(520px, calc(100vw - 32px));
       }
       .home-action-gift { --x: 2%; --y: 76%; --w: 18%; }
+      .home-action-mail { --x: 21%; --y: 76%; --w: 18%; }
       .home-action-monthly { --x: 2%; --y: 58.5%; --w: 24.3%; }
       .home-action-dragonboat { --x: 2%; --y: 60%; --w: 18%; }
       .home-action-rank { --x: 18%; --y: 82%; --w: 18%; }
@@ -956,6 +1078,8 @@
       .home-action-record { --x: 3%; --y: 24%; --w: 13%; }
       .home-action-element { --x: 3%; --y: 37%; --w: 13%; }
       .home-action-team { --x: 3%; --y: 50%; --w: 13%; }
+      .home-action-elite-tournament { --x: 2%; --y: 64%; --w: 16%; }
+      .home-action-pvp-room { --x: 2%; --y: 78%; --w: 16%; }
       .home-double-reward {
         left: 3%;
         right: 3%;
@@ -1055,6 +1179,35 @@
       background: #0284c7 !important;
       color: #fff !important;
     }
+    .skin-shop-tab-active,
+    .skin-shop-buy {
+      background: #8b3f2f !important;
+      color: #fff !important;
+    }
+    .skin-shop-tab-active {
+      box-shadow: 0 0 0 1px rgba(139, 63, 47, .35), 0 4px 12px rgba(139, 63, 47, .22);
+    }
+    .skin-shop-view {
+      background: #fff !important;
+      border: 1px solid #8b3f2f !important;
+      color: #8b3f2f !important;
+    }
+    .skin-shop-view:hover,
+    .skin-shop-buy:hover:not(:disabled) {
+      filter: brightness(1.08);
+    }
+    .skin-preview-modal {
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+    .skin-preview-animation {
+      width: min(72vw, 640px);
+      height: min(58vh, 500px);
+      object-fit: contain;
+      image-rendering: auto;
+      filter: drop-shadow(0 12px 30px rgba(0, 0, 0, .55));
+    }
     .gear-shop-card {
       border-color: #e0f2fe !important;
       background: #f0f9ff !important;
@@ -1083,6 +1236,32 @@
     }
     .gear-shop-buy:disabled {
       opacity: .45;
+    }
+    .battle-prepare-overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 2147483646 !important;
+      isolation: isolate;
+      transform: translateZ(0);
+    }
+    .reward-fly-overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      overflow: hidden !important;
+      z-index: 2147483647 !important;
+      pointer-events: none !important;
+    }
+    .app-toast-overlay {
+      position: fixed !important;
+      top: 20px !important;
+      left: 50% !important;
+      z-index: 2147483647 !important;
+      pointer-events: none !important;
+      transform: translateX(-50%) !important;
     }
     .app-top-dialog-overlay,
     .bag-item-use-overlay.app-top-dialog-overlay {
@@ -2307,6 +2486,34 @@
     .team-boss-chest:hover {
       transform: translateX(-50%) scale(1.05);
     }
+    .team-boss-desc {
+      position: absolute;
+      bottom: -18%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid rgba(250, 204, 21, 0.35);
+      border-radius: 12px;
+      padding: 10px 12px;
+      text-align: left;
+      z-index: 5;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    }
+    .team-boss-desc-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: #fbbf24;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .team-boss-desc-line {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fef3c7;
+      line-height: 1.55;
+    }
     .team-boss-right {
       flex: 1;
       display: flex;
@@ -2382,15 +2589,13 @@
     .team-boss-hp-bar-wrap {
       position: absolute;
       top: 30%;
-      left: 10%;
-      right: 10%;
+      left: 13.5%;
+      right: 2%;
       height: 40%;
       background: transparent;
       border-radius: 2px;
       overflow: hidden;
       z-index: 1;
-      transform: translate(15%, -2%) scale(1.323, 1.68714);
-      transform-origin: center center;
     }
     .team-boss-hp-bar {
       height: 100%;
@@ -4189,12 +4394,48 @@
     }
     .fate-gate-door {
       position: absolute;
+      border: none;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
       object-fit: contain;
+      z-index: 3;
+      transition: transform 0.16s ease, filter 0.16s ease;
     }
-    .fate-gate-door-1 { width: 16.5%; left: 7.9%; top: 26.7%; }
-    .fate-gate-door-2 { width: 17%; left: 29.6%; top: 26.6%; }
-    .fate-gate-door-3 { width: 17.8%; left: 51.2%; top: 26%; }
-    .fate-gate-door-4 { width: 20.9%; left: 71.6%; top: 25.3%; }
+    .fate-gate-door img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .fate-gate-door-name {
+      position: absolute;
+      top: -12%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(12px, 1.45vw, 26px);
+      font-weight: 900;
+      color: var(--fate-gate-glow, #fff);
+      text-shadow: 0 0 8px currentColor, 0 2px 2px rgba(0,0,0,0.9);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .fate-gate-door:hover,
+    .fate-gate-door.is-current {
+      transform: scale(1.045);
+      filter: brightness(1.16) drop-shadow(0 0 9px var(--fate-gate-glow, #fff));
+    }
+    .fate-gate-door.is-current {
+      animation: fate-gate-current-glow 1.35s ease-in-out infinite alternate;
+    }
+    @keyframes fate-gate-current-glow {
+      from { filter: brightness(1.08) drop-shadow(0 0 4px var(--fate-gate-glow, #fff)); }
+      to { filter: brightness(1.24) drop-shadow(0 0 15px var(--fate-gate-glow, #fff)); }
+    }
+    .fate-gate-door-1 { width: 16.5%; aspect-ratio: 339 / 417; left: 7.9%; top: 26.7%; }
+    .fate-gate-door-2 { width: 17%; aspect-ratio: 349 / 427; left: 29.6%; top: 26.6%; }
+    .fate-gate-door-3 { width: 17.8%; aspect-ratio: 365 / 425; left: 51.2%; top: 26%; }
+    .fate-gate-door-4 { width: 20.9%; aspect-ratio: 429 / 450; left: 71.6%; top: 25.3%; }
     .fate-gate-arrow {
       position: absolute;
       width: 5.8%;
@@ -4223,6 +4464,49 @@
     }
     .fate-gate-trait-cell {
       background: url('./resource-v10/命运之门/特性单框.png') center / 100% 100% no-repeat;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8% 7%;
+      color: #fff3a4;
+      font-weight: 900;
+      font-size: clamp(7px, 0.78vw, 14px);
+      line-height: 1.08;
+      text-align: center;
+      text-shadow: 0 1px 2px #541600;
+    }
+    .fate-gate-trait-cell.is-filled {
+      filter: brightness(1.1) drop-shadow(0 0 3px rgba(255,241,122,0.8));
+    }
+    .fate-gate-reward-icon {
+      width: 46%;
+      max-height: 54%;
+      object-fit: contain;
+      margin-bottom: 2px;
+    }
+    .fate-gate-reward-label {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .fate-gate-status {
+      position: absolute;
+      left: 33%;
+      top: 54.5%;
+      width: 34%;
+      padding: 0.45% 1%;
+      border: 1px solid rgba(255,231,113,0.82);
+      border-radius: 999px;
+      background: rgba(31, 7, 61, 0.72);
+      color: #fff3a4;
+      font-size: clamp(10px, 1vw, 18px);
+      font-weight: 900;
+      text-align: center;
+      text-shadow: 0 1px 2px #26053d;
+      z-index: 4;
     }
     .fate-gate-actions {
       position: absolute;
@@ -4236,6 +4520,7 @@
       align-items: center;
     }
     .fate-gate-action-btn {
+      position: relative;
       border: none;
       background: transparent;
       padding: 0;
@@ -4248,6 +4533,26 @@
       display: block;
       object-fit: contain;
     }
+    .fate-gate-action-label {
+      display: flex;
+      position: absolute;
+      z-index: 1;
+      left: 21%;
+      right: 4%;
+      top: 14%;
+      bottom: 14%;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: clamp(11px, 1.18vw, 22px);
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 1px rgba(0,0,0,0.72), 1px 0 1px rgba(0,0,0,0.62);
+      white-space: nowrap;
+    }
+    .fate-gate-action-claim { background: linear-gradient(180deg, #776b37 0%, #5d592d 100%); }
+    .fate-gate-action-sell { background: linear-gradient(180deg, #36a946 0%, #1c8d31 100%); }
+    .fate-gate-action-purple { background: linear-gradient(180deg, #55a7ee 0%, #287bd0 100%); }
     .fate-gate-action-btn:hover {
       transform: scale(1.06);
       filter: brightness(1.12) drop-shadow(0 0 6px rgba(255,255,255,0.65));
@@ -4587,6 +4892,22 @@
       border: 1px solid rgba(251, 191, 36, 0.5);
       margin-left: 8px;
     }
+    .bag2-skills-peak-power {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 26px;
+      padding: 4px 10px;
+      margin-left: 8px;
+      border: 1px solid rgba(251, 191, 36, 0.72);
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(254,243,199,0.9));
+      color: #92400e;
+      box-shadow: 0 1px 3px rgba(146,64,14,0.18);
+      white-space: nowrap;
+    }
+    .bag2-skills-peak-label { font-size: clamp(8px, 0.85vw, 11px); font-weight: 900; }
+    .bag2-skills-peak-value { color: #d97706; font-size: clamp(10px, 1vw, 13px); font-weight: 900; }
     .bag2-skills-study-btn {
       display: flex;
       align-items: center;
@@ -5911,26 +6232,29 @@
       height: 100vh;
       min-width: 100vw;
       min-height: 100vh;
-      max-width: none !important;
-      max-height: none !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
       pointer-events: none;
       z-index: 125;
       animation: battleSkillEffectFullscreen var(--skill-fx-duration, .9s) linear forwards;
-      mix-blend-mode: screen;
-      filter: drop-shadow(0 0 calc(18 * var(--ui-px)) rgba(34,211,238,.58));
-      overflow: hidden;
+      opacity: 1 !important;
+      mix-blend-mode: normal !important;
+      filter: none !important;
+      overflow: hidden !important;
+      box-sizing: border-box;
     }
     .battle-skill-effect-fullscreen > img {
       position: absolute;
-      left: 35%;
-      top: 40%;
-      width: 150vw;
-      height: 150vh;
-      max-width: none !important;
-      max-height: none !important;
+      left: 50%;
+      top: 50%;
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
       object-fit: fill;
       display: block;
       transform: translate(-50%, -50%);
+      opacity: 1 !important;
     }
     @keyframes battleStageChangeFloat {
       0% {
@@ -6018,6 +6342,12 @@
     }
     .battle-defeated-exit { animation: battleDefeatedExit 1.2s ease-in forwards; pointer-events: none; }
     .reward-fly-toast {
+      position: absolute;
+      top: 4rem;
+      left: 50%;
+      box-sizing: border-box;
+      max-width: calc(100vw - 24px);
+      overflow: hidden;
       animation: rewardFlyAcross 3.3s cubic-bezier(.2,.78,.18,1) both;
       background:
         linear-gradient(90deg, rgba(251,191,36,.18), rgba(255,255,255,.9), rgba(34,211,238,.18)),
@@ -6127,38 +6457,61 @@
       z-index: 0;
     }
     .battle-shengyu-bg-layer {
-      position: absolute;
+      position: fixed;
       inset: 0;
-      z-index: 0;
+      width: 100vw;
+      height: 100vh;
+      min-width: 100vw;
+      min-height: 100vh;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      z-index: 124;
       pointer-events: none;
       overflow: hidden;
       background: #020617;
+      opacity: 1 !important;
+      mix-blend-mode: normal !important;
     }
-    .battle-shengyu-bg-layer > object {
-      width: 100%;
-      height: 100%;
-      max-width: none !important;
-      max-height: none !important;
-      object-fit: cover;
+    .battle-shengyu-bg-layer > img {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 100vw;
+      height: 100vh;
+      min-width: 100vw;
+      min-height: 100vh;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      object-fit: fill;
       display: block;
-      border: 0;
+      transform: translate(-50%, -50%);
+      opacity: 1 !important;
       pointer-events: none;
     }
+    .battle-shengyu-bg-layer-persistent {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      max-width: none !important;
+      max-height: none !important;
+      z-index: 0;
+      background: transparent;
+    }
+    .battle-shengyu-bg-layer-persistent > img {
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      max-width: none !important;
+      max-height: none !important;
+    }
     .battle-shengyu-bg-layer-mobile {
-      background: #07152d;
-      animation: battle-shengyu-mobile-flash var(--shengyu-bg-duration, 1100ms) ease-out both;
-      will-change: opacity, transform;
+      background: #020617;
     }
     .battle-shengyu-bg-layer-mobile::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(120deg, rgba(251, 146, 60, .18), rgba(250, 204, 21, .32) 46%, rgba(56, 189, 248, .12));
-    }
-    @keyframes battle-shengyu-mobile-flash {
-      0% { opacity: 0; transform: scale(1.015); }
-      20% { opacity: .96; }
-      100% { opacity: 0; transform: scale(1); }
+      display: none;
     }
     .battle-bg-shade {
       position: absolute;
@@ -8284,6 +8637,7 @@
       background-repeat: no-repeat !important;
     }
     html.android-webview.android-landscape header.home-hub-scene .home-action-gift { --x: 1.2%; --y: 68.8%; --w: 6.5%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-mail { --x: 8.5%; --y: 67.6%; --w: 7.3%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-monthly { --x: 1.2%; --y: 55.8%; --w: 9.2%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-dragonboat { --x: 8.5%; --y: 67.6%; --w: 7.3%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-rank { --x: 22%; --y: 86.2%; --w: 7.8%; }
@@ -11428,24 +11782,34 @@
     html:not(.android-webview) .battle-scene-overlay .battle-mobile-root .battle-mobile-log {
       width: clamp(calc(440 * var(--ui-px)), 32vw, calc(720 * var(--ui-px))) !important;
       max-width: clamp(calc(440 * var(--ui-px)), 32vw, calc(720 * var(--ui-px))) !important;
-      min-height: calc(130 * var(--ui-px)) !important;
-      max-height: clamp(calc(230 * var(--ui-px)), 34vh, calc(390 * var(--ui-px))) !important;
+      height: auto !important;
+      min-height: 0 !important;
+      max-height: clamp(calc(126 * var(--ui-px)), 18.9vh, calc(224 * var(--ui-px))) !important;
+      display: flex !important;
+      flex-direction: column !important;
       overflow: hidden !important;
+      overscroll-behavior: contain;
+      z-index: 400 !important;
+    }
+    html:not(.android-webview) .battle-scene-overlay .battle-mobile-root .battle-mobile-log .battle-log-toggle {
+      flex: 0 0 auto !important;
     }
     html:not(.android-webview) .battle-scene-overlay .battle-mobile-root .battle-mobile-log .battle-log-body,
     html:not(.android-webview) .battle-scene-overlay .battle-mobile-root .battle-mobile-log .max-h-\[220px\] {
-      max-height: clamp(calc(170 * var(--ui-px)), 27vh, calc(320 * var(--ui-px))) !important;
+      flex: 0 1 auto !important;
+      min-height: 0 !important;
+      max-height: clamp(calc(58 * var(--ui-px)), 10vh, calc(156 * var(--ui-px))) !important;
       overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: contain;
+    }
+    html:not(.android-webview) .battle-scene-overlay .battle-mobile-root .battle-mobile-log .battle-log-body > div {
+      overflow-wrap: anywhere !important;
+      word-break: break-word !important;
     }
     html.android-webview .battle-scene-overlay .battle-mobile-root .battle-mobile-log {
       display: none !important;
     }
-    html.android-webview .battle-scene-overlay .battle-mobile-root .battle-stage-hover-zone .battle-stage-popover {
-      opacity: 1 !important;
-      transform: translate(0, 0) !important;
-    }
-
-
     .battle-scene-overlay .battle-mobile-root .battle-target-status-outside {
       order: 3 !important;
       position: relative !important;
@@ -11497,6 +11861,7 @@
 </div>
 <div id="app" v-cloak>
   <input ref="guestImportInput" type="file" accept="application/json,.json" class="hidden" @change="importGuestLocalSave">
+  <input ref="userImportInput" type="file" accept="application/json,.json" class="hidden" @change="importUserLocalSave">
   <div v-if="!authReady" class="min-h-screen flex items-center justify-center bg-slate-950 text-cyan-100 font-black">
     正在准备登录环境...
   </div>
@@ -11512,23 +11877,25 @@
           <div class="login-captcha-box">
             <div>{{ loginCaptchaNotice }}</div>
           </div>
-          <input v-model="authCaptcha" type="text" autocomplete="off" placeholder="请输入验证码" @keyup.enter="enterGuestMode" class="login-input">
+          <input v-model="authCaptcha" @input="authError=''" type="text" autocomplete="off" placeholder="请输入验证码" @keyup.enter="enterGuestMode" class="login-input">
         </div>
+        <div v-if="authError" role="alert" class="mt-3 rounded-xl border border-rose-300/70 bg-rose-950/45 px-3 py-2 text-sm font-bold text-rose-100 leading-5">{{ authError }}</div>
         <button @click="enterGuestMode" :disabled="authLoading" class="login-primary-btn w-full disabled:opacity-50" :class="loginCaptchaVerified ? 'mt-0' : 'mt-4'">{{ loginCaptchaVerified ? '游客登录' : '验证并游客登录' }}</button>
       </template>
       <template v-else>
         <div class="flex gap-2 mb-4">
-          <button @click="authMode='login'" class="flex-1 login-ghost-btn" :class="authMode==='login' ? '!bg-cyan-500 !text-white !border-cyan-300' : ''">登录</button>
-          <button @click="authMode='register'" class="flex-1 login-ghost-btn" :class="authMode==='register' ? '!bg-cyan-500 !text-white !border-cyan-300' : ''">注册</button>
+          <button @click="authMode='login'; authError=''" class="flex-1 login-ghost-btn" :class="authMode==='login' ? '!bg-cyan-500 !text-white !border-cyan-300' : ''">登录</button>
+          <button @click="authMode='register'; authError=''" class="flex-1 login-ghost-btn" :class="authMode==='register' ? '!bg-cyan-500 !text-white !border-cyan-300' : ''">注册</button>
         </div>
         <div class="space-y-3">
-          <input v-model="authUsername" type="text" autocomplete="username" placeholder="用户名" class="login-input">
-          <input v-model="authPassword" type="password" autocomplete="current-password" placeholder="密码" @keyup.enter="submitAuth" class="login-input">
+          <input v-model="authUsername" @input="authError=''" type="text" autocomplete="username" placeholder="用户名" class="login-input">
+          <input v-model="authPassword" @input="authError=''" type="password" autocomplete="current-password" placeholder="密码" @keyup.enter="submitAuth" class="login-input">
           <div v-if="authMode === 'register' || !loginCaptchaVerified" class="login-captcha-box">
             <div>{{ loginCaptchaNotice }}</div>
           </div>
-          <input v-if="authMode === 'register' || !loginCaptchaVerified" v-model="authCaptcha" type="text" autocomplete="off" placeholder="请输入验证码" @keyup.enter="submitAuth" class="login-input">
+          <input v-if="authMode === 'register' || !loginCaptchaVerified" v-model="authCaptcha" @input="authError=''" type="text" autocomplete="off" placeholder="请输入验证码" @keyup.enter="submitAuth" class="login-input">
         </div>
+        <div v-if="authError" role="alert" class="mt-3 rounded-xl border border-rose-300/70 bg-rose-950/45 px-3 py-2 text-sm font-bold text-rose-100 leading-5">{{ authError }}</div>
         <label class="mt-3 flex items-center gap-2 text-xs font-black text-cyan-100/85 select-none">
           <input v-model="rememberPassword" type="checkbox" class="w-4 h-4 accent-cyan-500">
           <span>记住密码</span>
@@ -11574,6 +11941,7 @@
     </div>
     <div class="home-action-grid">
       <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./resource/ui/背景/赠礼.png" alt=""></button>
+      <button @click="openMailPanel" class="home-action-btn home-action-mail" title="邮件" aria-label="邮件"><img src="./resource/邮件.png" alt=""></button>
       <button @click="openMonthlySignPanel" class="home-action-btn home-action-monthly" title="月签到" aria-label="月签到"><img src="./resource/button/签到.png" alt=""></button>
       <button @click.stop.prevent="openLeaderboardPanel" class="home-action-btn home-action-rank" title="排行榜" aria-label="排行榜"><img src="./resource/ui/背景/排行榜.png" alt=""></button>
       <button @click="openStrongRoadPanel" class="home-action-btn home-action-strong-road" title="变强之路" aria-label="变强之路"><img src="./resource/界面ui/变强之路.png" alt=""></button>
@@ -11589,7 +11957,9 @@
       <button @click="openQixingGachaPanel" class="home-action-btn home-action-gacha" title="启星转盘" aria-label="启星转盘"><img src="./resource/ui/背景/转盘.png" alt=""></button>
       <button @click="openChallengeRecordPanel" class="home-action-btn home-action-record" title="挑战录像" aria-label="挑战录像"><img src="./resource/界面ui/录像.png" alt=""></button>
       <button @click="openElementPanel" class="home-action-btn home-action-element" title="属性克制" aria-label="属性克制"><img src="./resource/界面ui/属性.png" alt=""></button>
-      <button v-if="!isMobileClient" @click="openTeamPanel" class="home-action-btn home-action-team" title="战队" aria-label="战队"><img src="./resource/创建战队.png" alt=""></button>
+      <button v-if="!isMobileClient" @pointerdown="markTeamPanelInteraction" @keydown="markTeamPanelInteraction" @click="openTeamPanel" class="home-action-btn home-action-team" title="战队" aria-label="战队"><img src="./resource/战队基地.png" alt=""></button>
+      <button v-if="false" @click="openEliteTournamentPanel" class="home-action-btn home-action-elite-tournament" title="Hub第一届精英大赛" aria-label="Hub第一届精英大赛"><span class="home-elite-tournament-face">Hub第一届<br>精英大赛</span></button>
+      <button @click="openPvpRoomPanel" class="home-action-btn home-action-pvp-room" title="对战房间" aria-label="对战房间"><span class="home-pvp-room-face"><span class="home-pvp-room-vs">VS</span><span class="home-pvp-room-label">对战房间</span></span></button>
       <button
         @click="showGlobalSettingsPanel = true"
         class="home-settings-btn"
@@ -11722,7 +12092,7 @@
                     <button @click="unequipPetSkin(petId(selectedPet))" class="h-7 px-3 rounded-lg bg-white text-violet-700 border border-violet-200 font-black">卸下皮肤</button>
                   </div>
                   <div class="mt-3 grid grid-cols-3 md:grid-cols-6 gap-2">
-                    <button v-for="seal in qixingSealRows" :key="'bag_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
+                    <button v-for="seal in qixingSealRows" :key="'bag_trait_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="qixing-seal-grid-card p-1.5 text-center flex items-center justify-center" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.restrictionText ? '｜仅限' + seal.restrictionText : ''}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
                       <img :src="seal.image" @error="withFallback" class="qixing-seal-grid-img mx-auto" :class="{ 'is-legacy': seal.isLegacy }">
                       <div class="qixing-seal-grid-meta">{{ seal.name }} Lv.{{ seal.level }}</div>
                       <div class="qixing-seal-grid-equipped">{{ seal.equippedPetName || '未装配' }}</div>
@@ -11850,6 +12220,28 @@
       </ol>
       <div class="shrink-0 border-t border-slate-100 px-4 py-3 md:px-6 flex justify-end">
         <button @click="closeReleaseNotesModal" class="h-10 px-6 rounded-xl bg-cyan-600 text-white text-sm font-black">我知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showDesktopCloseSaveFailureModal" class="fixed inset-0 z-[2147483647] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-3xl border border-rose-200 bg-white p-6 shadow-2xl" @click.stop>
+      <h2 class="text-lg font-black text-rose-700">当前存档异常</h2>
+      <p class="mt-3 text-sm font-bold leading-6 text-slate-700">关闭前已连续 5 次存档失败。是否继续退出应用？</p>
+      <p class="mt-2 text-xs font-bold leading-5 text-slate-500">点击确认将直接关闭应用；点击取消可回到游戏继续操作。</p>
+      <div class="mt-6 flex justify-end gap-3">
+        <button @click="cancelDesktopCloseAfterSaveFailure" class="h-10 rounded-xl bg-slate-200 px-5 text-sm font-black text-slate-700">取消</button>
+        <button @click="finishDesktopCloseAfterSaveFailure" class="h-10 rounded-xl bg-rose-600 px-5 text-sm font-black text-white">确认退出</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showDesktopPowerBanModal" class="fixed inset-0 z-[2147483647] bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-3xl border border-rose-200 bg-white p-6 shadow-2xl" @click.stop>
+      <h2 class="text-lg font-black text-rose-700">账号已禁用</h2>
+      <p class="mt-4 text-base font-black leading-7 text-slate-800">你的账号已禁用，最大战斗力异常！</p>
+      <div class="mt-6 flex justify-end">
+        <button @click="confirmDesktopPowerBan" class="h-10 rounded-xl bg-rose-600 px-6 text-sm font-black text-white">确认</button>
       </div>
     </div>
   </div>
@@ -12240,7 +12632,10 @@
           </div>
           <template v-if="bag2InfoTab === 'skills'">
             <div class="bag2-skills-header">
-              <img :src="selectedPetTalentImageSrc" @error="withFallback" class="bag2-skills-talent-icon">
+              <div class="bag2-skills-peak-power" title="按满学习力、唯我独尊天赋与各槽位最优装备模拟计算，不会修改当前亚比数据。">
+                <span class="bag2-skills-peak-label">巅峰战斗力</span>
+                <span class="bag2-skills-peak-value">{{ bag2DisplayPetPeakBattlePower }}</span>
+              </div>
               <div class="bag2-skills-power-btn">
                 <span class="bag2-skills-power-label">战斗力</span>
                 <span class="bag2-skills-power-value">{{ selectedPetBattlePower }}</span>
@@ -12346,7 +12741,7 @@
               </div>
               <div class="bag2-enhance-section-title">特性仓库</div>
               <div class="bag2-enhance-seals">
-                <button v-for="seal in qixingSealRows" :key="'bag2_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="bag2-seal-card" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
+                <button v-for="seal in qixingSealRows" :key="'bag2_seal_'+seal.id" @click="selectQixingSeal(seal.id)" class="bag2-seal-card" :class="{ 'is-selected': seal.selected }" :title="`${seal.name} Lv.${seal.level}${seal.restrictionText ? '｜仅限' + seal.restrictionText : ''}${seal.equippedPetName ? '｜' + seal.equippedPetName : '｜未装配'}`">
                   <img :src="seal.image" @error="withFallback" class="bag2-seal-img" :class="{ 'is-legacy': seal.isLegacy }">
                   <div class="bag2-seal-name">{{ seal.name }} Lv.{{ seal.level }}</div>
                   <div class="bag2-seal-owner">{{ seal.equippedPetName || '未装配' }}</div>
@@ -12494,14 +12889,18 @@
         </div>
       </div>
     </div>
-    <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
-      <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
-    </div>
-    <div v-cloak v-if="rewardFlyToast.show" class="absolute top-16 left-1/2 z-[10001] pointer-events-none">
-      <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
-        {{ rewardFlyToast.message }}
+    <teleport to="body">
+      <div v-if="toast.show" class="app-toast-overlay">
+        <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
       </div>
-    </div>
+    </teleport>
+    <teleport to="body">
+      <div v-cloak v-if="rewardFlyToast.show" class="reward-fly-overlay fixed inset-0 z-[10001] pointer-events-none overflow-hidden">
+        <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
+          {{ rewardFlyToast.message }}
+        </div>
+      </div>
+    </teleport>
   </div>
 
   <div v-if="showDragonBoatShopPanel" class="fixed inset-0 z-[131] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeDragonBoatShopPanel">
@@ -12551,17 +12950,60 @@
         </div>
         <div class="battle-prepare-grid flex-1 grid grid-cols-1 md:grid-cols-[1fr_1.05fr] items-center min-h-0">
           <div class="battle-prepare-target-card relative rounded-3xl border border-cyan-300/25 bg-slate-900/35 overflow-hidden">
+            <div v-if="battlePrepare.opponentSlots && battlePrepare.opponentSlots.some(slot => !slot.empty)" class="absolute inset-0 flex flex-col p-3 md:p-5">
+              <div class="flex items-center justify-between gap-3 mb-3">
+                <div>
+                  <div class="text-xs font-black text-cyan-200">对方阵容</div>
+                  <div class="text-lg md:text-xl font-black text-white truncate">{{ battlePrepare.opponentName || '对手训练师' }}</div>
+                </div>
+                <div class="text-xs font-black text-cyan-200">{{ battlePrepare.opponentSlots.filter(slot => !slot.empty).length }}/6</div>
+              </div>
+              <div class="battle-prepare-team-grid grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
+                <div v-for="slot in battlePrepare.opponentSlots" :key="'prepare_opponent_'+slot.idx" class="battle-prepare-slot rounded-2xl border border-cyan-200/25 bg-white/8 relative overflow-hidden">
+                  <template v-if="!slot.empty">
+                    <div class="absolute top-2 left-2 z-10 flex gap-1">
+                      <span v-if="slot.element" class="element-icon" :style="petElementIconStyle(slot.element, 16)" :title="slot.element"></span>
+                      <span v-if="slot.subElement" class="element-icon" :style="petElementIconStyle(slot.subElement, 16)" :title="slot.subElement"></span>
+                    </div>
+                    <div class="absolute top-2 right-2 z-10 rounded-full bg-slate-950/70 px-2 py-0.5 text-[11px] font-black text-cyan-100">Lv.{{ slot.level }}</div>
+                    <div class="battle-prepare-team-pet-anchor">
+                      <div class="battle-prepare-pet-frame battle-prepare-team-float w-full h-full">
+                        <img :src="slot.image" @error="withStaticPetFallback" class="battle-prepare-slot-img drop-shadow-[0_14px_18px_rgba(0,0,0,.45)]">
+                      </div>
+                    </div>
+                    <div class="absolute inset-x-2 bottom-2 text-center text-xs md:text-sm font-black text-white truncate">{{ slot.name }}</div>
+                  </template>
+                  <template v-else><div class="h-full rounded-xl border border-dashed border-slate-400/35 bg-slate-900/35 flex items-center justify-center text-xs font-black text-slate-400">空白</div></template>
+                </div>
+              </div>
+            </div>
+            <template v-else>
             <div class="absolute top-4 left-4 z-10 rounded-2xl bg-slate-950/70 border border-cyan-300/30 px-4 py-2">
-              <div class="text-xs font-black text-cyan-200">挑战目标</div>
-              <div class="text-xl md:text-2xl font-black text-white">{{ battlePrepare.targets && battlePrepare.targets.length > 1 ? '本层全部亚比' : (battlePrepare.target ? battlePrepare.target.name : '未知目标') }}</div>
-              <div class="text-sm font-black text-cyan-100">{{ battlePrepare.targets && battlePrepare.targets.length > 1 ? battlePrepare.targets.length + ' 只目标' : 'Lv.' + (battlePrepare.target ? battlePrepare.target.level : 1) }}</div>
+              <div class="text-xs font-black text-cyan-200">{{ battlePrepare.opponentSlots && battlePrepare.opponentSlots.some(slot => !slot.empty) ? '对手阵容' : '挑战目标' }}</div>
+              <div class="text-xl md:text-2xl font-black text-white">{{ battlePrepare.opponentSlots && battlePrepare.opponentSlots.some(slot => !slot.empty) ? (battlePrepare.opponentName || '对手训练师') : (battlePrepare.targets && battlePrepare.targets.length > 1 ? '本层全部亚比' : (battlePrepare.target ? battlePrepare.target.name : '未知目标')) }}</div>
+              <div class="text-sm font-black text-cyan-100">{{ battlePrepare.opponentSlots && battlePrepare.opponentSlots.some(slot => !slot.empty) ? '已锁定 ' + battlePrepare.opponentSlots.filter(slot => !slot.empty).length + ' 只亚比' : (battlePrepare.targets && battlePrepare.targets.length > 1 ? battlePrepare.targets.length + ' 只目标' : 'Lv.' + (battlePrepare.target ? battlePrepare.target.level : 1)) }}</div>
             </div>
             <div class="absolute top-4 right-4 z-10 flex gap-1">
               <span v-if="battlePrepare.target && battlePrepare.target.element" class="element-icon" :style="petElementIconStyle(battlePrepare.target.element, 24)" :title="battlePrepare.target.element"></span>
               <span v-if="battlePrepare.target && battlePrepare.target.subElement" class="element-icon" :style="petElementIconStyle(battlePrepare.target.subElement, 24)" :title="battlePrepare.target.subElement"></span>
             </div>
             <div class="absolute inset-x-[8%] bottom-[7%] h-[clamp(56px,10vh,96px)] rounded-[50%] bg-cyan-300/25 blur-sm"></div>
-            <div v-if="battlePrepare.targets && battlePrepare.targets.length > 1" class="battle-prepare-target-grid absolute grid grid-cols-2 items-end">
+            <div v-if="battlePrepare.opponentSlots && battlePrepare.opponentSlots.some(slot => !slot.empty)" class="battle-prepare-target-grid absolute grid grid-cols-2 items-end">
+              <div v-for="slot in battlePrepare.opponentSlots.filter(slot => !slot.empty)" :key="'prepare_opponent_'+slot.idx+'_'+slot.dexId" class="battle-prepare-target-mini relative h-full rounded-2xl border border-cyan-200/20 bg-slate-950/20 overflow-visible">
+                <div class="absolute top-2 left-2 z-10 rounded-full bg-slate-950/70 px-2 py-0.5 text-[11px] font-black text-cyan-100">Lv.{{ slot.level }}</div>
+                <div class="absolute top-2 right-2 z-10 flex gap-1">
+                  <span v-if="slot.element" class="element-icon" :style="petElementIconStyle(slot.element, 16)" :title="slot.element"></span>
+                  <span v-if="slot.subElement" class="element-icon" :style="petElementIconStyle(slot.subElement, 16)" :title="slot.subElement"></span>
+                </div>
+                <div class="battle-prepare-target-pet-anchor">
+                  <div class="pet-anim-frame battle-prepare-pet-frame battle-prepare-target-float w-full h-full">
+                    <img :src="slot.image" @error="withStaticPetFallback" class="battle-prepare-target-image drop-shadow-[0_22px_26px_rgba(0,0,0,.55)]">
+                  </div>
+                </div>
+                <div class="absolute inset-x-2 bottom-2 text-center text-sm font-black text-white truncate">{{ slot.name }}</div>
+              </div>
+            </div>
+            <div v-else-if="battlePrepare.targets && battlePrepare.targets.length > 1" class="battle-prepare-target-grid absolute grid grid-cols-2 items-end">
               <div v-for="target in battlePrepare.targets" :key="'prepare_target_'+target.name+'_'+target.level" class="battle-prepare-target-mini relative h-full rounded-2xl border border-cyan-200/20 bg-slate-950/20 overflow-visible">
                 <div class="absolute top-2 left-2 z-10 rounded-full bg-slate-950/70 px-2 py-0.5 text-[11px] font-black text-cyan-100">Lv.{{ target.level }}</div>
                 <div class="absolute top-2 right-2 z-10 flex gap-1">
@@ -12581,6 +13023,7 @@
                 <img :src="battlePrepare.target.image" @error="withFallback" class="battle-prepare-target-image drop-shadow-[0_28px_36px_rgba(0,0,0,.55)]">
               </div>
             </div>
+            </template>
           </div>
           <div class="battle-prepare-team-panel rounded-3xl border border-white/15 bg-slate-950/55 p-3 md:p-5">
             <div class="flex items-center justify-between mb-3">
@@ -12815,7 +13258,7 @@
     <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
       <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
     </div>
-    <div v-cloak v-if="rewardFlyToast.show" class="absolute top-16 left-1/2 z-[10001] pointer-events-none">
+    <div v-cloak v-if="rewardFlyToast.show" class="reward-fly-overlay pointer-events-none">
       <div :key="'reward_fly_'+rewardFlyToast.seq" class="reward-fly-toast whitespace-nowrap rounded-2xl px-8 py-3 text-xl md:text-2xl font-black text-amber-100">
         {{ rewardFlyToast.message }}
       </div>
@@ -12852,6 +13295,39 @@
             {{ egg.hatchAt <= nowTs ? '立即孵化' : '孵化中' }}
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showMailPanel" class="fixed inset-0 z-[133] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeMailPanel">
+    <div class="w-full max-w-3xl max-h-[86vh] rounded-3xl border border-cyan-200 bg-white shadow-2xl app-modal overflow-hidden flex flex-col" @click.stop>
+      <div class="flex items-center justify-between gap-3 border-b border-cyan-100 bg-cyan-50 px-4 py-3">
+        <div>
+          <div class="text-lg font-black text-cyan-950">邮件</div>
+          <div class="text-xs font-bold text-cyan-700">战队 BOSS 结算奖励和系统通知会发送到这里。</div>
+        </div>
+        <button @click="closeMailPanel" class="h-8 w-8 rounded-full bg-white text-slate-600 font-black shadow-sm">×</button>
+      </div>
+      <div class="min-h-0 overflow-y-auto p-4 scrollbar">
+        <div v-if="mailLoading" class="min-h-[220px] flex items-center justify-center text-sm font-black text-cyan-700">邮件加载中…</div>
+        <div v-else-if="mailList.length === 0" class="min-h-[220px] rounded-2xl border border-dashed border-cyan-200 bg-cyan-50/60 flex items-center justify-center text-sm font-black text-cyan-700">当前没有邮件。</div>
+        <div v-else class="space-y-2">
+          <article v-for="mail in mailList" :key="'mail_' + mail.id" class="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <div class="truncate text-sm font-black text-slate-900">{{ mail.title || '系统邮件' }}</div>
+                <div class="mt-1 text-[11px] font-bold text-slate-500">{{ formatMailTime(mail.createdAt) }}</div>
+              </div>
+              <span class="shrink-0 rounded-full px-2 py-1 text-[10px] font-black" :class="mail.claimed ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'">{{ mail.claimed ? '已领取' : '待领取' }}</span>
+            </div>
+            <div class="mt-2 text-xs font-bold leading-5 text-slate-700">{{ mail.body }}</div>
+            <div v-if="mail.rewardText" class="mt-2 rounded-xl bg-white px-2 py-2 text-xs font-black text-cyan-800">奖励：{{ mail.rewardText }}</div>
+          </article>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 px-4 py-3">
+        <button @click="deleteAllMails" :disabled="mailLoading || mailList.length === 0" class="h-9 rounded-xl bg-slate-100 px-4 text-xs font-black text-slate-600 disabled:opacity-40">清空邮件</button>
+        <button @click="claimAllMails" :disabled="mailLoading || mailList.length === 0" class="h-9 rounded-xl bg-cyan-600 px-4 text-xs font-black text-white disabled:opacity-40">一键领取</button>
       </div>
     </div>
   </div>
@@ -12938,23 +13414,27 @@
   <div v-if="showFateGatePanel" class="fate-gate-overlay" @click="closeFateGatePanel">
     <div class="fate-gate-panel" @click.stop>
       <img src="./resource-v10/命运之门/背景2.png" alt="命运之门" class="fate-gate-bg">
-      <img src="./resource-v10/命运之门/一级.png" alt="一级之门" class="fate-gate-door fate-gate-door-1">
-      <img src="./resource-v10/命运之门/二级.png" alt="二级之门" class="fate-gate-door fate-gate-door-2">
-      <img src="./resource-v10/命运之门/三级.png" alt="三级之门" class="fate-gate-door fate-gate-door-3">
-      <img src="./resource-v10/命运之门/四级.png" alt="四级之门" class="fate-gate-door fate-gate-door-4">
+      <button v-for="gate in fateGateDoors" :key="gate.key" @click="openFateGate(gate.key)" :class="['fate-gate-door', 'fate-gate-door-' + gate.index, { 'is-current': fateGateCurrentGate === gate.key }]" :style="{ '--fate-gate-glow': gate.glow }" :title="'开启' + gate.name + '（' + gate.cost + 'H币）'">
+        <span class="fate-gate-door-name">{{ gate.name }}</span>
+        <img :src="gate.image" :alt="gate.name">
+      </button>
       <img src="./resource-v10/命运之门/过度.png" alt="" class="fate-gate-arrow fate-gate-arrow-1">
       <img src="./resource-v10/命运之门/过度.png" alt="" class="fate-gate-arrow fate-gate-arrow-2">
       <img src="./resource-v10/命运之门/过度.png" alt="" class="fate-gate-arrow fate-gate-arrow-3">
       <div class="fate-gate-trait-panel">
         <div class="fate-gate-trait-grid">
-          <div v-for="n in 16" :key="'fate_gate_trait_' + n" class="fate-gate-trait-cell"></div>
+          <div v-for="n in 16" :key="'fate_gate_trait_' + n" :class="['fate-gate-trait-cell', { 'is-filled': fateGatePendingRewards[n - 1] }]">
+            <img v-if="fateGateRewardImage(fateGatePendingRewards[n - 1])" :src="fateGateRewardImage(fateGatePendingRewards[n - 1])" alt="" class="fate-gate-reward-icon">
+            <span v-if="fateGatePendingRewards[n - 1]" class="fate-gate-reward-label">{{ fateGateRewardLabel(fateGatePendingRewards[n - 1]) }}</span>
+          </div>
         </div>
         <div class="fate-gate-actions">
-          <button class="fate-gate-action-btn" title="拾取"><img src="./resource-v10/命运之门/拾取.png" alt="拾取"></button>
-          <button class="fate-gate-action-btn" title="卖出"><img src="./resource-v10/命运之门/卖出.png" alt="卖出"></button>
-          <button class="fate-gate-action-btn" title="获取"><img src="./resource-v10/命运之门/获取.png" alt="获取"></button>
+          <button @click="claimFateGateRewards" class="fate-gate-action-btn" title="拾取全部暂存奖励"><img src="./resource-v10/命运之门/拾取.png" alt="拾取全部奖励"><span class="fate-gate-action-label fate-gate-action-claim">拾取全部奖励</span></button>
+          <button @click="sellFateGateRewards" class="fate-gate-action-btn" title="按门阶折算并卖出全部暂存奖励"><img src="./resource-v10/命运之门/卖出.png" alt="一键卖出奖励"><span class="fate-gate-action-label fate-gate-action-sell">一键卖出奖励</span></button>
+          <button @click="openFateGateToPurple" class="fate-gate-action-btn" title="消耗50000H币直接开启至紫门"><img src="./resource-v10/命运之门/获取.png" alt="一键直达紫门"><span class="fate-gate-action-label fate-gate-action-purple">一键直达紫门</span></button>
         </div>
       </div>
+      <div class="fate-gate-status">当前可开启：{{ fateGateCurrentConfig.name }}（{{ fateGateCurrentConfig.cost }}H币） · 暂存 {{ fateGatePendingRewards.length }}/16 · 紫门保底 {{ fateGatePurplePity }}/400</div>
       <button @click="closeFateGatePanel" class="fate-gate-close-btn" title="关闭">
         <img src="./resource-v10/命运之门/关闭按钮.png" alt="关闭">
       </button>
@@ -13070,18 +13550,18 @@
 
   <div v-if="showNewWarehousePanel" class="app-top-overlay fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeNewWarehousePanel">
     <div class="new-warehouse-panel" @click.stop="closeNewWarehouseDropdowns">
-      <img src="./resource-v9/仓库ui/仓库底图.png" class="new-warehouse-bg" alt="">
+      <img src="./resource/仓库ui/仓库底图.png" class="new-warehouse-bg" alt="">
       <button @click="closeNewWarehousePanel" class="new-warehouse-close-btn" title="退出仓库" aria-label="退出仓库">
-        <img src="./resource-v9/仓库ui/关闭仓库按钮.png" alt="退出">
+        <img src="./resource/仓库ui/关闭仓库按钮.png" alt="退出">
       </button>
 
       <div class="new-warehouse-view-tabs">
-        <img src="./resource-v9/仓库ui/亚比仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'pet' }" @click="setNewWarehouseView('pet')" alt="亚比仓库">
-        <img src="./resource-v9/仓库ui/精英仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'elite' }" @click="setNewWarehouseView('elite')" alt="精英仓库">
+        <img src="./resource/仓库ui/亚比仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'pet' }" @click="setNewWarehouseView('pet')" alt="亚比仓库">
+        <img src="./resource/仓库ui/精英仓库按钮.png" class="new-warehouse-view-tab-btn" :class="{ active: newWarehouseView === 'elite' }" @click="setNewWarehouseView('elite')" alt="精英仓库">
       </div>
 
       <div class="new-warehouse-large-display" v-if="newWarehouseView === 'pet'">
-        <img src="./resource-v9/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
+        <img src="./resource/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
         <template v-if="selectedNewWarehousePet">
           <div class="new-warehouse-large-info">
             <div class="new-warehouse-large-name">{{ petDisplayName(selectedNewWarehousePet) }}</div>
@@ -13089,15 +13569,15 @@
           </div>
           <img :src="bagPetVisual(selectedNewWarehousePet).src" :style="warehousePetAnimImageStyle(selectedNewWarehousePet, 'action')" @error="withFallback" class="new-warehouse-large-pet">
           <div class="new-warehouse-action-btns">
-            <img src="./resource-v9/仓库ui/设为精英.png" class="new-warehouse-action-btn" @click="movePetToElite(selectedNewWarehousePet)" alt="设为精英">
-            <img src="./resource-v9/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
+            <img src="./resource/仓库ui/设为精英.png" class="new-warehouse-action-btn" @click="movePetToElite(selectedNewWarehousePet)" alt="设为精英">
+            <img src="./resource/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
           </div>
         </template>
         <div v-else class="new-warehouse-large-empty">暂无亚比</div>
       </div>
 
       <div class="new-warehouse-large-display" v-if="newWarehouseView === 'elite'">
-        <img src="./resource-v9/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
+        <img src="./resource/仓库ui/亚比背景.png" class="new-warehouse-large-bg" alt="">
         <template v-if="selectedNewWarehousePet">
           <div class="new-warehouse-large-info">
             <div class="new-warehouse-large-name">{{ petDisplayName(selectedNewWarehousePet) }}</div>
@@ -13105,8 +13585,8 @@
           </div>
           <img :src="bagPetVisual(selectedNewWarehousePet).src" :style="warehousePetAnimImageStyle(selectedNewWarehousePet, 'action')" @error="withFallback" class="new-warehouse-large-pet">
           <div class="new-warehouse-action-btns">
-            <img src="./resource-v9/仓库ui/取消精英.png" class="new-warehouse-action-btn" @click="removePetFromElite(selectedNewWarehousePet)" alt="取消精英">
-            <img src="./resource-v9/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
+            <img src="./resource/仓库ui/取消精英.png" class="new-warehouse-action-btn" @click="removePetFromElite(selectedNewWarehousePet)" alt="取消精英">
+            <img src="./resource/仓库ui/放入背包.png" class="new-warehouse-action-btn" @click="movePetToBag(selectedNewWarehousePet)" alt="放入背包">
           </div>
         </template>
         <div v-else class="new-warehouse-large-empty">暂无精英亚比</div>
@@ -13114,12 +13594,12 @@
 
       <div class="new-warehouse-skill-panel">
         <div class="new-warehouse-skill-tabs">
-          <img src="./resource-v9/仓库ui/技能.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'skills' }" @click="setNewWarehouseInfoTab('skills')" alt="技能">
-          <img src="./resource-v9/仓库ui/信息.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'info' }" @click="setNewWarehouseInfoTab('info')" alt="信息">
-          <img src="./resource-v9/仓库ui/能力.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'ability' }" @click="setNewWarehouseInfoTab('ability')" alt="能力">
+          <img src="./resource/仓库ui/技能.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'skills' }" @click="setNewWarehouseInfoTab('skills')" alt="技能">
+          <img src="./resource/仓库ui/信息.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'info' }" @click="setNewWarehouseInfoTab('info')" alt="信息">
+          <img src="./resource/仓库ui/能力.png" class="new-warehouse-skill-tab-btn" :class="{ active: newWarehouseInfoTab === 'ability' }" @click="setNewWarehouseInfoTab('ability')" alt="能力">
         </div>
         <template v-if="selectedNewWarehousePet">
-          <img src="./resource-v9/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
+          <img src="./resource/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
           <div class="new-warehouse-skill-content">
           <div v-if="newWarehouseInfoTab === 'skills'" class="new-warehouse-tab-panel">
             <div class="new-warehouse-skill-header">
@@ -13195,7 +13675,7 @@
           </div>
         </template>
         <template v-else>
-          <img src="./resource-v9/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
+          <img src="./resource/仓库ui/仓库显示面板.png" class="new-warehouse-skill-bg" alt="">
           <div class="new-warehouse-skill-content">
             <div class="new-warehouse-empty-state">仓库中没有亚比</div>
           </div>
@@ -13246,8 +13726,8 @@
 
       <div class="new-warehouse-filter-bar" @click.stop>
         <div class="new-warehouse-filter-group">
-          <img src="./resource-v9/仓库ui/属性按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter !== '全部系别' }" @click="toggleNewWarehouseElementPicker" alt="属性">
-          <img src="./resource-v9/仓库ui/全部按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter === '全部系别' }" @click="selectNewWarehouseElement('全部系别')" alt="全部">
+          <img src="./resource/仓库ui/属性按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter !== '全部系别' }" @click="toggleNewWarehouseElementPicker" alt="属性">
+          <img src="./resource/仓库ui/全部按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseElementFilter === '全部系别' }" @click="selectNewWarehouseElement('全部系别')" alt="全部">
           <div class="new-warehouse-element-picker" v-if="newWarehouseShowElementPicker">
             <div
               v-for="el in newWarehouseElementOptions"
@@ -13260,11 +13740,11 @@
         </div>
         <div class="new-warehouse-search-wrap">
           <input type="text" v-model="newWarehouseSearch" class="new-warehouse-search-input" placeholder="搜索亚比名称" @click.stop>
-          <img src="./resource-v9/仓库ui/搜索.png" class="new-warehouse-search-icon" alt="">
+          <img src="./resource/仓库ui/搜索.png" class="new-warehouse-search-icon" alt="">
         </div>
         <div class="new-warehouse-filter-group">
-          <img src="./resource-v9/仓库ui/时间排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('time') }" @click="toggleNewWarehouseTimeMenu" alt="时间排序">
-          <img src="./resource-v9/仓库ui/等级排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('level') }" @click="toggleNewWarehouseLevelMenu" alt="等级排序">
+          <img src="./resource/仓库ui/时间排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('time') }" @click="toggleNewWarehouseTimeMenu" alt="时间排序">
+          <img src="./resource/仓库ui/等级排序按钮.png" class="new-warehouse-filter-btn" :class="{ active: newWarehouseSortMode.startsWith('level') }" @click="toggleNewWarehouseLevelMenu" alt="等级排序">
           <div class="new-warehouse-sort-menu" v-if="newWarehouseTimeMenuOpen">
             <div class="new-warehouse-sort-item" :class="{ active: newWarehouseSortMode === 'time_desc' }" @click="setNewWarehouseSort('time_desc')">时间从新到旧</div>
             <div class="new-warehouse-sort-item" :class="{ active: newWarehouseSortMode === 'time_asc' }" @click="setNewWarehouseSort('time_asc')">时间从旧到新</div>
@@ -13284,7 +13764,7 @@
           :class="{ 'is-empty': !slotPet, 'is-selected': slotPet && selectedNewWarehousePet && petId(slotPet) === petId(selectedNewWarehousePet) }"
           @click="slotPet && selectNewWarehousePet(slotPet)"
         >
-          <img src="./resource-v9/仓库ui/仓库亚比显示背景.png" class="new-warehouse-slot-bg" alt="">
+          <img src="./resource/仓库ui/仓库亚比显示背景.png" class="new-warehouse-slot-bg" alt="">
           <template v-if="slotPet">
             <img :src="bagPetVisual(slotPet).src" :style="warehousePetAnimImageStyle(slotPet, 'action')" @error="withFallback" class="new-warehouse-slot-pet">
             <div class="new-warehouse-slot-label">{{ petDisplayName(slotPet) }}</div>
@@ -13490,6 +13970,7 @@
             <button @click="shopTab='skillStones'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='skillStones' ? 'bg-amber-500 text-slate-950' : 'text-slate-600'">&#25216;&#33021;&#30707;&#21830;&#24215;</button>
             <button @click="shopTab='bundles'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='bundles' ? 'bg-cyan-500 text-slate-950' : 'text-slate-600'">道具礼包</button>
             <button @click="shopTab='gear'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='gear' ? 'gear-shop-tab-active bg-sky-600 text-white' : 'text-slate-600'">装备商店</button>
+            <button @click="shopTab='skins'" class="skin-shop-tab h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='skins' ? 'skin-shop-tab-active' : 'text-slate-600'">皮肤商店</button>
           </div>
           <div class="panel-stat-chip">H币 {{ state.hCoins || 0 }}</div>
           <div class="panel-stat-chip">秘境晶石 {{ equipmentDungeonCrystalCount }}</div>
@@ -13523,6 +14004,7 @@
             <div class="text-sm font-black text-amber-950">{{ it.name }}</div>
             <div class="text-[11px] font-bold text-amber-800">{{ it.desc }}</div>
             <div class="text-[11px] font-black text-rose-700 mt-1">{{ it.price }} H&#24065;</div>
+            <div v-if="skillStoneCredentialNeed(it.id)" class="text-[11px] font-black text-violet-700 mt-1">需要{{ skillStoneCredentialNeed(it.id).name }} x{{ shopItemMaxBuyQuantity(it) > 0 ? Math.min(shopBuyQuantity(it.id), shopItemMaxBuyQuantity(it)) : 1 }}（持有 {{ skillStoneCredentialNeed(it.id).count }}）</div>
             <div v-if="it.purchaseLimit" class="text-[11px] font-black text-orange-700 mt-1">&#38480;&#36141;&#21097;&#20313; {{ shopItemRemainingLimited(it) }}/{{ it.purchaseLimit }}</div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
@@ -13535,7 +14017,7 @@
               @input="setShopBuyQuantity(it.id, $event.target.value)"
               class="w-20 h-9 rounded-xl border border-amber-200 bg-white px-2 text-sm font-black text-amber-950"
             >
-            <button @click="buySkillShopItem(it.id)" :disabled="!shopItemCanBuy(it)" class="h-9 px-4 rounded-xl bg-amber-500 text-slate-950 text-sm font-black disabled:opacity-45">&#36141;&#20080;</button>
+            <button @click="buySkillShopItem(it.id)" :disabled="!shopItemCanBuy(it) || (skillStoneCredentialNeed(it.id) && skillStoneCredentialNeed(it.id).count <= 0)" class="h-9 px-4 rounded-xl bg-amber-500 text-slate-950 text-sm font-black disabled:opacity-45">&#36141;&#20080;</button>
           </div>
         </div>
       </div>
@@ -13584,6 +14066,23 @@
           </div>
         </div>
       </div>
+      <div v-else-if="shopTab==='skins'" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
+        <div v-for="it in skinShopItems" :key="'skin_shop_item_'+it.id" class="rounded-2xl border border-fuchsia-200 bg-fuchsia-50 p-3 flex items-center justify-between gap-3">
+          <div class="min-w-0 flex items-center gap-3">
+            <img v-if="it.image" :src="it.image" @error="withFallback" :alt="it.name" class="w-12 h-12 object-contain shrink-0">
+            <div>
+              <div class="text-sm font-black text-fuchsia-950">{{ it.name }}</div>
+              <div class="text-[11px] font-bold text-fuchsia-800">{{ it.desc }}</div>
+              <div class="text-[11px] font-black text-amber-700 mt-1">{{ it.price }} H币</div>
+              <div class="text-[11px] font-black text-rose-600 mt-1">限购剩余 {{ shopItemRemainingLimited(it) }}/{{ it.purchaseLimit }}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button @click="openSkinPreview(it.id)" class="skin-shop-view h-9 px-3 rounded-xl text-sm font-black">查看</button>
+            <button @click="buySkinShopItem(it.id)" :disabled="!shopItemCanBuy(it)" class="skin-shop-buy h-9 px-4 rounded-xl text-white text-sm font-black disabled:opacity-45">购买</button>
+          </div>
+        </div>
+      </div>
       <div v-else-if="shopTab==='eggs'" class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
         <div v-for="entry in shopEggEntries" :key="'shop_egg_'+entry.dexId" class="rounded-2xl border border-violet-100 bg-violet-50 p-3 flex items-center justify-between gap-3">
           <div class="flex items-center gap-3 min-w-0">
@@ -13618,6 +14117,24 @@
   </div>
   </div>
 
+  <teleport to="body">
+  <div v-show="showSkinPreview" class="skin-preview-overlay app-top-dialog-overlay fixed inset-0 z-[2147483646] bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4" style="display:none; z-index:2147483646 !important;" @click="closeSkinPreview">
+    <div v-if="selectedSkinPreview" class="skin-preview-modal relative w-full max-w-4xl h-[min(78vh,680px)] overflow-hidden rounded-3xl border border-amber-200/70 shadow-2xl" :style="{ backgroundImage: `url(${selectedSkinPreview.backgroundSrc})` }" @click.stop>
+      <div class="absolute inset-0 bg-slate-950/35"></div>
+      <div class="relative z-10 flex items-center justify-between p-4">
+        <div>
+          <div class="text-xs font-black text-amber-200">皮肤动画预览</div>
+          <h3 class="mt-1 text-xl font-black text-white">{{ selectedSkinPreview.name }}</h3>
+        </div>
+        <button @click="closeSkinPreview" class="h-9 px-3 rounded-xl bg-slate-950/75 text-amber-100 text-sm font-black">关闭</button>
+      </div>
+      <div class="relative z-10 flex h-[calc(100%-76px)] items-center justify-center p-5">
+        <img :src="selectedSkinPreview.animationSrc" :alt="selectedSkinPreview.name" class="skin-preview-animation" @error="withFallback">
+      </div>
+    </div>
+  </div>
+  </teleport>
+
   <div v-if="showSkillStoneDetail" class="fixed inset-0 z-[75] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeSkillStoneDetail">
     <div v-if="selectedSkillStoneDetail" class="w-full max-w-lg rounded-3xl border border-amber-100 bg-white p-5 shadow-2xl app-modal" @click.stop>
       <div class="flex items-start justify-between gap-4">
@@ -13635,6 +14152,7 @@
         <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">&#21629;&#20013;: {{ selectedSkillStoneDetail.skill.accuracy }}</div>
         <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">PP: {{ selectedSkillStoneDetail.skill.pp }}</div>
         <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-amber-800">&#20215;&#26684;: {{ selectedSkillStoneDetail.item.price }} H&#24065;</div>
+        <div v-if="skillStoneCredentialNeed(selectedSkillStoneDetail.item.id)" class="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-violet-800">需要{{ skillStoneCredentialNeed(selectedSkillStoneDetail.item.id).name }}（持有 {{ skillStoneCredentialNeed(selectedSkillStoneDetail.item.id).count }}）</div>
       </div>
       <div class="mt-3 rounded-xl border border-amber-100 bg-amber-50 px-3 py-3 text-sm font-bold leading-6 text-amber-950 break-words">{{ selectedSkillStoneDetail.skill.desc }}</div>
     </div>
@@ -13723,7 +14241,16 @@
         </div>
         <button @click="closeChallengeRoadPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
-      <div class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-3 scrollbar">
+      <div class="flex items-center gap-2 mb-3">
+        <button
+          v-for="tab in challengeRoadTabs"
+          :key="'challenge_road_tab_' + tab.key"
+          @click="challengeRoadTab = tab.key"
+          class="h-9 px-4 rounded-xl text-sm font-black transition"
+          :class="challengeRoadTab === tab.key ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+        >{{ tab.label }}</button>
+      </div>
+      <div v-if="challengeRoadTab === 'hero'" class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-3 scrollbar">
         <div class="challenge-road-cover-track flex items-stretch gap-4 pr-2">
           <button
             v-for="tier in challengeRoadTiers"
@@ -13749,6 +14276,21 @@
                 <div class="challenge-road-tier-progress-fill" :style="{ width: tier.percent + '%' }"></div>
               </div>
               <div class="challenge-road-tier-progress-lock mt-2 text-[10px] font-black leading-tight text-slate-600">{{ tier.unlocked ? '' : tier.lockText }}</div>
+            </div>
+          </button>
+        </div>
+      </div>
+      <div v-else class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-3 scrollbar">
+        <div class="challenge-road-cover-track flex items-stretch gap-4 pr-2">
+          <button
+            @click="openRetroGloryChallenge"
+            class="challenge-road-tier-card relative overflow-hidden rounded-2xl border text-left transition bg-slate-900 hover:border-sky-300"
+          >
+            <img :src="retroGloryCoverSrc" @error="withFallback" class="challenge-road-tier-cover absolute inset-0 w-full h-full opacity-95">
+            <div class="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-white/72 via-white/30 to-transparent"></div>
+            <span class="challenge-road-tier-status rounded-full px-2.5 py-1 text-[11px] font-black bg-white/90 text-slate-900">挑战</span>
+            <div class="challenge-road-tier-progress">
+              <div class="text-sm font-black text-center truncate">重铸荣光</div>
             </div>
           </button>
         </div>
@@ -13807,6 +14349,37 @@
             <div v-if="filteredChallengeRoadItems.length === 0" class="col-span-full rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm font-black text-slate-400">
               当前筛选没有挑战目标
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template v-if="showRetroGloryPanel">
+    <div class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeRetroGloryPanel">
+      <div class="w-full max-w-6xl h-[86vh] rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl flex flex-col app-panel-modal" @click.stop>
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <div>
+            <div class="text-lg font-black text-slate-900">重铸荣光</div>
+            <div class="text-xs font-bold text-slate-500">怀旧之旅 · 选择BOSS挑战</div>
+          </div>
+          <button @click="closeRetroGloryPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">返回</button>
+        </div>
+        <div class="flex-1 min-h-0 challenge-road-entry-scroll scrollbar">
+          <div class="challenge-road-entry-track">
+            <button
+              v-for="boss in retroGloryBossCards"
+              :key="'retro_glory_boss_' + boss.dexId"
+              @click="openRetroGloryBoss(boss.dexId)"
+              class="challenge-road-entry-card relative overflow-hidden rounded-2xl border text-left transition border-slate-200 bg-white hover:border-sky-300"
+            >
+              <img :src="boss.image" @error="withFallback" class="challenge-road-entry-cover absolute inset-0 w-full h-full opacity-95">
+              <div class="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-white/72 via-white/30 to-transparent"></div>
+              <span class="challenge-road-entry-badge rounded-full px-2.5 py-1 text-[11px] font-black bg-white/90 text-slate-900">BOSS</span>
+              <div class="challenge-road-entry-name">
+                <div class="text-sm font-black text-center truncate">{{ boss.name }}</div>
+              </div>
+            </button>
           </div>
         </div>
       </div>
@@ -14083,7 +14656,7 @@
             </div>
             <div class="rounded-xl border border-yellow-200 bg-yellow-50 p-3">
               <div class="text-[10px] font-black text-yellow-700">当周BOSS勋章</div>
-              <div class="text-2xl font-black text-slate-900">{{ weeklyBossMedalCount }}/100</div>
+              <div class="text-2xl font-black text-slate-900">{{ weeklyBossMedalCount }}/50</div>
             </div>
             <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 col-span-2">
               <div class="text-[10px] font-black text-emerald-700">勋章兑换</div>
@@ -14123,6 +14696,10 @@
       <div class="equipment-dungeon-scorebar">
         <span>当前累积分数：{{ equipmentDungeonScore }}</span>
         <span>今日机会：{{ equipmentDungeonAttemptsLeft }}/6</span>
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          <span class="text-[11px] text-amber-200">SSS通关卡：{{ equipmentDungeonSssClearCardCount }}</span>
+          <button @click.stop="useEquipmentDungeonSssClearCard" :disabled="equipmentDungeonSssClearCardCount<=0 || equipmentDungeonAttemptsLeft<=0" class="h-7 rounded-lg bg-fuchsia-400 px-3 text-[11px] font-black text-slate-950 shadow disabled:opacity-45">使用SSS通关卡</button>
+        </div>
         <div v-if="equipmentDungeonCanSweep" class="mt-2 flex flex-wrap gap-2">
           <button @click.stop="sweepEquipmentDungeon(1)" class="h-7 rounded-lg bg-cyan-400 px-3 text-[11px] font-black text-slate-950 shadow">扫荡1次</button>
           <button @click.stop="sweepEquipmentDungeon(equipmentDungeonAttemptsLeft)" class="h-7 rounded-lg bg-amber-300 px-3 text-[11px] font-black text-slate-950 shadow">扫荡剩余</button>
@@ -14171,6 +14748,7 @@
         <img :src="equipmentDungeonBossAnimSrc" @error="withFallback" alt="">
       </button>
       <div v-if="equipmentDungeonBossCardsVisible" class="equipment-dungeon-card-panel">
+        <button type="button" class="equipment-dungeon-card-close" @click.stop="closeEquipmentDungeonBossCards" title="关闭" aria-label="关闭">×</button>
         <div v-for="card in equipmentDungeonDifficultyCards" :key="'equipment_dungeon_card_'+card.key" class="equipment-dungeon-card" :class="'is-'+card.key">
           <div class="equipment-dungeon-card-title">
             <span>{{ card.label }}</span>
@@ -14224,7 +14802,8 @@
             >
               <div class="flex items-start justify-between gap-2">
                 <div class="text-sm font-black text-cyan-50 leading-5">{{ row.label }}</div>
-                <div v-if="row.disabled" class="rounded-full bg-slate-700 px-2 py-0.5 text-[10px] font-black text-slate-300">已获取</div>
+                <div v-if="row.obtained" class="rounded-full bg-slate-700 px-2 py-0.5 text-[10px] font-black text-slate-300">已获取</div>
+                <div v-else-if="row.locked" class="rounded-full bg-slate-700 px-2 py-0.5 text-[10px] font-black text-slate-300">未解锁</div>
               </div>
               <div class="mt-2 text-xs font-black text-cyan-200">概率 {{ row.probability }}%</div>
             </div>
@@ -14242,7 +14821,7 @@
             </div>
           </div>
           <div class="rounded-xl border border-cyan-200/20 bg-slate-950/35 p-3 text-xs font-bold text-cyan-50 leading-5">
-            第一阶段在通关挑战之路第一梯度后解锁，寒冰公主亚比蛋150抽保底且本阶段只可获取一次，获取后奖池卡片置灰，后续抽到会自动转为启星碎片。第二阶段在拥有第五梯度任意BOSS亚比或亚比蛋后解锁，未来计划·神秘战无炎皮肤500抽保底且只可获取一次；第二阶段寒冰公主亚比蛋同样只可获取一次。能量核心转盘消耗H币，单抽2000H币，十连18000H币；200抽保底一个未获取能量核心，获得后置灰且不再重复获取，再200抽保底另一个未获取能量核心。
+            第一阶段在通关挑战之路第一梯度后解锁，寒冰公主亚比蛋150抽保底且本阶段只可获取一次，获取后奖池卡片置灰，后续抽到会自动转为启星碎片。第二阶段在拥有第五梯度任意BOSS亚比或亚比蛋后解锁：未来计划·大妖神武月皮肤500抽保底，获得后开启黑暗未来计划·念500抽保底；两项皮肤奖励均只可获取一次。第二阶段寒冰公主亚比蛋同样可获取一次。能量核心转盘消耗H币，单抽2000H币，十连18000H币；200抽保底一个未获取能量核心，获得后置灰且不再重复获取，再200抽保底另一个未获取能量核心。
           </div>
           <div v-if="!selectedQixingGachaPhaseUnlocked" class="rounded-xl border border-amber-200/35 bg-amber-300/10 p-3 text-xs font-black text-amber-100 leading-5">
             {{ qixingGachaPhaseLockText }}
@@ -14441,6 +15020,228 @@
     </div>
   </div>
 
+  <div v-if="showPvpRoomPanel" class="fixed inset-0 z-[220] bg-black/82 backdrop-blur-sm">
+    <div class="pvp-room-panel">
+      <div class="pvp-room-header">
+        <div><div class="pvp-room-title">对战房间</div><div class="text-xs font-bold">双人6v6真人同步对战 · 房间内胜负均返回准备页面</div></div>
+        <div class="pvp-room-actions">
+          <template v-if="!pvpRoomState.myRoom">
+            <input v-model="pvpRoomJoinCode" @keyup.enter="joinPvpRoom" class="pvp-room-code-input" maxlength="6" inputmode="numeric" placeholder="房间编号">
+            <button @click="joinPvpRoom" class="pvp-room-btn">加入房间</button>
+            <button @click="createPvpRoom" class="pvp-room-btn is-primary">创建房间</button>
+          </template>
+          <button v-else @click="leavePvpRoom" class="pvp-room-btn">{{ pvpRoomState.myRoom.hostUserId === authUser.id ? '解散房间' : '退出房间' }}</button>
+          <button @click="closePvpRoomPanel" class="pvp-room-btn">关闭</button>
+        </div>
+      </div>
+      <div v-if="pvpRoomLoading" class="px-5 py-2 text-sm font-bold">房间数据同步中...</div>
+      <div class="pvp-room-body">
+        <template v-if="!pvpRoomState.myRoom">
+          <div v-if="!pvpRoomState.rooms || pvpRoomState.rooms.length === 0" class="h-full flex items-center justify-center text-lg font-black">当前没有公开房间，点击右上角创建房间。</div>
+          <div v-else class="pvp-room-list">
+            <div v-for="room in pvpRoomState.rooms" :key="room.id" class="pvp-room-card">
+              <div class="flex items-center justify-between"><div class="pvp-room-card-code">#{{ room.code }}</div><div class="text-xs">{{ room.right ? '2 / 2' : '1 / 2' }}</div></div>
+              <div class="pvp-room-player"><span class="pvp-room-seat">主</span><span>{{ room.left ? room.left.username : '等待房主' }}</span><span v-if="room.leftReady" class="pvp-room-ready"></span></div>
+              <div class="pvp-room-player"><span class="pvp-room-seat">客</span><span>{{ room.right ? room.right.username : '等待玩家加入' }}</span><span v-if="room.rightReady" class="pvp-room-ready"></span></div>
+              <button @click="joinPvpRoom(room.code)" :disabled="Boolean(room.right) || pvpRoomLoading" class="pvp-room-btn mt-3 w-full disabled:cursor-not-allowed disabled:opacity-45">{{ room.right ? '房间已满' : '加入房间' }}</button>
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <div class="text-center text-sm font-black">房间编号：{{ pvpRoomState.myRoom.code }} · {{ pvpRoomState.myRoom.status === 'ready' ? '双方已准备，正在进入对战' : '等待双方准备' }}</div>
+          <div class="pvp-room-arena">
+            <section class="pvp-room-team" :class="{ 'is-self': pvpRoomState.myRoom.mySide === 'left' }">
+              <div class="flex items-center gap-3"><div class="pvp-room-seat">主</div><div><div class="font-black text-lg">{{ pvpRoomState.myRoom.left.username }}</div><div class="text-xs font-bold">{{ pvpRoomState.myRoom.leftReady ? '已准备' : '调整阵容中' }}</div></div></div>
+              <div v-for="pet in pvpRoomReadyTeam(pvpRoomState.myRoom.left).slice(0, 1)" :key="'room_left_'+pet.id" class="pvp-room-pet"><img class="elite-ready-pet-static" :src="eliteReadyPetStaticImage(pet)" alt="首发亚比"><span class="text-xs font-black">Lv.{{ pet.level }} · 首发</span></div>
+              <div v-if="pvpRoomState.myRoom.mySide === 'left' && !pvpRoomState.myRoom.leftReady" class="elite-ready-self-actions"><button @click="openBag2Panel" class="pvp-room-btn">背包</button><button @click="openNewWarehousePanel" class="pvp-room-btn">仓库</button><button @click="preparePvpRoom" class="pvp-room-btn is-primary">准备</button></div>
+            </section>
+            <div class="pvp-room-vs">VS</div>
+            <section class="pvp-room-team" :class="{ 'is-self': pvpRoomState.myRoom.mySide === 'right' }">
+              <div class="flex items-center gap-3"><div class="pvp-room-seat">客</div><div><div class="font-black text-lg">{{ pvpRoomState.myRoom.right ? pvpRoomState.myRoom.right.username : '等待玩家加入' }}</div><div class="text-xs font-bold">{{ pvpRoomState.myRoom.rightReady ? '已准备' : '调整阵容中' }}</div></div><button v-if="pvpRoomState.myRoom.mySide === 'left' && pvpRoomState.myRoom.right && pvpRoomState.myRoom.status === 'waiting'" @click="kickPvpRoomMember" class="ml-auto pvp-room-btn text-rose-100">踢出</button></div>
+              <div v-if="pvpRoomState.myRoom.right" v-for="pet in pvpRoomReadyTeam(pvpRoomState.myRoom.right).slice(0, 1)" :key="'room_right_'+pet.id" class="pvp-room-pet"><img class="elite-ready-pet-static" :src="eliteReadyPetStaticImage(pet)" alt="首发亚比"><span class="text-xs font-black">Lv.{{ pet.level }} · 首发</span></div>
+              <div v-else class="pvp-room-pet text-sm font-black">等待另一位训练师加入</div>
+              <div v-if="pvpRoomState.myRoom.mySide === 'right' && !pvpRoomState.myRoom.rightReady" class="elite-ready-self-actions"><button @click="openBag2Panel" class="pvp-room-btn">背包</button><button @click="openNewWarehousePanel" class="pvp-room-btn">仓库</button><button @click="preparePvpRoom" class="pvp-room-btn is-primary">准备</button></div>
+            </section>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showEliteTournamentPanel" class="fixed inset-0 z-[220] bg-black/82 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="elite-tournament-panel">
+      <div class="elite-tournament-header">
+        <div class="flex items-center gap-3">
+          <span class="elite-tournament-cup">🏆</span>
+          <div>
+            <div class="elite-tournament-title">Hub第一届精英大赛</div>
+            <div class="elite-tournament-subtitle">128进8小组赛 · 8进1冠军赛</div>
+          </div>
+        </div>
+        <button @click="closeEliteTournamentPanel" class="h-10 rounded-xl border border-sky-200/25 bg-slate-800/85 px-4 text-sm font-black text-sky-100 hover:bg-slate-700">关闭</button>
+      </div>
+      <div class="elite-tabs">
+        <button @click="eliteTournamentTab = 'bracket'" :class="{ 'is-active': eliteTournamentTab === 'bracket' }" class="elite-tab">赛程对战图</button>
+        <button @click="eliteTournamentTab = 'prepare'" :class="{ 'is-active': eliteTournamentTab === 'prepare' }" class="elite-tab">对战准备</button>
+        <div class="ml-auto self-center text-sm font-black text-sky-100">报名 {{ eliteTournamentState.registrationCount || 0 }}/128</div>
+      </div>
+      <div v-if="eliteTournamentLoading" class="px-5 py-2 text-sm text-amber-200">赛事数据同步中...</div>
+      <div v-if="eliteTournamentTab === 'bracket'" class="min-h-0 flex-1 overflow-hidden flex flex-col">
+        <div class="elite-bracket-overview">
+          <div>
+          <span v-if="eliteTournamentState.status === 'registration'">报名开启中，至少 2 名玩家报名后可立即开始。</span>
+          <span v-else-if="eliteTournamentState.status === 'completed'">冠军：{{ eliteTournamentState.champion ? eliteTournamentState.champion.username : '待定' }}</span>
+          <span v-else>比赛进行中，赛程每 3 秒自动同步。</span>
+          <span v-if="eliteTournamentState.registered && eliteTournamentState.status === 'registration'" class="ml-2">已报名，等待开赛</span>
+          </div>
+          <div class="elite-bracket-actions">
+          <button v-if="!eliteTournamentState.registered && eliteTournamentState.status === 'registration'" @click="registerEliteTournament" class="rounded-lg bg-amber-400 px-4 py-2 font-black text-slate-900">报名参加</button>
+          <button v-if="eliteTournamentState.canStart && eliteTournamentState.registered" @click="startEliteTournament" class="rounded-lg bg-emerald-400 px-4 py-2 font-black text-slate-900">立即开始</button>
+          </div>
+        </div>
+        <div class="elite-bracket-toolbar">
+          <div class="elite-group-tabs">
+            <button
+              v-for="group in eliteTournamentGroupOptions"
+              :key="'elite_group_'+group.key"
+              type="button"
+              @click="selectEliteTournamentGroup(group.key)"
+              :class="{ 'is-active': eliteTournamentSelectedGroup === group.key, 'is-done': group.finished }"
+              class="elite-group-tab"
+            >{{ group.key }}</button>
+            <button
+              v-if="eliteTournamentFinalAvailable"
+              type="button"
+              @click="selectEliteTournamentGroup('final')"
+              :class="{ 'is-active': eliteTournamentSelectedGroup === 'final' }"
+              class="elite-group-tab"
+            >冠军赛</button>
+          </div>
+          <div class="elite-bracket-title">{{ eliteTournamentBracket.title }}</div>
+        </div>
+        <div class="elite-bracket-scroll">
+          <div class="elite-bracket-board" :class="{ 'is-final': eliteTournamentBracket.isFinal }">
+            <section v-for="column in eliteTournamentBracket.leftColumns" :key="'bracket_left_'+column.round" class="elite-bracket-column">
+              <div class="elite-bracket-column-head">{{ column.label }}</div>
+              <div class="elite-bracket-slots" :style="{ gridTemplateRows: 'repeat(' + column.slotCount + ', minmax(0, 1fr))' }">
+                <div
+                  v-for="slot in column.slots"
+                  :key="'left_'+column.round+'_'+slot.key"
+                  class="elite-bracket-slot is-left"
+                  :class="{ 'is-empty': slot.empty, 'is-mine': slot.isMine, 'is-winner': slot.isWinner }"
+                >
+                  <template v-if="slot.empty">待定</template>
+                  <template v-else>
+                    <span v-if="slot.isReady" class="elite-bracket-ready"></span>
+                    <span class="elite-bracket-slot-name">{{ slot.name }}</span>
+                    <span v-if="slot.isBot" class="elite-bracket-bot">AI</span>
+                  </template>
+                </div>
+              </div>
+            </section>
+            <section class="elite-bracket-center">
+              <div class="elite-bracket-cup">🏆</div>
+              <div class="font-black text-sm">{{ eliteTournamentBracket.champion ? eliteTournamentBracket.champion.username : '待定' }}</div>
+              <div class="elite-bracket-center-label">{{ eliteTournamentBracket.centerLabel }}</div>
+            </section>
+            <section v-for="column in eliteTournamentBracket.rightColumns" :key="'bracket_right_'+column.round" class="elite-bracket-column">
+              <div class="elite-bracket-column-head">{{ column.label }}</div>
+              <div class="elite-bracket-slots" :style="{ gridTemplateRows: 'repeat(' + column.slotCount + ', minmax(0, 1fr))' }">
+                <div
+                  v-for="slot in column.slots"
+                  :key="'right_'+column.round+'_'+slot.key"
+                  class="elite-bracket-slot is-right"
+                  :class="{ 'is-empty': slot.empty, 'is-mine': slot.isMine, 'is-winner': slot.isWinner }"
+                >
+                  <template v-if="slot.empty">待定</template>
+                  <template v-else>
+                    <span v-if="slot.isReady" class="elite-bracket-ready"></span>
+                    <span class="elite-bracket-slot-name">{{ slot.name }}</span>
+                    <span v-if="slot.isBot" class="elite-bracket-bot">AI</span>
+                  </template>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+      <div v-else class="min-h-0 flex-1 overflow-auto p-5 text-sky-50">
+        <div v-if="!eliteTournamentState.registered" class="rounded-2xl border border-sky-300/30 bg-slate-950/40 p-6 text-center">请先在赛程页面报名参加。</div>
+        <div v-else-if="eliteTournamentState.status === 'registration'" class="rounded-2xl border border-sky-300/30 bg-slate-950/40 p-6 text-center">已锁定背包 6 只亚比，等待任意已报名玩家点击“立即开始”。</div>
+        <div v-else-if="eliteTournamentState.status === 'completed'" class="rounded-2xl border border-amber-300/40 bg-slate-950/40 p-6 text-center">本届比赛已结束，冠军：{{ eliteTournamentState.champion ? eliteTournamentState.champion.username : '待定' }}。</div>
+        <div v-else-if="eliteTournamentState.myMatch" class="elite-ready-arena">
+          <section class="elite-ready-team" :class="{ 'is-self': eliteTournamentState.myMatch.mySide === 'left' }">
+            <div class="elite-ready-trainer">
+              <div class="elite-ready-avatar">{{ eliteTournamentState.myMatch.left ? eliteTournamentState.myMatch.left.username.slice(0, 1) : '?' }}</div>
+              <div>
+                <div class="elite-ready-name">{{ eliteTournamentState.myMatch.left ? eliteTournamentState.myMatch.left.username : '待定' }}</div>
+                <div class="elite-ready-state">{{ eliteTournamentState.myMatch.leftReady ? '已准备' : '等待准备' }}</div>
+              </div>
+            </div>
+            <div class="elite-ready-pets">
+              <div
+                v-for="(pet, petIndex) in eliteReadyTeam(eliteTournamentState.myMatch.left).slice(0, 1)"
+                :key="'left_pet_'+petIndex"
+                class="elite-ready-pet"
+                :class="{ 'is-first': petIndex === 0, 'is-empty': !pet }"
+              >
+                <template v-if="pet">
+                  <div class="elite-ready-pet-head"><span class="element-icon" :style="petElementIconStyle(pet.element, 24)"></span><span>Lv.{{ pet.level }}</span></div>
+                  <img class="elite-ready-pet-static" :src="eliteReadyPetStaticImage(pet)" alt="出战亚比">
+                  <div v-if="petIndex === 0" class="elite-ready-first-tag">首发</div>
+                </template>
+                <template v-else>空位</template>
+              </div>
+            </div>
+            <div v-if="eliteTournamentState.myMatch.mySide === 'left'" class="elite-ready-self-actions">
+              <template v-if="!eliteTournamentState.myMatch.leftReady">
+                <button @click="openBag2Panel" class="elite-ready-action">背包</button>
+                <button @click="openNewWarehousePanel" class="elite-ready-action">仓库</button>
+                <button @click="prepareEliteTournamentMatch" class="elite-ready-action is-primary">准备</button>
+              </template>
+              <div v-else class="elite-ready-first-tag">已准备，阵容已锁定</div>
+            </div>
+          </section>
+          <div class="elite-ready-vs">VS</div>
+          <section class="elite-ready-team" :class="{ 'is-self': eliteTournamentState.myMatch.mySide === 'right' }">
+            <div class="elite-ready-trainer">
+              <div class="elite-ready-avatar">{{ eliteTournamentState.myMatch.right ? eliteTournamentState.myMatch.right.username.slice(0, 1) : '?' }}</div>
+              <div>
+                <div class="elite-ready-name">{{ eliteTournamentState.myMatch.right ? eliteTournamentState.myMatch.right.username : '待定' }}</div>
+                <div class="elite-ready-state">{{ eliteTournamentState.myMatch.rightReady ? '已准备' : '等待准备' }}</div>
+              </div>
+            </div>
+            <div class="elite-ready-pets">
+              <div
+                v-for="(pet, petIndex) in eliteReadyTeam(eliteTournamentState.myMatch.right).slice(0, 1)"
+                :key="'right_pet_'+petIndex"
+                class="elite-ready-pet"
+                :class="{ 'is-first': petIndex === 0, 'is-empty': !pet }"
+              >
+                <template v-if="pet">
+                  <div class="elite-ready-pet-head"><span class="element-icon" :style="petElementIconStyle(pet.element, 24)"></span><span>Lv.{{ pet.level }}</span></div>
+                  <img class="elite-ready-pet-static" :src="eliteReadyPetStaticImage(pet)" alt="出战亚比">
+                  <div v-if="petIndex === 0" class="elite-ready-first-tag">首发</div>
+                </template>
+                <template v-else>空位</template>
+              </div>
+            </div>
+            <div v-if="eliteTournamentState.myMatch.mySide === 'right'" class="elite-ready-self-actions">
+              <template v-if="!eliteTournamentState.myMatch.rightReady">
+                <button @click="openBag2Panel" class="elite-ready-action">背包</button>
+                <button @click="openNewWarehousePanel" class="elite-ready-action">仓库</button>
+                <button @click="prepareEliteTournamentMatch" class="elite-ready-action is-primary">准备</button>
+              </template>
+              <div v-else class="elite-ready-first-tag">已准备，阵容已锁定</div>
+            </div>
+          </section>
+          <div class="col-span-full mt-4 rounded-2xl border border-sky-300/20 bg-slate-950/45 p-3 text-center text-sm font-bold text-sky-100">真人对真人时，双方每回合各自选择技能，服务器同步同一战场与结算结果；人机对局自动出招。</div>
+        </div>
+        <div v-else class="rounded-2xl border border-sky-300/30 bg-slate-950/40 p-6 text-center">当前轮次已结束，等待其他对局完成后生成下一轮赛程。</div>
+      </div>
+    </div>
+  </div>
+
   <div v-if="showTeamPanel" class="fixed inset-0 z-[95] bg-black flex items-center justify-center">
     <div v-if="teamLoading" class="team-loading-mask">
       <div class="bag2-spinner"></div>
@@ -14454,12 +15255,12 @@
         <svg viewBox="0 0 24 24" class="w-6 h-6 fill-none stroke-white stroke-width-2"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
 
-      <div class="team-commander" @click="onCommanderClick">
+      <div class="team-commander" @click="onCommanderClick($event)">
         <img src="./resource/指挥官_.png" alt="指挥官">
       </div>
 
       <div class="team-recruit-btn" @click="onTeamBossClick">
-        <img src="./resource-v9/战队boss/战队boss.png" alt="战队BOSS">
+        <img src="./resource/战队boss/战队boss.png" alt="战队BOSS">
       </div>
 
       <div class="team-boss-btn" style="display:none;" @click="onTeamBossClick">
@@ -14570,7 +15371,7 @@
             <img src="./resource/战队任务.png" alt="战队任务">
             <span>战队任务</span>
           </button>
-          <button class="team-butler-btn-item shop" @click="showTeamButler = false; showTeamShop = true">
+          <button class="team-butler-btn-item shop" @click="openTeamShop">
             <img src="./resource/战队商店.png" alt="战队商店">
             <span>战队商店</span>
           </button>
@@ -14589,7 +15390,7 @@
         <div v-for="task in teamTaskRows" :key="'team_task_'+task.key" class="team-task-row">
           <div>
             <div class="team-task-name">{{ task.name }}</div>
-            <div class="team-task-reward">贡献 +{{ task.contribution }} ｜ 荣誉 +{{ task.honor }}</div>
+            <div class="team-task-reward">贡献 +{{ task.contribution }} ｜ 荣誉 +{{ task.honor }}<span v-if="task.progressText"> ｜ {{ task.progressText }}</span></div>
           </div>
           <button
             v-if="!task.completed"
@@ -14613,14 +15414,19 @@
           <div>
             <div class="team-shop-title">战队商店</div>
             <div class="team-shop-subtitle">战队 Lv.{{ myTeam.level || 1 }}，按等级开放商品</div>
+            <div class="mt-2 flex gap-1">
+              <button @click="teamShopTab='items'" class="px-2 py-1 rounded-lg text-[11px] font-black" :class="teamShopTab==='items' ? 'bg-sky-600 text-white' : 'bg-white/70 text-sky-800'">道具商店</button>
+              <button @click="teamShopTab='skins'" class="px-2 py-1 rounded-lg text-[11px] font-black" :class="teamShopTab==='skins' ? 'bg-fuchsia-600 text-white' : 'bg-white/70 text-sky-800'">皮肤商店</button>
+            </div>
           </div>
           <div class="team-shop-wallet">
             <span>当前贡献 {{ teamCurrentContribution }}</span>
             <span>累计贡献 {{ teamTotalContribution }}</span>
+            <span>皮肤碎片 {{ skinFragmentCount }}</span>
           </div>
         </div>
         <div class="team-shop-list">
-          <div v-for="it in teamShopRows" :key="'team_shop_'+it.id" class="team-shop-card" :class="{ locked: !it.unlocked }">
+          <div v-for="it in (teamShopTab === 'skins' ? teamSkinShopRows : teamShopRows)" :key="'team_shop_'+it.id" class="team-shop-card" :class="{ locked: !it.unlocked }">
             <div v-if="it.image" class="team-shop-card-icon">
               <img :src="it.image" @error="withFallback" :alt="it.name">
             </div>
@@ -14634,7 +15440,7 @@
               <div class="team-shop-card-reward">奖励：{{ it.rewardLabel }}</div>
             </div>
             <div class="team-shop-card-action">
-              <div class="team-shop-card-cost">{{ it.cost }}贡献</div>
+              <div class="team-shop-card-cost">{{ it.costLabel }}</div>
               <button @click="buyTeamShopItem(it.id)" :disabled="!it.canBuy">{{ !it.unlocked ? '未开放' : (it.remaining <= 0 ? '已限购' : '兑换') }}</button>
             </div>
           </div>
@@ -14685,6 +15491,11 @@
                   :disabled="!canSetTeamElder(member)"
                   @click="setTeamMemberRole(member, 'elder')"
                 >设为元老</button>
+                <button
+                  v-if="canKickTeamMember(member)"
+                  class="team-record-mini-btn"
+                  @click="kickTeamMember(member)"
+                >踢出</button>
               </span>
             </div>
           </div>
@@ -14764,13 +15575,13 @@
     </div>
 
     <div v-if="showTeamBoss" class="team-boss-panel">
-      <img src="./resource-v9/战队boss/战队boss底图.png" alt="战队BOSS" class="team-boss-bg">
-      <img src="./resource-v9/战队boss/战队boss关闭按钮.png" alt="关闭" class="team-boss-close" @click="showTeamBoss = false">
+      <img src="./resource/战队boss/战队boss底图.png" alt="战队BOSS" class="team-boss-bg">
+      <img src="./resource/战队boss/战队boss关闭按钮.png" alt="关闭" class="team-boss-close" @click="showTeamBoss = false">
       
       <div class="team-boss-main">
         <!-- 左侧排行榜 -->
         <div class="team-boss-rank">
-          <img src="./resource-v9/战队boss/排行.png" alt="排行背景" class="team-boss-rank-bg">
+          <img src="./resource/战队boss/排行.png" alt="排行背景" class="team-boss-rank-bg">
           <div class="team-boss-rank-tabs">
             <span :class="['team-boss-rank-tab', { active: teamBossRankTab === 'inner' }]" @click="teamBossRankTab = 'inner'">队内排行</span>
             <span :class="['team-boss-rank-tab', { active: teamBossRankTab === 'team' }]" @click="teamBossRankTab = 'team'">战队排行</span>
@@ -14782,26 +15593,30 @@
               <span class="team-boss-ross-dmg">{{ item.damage }}</span>
             </div>
           </div>
-          <div class="team-boss-chest">
-            <img src="./resource-v9/战队boss/宝箱奖励.png" alt="宝箱奖励">
+          <div class="team-boss-desc">
+            <div class="team-boss-desc-title">挑战说明</div>
+            <div class="team-boss-desc-line">每日可无限次挑战，取伤害最高的一次计入排行。</div>
+            <div class="team-boss-desc-line">BOSS每回合有50%概率提升双防1级。</div>
+            <div class="team-boss-desc-line">我方每阵亡1只亚比，苍穹圣龙增加2500点护盾值（可叠加）。</div>
+            <div class="team-boss-desc-line">战队BOSS减伤20%，每回合末80%概率令对方陷入冰冻、麻痹、烧伤、束缚中的其中1种状态。</div>
           </div>
         </div>
 
         <!-- 右侧Boss区域 -->
         <div class="team-boss-right">
           <div class="team-boss-display">
-            <img src="./resource-v9/战队boss/boss背景框.png" alt="Boss背景" class="team-boss-frame">
+            <img src="./resource/战队boss/boss背景框.png" alt="Boss背景" class="team-boss-frame">
             <div class="team-boss-content">
-              <img src="./resource/地台boss/第四阶段/赤翼魔龙王.png" alt="Boss" class="team-boss-img">
+        <img src="./resource/地台boss/第四阶段/苍穹圣龙.png" alt="Boss" class="team-boss-img">
             </div>
           </div>
           <div class="team-boss-challenge" @click="challengeTeamBoss">
-            <img src="./resource-v9/战队boss/挑战.png" alt="挑战">
+            <img src="./resource/战队boss/挑战.png" alt="挑战">
           </div>
           <div class="team-boss-hp">
-            <img src="./resource-v9/战队boss/boss血量框.png" alt="血量框" class="team-boss-hp-frame">
+            <img src="./resource/战队boss/boss血量框.png" alt="血量框" class="team-boss-hp-frame">
             <div class="team-boss-hp-bar-wrap">
-              <img src="./resource-v9/战队boss/血量条.png" alt="血量条" class="team-boss-hp-bar" :style="{ width: teamBossHpPercent + '%' }">
+              <img src="./resource/战队boss/血量条.png" alt="血量条" class="team-boss-hp-bar" :style="{ width: teamBossHpPercent + '%' }">
             </div>
             <div class="team-boss-hp-text">HP {{ teamBossCurrentHp }} / {{ teamBossMaxHp }}</div>
           </div>
@@ -14810,7 +15625,7 @@
     </div>
   </div>
 
-  <div v-if="showTeamModal" class="team-modal-overlay">
+  <div v-cloak v-if="showTeamModal" class="team-modal-overlay">
     <div class="team-modal">
       <div class="team-modal-title">选择操作</div>
       <div class="team-modal-buttons">
@@ -14821,7 +15636,7 @@
     </div>
   </div>
 
-  <div v-if="showCreateTeamModal" class="team-modal-overlay">
+  <div v-cloak v-if="showCreateTeamModal" class="team-modal-overlay">
     <div class="team-create-modal">
       <div class="team-modal-title">创建战队</div>
       <div class="team-create-form">
@@ -14870,8 +15685,8 @@
 <div v-cloak v-if="battleScene && battleScene.open" class="battle-scene-overlay battle-render-safe fixed inset-0 z-[110] bg-slate-950/90 backdrop-blur-sm" @click="closeBattleScene">
   <div class="relative w-full h-full overflow-hidden bg-slate-950 battle-mobile-root" @click.stop>
     <div class="battle-bg-layer" :style="{ backgroundImage: `url(${battleBackground.src})` }"></div>
-    <div v-if="battleScene.shengyuBackground" :key="'shengyu_bg_' + battleScene.shengyuBackground.seq" :class="['battle-shengyu-bg-layer', { 'battle-shengyu-bg-layer-mobile': isMobileClient }]" :style="battleShengyuBackgroundStyle()">
-      <object v-if="!isMobileClient" :data="battleScene.shengyuBackground.src" type="image/svg+xml" aria-label=""></object>
+    <div v-if="battleScene.shengyuBackground" :key="'shengyu_bg_' + battleScene.shengyuBackground.seq" :class="['battle-shengyu-bg-layer', { 'battle-shengyu-bg-layer-mobile': isMobileClient, 'battle-shengyu-bg-layer-persistent': battleScene.shengyuBackground.entryComplete }]" :style="battleShengyuBackgroundStyle()">
+      <img :src="battleScene.shengyuBackground.src" alt="">
     </div>
     <div class="battle-bg-shade"></div>
     <div class="battle-speed-floating">
@@ -14886,8 +15701,8 @@
         </div>
       </div>
     </div>
-    <div v-if="battleVisualReady && battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'fullscreen'" :key="'skill_fx_fullscreen_' + battleScene.skillEffectFx.seq" class="battle-skill-effect-fullscreen" :style="battleSkillEffectStyle('fullscreen')">
-      <img :src="battleScene.skillEffectFx.src" alt="">
+    <div v-if="battleVisualReady && battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'fullscreen'" :key="'skill_fx_fullscreen_' + (battleScene.skillEffectFx.playbackKey || battleScene.skillEffectFx.seq)" class="battle-skill-effect-fullscreen" :style="battleSkillEffectStyle('fullscreen')">
+      <img :key="'skill_fx_fullscreen_image_' + (battleScene.skillEffectFx.playbackKey || battleScene.skillEffectFx.seq)" :src="battleScene.skillEffectFx.src" alt="">
     </div>
     <div v-if="battleScene.fxSkillText" class="hidden absolute top-6 right-6 z-30 rounded-2xl border border-cyan-300/60 bg-cyan-400/25 px-3 py-1 text-[11px] font-black text-cyan-100 whitespace-nowrap shadow-[0_8px_24px_rgba(34,211,238,0.25)] battle-skill-float">{{ battleScene.fxSkillText }}</div>
 
@@ -14945,6 +15760,7 @@
             <div :class="['battle-pet-visual-anchor', battleScene.fxTargetDefeated ? 'battle-defeated-exit' : '']">
               <div v-if="battleScene.fxTargetSkillText" class="text-sm font-black whitespace-nowrap battle-skill-float battle-pet-skill-float battle-target-skill-float" :style="battlePetSkillFloatStyle('target')">{{ battleScene.fxTargetSkillText }}</div>
               <img :key="'battle_target_pet_' + battleScene.targetImage" :src="battleScene.targetImage" :style="battlePetImageStyle('target')" @error="(event) => withBattlePetFallback(event, 'target')" class="battle-pet-img battle-target-pet-img drop-shadow-[0_20px_28px_rgba(0,0,0,0.5)]">
+              <img v-if="battleVisualReady && battleScene.targetTransformFx" :key="'transform_fx_target_' + battleScene.targetTransformSeq" :src="battleScene.targetTransformFx" class="battle-transform-effect-gif" :style="battleTransformEffectStyle('target')" alt="">
               <img v-if="battleVisualReady && battleScene.skillEffectFx && battleScene.skillEffectFx.side === 'target'" :key="'skill_fx_target_' + battleScene.skillEffectFx.seq" :src="battleScene.skillEffectFx.src" class="battle-skill-effect-gif" :style="battleSkillEffectStyle('target')" alt="">
               <img v-if="battleVisualReady && battleScene.statusEffectFxBySide && battleScene.statusEffectFxBySide.target" :key="'status_fx_target_' + battleScene.statusEffectFxBySide.target.seq" :src="battleScene.statusEffectFxBySide.target.src" class="battle-status-effect-gif" :style="battleStatusEffectStyle('target')" alt="">
               <img v-if="battleVisualReady && battleScene.moraleEffectFx && battleScene.moraleEffectFx.side === 'target'" :key="'morale_fx_target_' + battleScene.moraleEffectFx.seq" :src="battleScene.moraleEffectFx.src" class="battle-status-effect-gif battle-morale-effect-gif" :style="battleStatusEffectStyle('target', true)" alt="">
@@ -15184,6 +16000,22 @@
   </div>
 </div>
 
+<div v-cloak v-if="traitChoiceBundleDialog" class="app-top-dialog-overlay fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" @click="closeTraitChoiceBundleDialog">
+  <div class="w-full max-w-lg rounded-3xl border border-sky-200 bg-white p-5 shadow-2xl app-modal" @click.stop>
+    <div class="text-xl font-black text-slate-900">特性自选礼包</div>
+    <div class="mt-1 text-sm font-bold text-sky-800">选择一个特性，确认后消耗 1 个礼包。</div>
+    <div class="mt-4 grid grid-cols-2 gap-3">
+      <button
+        v-for="choice in traitChoiceBundleChoices"
+        :key="'trait_choice_bundle_'+choice.key"
+        @click="chooseTraitChoiceBundle(choice.key)"
+        class="rounded-2xl border border-sky-200 bg-gradient-to-b from-sky-50 to-indigo-50 px-3 py-5 text-center text-base font-black text-sky-950 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-400 hover:shadow-md"
+      >{{ choice.name }}</button>
+    </div>
+    <button @click="closeTraitChoiceBundleDialog" class="mt-4 h-10 w-full rounded-xl bg-slate-200 text-sm font-black text-slate-700 hover:bg-slate-300">取消</button>
+  </div>
+</div>
+
 <div v-cloak v-if="bagReplaceCtx" class="app-top-dialog-overlay fixed inset-0 bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4" @click="cancelReplaceBag">
   <div class="w-full max-w-3xl rounded-3xl border border-white bg-white p-4 shadow-2xl app-modal" @click.stop>
     <div class="text-lg font-black text-slate-900 mb-1">背包已满，选择替换亚比</div>
@@ -15252,8 +16084,20 @@
       </div>
     </div>
     <div class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
+      <div v-if="battleResult.teamBossDamageLimitExceeded" class="rounded-2xl border border-fuchsia-300 bg-fuchsia-50 p-4 text-center text-lg font-black text-fuchsia-800">
+        Hub不允许有你这么牛逼的存在
+      </div>
       <div v-if="battleResult.hCoinGain > 0" class="rounded-2xl border border-yellow-200 bg-yellow-50 p-3 text-sm font-black text-yellow-800">
         获得 H币 +{{ battleResult.hCoinGain }}
+      </div>
+      <div v-if="battleResult.teamBossSettle" class="rounded-2xl border border-orange-200 bg-orange-50 p-3">
+        <div class="text-sm font-black text-orange-800 mb-1">本次挑战各亚比伤害：</div>
+        <div v-for="(row, idx) in (battleResult.teamBossDamageByPet || [])" :key="'tbd_'+(row.id || idx)" class="flex items-center gap-2 py-1 border-t border-orange-100 first:border-t-0">
+          <img :src="row.image" @error="withFallback" class="w-9 h-9 object-contain rounded-lg border border-slate-200 bg-white shrink-0">
+          <span class="min-w-0 flex-1 text-sm font-black text-slate-800 truncate">{{ row.name }}</span>
+          <span class="text-sm font-black text-orange-700">{{ row.damage }}</span>
+        </div>
+        <div class="mt-2 pt-2 border-t border-orange-200 text-sm font-black text-orange-800">本次挑战总伤害：{{ battleResult.teamBossDamage }}</div>
       </div>
       <div v-if="battleResult.expMultiplier > 1" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-black text-emerald-800">
         经验倍率：本场经验 ×{{ battleResult.expMultiplier }}
@@ -15305,6 +16149,6 @@
 </div>
 
 <script src="./aola-dex-1-100.js?v=20260617_fix_weekly_and_action_fx"></script>
-<script src="./aola-star-app.js?v=20260723_team_sign_bosses"></script>
+<script src="./aola-star-app.js?v=20260909_skin_effects"></script>
 </body>
 </html>

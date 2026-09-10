@@ -8,6 +8,15 @@ const DATA_DIR = process.env.AOLA_DATA_DIR || path.join(__dirname, "data");
 const SAVE_ROOT = path.join(DATA_DIR, "saves");
 const USERS_FILE = path.join(DATA_DIR, "users.json");
 const TEAMS_FILE = path.join(DATA_DIR, "teams.json");
+const ELITE_TOURNAMENT_FILE = path.join(DATA_DIR, "elite-tournament.json");
+const PVP_ROOMS_FILE = path.join(DATA_DIR, "pvp-rooms.json");
+const ELITE_TOURNAMENT_SIZE = 128;
+const ELITE_TOURNAMENT_GROUP_COUNT = 8;
+const ELITE_TOURNAMENT_GROUP_SIZE = 16;
+const ELITE_TOURNAMENT_GROUPS = Array.from({ length: ELITE_TOURNAMENT_GROUP_COUNT }, (_, index) => String.fromCharCode(65 + index));
+const ELITE_TOURNAMENT_TITLE = "Hub第一届精英大赛";
+// 提升赛季号会使历史赛程自动失效，重新开启一届干净的报名赛事。
+const ELITE_TOURNAMENT_SEASON = 6;
 const STATIC_RESOURCE_DIR = process.env.AOLA_STATIC_RESOURCE_DIR || "";
 const STATIC_RESOURCE_PREFIXES = [
   "resource/BGM/",
@@ -18,7 +27,7 @@ const STATIC_RESOURCE_PREFIXES = [
   "resource/pet-img/",
   "resource/pet-state/",
   "resource/skill-effect/",
-  "resource/skill-effect-fullscreen/",
+  "resource/skill-effect-fullscreen-v2/",
   "resource/scene/",
   "resource/shengyu/",
   "resource/time-tunnel-environments/",
@@ -64,6 +73,23 @@ const writeJsonFile = (file, data) => {
 };
 
 const toPosixPath = (value) => String(value || "").replace(/\\/g, "/");
+const localDateKey = (date = new Date()) => {
+  const value = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(value.getTime())) return "";
+  return [
+    value.getFullYear(),
+    String(value.getMonth() + 1).padStart(2, "0"),
+    String(value.getDate()).padStart(2, "0")
+  ].join("-");
+};
+
+const effectiveTeamBossDateKey = (date = new Date()) => {
+  const value = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(value.getTime())) return "";
+  const effective = new Date(value.getTime());
+  if (effective.getHours() >= 22) effective.setDate(effective.getDate() + 1);
+  return localDateKey(effective);
+};
 
 const usersDb = () => {
   const raw = readJsonFile(USERS_FILE, { users: [] });
@@ -95,7 +121,7 @@ const TEST_USER_ID = "test-account-all-pets-1-1960";
 const LEGACY_TEST_USER_IDS = ["test-account-all-pets-1-1928", "test-account-all-pets-1-796"];
 const TEST_USERNAME = "test";
 const TEST_PASSWORD = "test123456";
-const LEADERBOARD_MAX_OPEN_DEX_ID = 2072;
+const LEADERBOARD_MAX_OPEN_DEX_ID = 3000;
 const LEADERBOARD_MAX_HCOINS = 100000000;
 const LEADERBOARD_METRICS = new Set(["battlePower", "activatedDexCount", "hCoins", "timeTunnelMaxClearedFloor", "equipmentDungeonBestScore"]);
 const LEADERBOARD_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
@@ -150,9 +176,37 @@ const TEAM_SHOP_ITEMS = [
   { id: "legend_battle_blade", name: "传说战刃", minLevel: 7, cost: 1400, limit: 2 },
   { id: "legend_shield", name: "传说护盾", minLevel: 7, cost: 1400, limit: 2 },
   { id: "legend_charm", name: "传说护符", minLevel: 7, cost: 1400, limit: 2 },
-  { id: "legend_boots", name: "传说护靴", minLevel: 7, cost: 1400, limit: 2 }
+  { id: "legend_boots", name: "传说护靴", minLevel: 7, cost: 1400, limit: 2 },
+  { id: "team_honor_battle_blade", name: "战队荣誉战刃", minLevel: 7, cost: 1800, limit: 5 },
+  { id: "team_honor_shield", name: "战队荣誉护盾", minLevel: 7, cost: 1800, limit: 5 },
+  { id: "team_honor_charm", name: "战队荣誉护符", minLevel: 7, cost: 1800, limit: 5 },
+  { id: "team_honor_boots", name: "战队荣誉护靴", minLevel: 7, cost: 1800, limit: 5 }
 ];
-const TEAM_SHOP_ITEM_BY_ID = new Map(TEAM_SHOP_ITEMS.map((item) => [item.id, item]));
+const TEAM_SKIN_SHOP_ITEMS = [
+  { id: "dragon_form_flame_king_skin", name: "龙态炎王皮肤", minLevel: 3, cost: 100, limit: 1, currency: "skinFragment", grantItemId: "dragon_form_flame_king_skin", skinKey: "dragon_form_flame_king" },
+  { id: "dragon_form_deka_skin", name: "龙态帝卡皮肤", minLevel: 3, cost: 100, limit: 1, currency: "skinFragment", grantItemId: "dragon_form_deka_skin", skinKey: "dragon_form_deka" },
+  { id: "dragon_form_bingluohuang_skin", name: "龙态冰罗皇皮肤", minLevel: 3, cost: 100, limit: 1, currency: "skinFragment", grantItemId: "dragon_form_bingluohuang_skin", skinKey: "dragon_form_bingluohuang" },
+  { id: "dragon_form_mingwang_skin", name: "龙态明王皮肤", minLevel: 3, cost: 100, limit: 1, currency: "skinFragment", grantItemId: "dragon_form_mingwang_skin", skinKey: "dragon_form_mingwang" },
+  { id: "seven_star_divine_emperor_longblade_skin", name: "七星神帝·龙刃皮肤", minLevel: 5, cost: 360, limit: 1, currency: "skinFragment", grantItemId: "seven_star_divine_emperor_longblade_skin", skinKey: "seven_star_divine_emperor_longblade" },
+  { id: "tiandao_guardian_donghuang_taiyi_skin", name: "天道守护·东皇太一皮肤", minLevel: 5, cost: 360, limit: 1, currency: "skinFragment", grantItemId: "tiandao_guardian_donghuang_taiyi_skin", skinKey: "tiandao_guardian_donghuang_taiyi" },
+  { id: "qiankun_xiuluoshen_skin", name: "未来计划·黯帝修罗皮肤", minLevel: 5, cost: 360, limit: 1, currency: "skinFragment", grantItemId: "qiankun_xiuluoshen_skin", skinKey: "qiankun_xiuluoshen" },
+  { id: "future_mystery_zhanwuyan_skin", name: "未来计划·神秘战无炎皮肤", minLevel: 5, cost: 360, limit: 1, currency: "skinFragment", grantItemId: "future_mystery_zhanwuyan_skin", skinKey: "future_mystery_zhanwuyan" }
+];
+const TEAM_SKIN_HCOIN_COMPENSATION_BY_ITEM_ID = Object.freeze({
+  dragon_form_flame_king_skin: 1280000,
+  dragon_form_deka_skin: 1280000,
+  dragon_form_bingluohuang_skin: 1280000,
+  dragon_form_mingwang_skin: 1280000,
+  seven_star_divine_emperor_longblade_skin: 4880000,
+  tiandao_guardian_donghuang_taiyi_skin: 4880000,
+  qiankun_xiuluoshen_skin: 4880000,
+  future_mystery_zhanwuyan_skin: 4880000
+});
+// Keep server-side purchase validation aligned with the displayed team-shop limits.
+TEAM_SHOP_ITEMS.forEach((item) => {
+  if (Number(item.limit) === 2) item.limit = 8;
+});
+const TEAM_SHOP_ITEM_BY_ID = new Map(TEAM_SHOP_ITEMS.concat(TEAM_SKIN_SHOP_ITEMS).map((item) => [item.id, item]));
 const TEST_MAX_DEX_ID = 1960;
 const TEST_DEFAULT_WEEKLY_REWARD_STATE_VERSION = "wunian_2020_exchange_reset_v2";
 const TEST_DEFAULT_WEEKLY_MEDAL_ITEM_ID = "weekly_boss_medal_wunian_2020";
@@ -894,10 +948,24 @@ const buildRankedLeaderboardRows = (metric) => buildQualifiedLeaderboardRows()
   })
   .map((row, idx) => ({ ...row, rank: idx + 1 }));
 
-const teamsDb = () => {
+const teamsDb = ({ teamBossDate = effectiveTeamBossDateKey() } = {}) => {
   const raw = readJsonFile(TEAMS_FILE, { teams: [] });
   const teams = Array.isArray(raw.teams) ? raw.teams : [];
-  return { teams: teams.map(normalizeTeamRow).filter((team) => team.id && team.name) };
+  const today = String(teamBossDate || effectiveTeamBossDateKey());
+  teams.forEach((team) => {
+    const boss = team && team.teamBoss && typeof team.teamBoss === "object" && !Array.isArray(team.teamBoss) ? team.teamBoss : null;
+    if (!boss) return;
+    const rawDate = String(boss.date || "");
+    if (!rawDate || rawDate === today) return;
+    if (team.bossDayArchive && team.bossDayArchive.date === rawDate) return;
+    const prevBest = normalizeTeamBossMap(boss.memberBestDamage);
+    team.bossDayArchive = {
+      date: rawDate,
+      memberBestDamage: prevBest,
+      teamDailyTotalDamage: Object.values(prevBest).reduce((sum, value) => sum + safeNonNegInt(value, 0), 0)
+    };
+  });
+  return { teams: teams.map((team) => normalizeTeamRow(team, today)).filter((team) => team.id && team.name) };
 };
 
 const saveTeamsDb = (db) => writeJsonFile(TEAMS_FILE, { teams: Array.isArray(db && db.teams) ? db.teams : [] });
@@ -939,7 +1007,7 @@ const normalizeTeamMember = (member) => ({
   joinedAt: String(member && member.joinedAt || new Date().toISOString())
 });
 
-function normalizeTeamRow(team) {
+function normalizeTeamRow(team, teamBossDate = effectiveTeamBossDateKey()) {
   const members = (Array.isArray(team && team.members) ? team.members : []).map(normalizeTeamMember).filter((member) => member.userId);
   const leaderId = String((team && team.leaderId) || (members.find((member) => member.role === "leader") || {}).userId || "");
   const normalizedMembers = members.map((member) => ({
@@ -960,9 +1028,130 @@ function normalizeTeamRow(team) {
     createdAt: String(team && team.createdAt || new Date().toISOString()),
     updatedAt: String(team && team.updatedAt || new Date().toISOString()),
     members: normalizedMembers,
-    applications
+    applications,
+    teamBoss: normalizeTeamBossRow(team && team.teamBoss, teamBossDate),
+    bossDayArchive: team && team.bossDayArchive && typeof team.bossDayArchive === "object" && !Array.isArray(team.bossDayArchive)
+      ? {
+        date: String(team.bossDayArchive.date || ""),
+        memberBestDamage: normalizeTeamBossMap(team.bossDayArchive.memberBestDamage),
+        teamDailyTotalDamage: safeNonNegInt(team.bossDayArchive.teamDailyTotalDamage, 0)
+      }
+      : null
   };
 }
+
+const TEAM_BOSS_DEFAULT_KEY = "sky_sacred_dragon";
+const MAILS_FILE = path.join(DATA_DIR, "mails.json");
+const MAIL_ITEM_DIVINE_PET_KEY = "divine_pet_key";
+const MAIL_ITEM_DUNGEON_CRYSTAL = "equipment_dungeon_crystal";
+const MAIL_ITEM_SKIN_FRAGMENT = "skin_fragment";
+const TEAM_BOSS_INNER_RANK_REWARDS = [
+  { min: 1, max: 1, contribution: 300, hCoins: 100000, divinePetKey: 50, dungeonCrystal: 30, skinFragment: 50, label: "第1名" },
+  { min: 2, max: 2, contribution: 250, hCoins: 80000, divinePetKey: 40, dungeonCrystal: 24, skinFragment: 40, label: "第2名" },
+  { min: 3, max: 3, contribution: 200, hCoins: 60000, divinePetKey: 30, dungeonCrystal: 20, skinFragment: 30, label: "第3名" },
+  { min: 4, max: 10, contribution: 150, hCoins: 50000, divinePetKey: 20, dungeonCrystal: 15, skinFragment: 20, label: "第4-10名" },
+  { min: 11, max: 30, contribution: 100, hCoins: 30000, divinePetKey: 10, dungeonCrystal: 10, skinFragment: 10, label: "第11-30名" },
+  { min: 31, max: 999999999, contribution: 50, hCoins: 10000, divinePetKey: 5, dungeonCrystal: 5, skinFragment: 5, label: "30名之后" }
+];
+const TEAM_BOSS_TEAM_RANK_REWARDS = [
+  { min: 1, max: 1, hCoins: 100000, divinePetKey: 30, dungeonCrystal: 30, skinFragment: 40, label: "第1名" },
+  { min: 2, max: 2, hCoins: 80000, divinePetKey: 24, dungeonCrystal: 24, skinFragment: 32, label: "第2名" },
+  { min: 3, max: 3, hCoins: 60000, divinePetKey: 20, dungeonCrystal: 20, skinFragment: 24, label: "第3名" },
+  { min: 4, max: 10, hCoins: 50000, divinePetKey: 15, dungeonCrystal: 15, skinFragment: 16, label: "第4-10名" },
+  { min: 11, max: 30, hCoins: 30000, divinePetKey: 10, dungeonCrystal: 10, skinFragment: 8, label: "第11-30名" },
+  { min: 31, max: 999999999, hCoins: 10000, divinePetKey: 5, dungeonCrystal: 5, skinFragment: 4, label: "30名之后" }
+];
+const mailsDb = () => {
+  const raw = readJsonFile(MAILS_FILE, { lastSettledDate: "", mails: {} });
+  const mails = raw && raw.mails && typeof raw.mails === "object" && !Array.isArray(raw.mails) ? raw.mails : {};
+  const settledDates = new Set(Array.isArray(raw && raw.settledDates) ? raw.settledDates.map(String).filter(Boolean) : []);
+  if (!Array.isArray(raw && raw.settledDates)) {
+    Object.values(mails).forEach((list) => {
+      (Array.isArray(list) ? list : []).forEach((mail) => {
+        const date = String(mail && mail.settlementDate || "");
+        if (date) settledDates.add(date);
+      });
+    });
+    const legacyDate = String(raw && raw.lastSettledDate || "");
+    if (legacyDate && legacyDate < localDateKey()) settledDates.add(legacyDate);
+  }
+  return {
+    lastSettledDate: String(raw && raw.lastSettledDate || ""),
+    settledDates: Array.from(settledDates),
+    mails
+  };
+};
+const saveMailsDb = (db) => writeJsonFile(MAILS_FILE, {
+  lastSettledDate: String(db && db.lastSettledDate || ""),
+  settledDates: Array.isArray(db && db.settledDates) ? db.settledDates.map(String).filter(Boolean) : [],
+  mails: (db && db.mails) || {}
+});
+const userMails = (db, userId) => {
+  const key = String(userId || "");
+  if (!Array.isArray(db.mails[key])) db.mails[key] = [];
+  return db.mails[key];
+};
+const teamBossRewardForRank = (table, rank) => table.find((row) => rank >= row.min && rank <= row.max) || null;
+const mailRewardItemsOf = (reward) => {
+  const items = [];
+  if (!reward) return items;
+  if (safeNonNegInt(reward.contribution, 0) > 0) items.push({ type: "contribution", amount: safeNonNegInt(reward.contribution, 0) });
+  if (safeNonNegInt(reward.hCoins, 0) > 0) items.push({ type: "hCoins", amount: safeNonNegInt(reward.hCoins, 0) });
+  if (safeNonNegInt(reward.divinePetKey, 0) > 0) items.push({ type: "item", itemId: MAIL_ITEM_DIVINE_PET_KEY, amount: safeNonNegInt(reward.divinePetKey, 0) });
+  if (safeNonNegInt(reward.dungeonCrystal, 0) > 0) items.push({ type: "item", itemId: MAIL_ITEM_DUNGEON_CRYSTAL, amount: safeNonNegInt(reward.dungeonCrystal, 0) });
+  if (safeNonNegInt(reward.skinFragment, 0) > 0) items.push({ type: "item", itemId: MAIL_ITEM_SKIN_FRAGMENT, amount: safeNonNegInt(reward.skinFragment, 0) });
+  return items;
+};
+const mailRewardTextOf = (reward) => {
+  if (!reward) return "";
+  const parts = [];
+  if (safeNonNegInt(reward.contribution, 0) > 0) parts.push(`${safeNonNegInt(reward.contribution, 0)}贡献`);
+  if (safeNonNegInt(reward.hCoins, 0) > 0) parts.push(`${safeNonNegInt(reward.hCoins, 0)}H币`);
+  if (safeNonNegInt(reward.divinePetKey, 0) > 0) parts.push(`${safeNonNegInt(reward.divinePetKey, 0)}神宠之匙`);
+  if (safeNonNegInt(reward.dungeonCrystal, 0) > 0) parts.push(`${safeNonNegInt(reward.dungeonCrystal, 0)}秘境晶石`);
+  if (safeNonNegInt(reward.skinFragment, 0) > 0) parts.push(`${safeNonNegInt(reward.skinFragment, 0)}皮肤碎片`);
+  return parts.join("、");
+};
+const normalizeTeamBossMap = (source, parser = (value) => Math.max(0, Math.floor(Number(value) || 0))) => {
+  const out = {};
+  if (!source || typeof source !== "object" || Array.isArray(source)) return out;
+  Object.keys(source).forEach((rawKey) => {
+    const key = String(rawKey || "");
+    if (!key) return;
+    out[key] = parser(source[rawKey]);
+  });
+  return out;
+};
+
+const normalizeTeamBossMapText = (source) => {
+  const out = {};
+  if (!source || typeof source !== "object" || Array.isArray(source)) return out;
+  Object.keys(source).forEach((rawKey) => {
+    const key = String(rawKey || "");
+    if (!key) return;
+    out[key] = String(source[rawKey] || "");
+  });
+  return out;
+};
+
+const normalizeTeamBossRow = (teamBoss, dateKey = effectiveTeamBossDateKey()) => {
+  const source = teamBoss && typeof teamBoss === "object" && !Array.isArray(teamBoss) ? teamBoss : {};
+  const today = String(dateKey || effectiveTeamBossDateKey());
+  const sameDay = String(source.date || "") === today;
+  const memberAttempts = sameDay ? normalizeTeamBossMap(source.memberAttempts) : {};
+  const memberBestDamage = sameDay ? normalizeTeamBossMap(source.memberBestDamage) : {};
+  const memberBestDamageAt = sameDay ? normalizeTeamBossMapText(source.memberBestDamageAt) : {};
+  const teamDailyTotalDamage = Object.values(memberBestDamage).reduce((sum, value) => sum + Math.max(0, Math.floor(Number(value) || 0)), 0);
+  return {
+    date: today,
+    bossKey: TEAM_BOSS_DEFAULT_KEY,
+    memberAttempts,
+    memberBestDamage,
+    memberBestDamageAt,
+    teamDailyTotalDamage,
+    updatedAt: sameDay ? String(source.updatedAt || "") : ""
+  };
+};
 
 const teamTotalHonor = (team) => (Array.isArray(team && team.members) ? team.members : [])
   .reduce((sum, member) => sum + safeNonNegInt(member && member.honor, 0), 0);
@@ -1018,6 +1207,19 @@ const publicTeamApplication = (app, names) => ({
   appliedAt: app.appliedAt
 });
 
+const publicTeamBoss = (teamBoss) => {
+  const state = normalizeTeamBossRow(teamBoss);
+  return {
+    date: state.date,
+    bossKey: state.bossKey,
+    memberAttempts: state.memberAttempts,
+    memberBestDamage: state.memberBestDamage,
+    memberBestDamageAt: state.memberBestDamageAt,
+    teamDailyTotalDamage: state.teamDailyTotalDamage,
+    updatedAt: state.updatedAt
+  };
+};
+
 const publicTeam = (team, options = {}) => {
   const names = options.names || userNameByIdMap();
   const honor = teamTotalHonor(team);
@@ -1045,9 +1247,127 @@ const publicTeam = (team, options = {}) => {
     contribution: viewerMember ? safeNonNegInt(viewerMember.contribution, 0) : 0,
     currentContribution: viewerMember ? safeNonNegInt(viewerMember.currentContribution, 0) : 0,
     shopPurchases: viewerMember && viewerMember.shopPurchases && typeof viewerMember.shopPurchases === "object" ? viewerMember.shopPurchases : {},
+    teamBoss: publicTeamBoss(team.teamBoss),
     applications: options.includeRecords ? (team.applications || []).map((app) => publicTeamApplication(app, names)) : [],
     memberRows: options.includeRecords ? (team.members || []).map((member) => publicTeamMember(member, names)) : []
   };
+};
+
+const rankedPublicTeamBossRows = () => {
+  const db = teamsDb();
+  const names = userNameByIdMap();
+  return db.teams
+    .map((team) => {
+      const boss = publicTeamBoss(team.teamBoss);
+      const leaderName = names.get(team.leaderId) || "匿名玩家";
+      return {
+        id: team.id,
+        name: team.name,
+        leaderId: team.leaderId,
+        leader: leaderName,
+        leaderName,
+        damage: safeNonNegInt(boss.teamDailyTotalDamage, 0),
+        teamBoss: boss
+      };
+    })
+    .sort((a, b) => safeNonNegInt(b.damage, 0) - safeNonNegInt(a.damage, 0) || String(a.name).localeCompare(String(b.name), "zh-Hans-CN"))
+    .map((row, index) => ({ ...row, rank: index + 1 }));
+};
+
+const updateTeamBossBattleResult = (team, userId, damage) => {
+  if (!team || !userId) return { ok: false, message: "战队不存在。" };
+  const boss = normalizeTeamBossRow(team.teamBoss);
+  const attempts = safeNonNegInt(boss.memberAttempts[userId], 0);
+  const actualDamage = Math.max(0, Math.floor(Number(damage) || 0));
+  boss.memberAttempts[userId] = attempts + 1;
+  if (actualDamage > safeNonNegInt(boss.memberBestDamage[userId], 0)) {
+    boss.memberBestDamage[userId] = actualDamage;
+    boss.memberBestDamageAt[userId] = new Date().toISOString();
+  } else if (!boss.memberBestDamageAt[userId]) {
+    boss.memberBestDamageAt[userId] = new Date().toISOString();
+  }
+  boss.teamDailyTotalDamage = Object.values(boss.memberBestDamage).reduce((sum, value) => sum + safeNonNegInt(value, 0), 0);
+  boss.updatedAt = new Date().toISOString();
+  team.teamBoss = boss;
+  team.updatedAt = boss.updatedAt;
+  return { ok: true, boss };
+};
+
+const settleTeamBossDailyRewards = (force = false) => {
+  try {
+    const now = new Date();
+    const today = localDateKey(now);
+    const todayClosed = Boolean(force) || now.getHours() >= 22;
+    const db = mailsDb();
+    const settledDates = new Set(Array.isArray(db.settledDates) ? db.settledDates.map(String).filter(Boolean) : []);
+    const teamsDbData = teamsDb({ teamBossDate: todayClosed ? today : effectiveTeamBossDateKey(now) });
+    const teams = Array.isArray(teamsDbData.teams) ? teamsDbData.teams : [];
+    const names = userNameByIdMap();
+    const candidateDates = [];
+    teams.forEach((team) => {
+      const archive = team && team.bossDayArchive && typeof team.bossDayArchive === "object" ? team.bossDayArchive : null;
+      const boss = team && team.teamBoss && typeof team.teamBoss === "object" ? team.teamBoss : null;
+      if (archive && String(archive.date || "")) candidateDates.push(String(archive.date));
+      if (boss && String(boss.date || "")) candidateDates.push(String(boss.date));
+    });
+    const pendingDates = candidateDates.filter((date) => date && !settledDates.has(date) && (date < today || (todayClosed && date === today)));
+    const settleDate = pendingDates.length > 0 ? pendingDates.sort()[0] : "";
+    if (!settleDate) {
+      return { settled: false };
+    }
+    const teamDayData = teams.map((team) => {
+      const archive = team && team.bossDayArchive && team.bossDayArchive.date === settleDate ? team.bossDayArchive : null;
+      const raw = team && team.teamBoss && String(team.teamBoss.date || "") === settleDate ? team.teamBoss : null;
+      const boss = archive || raw || null;
+      return { team, boss };
+    });
+    const innerRankByUserId = new Map();
+    teamDayData.forEach(({ team, boss }) => {
+      const best = boss && boss.memberBestDamage && typeof boss.memberBestDamage === "object" ? boss.memberBestDamage : {};
+      (team.members || [])
+        .map((member) => ({ team, member, damage: safeNonNegInt(best[member.userId], 0) }))
+        .sort((a, b) => b.damage - a.damage || String(names.get(a.member.userId) || "").localeCompare(String(names.get(b.member.userId) || ""), "zh-Hans-CN"))
+        .forEach((row, index) => {
+          innerRankByUserId.set(row.member.userId, { rank: index + 1, row });
+        });
+    });
+    const teamRows = teamDayData
+      .map(({ team, boss }) => ({ team, damage: boss ? safeNonNegInt(boss.teamDailyTotalDamage, 0) : 0 }))
+      .sort((a, b) => b.damage - a.damage || String(a.team.name || "").localeCompare(String(b.team.name || ""), "zh-Hans-CN"))
+      .map((row, idx) => ({ ...row, rank: idx + 1 }));
+    const teamRankByTeamId = new Map(teamRows.map((row) => [row.team.id, row]));
+    let sentCount = 0;
+    innerRankByUserId.forEach(({ rank, row }) => {
+      const teamRankRow = teamRankByTeamId.get(row.team.id);
+      const innerReward = teamBossRewardForRank(TEAM_BOSS_INNER_RANK_REWARDS, rank);
+      const teamReward = teamRankRow ? teamBossRewardForRank(TEAM_BOSS_TEAM_RANK_REWARDS, teamRankRow.rank) : null;
+      const items = [...mailRewardItemsOf(innerReward), ...mailRewardItemsOf(teamReward)];
+      if (items.length <= 0) return;
+      const innerText = innerReward ? `${innerReward.label}：${mailRewardTextOf(innerReward)}` : "";
+      const teamText = teamReward ? `战队排名${teamRankRow.rank}名（${teamReward.label}）：${mailRewardTextOf(teamReward)}` : "";
+      const body = [`战队BOSS ${settleDate} 排名奖励已结算`, innerText, teamText].filter(Boolean).join("；") + "。";
+      const mails = userMails(db, row.member.userId);
+      if (mails.some((mail) => String(mail && mail.settlementDate || "") === settleDate)) return;
+      mails.push({
+        id: `${settleDate}_${row.member.userId}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        title: `战队BOSS排名奖励（${settleDate}）`,
+        body,
+        items,
+        settlementDate: settleDate,
+        createdAt: new Date().toISOString(),
+        claimed: false
+      });
+      sentCount += 1;
+    });
+    settledDates.add(settleDate);
+    db.settledDates = Array.from(settledDates).sort();
+    db.lastSettledDate = db.settledDates[db.settledDates.length - 1] || settleDate;
+    saveMailsDb(db);
+    if (todayClosed) saveTeamsDb(teamsDb());
+    return { settled: true, date: settleDate, sentCount };
+  } catch (_) {
+    return { settled: false, error: true };
+  }
 };
 
 const rankedPublicTeams = (viewerUserId = "", includeRecords = false) => {
@@ -1133,8 +1453,463 @@ const requireUser = (req, res) => {
   return user;
 };
 
+const eliteTournamentDb = () => {
+  const raw = readJsonFile(ELITE_TOURNAMENT_FILE, {});
+  if (safeNonNegInt(raw && raw.season, 0) !== ELITE_TOURNAMENT_SEASON) {
+    return {
+      title: ELITE_TOURNAMENT_TITLE,
+      season: ELITE_TOURNAMENT_SEASON,
+      status: "registration",
+      registrations: [],
+      matches: [],
+      startedAt: "",
+      completedAt: "",
+      champion: null
+    };
+  }
+  const registrations = Array.isArray(raw && raw.registrations) ? raw.registrations : [];
+  const matches = Array.isArray(raw && raw.matches) ? raw.matches.map(normalizeEliteTournamentMatch) : [];
+  return {
+    title: ELITE_TOURNAMENT_TITLE,
+    status: ["registration", "in_progress", "completed"].includes(raw && raw.status) ? raw.status : "registration",
+    registrations,
+    matches,
+    startedAt: String(raw && raw.startedAt || ""),
+    completedAt: String(raw && raw.completedAt || ""),
+    champion: raw && raw.champion && typeof raw.champion === "object" ? raw.champion : null
+  };
+};
+
+const normalizeEliteTournamentMatch = (match) => {
+  const round = safeNonNegInt(match && match.round, 1);
+  const index = safeNonNegInt(match && match.index, 0);
+  const isFinal = match && match.stage === "final" || round > 4;
+  if (isFinal) {
+    const finalRoundFromId = /^elite-final-r(\d+)-m\d+$/i.exec(String(match && match.id || ""));
+    const finalRound = finalRoundFromId ? safeNonNegInt(finalRoundFromId[1], 1) : (round > 4 ? round - 4 : round);
+    return { ...match, stage: "final", group: "", round: Math.max(1, finalRound) };
+  }
+  const matchCount = Math.pow(2, 4 - round);
+  const groupIndex = Math.floor(index / matchCount);
+  const savedGroup = ELITE_TOURNAMENT_GROUPS.includes(match && match.group) ? match.group : "";
+  return {
+    ...match,
+    stage: "group",
+    group: savedGroup || ELITE_TOURNAMENT_GROUPS[Math.min(Math.max(groupIndex, 0), ELITE_TOURNAMENT_GROUP_COUNT - 1)] || "A",
+    round
+  };
+};
+
+const saveEliteTournamentDb = (db) => writeJsonFile(ELITE_TOURNAMENT_FILE, {
+  title: ELITE_TOURNAMENT_TITLE,
+  season: ELITE_TOURNAMENT_SEASON,
+  status: db.status,
+  registrations: Array.isArray(db.registrations) ? db.registrations : [],
+  matches: Array.isArray(db.matches) ? db.matches : [],
+  startedAt: db.startedAt || "",
+  completedAt: db.completedAt || "",
+  champion: db.champion || null
+});
+
+const eliteTournamentPetSnapshot = (pet, index) => ({
+  id: safeTeamText(pet && pet.id, 96) || `elite_pet_${index + 1}`,
+  dexId: safeNonNegInt(pet && pet.dexId, 0),
+  baseDexId: safeNonNegInt(pet && pet.baseDexId, 0),
+  name: safeTeamText(pet && pet.name, 48),
+  element: safeTeamText(pet && pet.element, 24),
+  subElement: safeTeamText(pet && pet.subElement, 24),
+  level: Math.max(1, Math.min(100, safeNonNegInt(pet && pet.level, 100))),
+  // 保留当前形态与技能解锁等级，避免降级喷雾后的赛事阵容重新按等级回退。
+  fixedStageIndex: Math.max(0, Math.min(8, safeNonNegInt(pet && pet.fixedStageIndex, 0))),
+  skillUnlockLevel: Math.max(1, Math.min(100, safeNonNegInt(pet && pet.skillUnlockLevel, safeNonNegInt(pet && pet.level, 100)))),
+  talent: pet && pet.talent && typeof pet.talent === "object" ? pet.talent : {},
+  study: pet && pet.study && typeof pet.study === "object" ? pet.study : {},
+  equippedSkills: Array.isArray(pet && pet.equippedSkills) ? pet.equippedSkills.map((name) => safeTeamText(name, 64)).filter(Boolean).slice(0, 4) : [],
+  extraSkills: Array.isArray(pet && pet.extraSkills) ? pet.extraSkills.map((name) => safeTeamText(name, 64)).filter(Boolean).slice(0, 8) : [],
+  equippedItemId: safeTeamText(pet && pet.equippedItemId, 80),
+  equippedTraitKey: safeTeamText(pet && pet.equippedTraitKey, 80),
+  skinKey: safeTeamText(pet && pet.skinKey, 80),
+  qixingSeal: pet && pet.qixingSeal && typeof pet.qixingSeal === "object" ? pet.qixingSeal : {}
+});
+
+const eliteTournamentParticipant = (user, team) => ({
+  id: `user:${user.id}`,
+  type: "user",
+  userId: user.id,
+  username: safeTeamText(user.username, 32) || "训练师",
+  team: team.map(eliteTournamentPetSnapshot),
+  joinedAt: new Date().toISOString()
+});
+
+const ELITE_BOT_DEX_IDS = [1, 4, 7, 25, 133, 150, 197, 248, 282, 376, 445, 635];
+const eliteTournamentBot = (index) => ({
+  id: `bot:${index + 1}`,
+  type: "bot",
+  userId: "",
+  username: `精英人机${String(index + 1).padStart(3, "0")}`,
+  team: Array.from({ length: 6 }, (_, petIndex) => eliteTournamentPetSnapshot({
+    id: `bot_${index + 1}_${petIndex + 1}`,
+    dexId: ELITE_BOT_DEX_IDS[(index * 3 + petIndex) % ELITE_BOT_DEX_IDS.length],
+    level: 100
+  }, petIndex)),
+  joinedAt: ""
+});
+
+const shuffleEliteTournament = (rows) => {
+  const result = rows.slice();
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    const j = crypto.randomInt ? crypto.randomInt(i + 1) : Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+};
+
+const eliteMatchParticipantView = (participant, includeTeam = false) => {
+  if (!participant) return null;
+  const view = {
+    id: String(participant.id || ""),
+    type: participant.type === "bot" ? "bot" : "user",
+    userId: String(participant.userId || ""),
+    username: safeTeamText(participant.username, 32) || "训练师"
+  };
+  if (includeTeam) view.team = Array.isArray(participant.team) ? participant.team : [];
+  return view;
+};
+
+// Older tournament records did not always contain `type: "user"`.  A real
+// account is identified by its userId; bots never have one.
+const isEliteTournamentUserParticipant = (participant) => Boolean(
+  participant && participant.type !== "bot" && safeTeamText(participant.userId, 96)
+);
+
+const createEliteMatchBattle = (left, right) => ({
+  mode: isEliteTournamentUserParticipant(left) && isEliteTournamentUserParticipant(right) ? "human" : "bot",
+  turn: 1,
+  actions: { left: null, right: null },
+  skinTransforms: [],
+  resolver: "",
+  revision: 0,
+  snapshot: null,
+  updatedAt: new Date().toISOString()
+});
+
+const eliteMatchView = (match, viewerUserId = "") => {
+  const isLeft = String(match && match.left && match.left.userId || "") === String(viewerUserId || "");
+  const isRight = String(match && match.right && match.right.userId || "") === String(viewerUserId || "");
+  const isViewerMatch = isLeft || isRight;
+  return {
+    id: String(match && match.id || ""),
+    stage: match && match.stage === "final" ? "final" : "group",
+    group: ELITE_TOURNAMENT_GROUPS.includes(match && match.group) ? match.group : "",
+    round: safeNonNegInt(match && match.round, 1),
+    index: safeNonNegInt(match && match.index, 0),
+    status: String(match && match.status || "waiting"),
+    left: eliteMatchParticipantView(match && match.left, isViewerMatch),
+    right: eliteMatchParticipantView(match && match.right, isViewerMatch),
+    leftReady: Boolean(match && match.leftReady),
+    rightReady: Boolean(match && match.rightReady),
+    battle: match && match.battle && typeof match.battle === "object" ? {
+      mode: match.battle.mode === "human" ? "human" : "bot",
+      turn: safeNonNegInt(match.battle.turn, 1),
+      leftActionReady: Boolean(match.battle.actions && match.battle.actions.left),
+      rightActionReady: Boolean(match.battle.actions && match.battle.actions.right),
+      resolving: Boolean(match.battle.resolver),
+      revision: safeNonNegInt(match.battle.revision, 0)
+    } : null,
+    winner: eliteMatchParticipantView(match && match.winner, false),
+    mySide: isLeft ? "left" : (isRight ? "right" : "")
+  };
+};
+
+const ensureEliteMatchBattle = (match) => {
+  if (!match) return false;
+  const expectedMode = isEliteTournamentUserParticipant(match.left) && isEliteTournamentUserParticipant(match.right) ? "human" : "bot";
+  if (match.battle && typeof match.battle === "object") {
+    let repaired = false;
+    if (match.battle.mode !== expectedMode) {
+      match.battle.mode = expectedMode;
+      repaired = true;
+    }
+    if (!match.battle.actions || typeof match.battle.actions !== "object") {
+      match.battle.actions = { left: null, right: null };
+      repaired = true;
+    }
+    return repaired;
+  }
+  match.battle = createEliteMatchBattle(match.left, match.right);
+  return true;
+};
+
+const normalizeEliteBattleAction = (body) => {
+  const action = body && body.action && typeof body.action === "object" ? body.action : null;
+  const type = action && ["switch", "item"].includes(action.type) ? action.type : "skill";
+  if (type === "switch") {
+    const petId = safeTeamText(action.petId, 96);
+    return petId ? { type, petId } : null;
+  }
+  if (type === "item") {
+    const itemId = safeTeamText(action.itemId, 80);
+    const amount = Math.min(999, Math.max(1, safeNonNegInt(action.amount, 1)));
+    const allowedItemIds = new Set(["pp_bean_s", "pp_bean_m", "pp_bean_l", "hp_candy_s", "hp_candy_m", "hp_candy_l", "purify_potion"]);
+    return allowedItemIds.has(itemId) ? { type, itemId, amount } : null;
+  }
+  const skillName = safeTeamText(action && action.skillName || body && body.skillName, 80);
+  return skillName ? { type: "skill", skillName } : null;
+};
+
+const recordEliteBattleSkinTransform = (battle, side, petId) => {
+  if (!battle || (side !== "left" && side !== "right")) return null;
+  const safePetId = safeTeamText(petId, 96);
+  if (!safePetId) return null;
+  if (!Array.isArray(battle.skinTransforms)) battle.skinTransforms = [];
+  const existing = battle.skinTransforms.find((event) => event && event.side === side && event.petId === safePetId);
+  if (existing) return existing;
+  const event = { id: `skin:${crypto.randomUUID()}`, side, petId: safePetId, createdAt: new Date().toISOString() };
+  battle.skinTransforms.push(event);
+  battle.skinTransforms = battle.skinTransforms.slice(-24);
+  battle.revision = safeNonNegInt(battle.revision, 0) + 1;
+  battle.updatedAt = event.createdAt;
+  return event;
+};
+
+const applyEliteTournamentForcedSwitch = (snapshot, side, petId) => {
+  if (!snapshot || typeof snapshot !== "object") return false;
+  const isLeft = side === "left";
+  const team = isLeft ? snapshot.team : snapshot.targetTeam;
+  const unit = (Array.isArray(team) ? team : []).find((row) => row && String(row.id || "") === String(petId || "") && Number(row.hp) > 0);
+  if (!unit) return false;
+  const prefix = isLeft ? "attacker" : "target";
+  const upper = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+  snapshot[`current${upper}Id`] = String(unit.id || "");
+  snapshot[`${prefix}DexId`] = safeNonNegInt(unit.dexId, 0);
+  snapshot[`${prefix}BaseDexId`] = safeNonNegInt(unit.baseDexId, safeNonNegInt(unit.dexId, 0));
+  snapshot[`${prefix}Name`] = safeTeamText(unit.name, 48);
+  snapshot[`${prefix}Image`] = safeTeamText(unit.image, 512);
+  snapshot[`${prefix}StaticImage`] = safeTeamText(unit.staticImage || unit.image, 512);
+  snapshot[`${prefix}Level`] = Math.max(1, safeNonNegInt(unit.level, 100));
+  snapshot[`${prefix}Element`] = safeTeamText(unit.element, 24);
+  snapshot[`${prefix}SubElement`] = safeTeamText(unit.subElement, 24);
+  snapshot[`${prefix}Ability`] = unit.ability && typeof unit.ability === "object" ? unit.ability : {};
+  snapshot[`${prefix}Hp`] = Math.max(0, Number(unit.hp) || 0);
+  snapshot[`${prefix}MaxHp`] = Math.max(1, Number(unit.maxHp) || Number(unit.hp) || 1);
+  snapshot[`ui${upper}Hp`] = snapshot[`${prefix}Hp`];
+  snapshot[`ui${upper}MaxHp`] = snapshot[`${prefix}MaxHp`];
+  snapshot[`${prefix}State`] = unit.battleState && typeof unit.battleState === "object" ? unit.battleState : {};
+  snapshot[`${prefix}Skills`] = Array.isArray(unit.skills) ? unit.skills : [];
+  snapshot[`${prefix}BattleItemId`] = safeTeamText(unit.battleItemId, 80);
+  snapshot[`${prefix}QixingSealLevel`] = Math.max(1, safeNonNegInt(unit.qixingSealLevel, 1));
+  snapshot[`${prefix}QixingSealTraitKey`] = safeTeamText(unit.qixingSealTraitKey, 80);
+  snapshot[`fx${upper}Defeated`] = false;
+  snapshot[`fx${upper}Shake`] = false;
+  if (!snapshot.pvpMeta || typeof snapshot.pvpMeta !== "object") snapshot.pvpMeta = {};
+  snapshot.pvpMeta.pendingSwitchSide = "";
+  return true;
+};
+
+const pvpRoomsDb = () => {
+  const raw = readJsonFile(PVP_ROOMS_FILE, {});
+  return { rooms: Array.isArray(raw && raw.rooms) ? raw.rooms.filter((room) => room && room.id && room.left) : [] };
+};
+const savePvpRoomsDb = (db) => writeJsonFile(PVP_ROOMS_FILE, { rooms: Array.isArray(db && db.rooms) ? db.rooms : [] });
+const pvpRoomParticipant = (user, team) => ({
+  id: `user:${user.id}`,
+  type: "user",
+  userId: user.id,
+  username: safeTeamText(user.username, 32) || "训练师",
+  team: team.map(eliteTournamentPetSnapshot)
+});
+const pvpRoomView = (room, viewerUserId = "", includeTeams = false) => {
+  if (!room) return null;
+  const isLeft = String(room.left && room.left.userId || "") === String(viewerUserId || "");
+  const isRight = String(room.right && room.right.userId || "") === String(viewerUserId || "");
+  const isMember = isLeft || isRight;
+  return {
+    id: String(room.id || ""), code: String(room.code || ""), status: ["waiting", "ready"].includes(room.status) ? room.status : "waiting",
+    hostUserId: String(room.hostUserId || ""), left: eliteMatchParticipantView(room.left, includeTeams && isMember), right: eliteMatchParticipantView(room.right, includeTeams && isMember),
+    leftReady: Boolean(room.leftReady), rightReady: Boolean(room.rightReady), mySide: isLeft ? "left" : (isRight ? "right" : ""),
+    battle: room.battle && typeof room.battle === "object" ? { mode: room.battle.mode, revision: safeNonNegInt(room.battle.revision, 0) } : null
+  };
+};
+const findPvpRoomByUser = (db, userId) => (db.rooms || []).find((room) => String(room.left && room.left.userId || "") === String(userId || "") || String(room.right && room.right.userId || "") === String(userId || ""));
+const pvpRoomCode = (db) => {
+  let code = "";
+  do { code = String(crypto.randomInt(100000, 1000000)); } while ((db.rooms || []).some((room) => String(room.code) === code));
+  return code;
+};
+const resetPvpRoomBattle = (room) => {
+  room.status = "waiting";
+  room.leftReady = false;
+  room.rightReady = false;
+  room.battle = createEliteMatchBattle(room.left, room.right);
+};
+
+const eliteTournamentStart = (db) => {
+  const seenUserIds = new Set();
+  const uniqueRegistrations = db.registrations.filter((entrant) => {
+    const userId = safeTeamText(entrant && entrant.userId, 96);
+    if (!userId || seenUserIds.has(userId)) return false;
+    seenUserIds.add(userId);
+    return true;
+  });
+  db.registrations = uniqueRegistrations;
+  const shuffledEntrants = shuffleEliteTournament(uniqueRegistrations.slice(0, ELITE_TOURNAMENT_SIZE));
+  const groupedEntrants = ELITE_TOURNAMENT_GROUPS.map(() => []);
+  // 首轮对阵按相邻两个席位组成。先把真实玩家随机两两放入同一组，
+  // 让尽可能多的玩家优先进行真人 PVP；人数为奇数时才由最后一名玩家对阵人机。
+  let groupIndex = 0;
+  for (let index = 0; index + 1 < shuffledEntrants.length; index += 2) {
+    groupedEntrants[groupIndex].push(shuffledEntrants[index], shuffledEntrants[index + 1]);
+    groupIndex = (groupIndex + 1) % ELITE_TOURNAMENT_GROUP_COUNT;
+  }
+  if (shuffledEntrants.length % 2 === 1) groupedEntrants[groupIndex].push(shuffledEntrants[shuffledEntrants.length - 1]);
+  let botIndex = 0;
+  groupedEntrants.forEach((entrants) => {
+    while (entrants.length < ELITE_TOURNAMENT_GROUP_SIZE) entrants.push(eliteTournamentBot(botIndex++));
+  });
+  db.matches = [];
+  groupedEntrants.forEach((entrants, groupIndex) => {
+    const group = ELITE_TOURNAMENT_GROUPS[groupIndex];
+    for (let index = 0; index < ELITE_TOURNAMENT_GROUP_SIZE / 2; index += 1) {
+      const left = entrants[index * 2];
+      const right = entrants[index * 2 + 1];
+      db.matches.push({
+        id: `elite-group-${group}-r1-m${index + 1}`,
+        stage: "group",
+        group,
+        round: 1,
+        index,
+        left,
+        right,
+        leftReady: left.type === "bot",
+        rightReady: right.type === "bot",
+        status: left.type === "bot" && right.type === "bot" ? "ready" : "waiting",
+        winner: null,
+        finishedAt: "",
+        battle: createEliteMatchBattle(left, right)
+      });
+    }
+  });
+  db.status = "in_progress";
+  db.startedAt = new Date().toISOString();
+};
+
+const createEliteNextMatches = (db, stage, group, round) => {
+  const current = db.matches.filter((match) => (
+    (match.stage || "group") === stage && (!group || match.group === group) && safeNonNegInt(match.round, 1) === round
+  ));
+  if (current.length === 0 || current.some((match) => match.status !== "finished")) return false;
+  const winners = current.sort((a, b) => a.index - b.index).map((match) => match.winner).filter(Boolean);
+  if (winners.length !== current.length) return false;
+
+  if (stage === "group" && round === 4) {
+    const groupWinners = ELITE_TOURNAMENT_GROUPS.map((groupName) => {
+      const finalMatch = db.matches.find((match) => match.stage === "group" && match.group === groupName && safeNonNegInt(match.round, 1) === 4);
+      return finalMatch && finalMatch.status === "finished" ? finalMatch.winner : null;
+    });
+    if (groupWinners.some((winner) => !winner) || db.matches.some((match) => match.stage === "final" && safeNonNegInt(match.round, 1) === 1)) return false;
+    for (let index = 0; index < groupWinners.length; index += 2) {
+      const left = groupWinners[index];
+      const right = groupWinners[index + 1];
+      db.matches.push({
+        id: `elite-final-r1-m${index / 2 + 1}`,
+        stage: "final",
+        group: "",
+        round: 1,
+        index: index / 2,
+        left,
+        right,
+        leftReady: left.type === "bot",
+        rightReady: right.type === "bot",
+        status: left.type === "bot" && right.type === "bot" ? "ready" : "waiting",
+        winner: null,
+        finishedAt: "",
+        battle: createEliteMatchBattle(left, right)
+      });
+    }
+    return true;
+  }
+
+  if (stage === "final" && winners.length === 1) {
+    db.status = "completed";
+    db.completedAt = new Date().toISOString();
+    db.champion = winners[0];
+    return true;
+  }
+  const nextRound = round + 1;
+  if (db.matches.some((match) => (
+    (match.stage || "group") === stage && (!group || match.group === group) && safeNonNegInt(match.round, 1) === nextRound
+  ))) return false;
+  for (let index = 0; index < winners.length; index += 2) {
+    const left = winners[index];
+    const right = winners[index + 1];
+    db.matches.push({
+      id: stage === "final" ? `elite-final-r${nextRound}-m${index / 2 + 1}` : `elite-group-${group}-r${nextRound}-m${index / 2 + 1}`,
+      stage,
+      group: stage === "final" ? "" : group,
+      round: nextRound,
+      index: index / 2,
+      left,
+      right,
+      leftReady: left.type === "bot",
+      rightReady: right.type === "bot",
+      status: left.type === "bot" && right.type === "bot" ? "ready" : "waiting",
+      winner: null,
+      finishedAt: "",
+      battle: createEliteMatchBattle(left, right)
+    });
+  }
+  return true;
+};
+
+const advanceEliteTournament = (db) => {
+  let changed = false;
+  ELITE_TOURNAMENT_GROUPS.forEach((group) => {
+    for (let round = 1; round <= 4; round += 1) changed = createEliteNextMatches(db, "group", group, round) || changed;
+  });
+  for (let round = 1; round <= 3; round += 1) changed = createEliteNextMatches(db, "final", "", round) || changed;
+  return changed;
+};
+
+const settleEliteBotMatches = (db) => {
+  let changed = false;
+  while (true) {
+    let changedInLoop = false;
+    db.matches.filter((match) => (
+      match.status === "ready" && match.left && match.right && match.left.type === "bot" && match.right.type === "bot"
+    )).forEach((match) => {
+      match.winner = crypto.randomInt(0, 2) === 0 ? match.left : match.right;
+      match.status = "finished";
+      match.finishedAt = new Date().toISOString();
+      changedInLoop = true;
+    });
+    if (advanceEliteTournament(db)) changedInLoop = true;
+    if (!changedInLoop) break;
+    changed = true;
+  }
+  return changed;
+};
+
+const eliteTournamentPublicState = (db, viewerUserId = "") => {
+  const matches = db.matches.map((match) => eliteMatchView(match, viewerUserId));
+  return {
+    ok: true,
+    title: ELITE_TOURNAMENT_TITLE,
+    size: ELITE_TOURNAMENT_SIZE,
+    status: db.status,
+    registrationCount: db.registrations.length,
+    canStart: db.status === "registration" && db.registrations.length >= 2,
+    registered: db.registrations.some((row) => String(row && row.userId || "") === String(viewerUserId || "")),
+    startedAt: db.startedAt,
+    completedAt: db.completedAt,
+    champion: eliteMatchParticipantView(db.champion),
+    matches,
+    myMatch: matches.find((match) => match.mySide && match.status !== "finished") || null
+  };
+};
+
 const handleApi = async (req, res) => {
   try {
+    settleTeamBossDailyRewards();
     const apiUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
     const pathname = apiUrl.pathname;
     if (req.method === "POST" && req.url === "/api/auth/register") {
@@ -1199,6 +1974,309 @@ const handleApi = async (req, res) => {
       }
       return sendJson(res, 200, { ok: true, user: publicUser(row) });
     }
+    if (req.method === "GET" && pathname === "/api/elite-tournament") {
+      const user = currentUser(req);
+      const db = eliteTournamentDb();
+      let tournamentChanged = db.matches.some((match) => ensureEliteMatchBattle(match));
+      if (settleEliteBotMatches(db)) tournamentChanged = true;
+      if (tournamentChanged) saveEliteTournamentDb(db);
+      return sendJson(res, 200, eliteTournamentPublicState(db, user ? user.id : ""));
+    }
+    if (req.method === "POST" && pathname === "/api/elite-tournament/register") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const team = Array.isArray(body && body.team) ? body.team.map(eliteTournamentPetSnapshot).filter((pet) => pet.dexId > 0) : [];
+      if (team.length !== 6) return sendJson(res, 400, { ok: false, message: "精英大赛需要锁定背包中的 6 只亚比。" });
+      const db = eliteTournamentDb();
+      if (db.status !== "registration") return sendJson(res, 409, { ok: false, message: "赛事已开赛，当前不能报名。" });
+      if (db.registrations.some((row) => String(row && row.userId || "") === user.id)) {
+        return sendJson(res, 409, { ok: false, message: "你已报名本届精英大赛。" });
+      }
+      if (db.registrations.length >= ELITE_TOURNAMENT_SIZE) return sendJson(res, 409, { ok: false, message: "报名人数已满。" });
+      db.registrations.push(eliteTournamentParticipant(user, team));
+      saveEliteTournamentDb(db);
+      return sendJson(res, 200, eliteTournamentPublicState(db, user.id));
+    }
+    if (req.method === "POST" && pathname === "/api/elite-tournament/start") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const db = eliteTournamentDb();
+      if (db.status !== "registration") return sendJson(res, 409, { ok: false, message: "赛事已经开始。" });
+      if (db.registrations.length < 2) return sendJson(res, 409, { ok: false, message: "至少两名玩家报名后才能立即开始。" });
+      eliteTournamentStart(db);
+      settleEliteBotMatches(db);
+      saveEliteTournamentDb(db);
+      return sendJson(res, 200, eliteTournamentPublicState(db, user.id));
+    }
+    if (req.method === "POST" && pathname === "/api/elite-tournament/prepare") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const preparedTeam = Array.isArray(body && body.team)
+        ? body.team.map(eliteTournamentPetSnapshot).filter((pet) => pet.dexId > 0)
+        : [];
+      if (preparedTeam.length !== 6) return sendJson(res, 400, { ok: false, message: "精英大赛需要锁定背包中的 6 只亚比。" });
+      const db = eliteTournamentDb();
+      const match = db.matches.find((row) => row && row.status !== "finished" && (
+        String(row.left && row.left.userId || "") === user.id || String(row.right && row.right.userId || "") === user.id
+      ));
+      if (!match) return sendJson(res, 404, { ok: false, message: "当前没有可准备的赛事对局。" });
+      if (String(match.left && match.left.userId || "") === user.id) {
+        match.left.team = preparedTeam;
+        match.leftReady = true;
+      }
+      if (String(match.right && match.right.userId || "") === user.id) {
+        match.right.team = preparedTeam;
+        match.rightReady = true;
+      }
+      if (match.leftReady && match.rightReady) match.status = "ready";
+      ensureEliteMatchBattle(match);
+      saveEliteTournamentDb(db);
+      return sendJson(res, 200, eliteTournamentPublicState(db, user.id));
+    }
+    if (req.method === "GET" && pathname === "/api/elite-tournament/battle") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const db = eliteTournamentDb();
+      const match = db.matches.find((row) => row && row.status !== "finished" && (
+        String(row.left && row.left.userId || "") === user.id || String(row.right && row.right.userId || "") === user.id
+      ));
+      if (!match) return sendJson(res, 404, { ok: false, message: "当前没有进行中的赛事对局。" });
+      const battleCreated = ensureEliteMatchBattle(match);
+      if (battleCreated) saveEliteTournamentDb(db);
+      return sendJson(res, 200, { ok: true, match: eliteMatchView(match, user.id), battle: match.battle });
+    }
+    if (req.method === "POST" && pathname === "/api/elite-tournament/battle/skin-transform") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const db = eliteTournamentDb();
+      const match = db.matches.find((row) => String(row && row.id || "") === safeTeamText(body && body.matchId, 80));
+      if (!match || match.status !== "ready") return sendJson(res, 404, { ok: false, message: "赛事对局尚未准备完成。" });
+      const side = String(match.left && match.left.userId || "") === user.id ? "left" : (String(match.right && match.right.userId || "") === user.id ? "right" : "");
+      if (!side || !match.battle || match.battle.mode !== "human") return sendJson(res, 403, { ok: false, message: "当前无法使用灵皮启耀。" });
+      const event = recordEliteBattleSkinTransform(match.battle, side, body && body.petId);
+      if (!event) return sendJson(res, 400, { ok: false, message: "皮肤启耀目标无效。" });
+      saveEliteTournamentDb(db);
+      return sendJson(res, 200, { ok: true, event, battle: match.battle });
+    }
+    if (req.method === "POST" && pathname === "/api/elite-tournament/battle/action") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const action = normalizeEliteBattleAction(body);
+      const db = eliteTournamentDb();
+      const match = db.matches.find((row) => String(row && row.id || "") === safeTeamText(body && body.matchId, 80));
+      if (!match || match.status !== "ready") return sendJson(res, 404, { ok: false, message: "赛事对局尚未准备完成。" });
+      const side = String(match.left && match.left.userId || "") === user.id ? "left" : (String(match.right && match.right.userId || "") === user.id ? "right" : "");
+      if (!side) return sendJson(res, 403, { ok: false, message: "无权操作该赛事对局。" });
+      if (!match.battle || typeof match.battle !== "object") match.battle = createEliteMatchBattle(match.left, match.right);
+      if (match.battle.mode !== "human") return sendJson(res, 409, { ok: false, message: "人机对局由人机自动出招。" });
+      if (match.battle.resolver) return sendJson(res, 409, { ok: false, message: "本回合正在结算。" });
+      if (!action) return sendJson(res, 400, { ok: false, message: "请选择要执行的对战动作。" });
+      const pendingSwitchSide = safeTeamText(match.battle.snapshot && match.battle.snapshot.pvpMeta && match.battle.snapshot.pvpMeta.pendingSwitchSide, 12);
+      if (pendingSwitchSide) {
+        if (pendingSwitchSide !== side) return sendJson(res, 409, { ok: false, message: "当前应由对方选择下一只亚比。" });
+        if (action.type !== "switch") return sendJson(res, 400, { ok: false, message: "当前亚比已倒下，请先手动换宠。" });
+        if (!applyEliteTournamentForcedSwitch(match.battle.snapshot, side, action.petId)) {
+          return sendJson(res, 400, { ok: false, message: "换宠目标不在本场比赛阵容中或已失去战斗能力。" });
+        }
+        match.battle.actions = { left: null, right: null };
+        match.battle.resolver = "";
+        match.battle.revision = safeNonNegInt(match.battle.revision, 0) + 1;
+        match.battle.updatedAt = new Date().toISOString();
+        saveEliteTournamentDb(db);
+        return sendJson(res, 200, { ok: true, forcedSwitch: true, battle: match.battle, mySide: side });
+      }
+      if (action.type === "switch") {
+        const participant = side === "left" ? match.left : match.right;
+        const petIds = (Array.isArray(participant && participant.team) ? participant.team : []).map((pet) => safeTeamText(pet && pet.id, 96));
+        if (!petIds.includes(action.petId)) return sendJson(res, 400, { ok: false, message: "换宠目标不在本场比赛阵容中。" });
+      }
+      match.battle.actions = { ...(match.battle.actions || {}), [side]: action };
+      match.battle.updatedAt = new Date().toISOString();
+      saveEliteTournamentDb(db);
+      return sendJson(res, 200, { ok: true, battle: match.battle, mySide: side, canResolve: side === "left" && Boolean(match.battle.actions.left && match.battle.actions.right) });
+    }
+    if (req.method === "POST" && pathname === "/api/elite-tournament/battle/claim") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const db = eliteTournamentDb();
+      const match = db.matches.find((row) => String(row && row.id || "") === safeTeamText(body && body.matchId, 80));
+      if (!match || match.status !== "ready" || String(match.left && match.left.userId || "") !== user.id) return sendJson(res, 403, { ok: false, message: "当前无法获取本回合结算权。" });
+      if (!match.battle || match.battle.mode !== "human" || !match.battle.actions || !match.battle.actions.left || !match.battle.actions.right) return sendJson(res, 409, { ok: false, message: "仍在等待双方选择技能。" });
+      if (match.battle.resolver && match.battle.resolver !== "left") return sendJson(res, 409, { ok: false, message: "本回合已被结算。" });
+      match.battle.resolver = "left";
+      match.battle.updatedAt = new Date().toISOString();
+      saveEliteTournamentDb(db);
+      return sendJson(res, 200, { ok: true, battle: match.battle });
+    }
+    if (req.method === "POST" && pathname === "/api/elite-tournament/battle/snapshot") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const db = eliteTournamentDb();
+      const match = db.matches.find((row) => String(row && row.id || "") === safeTeamText(body && body.matchId, 80));
+      if (!match || String(match.left && match.left.userId || "") !== user.id || !match.battle || match.battle.resolver !== "left") {
+        return sendJson(res, 403, { ok: false, message: "无权提交赛事战场同步。" });
+      }
+      if (!body || !body.snapshot || typeof body.snapshot !== "object" || Array.isArray(body.snapshot)) return sendJson(res, 400, { ok: false, message: "战场快照格式不正确。" });
+      match.battle.snapshot = body.snapshot;
+      match.battle.turn = Math.max(1, safeNonNegInt(match.battle.turn, 1) + 1);
+      match.battle.actions = { left: null, right: null };
+      match.battle.resolver = "";
+      match.battle.revision = safeNonNegInt(match.battle.revision, 0) + 1;
+      match.battle.updatedAt = new Date().toISOString();
+      saveEliteTournamentDb(db);
+      return sendJson(res, 200, { ok: true, battle: match.battle });
+    }
+    if (req.method === "POST" && pathname === "/api/elite-tournament/result") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const matchId = safeTeamText(body && body.matchId, 80);
+      const winnerSide = body && body.winnerSide === "right" ? "right" : "left";
+      const db = eliteTournamentDb();
+      const match = db.matches.find((row) => String(row && row.id || "") === matchId);
+      if (!match) return sendJson(res, 404, { ok: false, message: "赛事对局不存在。" });
+      const isParticipant = String(match.left && match.left.userId || "") === user.id || String(match.right && match.right.userId || "") === user.id;
+      if (!isParticipant) return sendJson(res, 403, { ok: false, message: "无权结算该赛事对局。" });
+      if (match.status !== "ready") return sendJson(res, 409, { ok: false, message: "双方准备完成后才能结算。" });
+      if (match.status === "finished") return sendJson(res, 409, { ok: false, message: "该对局已结算。" });
+      match.winner = winnerSide === "left" ? match.left : match.right;
+      match.status = "finished";
+      match.finishedAt = new Date().toISOString();
+      advanceEliteTournament(db);
+      settleEliteBotMatches(db);
+      saveEliteTournamentDb(db);
+      return sendJson(res, 200, eliteTournamentPublicState(db, user.id));
+    }
+    if (req.method === "GET" && pathname === "/api/pvp-rooms") {
+      const user = currentUser(req);
+      const db = pvpRoomsDb();
+      return sendJson(res, 200, { ok: true, rooms: db.rooms.map((room) => pvpRoomView(room, user ? user.id : "", false)), myRoom: user ? pvpRoomView(findPvpRoomByUser(db, user.id), user.id, true) : null });
+    }
+    if (req.method === "POST" && pathname === "/api/pvp-rooms/create") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const team = Array.isArray(body && body.team) ? body.team.map(eliteTournamentPetSnapshot).filter((pet) => pet.dexId > 0) : [];
+      if (team.length !== 6) return sendJson(res, 400, { ok: false, message: "创建房间需要背包中正好有6只亚比。" });
+      const db = pvpRoomsDb();
+      if (findPvpRoomByUser(db, user.id)) return sendJson(res, 409, { ok: false, message: "你已在一个对战房间内。" });
+      const left = pvpRoomParticipant(user, team);
+      const room = { id: `room:${crypto.randomUUID()}`, code: pvpRoomCode(db), hostUserId: user.id, left, right: null, leftReady: false, rightReady: false, status: "waiting", createdAt: new Date().toISOString(), battle: createEliteMatchBattle(left, null) };
+      db.rooms.push(room);
+      savePvpRoomsDb(db);
+      return sendJson(res, 200, { ok: true, room: pvpRoomView(room, user.id, true) });
+    }
+    if (req.method === "POST" && pathname === "/api/pvp-rooms/join") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const team = Array.isArray(body && body.team) ? body.team.map(eliteTournamentPetSnapshot).filter((pet) => pet.dexId > 0) : [];
+      if (team.length !== 6) return sendJson(res, 400, { ok: false, message: "加入房间需要背包中正好有6只亚比。" });
+      const db = pvpRoomsDb();
+      if (findPvpRoomByUser(db, user.id)) return sendJson(res, 409, { ok: false, message: "你已在一个对战房间内。" });
+      const room = (db.rooms || []).find((row) => String(row.code || "") === safeTeamText(body && body.code, 16));
+      if (!room) return sendJson(res, 404, { ok: false, message: "未找到该房间编号。" });
+      if (room.right) return sendJson(res, 409, { ok: false, message: "该房间已满，无法加入。" });
+      room.right = pvpRoomParticipant(user, team);
+      resetPvpRoomBattle(room);
+      savePvpRoomsDb(db);
+      return sendJson(res, 200, { ok: true, room: pvpRoomView(room, user.id, true) });
+    }
+    if (req.method === "POST" && pathname === "/api/pvp-rooms/prepare") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const db = pvpRoomsDb();
+      const room = (db.rooms || []).find((row) => String(row.id || "") === safeTeamText(body && (body.roomId || body.matchId), 120));
+      if (!room || !room.right) return sendJson(res, 404, { ok: false, message: "当前房间尚未凑齐两名玩家。" });
+      const team = Array.isArray(body && body.team) ? body.team.map(eliteTournamentPetSnapshot).filter((pet) => pet.dexId > 0) : [];
+      if (team.length !== 6) return sendJson(res, 400, { ok: false, message: "对战房间需要锁定6只亚比。" });
+      if (String(room.left.userId) === user.id) { room.left.team = team; room.leftReady = true; }
+      else if (String(room.right.userId) === user.id) { room.right.team = team; room.rightReady = true; }
+      else return sendJson(res, 403, { ok: false, message: "无权操作该房间。" });
+      if (room.leftReady && room.rightReady) { room.status = "ready"; room.battle = createEliteMatchBattle(room.left, room.right); }
+      savePvpRoomsDb(db);
+      return sendJson(res, 200, { ok: true, room: pvpRoomView(room, user.id, true) });
+    }
+    if (req.method === "POST" && pathname === "/api/pvp-rooms/leave") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const db = pvpRoomsDb();
+      const index = (db.rooms || []).findIndex((row) => String(row.id || "") === safeTeamText(body && (body.roomId || body.matchId), 120));
+      const room = index >= 0 ? db.rooms[index] : null;
+      if (!room) return sendJson(res, 404, { ok: false, message: "房间不存在。" });
+      if (String(room.hostUserId) === user.id) db.rooms.splice(index, 1);
+      else if (room.right && String(room.right.userId) === user.id) { room.right = null; resetPvpRoomBattle(room); }
+      else return sendJson(res, 403, { ok: false, message: "无权操作该房间。" });
+      savePvpRoomsDb(db);
+      return sendJson(res, 200, { ok: true });
+    }
+    if (req.method === "POST" && pathname === "/api/pvp-rooms/kick") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const db = pvpRoomsDb();
+      const room = (db.rooms || []).find((row) => String(row.id || "") === safeTeamText(body && (body.roomId || body.matchId), 120));
+      if (!room) return sendJson(res, 404, { ok: false, message: "房间不存在。" });
+      if (String(room.hostUserId) !== user.id) return sendJson(res, 403, { ok: false, message: "只有房主可以踢出玩家。" });
+      if (!room.right) return sendJson(res, 400, { ok: false, message: "当前没有可踢出的玩家。" });
+      if (room.status !== "waiting") return sendJson(res, 409, { ok: false, message: "对战已开始，无法踢出玩家。" });
+      room.right = null;
+      resetPvpRoomBattle(room);
+      savePvpRoomsDb(db);
+      return sendJson(res, 200, { ok: true, room: pvpRoomView(room, user.id, true) });
+    }
+    if (pathname.startsWith("/api/pvp-rooms/battle")) {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = req.method === "GET" ? null : await readBody(req);
+      const roomId = safeTeamText((body && (body.roomId || body.matchId)) || apiUrl.searchParams.get("roomId"), 120);
+      const db = pvpRoomsDb();
+      const room = (db.rooms || []).find((row) => String(row.id || "") === roomId);
+      const side = room && String(room.left && room.left.userId || "") === user.id ? "left" : (room && String(room.right && room.right.userId || "") === user.id ? "right" : "");
+      if (!room || !side || room.status !== "ready") return sendJson(res, 404, { ok: false, message: "当前房间对战已结束。" });
+      if (!room.battle || typeof room.battle !== "object") room.battle = createEliteMatchBattle(room.left, room.right);
+      if (req.method === "GET") return sendJson(res, 200, { ok: true, room: pvpRoomView(room, user.id, true), battle: room.battle });
+      if (pathname.endsWith("/skin-transform")) {
+        if (room.battle.mode !== "human") return sendJson(res, 409, { ok: false, message: "当前无法使用灵皮启耀。" });
+        const event = recordEliteBattleSkinTransform(room.battle, side, body && body.petId);
+        if (!event) return sendJson(res, 400, { ok: false, message: "皮肤启耀目标无效。" });
+        savePvpRoomsDb(db);
+        return sendJson(res, 200, { ok: true, event, battle: room.battle });
+      }
+      if (pathname.endsWith("/action")) {
+        const action = normalizeEliteBattleAction(body);
+        if (!action || room.battle.resolver) return sendJson(res, 409, { ok: false, message: "本回合暂时无法操作。" });
+        const pending = safeTeamText(room.battle.snapshot && room.battle.snapshot.pvpMeta && room.battle.snapshot.pvpMeta.pendingSwitchSide, 12);
+        if (pending) {
+          if (pending !== side || action.type !== "switch" || !applyEliteTournamentForcedSwitch(room.battle.snapshot, side, action.petId)) return sendJson(res, 400, { ok: false, message: "当前需要选择可出战的下一只亚比。" });
+          room.battle.actions = { left: null, right: null }; room.battle.resolver = ""; room.battle.revision = safeNonNegInt(room.battle.revision, 0) + 1;
+        } else room.battle.actions = { ...(room.battle.actions || {}), [side]: action };
+        room.battle.updatedAt = new Date().toISOString(); savePvpRoomsDb(db);
+        return sendJson(res, 200, { ok: true, battle: room.battle, mySide: side });
+      }
+      if (pathname.endsWith("/claim")) {
+        if (side !== "left" || !room.battle.actions.left || !room.battle.actions.right) return sendJson(res, 409, { ok: false, message: "仍在等待双方操作。" });
+        room.battle.resolver = "left"; room.battle.updatedAt = new Date().toISOString(); savePvpRoomsDb(db);
+        return sendJson(res, 200, { ok: true, battle: room.battle });
+      }
+      if (pathname.endsWith("/snapshot")) {
+        if (side !== "left" || room.battle.resolver !== "left" || !body.snapshot || typeof body.snapshot !== "object") return sendJson(res, 403, { ok: false, message: "无权提交房间战场同步。" });
+        room.battle.snapshot = body.snapshot; room.battle.turn = Math.max(1, safeNonNegInt(room.battle.turn, 1) + 1); room.battle.actions = { left: null, right: null }; room.battle.resolver = ""; room.battle.revision = safeNonNegInt(room.battle.revision, 0) + 1; room.battle.updatedAt = new Date().toISOString(); savePvpRoomsDb(db);
+        return sendJson(res, 200, { ok: true, battle: room.battle });
+      }
+      if (pathname.endsWith("/result")) {
+        resetPvpRoomBattle(room); savePvpRoomsDb(db);
+        return sendJson(res, 200, { ok: true, room: pvpRoomView(room, user.id, true) });
+      }
+    }
     if (req.method === "GET" && pathname === "/api/teams") {
       const user = currentUser(req);
       return sendJson(res, 200, { ok: true, teams: rankedPublicTeams(user ? user.id : "") });
@@ -1212,6 +2290,90 @@ const handleApi = async (req, res) => {
       const team = findUserTeam(db, user.id);
       if (!team) return sendJson(res, 200, { ok: true, team: null });
       return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, includeRecords) });
+    }
+    if (req.method === "GET" && pathname === "/api/teams/boss/rank") {
+      return sendJson(res, 200, { ok: true, teams: rankedPublicTeamBossRows() });
+    }
+    if (req.method === "POST" && pathname === "/api/teams/boss/record") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const damage = Math.max(0, Math.floor(Number(body.damage) || 0));
+      const db = teamsDb();
+      const team = findUserTeam(db, user.id);
+      if (!team) return sendJson(res, 404, { ok: false, message: "当前账号未加入战队。" });
+      const result = updateTeamBossBattleResult(team, user.id, damage);
+      if (!result.ok) return sendJson(res, 409, { ok: false, message: result.message });
+      saveTeamsDb(db);
+      return sendJson(res, 200, {
+        ok: true,
+        team: publicTeamWithRank(team, user.id, true),
+        teams: rankedPublicTeamBossRows()
+      });
+    }
+    if (req.method === "GET" && pathname === "/api/mail/list") {
+      const user = currentUser(req);
+      if (!user) return sendJson(res, 200, { ok: true, mails: [] });
+      const db = mailsDb();
+      const list = (userMails(db, user.id) || []).slice().sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+      return sendJson(res, 200, { ok: true, mails: list });
+    }
+    if (req.method === "POST" && pathname === "/api/mail/claim-all") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const db = mailsDb();
+      const list = userMails(db, user.id);
+      const unclaimed = list.filter((mail) => mail && !mail.claimed);
+      if (unclaimed.length <= 0) return sendJson(res, 200, { ok: true, claimed: 0 });
+      const saveFile = userSaveFile(user.id);
+      const payload = readJsonFile(saveFile, null);
+      const save = extractGameSaveState(payload);
+      if (!save || typeof save !== "object" || Array.isArray(save)) {
+        return sendJson(res, 409, { ok: false, message: "请先创建服务器存档后再领取邮件奖励。" });
+      }
+      save.hCoins = safeNonNegInt(save.hCoins, 0);
+      if (!save.items || typeof save.items !== "object" || Array.isArray(save.items)) save.items = {};
+      let contributionTotal = 0;
+      unclaimed.forEach((mail) => {
+        (Array.isArray(mail.items) ? mail.items : []).forEach((item) => {
+          if (!item || typeof item !== "object") return;
+          const amount = safeNonNegInt(item.amount, 0);
+          if (item.type === "hCoins") save.hCoins += amount;
+          else if (item.type === "item" && String(item.itemId || "")) save.items[String(item.itemId)] = safeNonNegInt(save.items[String(item.itemId)], 0) + amount;
+          else if (item.type === "contribution") contributionTotal += amount;
+        });
+        mail.claimed = true;
+        mail.claimedAt = new Date().toISOString();
+      });
+      const payloadOut = payload && typeof payload === "object" && !Array.isArray(payload)
+        ? payload
+        : { userId: user.id, username: user.username, savedAt: new Date().toISOString(), save };
+      payloadOut.save = save;
+      payloadOut.savedAt = new Date().toISOString();
+      writeJsonFile(saveFile, payloadOut);
+      if (contributionTotal > 0) {
+        const teams = teamsDb();
+        const team = findUserTeam(teams, user.id);
+        if (team) {
+          const member = (team.members || []).find((row) => row.userId === user.id);
+          if (member) {
+            member.contribution = safeNonNegInt(member.contribution, 0) + contributionTotal;
+            member.currentContribution = safeNonNegInt(member.currentContribution, 0) + contributionTotal;
+            team.updatedAt = new Date().toISOString();
+            saveTeamsDb(teams);
+          }
+        }
+      }
+      saveMailsDb(db);
+      return sendJson(res, 200, { ok: true, claimed: unclaimed.length });
+    }
+    if (req.method === "POST" && pathname === "/api/mail/delete-all") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const db = mailsDb();
+      userMails(db, user.id).length = 0;
+      saveMailsDb(db);
+      return sendJson(res, 200, { ok: true });
     }
     if (req.method === "GET" && pathname.startsWith("/api/teams/")) {
       const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
@@ -1340,6 +2502,58 @@ const handleApi = async (req, res) => {
       saveTeamsDb(db);
       return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
     }
+    if (req.method === "POST" && pathname === "/api/teams/member-kick") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const teamId = String(body.teamId || "");
+      const targetUserId = String(body.userId || "");
+      const db = teamsDb();
+      const team = findTeamById(db, teamId);
+      if (!team) return sendJson(res, 404, { ok: false, message: "战队不存在。" });
+      const actor = (team.members || []).find((member) => member.userId === user.id);
+      const targetIndex = (team.members || []).findIndex((member) => member.userId === targetUserId);
+      const target = targetIndex >= 0 ? team.members[targetIndex] : null;
+      if (!actor || !target) return sendJson(res, 404, { ok: false, message: "成员不存在。" });
+      if (actor.userId === target.userId) return sendJson(res, 400, { ok: false, message: "不能踢出自己，请使用退出战队。" });
+      if (target.role === "leader") return sendJson(res, 400, { ok: false, message: "不能踢出队长。" });
+      const rank = { leader: 3, vice: 2, elder: 1, member: 0 };
+      const actorRank = rank[actor.role] ?? 0;
+      const targetRank = rank[target.role] ?? 0;
+      if (actorRank <= 0 || actorRank <= targetRank) return sendJson(res, 403, { ok: false, message: "当前职位无权踢出该成员。" });
+      team.members.splice(targetIndex, 1);
+      team.updatedAt = new Date().toISOString();
+      saveTeamsDb(db);
+      return sendJson(res, 200, { ok: true, team: publicTeamWithRank(team, user.id, true) });
+    }
+    if (req.method === "POST" && pathname === "/api/teams/leave") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const db = teamsDb();
+      const team = findUserTeam(db, user.id);
+      if (!team) return sendJson(res, 404, { ok: false, message: "当前账号未加入战队。" });
+      const leavingIndex = (team.members || []).findIndex((member) => member.userId === user.id);
+      if (leavingIndex < 0) return sendJson(res, 404, { ok: false, message: "成员不存在。" });
+      const [leavingMember] = team.members.splice(leavingIndex, 1);
+      if (leavingMember.role === "leader" && team.members.length > 0) {
+        const nextLeader = team.members.slice().sort((a, b) => {
+          const joinedDiff = String(a.joinedAt || "").localeCompare(String(b.joinedAt || ""));
+          return joinedDiff || String(a.userId || "").localeCompare(String(b.userId || ""));
+        })[0];
+        team.members.forEach((member) => {
+          if (member.userId === nextLeader.userId) member.role = "leader";
+          else if (member.role === "leader") member.role = "member";
+        });
+        team.leaderId = nextLeader.userId;
+      }
+      if (team.members.length === 0) {
+        db.teams = (db.teams || []).filter((row) => row.id !== team.id);
+      } else {
+        team.updatedAt = new Date().toISOString();
+      }
+      saveTeamsDb(db);
+      return sendJson(res, 200, { ok: true });
+    }
     if (req.method === "POST" && pathname === "/api/teams/contribution") {
       const user = requireUser(req, res);
       if (!user) return;
@@ -1377,12 +2591,47 @@ const handleApi = async (req, res) => {
       const bought = safeNonNegInt(member.shopPurchases[item.id], 0);
       if (limit > 0 && bought >= limit) return sendJson(res, 409, { ok: false, message: "该商品已达到个人限购次数。" });
       const cost = safeNonNegInt(item.cost, 0);
-      if (safeNonNegInt(member.currentContribution, 0) < cost) return sendJson(res, 409, { ok: false, message: `当前贡献值不足，需要${cost}贡献值。` });
-      member.currentContribution = safeNonNegInt(member.currentContribution, 0) - cost;
+      const usesSkinFragments = String(item.currency || "") === "skinFragment";
+      let saveItemUpdates = null;
+      let saveHCoins = null;
+      let skinHcoinCompensation = 0;
+      if (usesSkinFragments) {
+        const saveFile = userSaveFile(user.id);
+        const payload = readJsonFile(saveFile, null);
+        const save = extractGameSaveState(payload);
+        if (!save || typeof save !== "object" || Array.isArray(save)) return sendJson(res, 409, { ok: false, message: "请先创建服务器存档后再兑换皮肤。" });
+        if (!save.items || typeof save.items !== "object" || Array.isArray(save.items)) save.items = {};
+        const fragments = safeNonNegInt(save.items[MAIL_ITEM_SKIN_FRAGMENT], 0);
+        if (fragments < cost) return sendJson(res, 409, { ok: false, message: `皮肤碎片不足，需要${cost}个。` });
+        const grantItemId = String(item.grantItemId || item.id || "");
+        const alreadyOwned = safeNonNegInt(save.items[grantItemId], 0) > 0
+          || (Array.isArray(save.activePets) && save.activePets.some((pet) => String(pet && pet.skinKey || "") === String(item.skinKey || "")));
+        save.items[MAIL_ITEM_SKIN_FRAGMENT] = fragments - cost;
+        if (alreadyOwned && TEAM_SKIN_HCOIN_COMPENSATION_BY_ITEM_ID[grantItemId]) {
+          skinHcoinCompensation = TEAM_SKIN_HCOIN_COMPENSATION_BY_ITEM_ID[grantItemId];
+          save.hCoins = safeNonNegInt(save.hCoins, 0) + skinHcoinCompensation;
+          saveHCoins = save.hCoins;
+        } else {
+          save.items[grantItemId] = safeNonNegInt(save.items[grantItemId], 0) + 1;
+        }
+        const payloadOut = payload && typeof payload === "object" && !Array.isArray(payload)
+          ? payload
+          : { userId: user.id, username: user.username, savedAt: new Date().toISOString(), save };
+        payloadOut.save = save;
+        payloadOut.savedAt = new Date().toISOString();
+        writeJsonFile(saveFile, payloadOut);
+        saveItemUpdates = {
+          [MAIL_ITEM_SKIN_FRAGMENT]: save.items[MAIL_ITEM_SKIN_FRAGMENT],
+          [grantItemId]: save.items[grantItemId]
+        };
+      } else {
+        if (safeNonNegInt(member.currentContribution, 0) < cost) return sendJson(res, 409, { ok: false, message: `当前贡献值不足，需要${cost}贡献值。` });
+        member.currentContribution = safeNonNegInt(member.currentContribution, 0) - cost;
+      }
       if (limit > 0) member.shopPurchases[item.id] = bought + 1;
       team.updatedAt = new Date().toISOString();
       saveTeamsDb(db);
-      return sendJson(res, 200, { ok: true, item, team: publicTeamWithRank(team, user.id, true) });
+      return sendJson(res, 200, { ok: true, item, saveItemUpdates, saveHCoins, skinHcoinCompensation, team: publicTeamWithRank(team, user.id, true) });
     }
     if (req.method === "GET" && new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname === "/api/leaderboard/my-rank") {
       const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
@@ -1467,12 +2716,21 @@ const handleApi = async (req, res) => {
   }
 };
 
+let teamBossSettleTimer = null;
+
 const startServer = (port = PORT, callback = null) => {
   ensureDir(DATA_DIR);
   ensureDir(SAVE_ROOT);
   if (!fs.existsSync(USERS_FILE)) writeJsonFile(USERS_FILE, { users: [] });
   if (!fs.existsSync(TEAMS_FILE)) writeJsonFile(TEAMS_FILE, { teams: [] });
+  if (!fs.existsSync(ELITE_TOURNAMENT_FILE)) saveEliteTournamentDb(eliteTournamentDb());
+  if (!fs.existsSync(PVP_ROOMS_FILE)) savePvpRoomsDb(pvpRoomsDb());
   ensureTestAccount();
+  if (teamBossSettleTimer) clearInterval(teamBossSettleTimer);
+  teamBossSettleTimer = setInterval(() => {
+    if (new Date().getHours() >= 22) settleTeamBossDailyRewards(true);
+  }, 60 * 1000);
+  settleTeamBossDailyRewards();
   const server = http.createServer((req, res) => {
     const pathname = new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname;
     if (req.method === "OPTIONS") {

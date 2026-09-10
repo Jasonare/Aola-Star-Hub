@@ -10,5 +10,8 @@ contextBridge.exposeInMainWorld("aolaDesktop", {
   },
   autoSaveDone(windowId) {
     ipcRenderer.send(`aola:auto-save-done:${windowId}`);
+  },
+  closeWindow() {
+    ipcRenderer.send("aola:force-close-window");
   }
 });

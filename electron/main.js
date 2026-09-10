@@ -114,6 +114,13 @@ const createWindow = (targetUrl) => {
   win.loadURL(targetUrl);
 };
 
+ipcMain.on("aola:force-close-window", (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (!win || win.isDestroyed()) return;
+  win.__allowCloseAfterSave = true;
+  win.close();
+});
+
 app.whenReady().then(async () => {
   try {
     const backendPort = await startLocalBackend();
