@@ -10,6 +10,8 @@ const USERS_FILE = path.join(DATA_DIR, "users.json");
 const TEAMS_FILE = path.join(DATA_DIR, "teams.json");
 const ELITE_TOURNAMENT_FILE = path.join(DATA_DIR, "elite-tournament.json");
 const PVP_ROOMS_FILE = path.join(DATA_DIR, "pvp-rooms.json");
+const WEEKLY_BOSS_FIRST_CLEAR_FILE = path.join(DATA_DIR, "weekly-boss-first-clears.json");
+const WEEKLY_BOSS_DIFFICULTY_KEYS = new Set(["normal", "hard", "nightmare"]);
 const ELITE_TOURNAMENT_SIZE = 128;
 const ELITE_TOURNAMENT_GROUP_COUNT = 8;
 const ELITE_TOURNAMENT_GROUP_SIZE = 16;
@@ -557,8 +559,32 @@ const normalizeFullTestSavePayload = (payload) => {
     fixedStageIndex: pet.fixedStageIndex,
     keepEquippedSkillsAboveLevel: true
   }));
-  const bagPetIds = activePets.slice(0, 6).map((pet) => pet.id);
-  while (bagPetIds.length < 6) bagPetIds.push("");
+  const activePetIds = new Set(activePets.map((pet) => String(pet && pet.id || "")).filter(Boolean));
+  const rawElitePetIds = Array.isArray(save.elitePetIds)
+    ? save.elitePetIds
+    : (Array.isArray(save.eliteWarehousePetIds) ? save.eliteWarehousePetIds : []);
+  const elitePetIdSet = new Set();
+  const elitePetIds = Array.from({ length: 12 }, (_, index) => {
+    const raw = rawElitePetIds[index];
+    const id = String(raw && typeof raw === "object" ? (raw.id || raw.petId || "") : (raw || "")).trim();
+    if (!id || !activePetIds.has(id) || elitePetIdSet.has(id)) return "";
+    elitePetIdSet.add(id);
+    return id;
+  });
+  const rawBagPetIds = Array.isArray(save.bagPetIds) ? save.bagPetIds : [];
+  const bagPetIdSet = new Set();
+  const bagPetIds = Array.from({ length: 6 }, (_, index) => {
+    const raw = rawBagPetIds[index];
+    const id = String(raw && typeof raw === "object" ? (raw.id || raw.petId || "") : (raw || "")).trim();
+    if (!id || !activePetIds.has(id) || bagPetIdSet.has(id)) return "";
+    bagPetIdSet.add(id);
+    return id;
+  });
+  if (!bagPetIds.some(Boolean)) {
+    activePets.slice(0, 6).forEach((pet, index) => {
+      bagPetIds[index] = pet.id;
+    });
+  }
   return {
     ...fullSeed,
     ...save,
@@ -566,6 +592,7 @@ const normalizeFullTestSavePayload = (payload) => {
     defeatedDexIds: fullSeed.defeatedDexIds,
     activePets,
     bagPetIds,
+    elitePetIds,
     selectedAttackerId: bagPetIds[0] || "",
     selectedPetId: activePets[0] ? activePets[0].id : "",
     guardianWinCounts: fullSeed.guardianWinCounts,
@@ -670,16 +697,58 @@ const backfillAlhub666MistDragonEgg = (payload) => {
   };
 };
 
+const normalizeWarehouseSlotsInSavePayload = (payload) => {
+  const save = payload && typeof payload.save === "object" && !Array.isArray(payload.save) ? payload.save : null;
+  if (!save) return payload;
+  const activePetIds = new Set((Array.isArray(save.activePets) ? save.activePets : [])
+    .map((pet) => String(pet && pet.id || "").trim())
+    .filter(Boolean));
+  const rawElitePetIds = Array.isArray(save.elitePetIds)
+    ? save.elitePetIds
+    : (Array.isArray(save.eliteWarehousePetIds) ? save.eliteWarehousePetIds : []);
+  const eliteSeen = new Set();
+  const elitePetIds = Array.from({ length: 12 }, (_, index) => {
+    const raw = rawElitePetIds[index];
+    const id = String(raw && typeof raw === "object" ? (raw.id || raw.petId || "") : (raw || "")).trim();
+    if (!id || !activePetIds.has(id) || eliteSeen.has(id)) return "";
+    eliteSeen.add(id);
+    return id;
+  });
+  const rawBagPetIds = Array.isArray(save.bagPetIds) ? save.bagPetIds : [];
+  const bagSeen = new Set();
+  const bagPetIds = Array.from({ length: 6 }, (_, index) => {
+    const raw = rawBagPetIds[index];
+    const id = String(raw && typeof raw === "object" ? (raw.id || raw.petId || "") : (raw || "")).trim();
+    if (!id || !activePetIds.has(id) || bagSeen.has(id)) return "";
+    bagSeen.add(id);
+    return id;
+  });
+  const unchanged = Array.isArray(save.elitePetIds) && save.elitePetIds.length === elitePetIds.length
+    && save.elitePetIds.every((id, index) => String(id || "") === elitePetIds[index])
+    && Array.isArray(save.bagPetIds) && save.bagPetIds.length === bagPetIds.length
+    && save.bagPetIds.every((id, index) => String(id || "") === bagPetIds[index]);
+  if (unchanged) return payload;
+  return {
+    ...(payload && typeof payload === "object" ? payload : {}),
+    save: {
+      ...save,
+      elitePetIds,
+      bagPetIds
+    }
+  };
+};
+
 const normalizeSaveForUser = (user, payload) => {
   const save = payload && typeof payload.save === "object" && !Array.isArray(payload.save) ? payload.save : null;
   if (!save) return payload;
   const backfilledPayload = backfillAlhub666MistDragonEgg(payload);
-  const backfilledSave = backfilledPayload && backfilledPayload.save && typeof backfilledPayload.save === "object" && !Array.isArray(backfilledPayload.save)
-    ? backfilledPayload.save
+  const warehouseNormalizedPayload = normalizeWarehouseSlotsInSavePayload(backfilledPayload);
+  const backfilledSave = warehouseNormalizedPayload && warehouseNormalizedPayload.save && typeof warehouseNormalizedPayload.save === "object" && !Array.isArray(warehouseNormalizedPayload.save)
+    ? warehouseNormalizedPayload.save
     : save;
-  if (!user || user.id !== TEST_USER_ID) return backfilledPayload;
-  const normalizedSave = normalizeFullTestSavePayload(backfilledPayload);
-  if (normalizedSave === backfilledSave) return backfilledPayload;
+  if (!user || user.id !== TEST_USER_ID) return warehouseNormalizedPayload;
+  const normalizedSave = normalizeFullTestSavePayload(warehouseNormalizedPayload);
+  if (normalizedSave === backfilledSave) return warehouseNormalizedPayload;
   return {
     ...(payload && typeof payload === "object" ? payload : {}),
     userId: user.id,
@@ -1086,6 +1155,28 @@ const saveMailsDb = (db) => writeJsonFile(MAILS_FILE, {
   settledDates: Array.isArray(db && db.settledDates) ? db.settledDates.map(String).filter(Boolean) : [],
   mails: (db && db.mails) || {}
 });
+
+const normalizeWeeklyBossFirstClearBossKey = (value) => safeTeamText(value, 80).toLowerCase().replace(/[^a-z0-9_-]/g, "");
+const weeklyBossFirstClearDb = () => {
+  const raw = readJsonFile(WEEKLY_BOSS_FIRST_CLEAR_FILE, {});
+  const bosses = raw && typeof raw.bosses === "object" && !Array.isArray(raw.bosses) ? raw.bosses : {};
+  return { bosses };
+};
+const saveWeeklyBossFirstClearDb = (db) => writeJsonFile(WEEKLY_BOSS_FIRST_CLEAR_FILE, {
+  bosses: db && db.bosses && typeof db.bosses === "object" && !Array.isArray(db.bosses) ? db.bosses : {}
+});
+const weeklyBossFirstClearRows = (db, bossKey) => {
+  const source = db && db.bosses && db.bosses[bossKey] && typeof db.bosses[bossKey] === "object" ? db.bosses[bossKey] : {};
+  return Array.from(WEEKLY_BOSS_DIFFICULTY_KEYS).reduce((out, difficulty) => {
+    const rows = Array.isArray(source[difficulty]) ? source[difficulty] : [];
+    out[difficulty] = rows
+      .filter((row) => row && row.userId && row.username && row.clearedAt)
+      .sort((left, right) => String(left.clearedAt).localeCompare(String(right.clearedAt)))
+      .slice(0, 3)
+      .map((row) => ({ username: safeUserName(row.username).slice(0, 32), clearedAt: String(row.clearedAt) }));
+    return out;
+  }, {});
+};
 const userMails = (db, userId) => {
   const key = String(userId || "");
   if (!Array.isArray(db.mails[key])) db.mails[key] = [];
@@ -1950,6 +2041,34 @@ const handleApi = async (req, res) => {
     if (req.method === "GET" && req.url === "/api/auth/me") {
       const user = currentUser(req);
       return sendJson(res, 200, { ok: true, user: user ? publicUser(user) : null });
+    }
+    if (req.method === "GET" && pathname === "/api/weekly-boss/first-clears") {
+      const bossKey = normalizeWeeklyBossFirstClearBossKey(apiUrl.searchParams.get("bossKey"));
+      if (!bossKey) return sendJson(res, 400, { ok: false, message: "当周BOSS标识不正确。" });
+      return sendJson(res, 200, { ok: true, bossKey, rowsByDifficulty: weeklyBossFirstClearRows(weeklyBossFirstClearDb(), bossKey) });
+    }
+    if (req.method === "POST" && pathname === "/api/weekly-boss/first-clears") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const bossKey = normalizeWeeklyBossFirstClearBossKey(body && body.bossKey);
+      const difficulty = String(body && body.difficulty || "").trim().toLowerCase();
+      if (!bossKey || !WEEKLY_BOSS_DIFFICULTY_KEYS.has(difficulty)) {
+        return sendJson(res, 400, { ok: false, message: "当周BOSS或难度不正确。" });
+      }
+      const db = weeklyBossFirstClearDb();
+      if (!db.bosses[bossKey] || typeof db.bosses[bossKey] !== "object" || Array.isArray(db.bosses[bossKey])) db.bosses[bossKey] = {};
+      const rows = Array.isArray(db.bosses[bossKey][difficulty]) ? db.bosses[bossKey][difficulty] : [];
+      const hasCleared = rows.some((row) => String(row && row.userId || "") === String(user.id));
+      if (!hasCleared && rows.length < 3) {
+        const now = new Date();
+        const clearedAt = new Date(Math.floor(now.getTime() / 1000) * 1000).toISOString();
+        rows.push({ userId: user.id, username: safeUserName(user.username).slice(0, 32), clearedAt });
+        rows.sort((left, right) => String(left.clearedAt).localeCompare(String(right.clearedAt)));
+        db.bosses[bossKey][difficulty] = rows.slice(0, 3);
+        saveWeeklyBossFirstClearDb(db);
+      }
+      return sendJson(res, 200, { ok: true, bossKey, rowsByDifficulty: weeklyBossFirstClearRows(db, bossKey) });
     }
     if (req.method === "POST" && req.url === "/api/auth/rename") {
       const user = requireUser(req, res);
