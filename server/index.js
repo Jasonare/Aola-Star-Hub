@@ -166,7 +166,8 @@ const SHOP_REDEEM_CODE_ALHUB666_BACKFILL_MIGRATION_KEY = "redeem_alhub666_mist_d
 const publicUser = (user) => ({
   id: user.id,
   username: user.username,
-  saveDir: `server/data/saves/${user.id}`
+  saveDir: `server/data/saves/${user.id}`,
+  createdAt: user.createdAt || null
 });
 
 const cleanText = (s) => String(s || "").replace(/[\u200b\u00a0]/g, "").trim();
