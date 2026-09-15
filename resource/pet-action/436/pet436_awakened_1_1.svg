@@ -1,9 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="81" height="109" viewBox="0 0 81 109">
-  <title>魔剑之魂 正面待机</title><desc>暗紫火焰与魔剑魂压迫感；保留黑暗守卫原待机帧节奏。</desc>
-  <defs><filter id="void"><feColorMatrix values=".32 0 .28 0 .12  .1 0 .2 0 .02  .3 0 .8 0 .18  0 0 0 1 0"/><feGaussianBlur stdDeviation=".25"/></filter><radialGradient id="a"><stop stop-color="#f0a4ff"/><stop offset=".38" stop-color="#7921ad" stop-opacity=".85"/><stop offset="1" stop-color="#14001f" stop-opacity="0"/></radialGradient><style><![CDATA[@keyframes pulse{0%,100%{opacity:.45;transform:scale(.84)}50%{opacity:1;transform:scale(1.12)}}@keyframes flame{0%,100%{transform:translateY(3px) scaleY(.75)}50%{transform:translateY(-4px) scaleY(1.2)}}.a{transform-origin:40px 80px;animation:pulse 980ms ease-in-out infinite}.f{transform-origin:40px 88px;animation:flame 560ms ease-in-out infinite}]]></style></defs>
-  <image xlink:href="pet436_1_1.svg" width="81" height="109" filter="url(#void)"/>
-  <ellipse class="a" cx="40" cy="76" rx="38" ry="39" fill="url(#a)"/>
-  <g class="f" fill="#b93cff" opacity=".72"><path d="M17 99c-8-18 8-24 4-38 16 13 3 25 10 38z"/><path d="M42 104c-8-22 10-28 1-50 19 20 4 34 11 50z"/><path d="M59 99c-5-16 10-24 3-38 15 13 3 26 8 38z"/></g>
-  <path d="M41 10l5 52-5 25-5-25z" fill="#e6a0ff" opacity=".8"/><circle cx="41" cy="59" r="3" fill="#fff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs><filter id="g"><feGaussianBlur stdDeviation="9"/></filter><style><![CDATA[@keyframes float{0%,100%{transform:translateY(12px) scale(.985)}50%{transform:translateY(-12px) scale(1.015)}}@keyframes pulse{0%,100%{opacity:.2}50%{opacity:.78}}@keyframes orbit{to{transform:rotate(360deg)}}.body{transform-origin:512px 520px;animation:float 1.9s ease-in-out infinite}.aura{transform-origin:512px 570px;animation:pulse 1.9s ease-in-out infinite}.ring{transform-origin:512px 842px;animation:orbit 5s linear infinite}]]></style></defs>
+  <g class="aura" filter="url(#g)" fill="none" stroke="#9d54ff"><ellipse cx="512" cy="842" rx="330" ry="54" stroke-width="24"/><ellipse class="ring" cx="512" cy="842" rx="260" ry="38" stroke-width="8" stroke-dasharray="32 22"/></g>
+  <g class="body"><image href="magic-sword-soul_1_1.png" x="70" y="0" width="884" height="1024" preserveAspectRatio="xMidYMid meet"/></g>
 </svg>

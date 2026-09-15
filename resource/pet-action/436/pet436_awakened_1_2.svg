@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="85" height="109" viewBox="0 0 85 109">
-  <title>魔剑之魂 正面受击</title><desc>受击时魂火爆裂后迅速凝回。</desc>
-  <defs><filter id="void"><feColorMatrix values=".32 0 .28 0 .12 .1 0 .2 0 .02 .3 0 .8 0 .18 0 0 0 1 0"/></filter><style><![CDATA[@keyframes hit{0%,100%{opacity:.15;transform:scale(.7)}30%{opacity:1;transform:scale(1.15)}60%{opacity:.65;transform:scale(.9)}}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}.h{transform-origin:43px 56px;animation:hit 420ms steps(2,end) infinite}.b{animation:shake 420ms steps(2,end) infinite}]]></style></defs>
-  <g class="b"><image xlink:href="pet436_1_2.svg" width="85" height="109" filter="url(#void)"/></g>
-  <g class="h" fill="none" stroke="#d96cff" stroke-width="2"><path d="M5 24l22 12M80 24L58 36M9 82l22-12M77 82L55 70M43 3v24M43 106V82"/><circle cx="43" cy="55" r="31"/></g>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs><filter id="f"><feGaussianBlur stdDeviation="7"/></filter><style><![CDATA[@keyframes hit{0%,100%{transform:translateX(0)}16%{transform:translateX(-26px)}32%{transform:translateX(22px)}48%{transform:translateX(-12px)}}@keyframes flash{0%,18%,100%{opacity:0}24%,42%{opacity:1}}.body{transform-origin:512px 520px;animation:hit .7s ease-out infinite}.flash{animation:flash .7s ease-out infinite}]]></style></defs>
+  <g class="flash" filter="url(#f)" fill="none" stroke="#e6c8ff"><path d="M120 250L900 760M890 210L150 790M512 80V940" stroke-width="18"/><circle cx="512" cy="510" r="360" stroke-width="12"/></g>
+  <g class="body"><image href="magic-sword-soul_1_2.png" x="54" y="0" width="916" height="1024" preserveAspectRatio="xMidYMid meet"/></g>
 </svg>
