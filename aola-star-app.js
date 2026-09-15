@@ -994,10 +994,10 @@ const QIXING_TRAIT_META = {
     name: "灵锋之噬",
     image: "./resource/灵锋之噬.png",
     battle: {
-      1: { lifestealRatio: 0.05, critDamageBonus: 0.03, chance: 0.15, keys: ["crit", "evasion"], label: "Lv.1：每次攻击回复伤害值5%，暴击伤害+3%，15%概率提升暴击和闪避各1级" },
-      2: { lifestealRatio: 0.08, critDamageBonus: 0.06, chance: 0.2, keys: ["crit", "evasion"], label: "Lv.2：每次攻击回复伤害值8%，暴击伤害+6%，20%概率提升暴击和闪避各1级" },
-      3: { lifestealRatio: 0.1, critDamageBonus: 0.09, chance: 0.25, keys: ["crit", "evasion"], label: "Lv.3：每次攻击回复伤害值10%，暴击伤害+9%，25%概率提升暴击和闪避各1级" },
-      4: { lifestealRatio: 0.15, critDamageBonus: 0.12, chance: 0.35, keys: ["crit", "evasion"], label: "Lv.4：每次攻击回复伤害值15%，暴击伤害+12%，35%概率提升暴击和闪避各1级" }
+      1: { lifestealRatio: 0.05, critDamageBonus: 0.03, chance: 0.15, keys: ["critStage", "evasion"], label: "Lv.1：每次攻击回复伤害值5%，暴击伤害+3%，15%概率提升暴击和闪避各1级" },
+      2: { lifestealRatio: 0.08, critDamageBonus: 0.06, chance: 0.2, keys: ["critStage", "evasion"], label: "Lv.2：每次攻击回复伤害值8%，暴击伤害+6%，20%概率提升暴击和闪避各1级" },
+      3: { lifestealRatio: 0.1, critDamageBonus: 0.09, chance: 0.25, keys: ["critStage", "evasion"], label: "Lv.3：每次攻击回复伤害值10%，暴击伤害+9%，25%概率提升暴击和闪避各1级" },
+      4: { lifestealRatio: 0.15, critDamageBonus: 0.12, chance: 0.35, keys: ["critStage", "evasion"], label: "Lv.4：每次攻击回复伤害值15%，暴击伤害+12%，35%概率提升暴击和闪避各1级" }
     }
   },
   [QIXING_TRAIT_KEYS.DONGHUANG_TAICHU]: {
@@ -1520,7 +1520,7 @@ const WEEKLY_BOSS_CONFIGS = [
     difficultyRules: {
       normal: { fearChance: 0.3, fearSingleFixedDamage: 200, fearMultiFixedDamagePerHit: 100, earlyStealChance: 0.3, earlyDamageReductionStep: 0.05, maxEarlyDamageReductionRatio: 0.2, lateStealChance: 0.3, lateDamageBoostStep: 0.05, maxLateDamageBoostRatio: 0.3, lowHpThreshold: 0.5, lowHpHealPerTurn: 800, lowHpAccuracyEvasionDebuff: 2, lowHpStatDrainStep: 0.05, maxLowHpStatDrainRatio: 0.2 },
       hard: { fearChance: 0.5, fearSingleFixedDamage: 300, fearMultiFixedDamagePerHit: 150, earlyStealChance: 0.6, earlyDamageReductionStep: 0.08, maxEarlyDamageReductionRatio: 0.32, lateStealChance: 0.6, lateDamageBoostStep: 0.08, maxLateDamageBoostRatio: 0.48, lowHpThreshold: 0.5, lowHpHealPerTurn: 1000, lowHpAccuracyEvasionDebuff: 4, lowHpStatDrainStep: 0.05, maxLowHpStatDrainRatio: 0.25 },
-      nightmare: { fearChance: 0.7, fearSingleFixedDamage: 400, fearMultiFixedDamagePerHit: 200, turnStartSkipChance: 0.15, earlyStealChance: 1, earlyDamageReductionStep: 0.1, maxEarlyDamageReductionRatio: 0.4, lateStealChance: 1, lateDamageBoostStep: 0.1, maxLateDamageBoostRatio: 0.6, lowHpThreshold: 0.5, lowHpHealPerTurn: 1500, lowHpAccuracyEvasionDebuff: 6, lowHpStatDrainStep: 0.05, maxLowHpStatDrainRatio: 0.3 }
+      nightmare: { fearChance: 0.7, fearSingleFixedDamage: 400, fearMultiFixedDamagePerHit: 200, turnStartSkipChance: 0.05, earlyStealChance: 1, earlyDamageReductionStep: 0.1, maxEarlyDamageReductionRatio: 0.4, lateStealChance: 1, lateDamageBoostStep: 0.1, maxLateDamageBoostRatio: 0.6, lowHpThreshold: 0.5, lowHpHealPerTurn: 1500, lowHpAccuracyEvasionDebuff: 6, lowHpStatDrainStep: 0.05, maxLowHpStatDrainRatio: 0.3 }
     }
   }
 ];
@@ -2356,8 +2356,7 @@ const TEAM_SHOP_TRAIT_CHOICES = [
   { key: QIXING_TRAIT_KEYS.LEGACY, name: "启星之印" },
   { key: QIXING_TRAIT_KEYS.SHOUYU, name: "守御之印" },
   { key: QIXING_TRAIT_KEYS.LIANGYI, name: "两仪之印" },
-  { key: QIXING_TRAIT_KEYS.JILAN, name: "疾岚之瞳" },
-  { key: QIXING_TRAIT_KEYS.LINGFENG, name: "灵锋之噬" }
+  { key: QIXING_TRAIT_KEYS.JILAN, name: "疾岚之瞳" }
 ];
 const TEAM_INTRUDER_DEX_ID = 503;
 const BADGE_IMAGE_FILE_NAMES = new Set([
@@ -3069,19 +3068,20 @@ const calcWinExp = (targetLevel) => {
 const calcLoseExp = () => 0;
 
 const normalizeBagIds = (rawIds, activePets) => {
-  const validIds = new Set(activePets.map((p) => p.id));
+  const petsById = new Map(activePets.filter((p) => p && p.id).map((p) => [String(p.id), p]));
   const out = [];
-  const seen = new Set();
+  const seenIds = new Set();
   const rawArray = Array.isArray(rawIds) ? rawIds : [];
   for (let i = 0; i < 6; i++) {
     const id = rawArray[i];
     const sid = String(id || "");
+    const pet = petsById.get(sid);
     if (!sid) {
       out.push("");
-    } else if (!validIds.has(sid) || seen.has(sid)) {
+    } else if (!pet || seenIds.has(sid)) {
       out.push("");
     } else {
-      seen.add(sid);
+      seenIds.add(sid);
       out.push(sid);
     }
   }
@@ -3172,6 +3172,8 @@ const skillDisplayDesc = (skill) => {
   if (name === "天道聚能" || name === "天道聚极") return "先发，立即获得相当于当前体力30%的东皇之光护盾（不可叠加）；3回合内免疫异常状态；3回合后触发东皇之光，提升自身攻击外全属性1级并获得400-600点东皇能量。护盾耗尽后提升伤害抗性30%，持续4回合。";
   if (name === "神灵") return "根据自身速度等级调整最终命中率：速度等级≤0时100%必中，1-2级90%，3-4级80%，5级70%，6级60%；该命中率不受命中和闪避等级影响。命中后根据自身速度数值以及命中和闪避等级造成伤害，并回复伤害50%的体力。";
   if (name === "锁神诀") return "100％命中，每回合减血1/16，持续5回合，并且令敌方1体速度下降1级，对BOSS有效；一场战斗只能使用一次，使用PP豆无法再次使用。";
+  if (name === "修罗流星") return "先发，攻击对方单体，30%概率令对方烧伤；命中则本回合受到伤害减半，且有45%概率降低对方全属性等级1级。";
+  if (name === "上古战魂") return "提升自己攻击、命中、暴击、防御、特防和速度等级各1级，提升伤害抗性40%，回合结束时恢复一定体力值。";
   if (name === "激发力量") return "攻击对方单体，若自己中毒、麻痹或烧伤时，则发动2倍威力。";
   if (name === "闇月马戏团") return "50%的概率削弱对方单体攻击和特攻各1级。";
   if (name === "超级骰子炸弹") return SUPER_DICE_BOMB_SKILL.desc;
@@ -6135,12 +6137,20 @@ const getStatusPowerMultiplier = (scene, actorSide, targetSide, skill) => {
   });
   return factor;
 };
-const rollSkillChancePowerMultiplier = (skill) => {
+const resolveBattleEffectChance = (scene, effect) => {
+  const byDomain = effect && effect.chanceByShengyuDomain;
+  const domain = normalize(scene && scene.shengyuDomain);
+  if (byDomain && typeof byDomain === "object" && Object.prototype.hasOwnProperty.call(byDomain, domain)) return byDomain[domain];
+  return effect && effect.chance;
+};
+const rollSkillChancePowerMultiplier = (scene, skill) => {
   const effects = parseSkillEffects(skill).filter((e) => normalize(e && e.kind) === "chancePowerMultiplier");
   let factor = 1;
   const hits = [];
   effects.forEach((e) => {
-    const list = Array.isArray(e && e.chances) ? e.chances.slice() : [{ chance: e && e.chance, factor: e && e.factor }];
+    const domain = normalize(scene && scene.shengyuDomain);
+    const domainChances = e && e.chancesByShengyuDomain && e.chancesByShengyuDomain[domain];
+    const list = Array.isArray(domainChances) ? domainChances.slice() : (Array.isArray(e && e.chances) ? e.chances.slice() : [{ chance: e && e.chance, factor: e && e.factor }]);
     const sorted = list
       .map((x) => ({ chance: clamp(Number(x && x.chance) || 0, 0, 1), factor: Math.max(0.01, Number(x && x.factor) || 1) }))
       .filter((x) => x.chance > 0 && x.factor > 0)
@@ -7100,6 +7110,13 @@ const manualHardcodedSkillEffects = (skill) => {
       { kind: "onDamagedStage", target: "self", applyTo: "attacker", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: -1, turns: 5, chance: 0.33, trigger: "damaged" }
     ];
   }
+  if (skillId === 22047 || name === "刃爆") {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "stage", target: "self", keys: ["atk", "accuracy", "critStage"], delta: 1, chance: 1, requireHit: false },
+      { kind: "damageReflect", target: "self", attackKind: "all", ratio: 0.25, maxReflect: 3000, turns: 1, label: "刃爆" }
+    ];
+  }
   if (skillId === 16315 || name === "兽王觉醒") {
     return [
       { kind: "stage", target: "self", keys: ["spAtk", "accuracy", "def", "speed"], delta: 1, chance: 1, requireHit: false },
@@ -7313,7 +7330,16 @@ const manualHardcodedSkillEffects = (skill) => {
   if (name === "上古战魂" && skillId === 19077) {
     return [
       { kind: "stage", target: "self", keys: ["atk", "accuracy", "critStage", "def", "spDef", "speed"], delta: 1, chance: 1, requireHit: false },
+      { kind: "damageReduction", target: "self", ratio: 0.4, turns: 5, requireHit: false, label: "上古战魂" },
       { kind: "endTurnHealByLostHp", target: "self", lostAdd: 100, multiplier: 300, turns: 5 }
+    ];
+  }
+  if (skillId === 10307 || name === "修罗流星") {
+    return [
+      { kind: "priority", target: "self", value: 1 },
+      { kind: "status", target: "opponent", status: "burn", turns: 5, chance: 0.3, requireHit: true },
+      { kind: "damageReduction", target: "self", ratio: 0.5, turns: 1, requireHit: true, label: "修罗流星" },
+      { kind: "stage", target: "opponent", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: -1, chance: 0.45, requireHit: true }
     ];
   }
   if (name === "万物皆明" || skillId === 193 || skillId === 16221 || skillId === 16234) {
@@ -7702,7 +7728,7 @@ const manualHardcodedSkillEffects = (skill) => {
   if (name === "念力壁") return [{ kind: "typedDamageReduction", target: "self", attackKind: "special", ratio: 0.5, turns: 5 }];
   if (name === "闪电护盾" || skillId === 13205) return [
     { kind: "typedDamageReduction", target: "self", attackKind: "special", ratio: 0.5, turns: 5 },
-    { kind: "damageReflect", target: "self", attackKind: "physical", ratio: 0.25, turns: 5 }
+    { kind: "damageReflect", target: "self", attackKind: "physical", ratio: 0.25, maxReflect: 3000, turns: 5, label: "闪电护盾" }
   ];
   if (name === "银光护盾") return [{ kind: "damageShield", target: "self", turns: 5, amount: 50 }];
   if (name === "冰雾海") return [
@@ -8816,19 +8842,19 @@ const correctedKnownSkillEffects = (skill, effects = []) => {
     return [
       { kind: "priority", target: "self", value: 1 },
       { kind: "damageReduction", target: "self", ratio: 0.5, turns: 1, requireHit: true },
-      { kind: "chancePowerMultiplier", target: "self", chances: [{ chance: 0.5, factor: 2 }] }
+      { kind: "chancePowerMultiplier", target: "self", chances: [{ chance: 0.5, factor: 2 }], chancesByShengyuDomain: { [SHENGYU_DOMAIN_YUEHUA]: [{ chance: 0.8, factor: 2 }] } }
     ];
   }
   if (skillId === 9302 || name === "合金巨炮") {
     return [
-      { kind: "status", target: "opponent", status: "fear", turns: 3, chance: 0.4, requireHit: true },
-      { kind: "healFlat", target: "self", amount: 1000, chance: 0.1, requireHit: true }
+      { kind: "status", target: "opponent", status: "fear", turns: 3, chance: 0.4, chanceByShengyuDomain: { [SHENGYU_DOMAIN_YUEHUA]: 0.6 }, requireHit: true },
+      { kind: "healFlat", target: "self", amount: 1000, chance: 0.1, chanceByShengyuDomain: { [SHENGYU_DOMAIN_YUEHUA]: 0.15 }, requireHit: true }
     ];
   }
   if (skillId === 16330 || name === "傲月之轮") {
     return [
       { kind: "multiHit", target: "opponent", min: 2, max: 3 },
-      { kind: "perHitStage", target: "opponent", keys: ["def", "evasion"], delta: -1, chance: 0.5 }
+      { kind: "perHitStage", target: "opponent", keys: ["def", "evasion"], delta: -1, chance: 0.5, chanceByShengyuDomain: { [SHENGYU_DOMAIN_YUEHUA]: 1 } }
     ];
   }
   if (skillId === 16329 || name === "幽月之魂") {
@@ -8836,7 +8862,8 @@ const correctedKnownSkillEffects = (skill, effects = []) => {
       { kind: "priority", target: "self", value: 1 },
       { kind: "recoilFlat", target: "self", amount: 200, requireHit: false },
       { kind: "stage", target: "self", keys: ALL_ABILITY_STAGE_KEYS.slice(), delta: 1, chance: 1, requireHit: false },
-      { kind: "endTurnHealFlat", target: "self", amount: 200, turns: 2, chance: 0.5, label: "幽月之魂" }
+      { kind: "endTurnHealFlat", target: "self", amount: 200, turns: 2, chance: 0.5, label: "幽月之魂" },
+      { kind: "stageGuard", target: "self", mode: "debuff", turns: 2, requireHit: false, shengyuDomain: SHENGYU_DOMAIN_YUEHUA, label: "幽月之魂" }
     ];
   }
   // 幻灵圣域五只亚比的技能：圣域内增幅由领域效果分支处理，此处固定基础效果。
@@ -10397,7 +10424,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
         logs.push(`${side === "attacker" ? scene.attackerName : scene.targetName}的异常免疫生效。`);
         return;
       }
-      let chance = clamp(Number(e.chance) || 1, 0, 1);
+      let chance = clamp(Number(resolveBattleEffectChance(scene, e)) || 1, 0, 1);
       if (e.chanceBySelfLostHp) {
         const selfHpKey = actor === "attacker" ? "attackerHp" : "targetHp";
         const selfMaxHpKey = actor === "attacker" ? "attackerMaxHp" : "targetMaxHp";
@@ -10552,6 +10579,8 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       return;
     }
     if (e.kind === "healFlat") {
+      const chance = clamp(Number(resolveBattleEffectChance(scene, e)) || 1, 0, 1);
+      if (Math.random() > chance) return;
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       const val = Math.max(1, Number(e.amount) || 0);
@@ -13760,35 +13789,16 @@ createApp({
 
     const sanitizeState = (loaded) => {
       if (!loaded || typeof loaded !== "object") return createInitialState();
-      const rawQixingSeals = Array.isArray(loaded.qixingSeals) ? loaded.qixingSeals : [];
-      const rawDonghuangSeals = rawQixingSeals.filter((seal) => {
-        const rawTraitKey = normalize(seal && (seal.traitKey || seal.key));
-        return normalizeQixingTraitKey(rawTraitKey) === QIXING_TRAIT_KEYS.DONGHUANG_TAICHU || rawTraitKey === "东皇太初印";
-      });
-      const legacyDonghuangTrait = (() => {
-        const rawTraitKey = normalize(loaded.qixingSealTraitKey);
-        return normalizeQixingTraitKey(rawTraitKey) === QIXING_TRAIT_KEYS.DONGHUANG_TAICHU || rawTraitKey === "东皇太初印";
-      })();
-      const petHasDonghuangSeal = (pet) => {
-        if (!pet || normalize(pet.equippedItemId) !== QIXING_SEAL_ITEM_ID || (rawDonghuangSeals.length === 0 && !legacyDonghuangTrait)) return false;
-        const petId = normalize(pet.id);
-        const instanceId = normalize(pet.equippedItemInstanceId);
-        if (rawDonghuangSeals.some((seal) => normalize(seal && seal.equippedPetId) === petId || (instanceId && normalize(seal && seal.id) === instanceId))) return true;
-        if (rawDonghuangSeals.length === 0 && legacyDonghuangTrait) return true;
-        return rawDonghuangSeals.length === 1 && !normalize(rawDonghuangSeals[0] && rawDonghuangSeals[0].equippedPetId);
-      };
       const activePets = Array.isArray(loaded.activePets) ? loaded.activePets.map((p) => {
         const nameInSave = normalize(p.speciesName);
-        const donghuangSkin = normalize(p.skinKey) === TIANTAO_GUARDIAN_DONGHUANG_TAIYI_SKIN_KEY || petHasDonghuangSeal(p);
-        const dex = donghuangSkin
-          ? (dexById.get(DONGHUANG_TAIYI_DEX_ID) || resolveDexFromSaved({ dexId: p.dexId, speciesName: nameInSave, level: p.level }))
-          : resolveDexFromSaved({ dexId: p.dexId, speciesName: nameInSave, level: p.level });
+        // 皮肤与特性只影响外观和战斗效果，绝不能参与亚比身份迁移。
+        const dex = resolveDexFromSaved({ dexId: p.dexId, speciesName: nameInSave, level: p.level });
         if (!dex) return null;
         const species = getSpeciesByDexId(dex.dexId, dex.name);
         if (!species) return null;
         const level = clamp(Number(p.level) || 1, 1, 100);
         const skillUnlockLevel = clamp(Math.max(level, Number(p.skillUnlockLevel) || level), 1, 100);
-        const savedBase = donghuangSkin ? DONGHUANG_TAIYI_DEX_ID : (Number(p.baseDexId) || 0);
+        const savedBase = Number(p.baseDexId) || 0;
         const anchor = savedBase || dex.dexId;
         const chain = getChainStageInfoByDexId(anchor, nameInSave || dex.name);
         const rootDexId = chain.rootDexId || chainRootByDex.get(anchor) || anchor;
@@ -14009,7 +14019,7 @@ createApp({
             const petDexIds = [pet && pet.dexId, pet && pet.baseDexId, resolveEvolutionDexIdByPetAndStage(pet, 0)]
               .map((id) => Number(id) || 0);
             const petNames = [pet && pet.speciesName, pet && pet.fixedName, pet && pet.name].map(normalize);
-            const nameMatched = normalizedTargetName && petNames.some((name) => name === normalizedTargetName || name.includes(normalizedTargetName) || normalizedTargetName.includes(name));
+            const nameMatched = normalizedTargetName && petNames.some((name) => Boolean(name) && (name === normalizedTargetName || name.includes(normalizedTargetName) || normalizedTargetName.includes(name)));
             return (petDexIds.includes(dexId) || nameMatched) && abilityBreakthroughTotal(pet && pet.abilityBreakthrough) > 0;
           });
           return hasCore || hasPendingAllocation || hasAllocatedPoints;
@@ -14231,6 +14241,11 @@ createApp({
             out[id] = Math.max(0, Math.floor(Number(source[rawId]) || 0));
           });
           Object.entries(legacyEnergyCoreBundlePurchaseCounts).forEach(([id, count]) => {
+            // 能量核心礼包的旧购买次数可能是兼容迁移误写的；只有库存、突破影像或能力值能证明已使用时才锁定。
+            if (Object.prototype.hasOwnProperty.call(ENERGY_CORE_BUNDLE_TARGETS, id)) {
+              out[id] = count > 0 ? 1 : 0;
+              return;
+            }
             if (count > 0) out[id] = Math.max(Math.max(0, Math.floor(Number(out[id]) || 0)), count);
           });
           return out;
@@ -14265,7 +14280,7 @@ createApp({
             currentGate,
             pendingRewards,
             purpleOpenCount: clamp(Math.floor(Number(source.purpleOpenCount) || 0), 0, 99),
-            purpleLingfengPityCount: clamp(Math.floor(Number(source.purpleLingfengPityCount) || 0), 0, 199)
+            purpleLingfengPityCount: clamp(Math.floor(Number(source.purpleLingfengPityCount) || 0), 0, 349)
           };
         })(),
         qixingGacha: (() => {
@@ -16419,7 +16434,7 @@ createApp({
       const hasAllocatedPoints = activePets.some((pet) => {
         const petDexIds = [pet && pet.dexId, pet && pet.baseDexId, resolveEvolutionDexIdByPetAndStage(pet, 0)].map((id) => Number(id) || 0);
         const petNames = [pet && pet.speciesName, pet && pet.fixedName, pet && pet.name].map(normalize);
-        const nameMatched = normalizedTargetName && petNames.some((name) => name === normalizedTargetName || name.includes(normalizedTargetName) || normalizedTargetName.includes(name));
+        const nameMatched = normalizedTargetName && petNames.some((name) => Boolean(name) && (name === normalizedTargetName || name.includes(normalizedTargetName) || normalizedTargetName.includes(name)));
         return (petDexIds.includes(dexId) || nameMatched) && abilityBreakthroughTotal(pet && pet.abilityBreakthrough) > 0;
       });
       return hasPendingAllocation || hasAllocatedPoints;
@@ -16827,7 +16842,7 @@ createApp({
         currentGate,
         pendingRewards,
         purpleOpenCount: clamp(Math.floor(Number(source.purpleOpenCount) || 0), 0, 99),
-        purpleLingfengPityCount: clamp(Math.floor(Number(source.purpleLingfengPityCount) || 0), 0, 199)
+        purpleLingfengPityCount: clamp(Math.floor(Number(source.purpleLingfengPityCount) || 0), 0, 349)
       };
       return state.value.fateGate;
     };
@@ -16874,7 +16889,7 @@ createApp({
       if (gate.key === "purple") {
         fateGate.purpleOpenCount += 1;
         fateGate.purpleLingfengPityCount += 1;
-        if (fateGate.purpleLingfengPityCount >= 200) {
+        if (fateGate.purpleLingfengPityCount >= 350) {
           reward = { type: "trait", traitKey: QIXING_TRAIT_KEYS.LINGFENG, amount: 1, label: "灵锋之噬", probability: 100 };
           fateGate.purpleLingfengPityCount = 0;
           fateGate.purpleOpenCount = 0;
@@ -18856,10 +18871,12 @@ createApp({
       }) || null;
     });
 
-    const bagSlots = computed(() => state.value.bagPetIds.map((id, idx) => ({
-      idx,
-      pet: state.value.activePets.find((p) => p.id === id) || null
-    })));
+    const bagSlots = computed(() => {
+      return state.value.bagPetIds.map((id, idx) => ({
+        idx,
+        pet: state.value.activePets.find((p) => p && p.id === id) || null
+      }));
+    });
     const firstPet = computed(() => (bagSlots.value[0] && bagSlots.value[0].pet) ? bagSlots.value[0].pet : null);
     const bag2DisplayPet = computed(() => {
       const sel = selectedPet.value;
@@ -18924,13 +18941,14 @@ createApp({
     });
     const bagCount = computed(() => bagPets.value.length);
     const safeActivePets = computed(() => state.value.activePets.filter((p) => p && p.id));
-    const warehousePets = computed(() => safeActivePets.value.filter((p) => !state.value.bagPetIds.includes(p.id) && !state.value.elitePetIds.includes(p.id)));
+    const warehousePets = computed(() => safeActivePets.value
+      .filter((pet) => !state.value.bagPetIds.includes(pet.id) && !state.value.elitePetIds.includes(pet.id)));
     const eliteWarehousePets = computed(() => {
       const byId = new Map(safeActivePets.value.map((p) => [p.id, p]));
       return state.value.elitePetIds
         .filter((id) => normalize(id) && !state.value.bagPetIds.includes(id))
         .map((id) => byId.get(id))
-        .filter((p) => p && p.id);
+        .filter((pet) => pet && pet.id);
     });
     const warehouseCount = computed(() => warehousePets.value.length);
     const shopTargetOptions = computed(() => bagPets.value.map((p) => ({
@@ -24391,7 +24409,7 @@ const applyBossChainFinalBuff = (scene) => {
         showBattleStageTotalChangeFx(scene, stageTotalsBeforeSkill, 220);
         return { ended: false, visualDelayMs };
       }
-      const rolledPowerMultiplier = rollSkillChancePowerMultiplier(skill);
+      const rolledPowerMultiplier = rollSkillChancePowerMultiplier(scene, skill);
       if (rolledPowerMultiplier > 1) pushBattleLog(scene, `${actorName}的${skill.name}触发${rolledPowerMultiplier}倍伤害。`);
       const unharmedPowerMultiplier = getUnharmedPowerMultiplier(scene, actorSide, skill);
       if (unharmedPowerMultiplier > 1) pushBattleLog(scene, `${actorName}本回合未受到伤害，${skill.name}威力翻倍。`);
@@ -24718,7 +24736,7 @@ const applyBossChainFinalBuff = (scene) => {
           skillEffectDidApply = true;
           perHitEffects.forEach((e) => {
             if (normalize(e && e.shengyuDomain) && !isBattleShengyuDomainActive(scene, e.shengyuDomain)) return;
-            const chance = clamp(Number(e.chance) || 0, 0, 1);
+            const chance = clamp(Number(resolveBattleEffectChance(scene, e)) || 0, 0, 1);
             if (Math.random() > chance) return;
             const side = e.target === "self" ? actorSide : targetSide;
             if (e.guardianBossImmune && isBossLikeProtectedTarget(scene, side)) return;
@@ -26374,7 +26392,7 @@ const applyBossChainFinalBuff = (scene) => {
       : { currentGate: "white", pendingRewards: [], purpleOpenCount: 0, purpleLingfengPityCount: 0 });
     const fateGatePendingRewards = computed(() => Array.isArray(fateGateState.value.pendingRewards) ? fateGateState.value.pendingRewards : []);
     const fateGatePurplePity = computed(() => clamp(Math.floor(Number(fateGateState.value.purpleOpenCount) || 0), 0, 99));
-    const fateGatePurpleLingfengPity = computed(() => clamp(Math.floor(Number(fateGateState.value.purpleLingfengPityCount) || 0), 0, 199));
+    const fateGatePurpleLingfengPity = computed(() => clamp(Math.floor(Number(fateGateState.value.purpleLingfengPityCount) || 0), 0, 349));
     const fateGateHcoinBalance = computed(() => Math.max(0, Math.floor(Number(state.value.hCoins) || 0)));
     const fateGateCurrentGate = computed(() => FATE_GATE_CONFIG[normalize(fateGateState.value.currentGate)] ? normalize(fateGateState.value.currentGate) : "white");
     const fateGateCurrentConfig = computed(() => FATE_GATE_CONFIG[fateGateCurrentGate.value] || FATE_GATE_CONFIG.white);

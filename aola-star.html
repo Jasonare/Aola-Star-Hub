@@ -833,13 +833,19 @@
     .equipment-dungeon-card-panel {
       position: absolute;
       left: 50%;
-      bottom: 5vh;
+      bottom: 2vh;
       z-index: 12;
       width: min(92vw, 880px);
       transform: translateX(-50%);
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
+    }
+    .equipment-dungeon-card-close {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      z-index: 1;
     }
     .equipment-dungeon-card {
       border: 1px solid rgba(125, 211, 252, .34);
@@ -944,7 +950,7 @@
         height: 34vh;
       }
       .equipment-dungeon-card-panel {
-        bottom: 3vh;
+        bottom: 2vh;
         grid-template-columns: 1fr;
         width: min(90vw, 420px);
         max-height: 58vh;
@@ -2105,6 +2111,9 @@
       min-width: 120px;
       max-height: 180px;
       overflow-y: auto;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
       background: linear-gradient(180deg, rgba(14, 116, 144, .95), rgba(7, 89, 133, .95));
       border: 1px solid rgba(125, 211, 252, .6);
       border-radius: 8px;
@@ -2191,6 +2200,12 @@
       .new-warehouse-search-icon {
         width: 14px;
         height: 14px;
+      }
+      .new-warehouse-element-picker {
+        top: auto;
+        bottom: 110%;
+        max-height: min(42vh, 320px);
+        z-index: 80;
       }
     }
     .new-warehouse-sort-menu {
@@ -12519,7 +12534,7 @@
 
   <div v-if="selectedDexEntry" class="fixed inset-0 z-[75] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="state.selectedDexId = null">
     <div class="dex-chal-panel" @click.stop>
-      <img src="resource-v10/亚比图鉴/图鉴挑战底图.png" class="dex-chal-bg" alt="">
+      <img src="resource/亚比图鉴/图鉴挑战底图.png" class="dex-chal-bg" alt="">
       <div class="dex-chal-pet">
         <div class="dex-chal-pet-meta">
           <div class="text-[10px] font-black text-white/90">#{{ selectedDexEntry.dexId }}</div>
@@ -12572,7 +12587,7 @@
         <button @click="startAutoBattleFromDex" :disabled="bagPets.length === 0 || autoBattleDeviceCount <= 0" class="w-full rounded-xl bg-slate-800 text-white text-sm font-black disabled:opacity-50 disabled:cursor-not-allowed" style="height:30%">自动挑战{{ selectedAutoBattleCount }}次（剩余 {{ autoBattleDeviceCount }} 次）</button>
       </div>
       <button @click="state.selectedDexId = null" class="dex-chal-close" title="关闭">
-        <img src="resource-v10/亚比图鉴/图鉴挑战关闭按钮.png" alt="关闭">
+        <img src="resource/亚比图鉴/图鉴挑战关闭按钮.png" alt="关闭">
       </button>
     </div>
     <div v-if="toast.show" class="absolute top-5 left-1/2 -translate-x-1/2 z-[10000] pointer-events-none">
@@ -13648,7 +13663,7 @@
           <button @click="openFateGateToPurple" class="fate-gate-action-btn" title="消耗50000H币直接开启至紫门"><img src="./resource/命运之门/获取.png" alt="一键直达紫门"><span class="fate-gate-action-label fate-gate-action-purple">一键直达紫门</span></button>
         </div>
       </div>
-      <div class="fate-gate-status">当前可开启：{{ fateGateCurrentConfig.name }}（<span class="fate-gate-hcoin-inline"><img src="./resource/小图标/h币.png" alt="H币"><span>{{ fateGateCurrentConfig.cost }}</span></span>） · 暂存 {{ fateGatePendingRewards.length }}/16 · 紫门特性保底 {{ fateGatePurplePity }}/100 · 灵锋之噬保底 {{ fateGatePurpleLingfengPity }}/200 · 直达 <span class="fate-gate-hcoin-inline"><img src="./resource/小图标/h币.png" alt="H币"><span>50000</span></span></div>
+      <div class="fate-gate-status">当前可开启：{{ fateGateCurrentConfig.name }}（<span class="fate-gate-hcoin-inline"><img src="./resource/小图标/h币.png" alt="H币"><span>{{ fateGateCurrentConfig.cost }}</span></span>） · 暂存 {{ fateGatePendingRewards.length }}/16 · 紫门特性保底 {{ fateGatePurplePity }}/100 · 灵锋之噬保底 {{ fateGatePurpleLingfengPity }}/350 · 直达 <span class="fate-gate-hcoin-inline"><img src="./resource/小图标/h币.png" alt="H币"><span>50000</span></span></div>
       <button @click="closeFateGatePanel" class="fate-gate-close-btn" title="关闭">
         <img src="./resource/命运之门/关闭按钮.png" alt="关闭">
       </button>
