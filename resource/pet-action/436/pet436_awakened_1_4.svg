@@ -1,5 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
-  <defs><filter id="b"><feGaussianBlur stdDeviation="12"/></filter><style><![CDATA[@keyframes dash{0%,100%{transform:translateX(-35px)}50%{transform:translateX(35px)}}@keyframes slash{0%,30%{opacity:0;transform:scaleX(.2)}46%,72%{opacity:.95;transform:scaleX(1.15)}100%{opacity:0;transform:scaleX(1.4)}}.body{transform-origin:620px 390px;animation:dash .55s ease-in-out infinite}.slash{transform-origin:650px 350px;animation:slash .55s ease-out infinite}]]></style></defs>
-  <g class="slash" filter="url(#b)" fill="none" stroke="#bd5bff"><path d="M90 500Q650 70 1210 300" stroke-width="42"/><path d="M120 570Q680 130 1190 380" stroke="#ff4eae" stroke-width="14"/></g>
-  <g class="body"><image href="magic-sword-soul_1_4.png" x="90" y="-100" width="1100" height="920" preserveAspectRatio="xMidYMid meet"/></g>
+  <desc>Magic Sword Soul front attack; wind-up, slash, recovery; 3 pose frames; 90ms per frame.</desc>
+  <style><![CDATA[.frame{opacity:0;animation:attack 270ms step-end infinite}.f0{animation-delay:0ms}.f1{animation-delay:-90ms}.f2{animation-delay:-180ms}@keyframes attack{0%,33.32%{opacity:1}33.33%,100%{opacity:0}}]]></style>
+  <g class="frame f0"><image href="magic-sword-soul_1_4_f1.png" x="90" y="-100" width="1100" height="920" preserveAspectRatio="xMidYMid meet"/></g>
+  <g class="frame f1"><image href="magic-sword-soul_1_4.png" x="90" y="-100" width="1100" height="920" preserveAspectRatio="xMidYMid meet"/></g>
+  <g class="frame f2"><image href="magic-sword-soul_1_4_f2.png" x="90" y="-100" width="1100" height="920" preserveAspectRatio="xMidYMid meet"/></g>
 </svg>

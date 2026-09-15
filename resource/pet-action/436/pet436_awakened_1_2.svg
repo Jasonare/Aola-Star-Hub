@@ -1,5 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <defs><filter id="f"><feGaussianBlur stdDeviation="7"/></filter><style><![CDATA[@keyframes hit{0%,100%{transform:translateX(0)}16%{transform:translateX(-26px)}32%{transform:translateX(22px)}48%{transform:translateX(-12px)}}@keyframes flash{0%,18%,100%{opacity:0}24%,42%{opacity:1}}.body{transform-origin:512px 520px;animation:hit .7s ease-out infinite}.flash{animation:flash .7s ease-out infinite}]]></style></defs>
-  <g class="flash" filter="url(#f)" fill="none" stroke="#e6c8ff"><path d="M120 250L900 760M890 210L150 790M512 80V940" stroke-width="18"/><circle cx="512" cy="510" r="360" stroke-width="12"/></g>
-  <g class="body"><image href="magic-sword-soul_1_2.png" x="54" y="0" width="916" height="1024" preserveAspectRatio="xMidYMid meet"/></g>
+  <desc>Magic Sword Soul front hit; 3 pose frames; 100ms per frame.</desc>
+  <style><![CDATA[.frame{opacity:0;animation:hit 300ms step-end infinite}.f0{animation-delay:0ms}.f1{animation-delay:-100ms}.f2{animation-delay:-200ms}@keyframes hit{0%,33.32%{opacity:1}33.33%,100%{opacity:0}}]]></style>
+  <g class="frame f0"><image href="magic-sword-soul_1_2.png" x="54" y="0" width="916" height="1024" preserveAspectRatio="xMidYMid meet"/></g>
+  <g class="frame f1"><image href="magic-sword-soul_1_2_f1.png" x="54" y="0" width="916" height="1024" preserveAspectRatio="xMidYMid meet"/></g>
+  <g class="frame f2"><image href="magic-sword-soul_1_2_f2.png" x="54" y="0" width="916" height="1024" preserveAspectRatio="xMidYMid meet"/></g>
 </svg>

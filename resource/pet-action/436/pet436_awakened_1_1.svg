@@ -1,5 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <defs><filter id="g"><feGaussianBlur stdDeviation="9"/></filter><style><![CDATA[@keyframes float{0%,100%{transform:translateY(12px) scale(.985)}50%{transform:translateY(-12px) scale(1.015)}}@keyframes pulse{0%,100%{opacity:.2}50%{opacity:.78}}@keyframes orbit{to{transform:rotate(360deg)}}.body{transform-origin:512px 520px;animation:float 1.9s ease-in-out infinite}.aura{transform-origin:512px 570px;animation:pulse 1.9s ease-in-out infinite}.ring{transform-origin:512px 842px;animation:orbit 5s linear infinite}]]></style></defs>
-  <g class="aura" filter="url(#g)" fill="none" stroke="#9d54ff"><ellipse cx="512" cy="842" rx="330" ry="54" stroke-width="24"/><ellipse class="ring" cx="512" cy="842" rx="260" ry="38" stroke-width="8" stroke-dasharray="32 22"/></g>
-  <g class="body"><image href="magic-sword-soul_1_1.png" x="70" y="0" width="884" height="1024" preserveAspectRatio="xMidYMid meet"/></g>
+  <desc>Magic Sword Soul front idle; 3 pose frames; 120ms per frame.</desc>
+  <style><![CDATA[.frame{opacity:0;animation:idle 360ms step-end infinite}.f0{animation-delay:0ms}.f1{animation-delay:-120ms}.f2{animation-delay:-240ms}@keyframes idle{0%,33.32%{opacity:1}33.33%,100%{opacity:0}}]]></style>
+  <g class="frame f0"><image href="magic-sword-soul_1_1.png" x="70" y="0" width="884" height="1024" preserveAspectRatio="xMidYMid meet"/></g>
+  <g class="frame f1"><image href="magic-sword-soul_1_1_f1.png" x="70" y="0" width="884" height="1024" preserveAspectRatio="xMidYMid meet"/></g>
+  <g class="frame f2"><image href="magic-sword-soul_1_1_f2.png" x="70" y="0" width="884" height="1024" preserveAspectRatio="xMidYMid meet"/></g>
 </svg>
