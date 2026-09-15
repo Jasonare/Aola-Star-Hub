@@ -3994,6 +3994,29 @@
       border: 3px solid rgba(255,255,255,0.3);
       box-shadow: 0 20px 60px rgba(0,0,0,0.4);
     }
+    /* V10.1 信息卡：仅覆盖信息卡自身，不影响既有弹窗。 */
+    .info-card-v101 {
+      width: min(94vw, 900px);
+      min-height: min(67vw, 670px);
+      padding: 7% 4% 5%;
+      background: url("./resource-v10/信息卡/信息卡底图.png") center / 100% 100% no-repeat;
+      border: 0;
+      border-radius: 0;
+      color: #173d61;
+    }
+    .info-card-v101 .info-card-close-btn { top: 3%; right: 3%; width: 7%; height: 7%; min-width: 30px; min-height: 30px; background: url("./resource-v10/信息卡/信息卡关闭按钮.png") center / contain no-repeat; }
+    .info-card-v101 .info-card-close-btn:hover { background: url("./resource-v10/信息卡/信息卡关闭按钮.png") center / contain no-repeat; filter: brightness(1.12); }
+    .info-card-v101 .info-card-content { margin-left: 51%; padding: 4% 5%; min-height: 510px; background: url("./resource-v10/信息卡/信息界面底图.png") center / 100% 100% no-repeat; }
+    .info-card-v101 .info-card-title { color: #173d61; text-shadow: none; }
+    .info-card-v101 .info-card-account-label, .info-card-v101 .info-card-account-value { color: #173d61; }
+    .info-card-v101 .info-card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .info-card-v101 .info-card-stat { background: rgba(255,255,255,.62); border: 1px solid #9ed8f1; }
+    .info-card-v101 .info-card-stat-label, .info-card-v101 .info-card-stat-value { color: #173d61; }
+    .info-card-v101 .info-card-badge-section { background: rgba(255,255,255,.42); }
+    .info-card-v101 .info-card-action-btn { background-size: 100% 100%; background-repeat: no-repeat; color: transparent; }
+    .info-card-v101 .info-card-import-btn { background-image: url("./resource-v10/信息卡/导入存档按钮.png"); }
+    .info-card-v101 .info-card-export-btn { background-image: url("./resource-v10/信息卡/导出存档按钮.png"); }
+    @media (max-width: 760px) { .info-card-v101 { width: 96vw; min-height: 0; padding: 9% 4% 6%; } .info-card-v101 .info-card-content { margin-left: 0; min-height: 0; padding: 10% 8% 8%; } }
     .info-card-close-btn {
       position: absolute;
       top: 12px;
@@ -13560,7 +13583,7 @@
   </div>
 
   <div v-if="showInfoCardPanel" class="fixed inset-0 z-[132] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeInfoCardPanel">
-    <div class="info-card-panel" @click.stop>
+    <div class="info-card-panel info-card-v101" @click.stop>
       <button @click="closeInfoCardPanel" class="info-card-close-btn" title="关闭">X</button>
       <div class="info-card-content">
         <div class="info-card-title">信息卡</div>
@@ -13574,20 +13597,20 @@
         </div>
         <div class="info-card-stats">
           <div class="info-card-stat">
-            <div class="info-card-stat-label">图鉴激活</div>
-            <div class="info-card-stat-value">{{ activatedDexCount }}</div>
+            <div class="info-card-stat-label">星龄</div>
+            <div class="info-card-stat-value">{{ infoCardStarAge }}天</div>
           </div>
           <div class="info-card-stat">
-            <div class="info-card-stat-label">仓库亚比</div>
-            <div class="info-card-stat-value">{{ warehouseCount }}</div>
+            <div class="info-card-stat-label">亚比数量</div>
+            <div class="info-card-stat-value">{{ infoCardPetCount }}</div>
           </div>
           <div class="info-card-stat">
-            <div class="info-card-stat-label">最大战力</div>
-            <div class="info-card-stat-value">{{ maxBagBattlePower }}</div>
+            <div class="info-card-stat-label">最高等级</div>
+            <div class="info-card-stat-value">{{ infoCardHighestLevel }}</div>
           </div>
           <div class="info-card-stat">
-            <div class="info-card-stat-label">H币</div>
-            <div class="info-card-stat-value hcoin-display"><img src="./resource/小图标/h币.png" alt="H币"><span>{{ state && state.hCoins || 0 }}</span></div>
+            <div class="info-card-stat-label">PVP胜场</div>
+            <div class="info-card-stat-value">{{ infoCardPvpWins }}</div>
           </div>
         </div>
         <div class="info-card-badge-section">
