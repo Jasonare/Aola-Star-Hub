@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="230" height="150" viewBox="0 0 230 150">
+  <title>魔剑之魂 正面攻击</title><desc>魔剑横斩，暗紫火焰剑痕向正前方压迫推进。</desc>
+  <defs><filter id="void"><feColorMatrix values=".32 0 .28 0 .12 .1 0 .2 0 .02 .3 0 .8 0 .18 0 0 0 1 0"/></filter><linearGradient id="slash" x1="0" x2="1"><stop stop-color="#22002e" stop-opacity="0"/><stop offset=".35" stop-color="#bc46ff"/><stop offset=".6" stop-color="#fff0ff"/><stop offset="1" stop-color="#4a006d" stop-opacity="0"/></linearGradient><style><![CDATA[@keyframes slash{0%{opacity:0;transform:translateX(-70px) scaleX(.2)}25%,68%{opacity:1}100%{opacity:0;transform:translateX(110px) scaleX(1.25)}}@keyframes ember{to{transform:translate(80px,-34px);opacity:0}}.s{transform-origin:55px 78px;animation:slash 720ms ease-out infinite}.e{animation:ember 720ms linear infinite}]]></style></defs>
+  <image xlink:href="pet436_1_4.svg" width="230" height="150" filter="url(#void)"/>
+  <path class="s" d="M7 106Q89 13 225 43Q107 54 19 121z" fill="url(#slash)"/><g class="e" fill="#d76aff"><circle cx="50" cy="95" r="3"/><circle cx="72" cy="82" r="2"/><circle cx="31" cy="111" r="2"/></g>
+</svg>

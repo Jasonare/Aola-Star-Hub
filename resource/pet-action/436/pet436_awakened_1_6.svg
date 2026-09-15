@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="103" height="109" viewBox="0 0 103 109">
+  <title>魔剑之魂 正面技能</title><desc>魔剑魂域展开，暗紫火焰组成压迫性的领域之眼。</desc>
+  <defs><filter id="void"><feColorMatrix values=".32 0 .28 0 .12 .1 0 .2 0 .02 .3 0 .8 0 .18 0 0 0 1 0"/></filter><radialGradient id="core"><stop stop-color="#fff"/><stop offset=".18" stop-color="#e58bff"/><stop offset=".55" stop-color="#6720a0" stop-opacity=".75"/><stop offset="1" stop-color="#160020" stop-opacity="0"/></radialGradient><style><![CDATA[@keyframes domain{0%,100%{opacity:.35;transform:scale(.72)}50%{opacity:1;transform:scale(1.18)}}@keyframes ring{to{transform:rotate(360deg)}}.d{transform-origin:52px 55px;animation:domain 900ms ease-in-out infinite}.r{transform-origin:52px 55px;animation:ring 1300ms linear infinite}]]></style></defs>
+  <image xlink:href="pet436_1_6.svg" width="103" height="109" filter="url(#void)"/><circle class="d" cx="52" cy="53" r="47" fill="url(#core)"/><g class="r" fill="none" stroke="#cb63ff" stroke-width="2" opacity=".85"><circle cx="52" cy="55" r="42" stroke-dasharray="8 6"/><path d="M17 55Q52 34 87 55Q52 76 17 55z"/></g><path d="M52 40l9 15-9 16-9-16z" fill="#fff"/>
+</svg>
