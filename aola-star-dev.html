@@ -4018,7 +4018,23 @@
     .info-card-v101 .info-card-action-btn { background-size: 100% 100%; background-repeat: no-repeat; color: transparent; }
     .info-card-v101 .info-card-import-btn { background-image: url("./resource-v10/信息卡/导入存档按钮.png"); }
     .info-card-v101 .info-card-export-btn { background-image: url("./resource-v10/信息卡/导出存档按钮.png"); }
-    @media (max-width: 760px) { .info-card-v101 { width: 96vw; min-height: 0; padding: 9% 4% 6%; } .info-card-v101 .info-card-content { margin-left: 0; min-height: 0; padding: 10% 8% 8%; } }
+    .info-card-v101-layout { display: grid; grid-template-columns: 49% 51%; min-height: 510px; }
+    .info-card-v101-left { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15% 10%; color: #e9fbff; text-align: center; }
+    .info-card-v101-left-name { max-width: 88%; font-size: clamp(18px, 3vw, 34px); font-weight: 900; text-shadow: 0 2px 4px #115b94; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .info-card-v101-left-title { margin-top: 12px; font-size: clamp(12px, 1.6vw, 18px); font-weight: 800; }
+    .info-card-v101-main { margin: 3% 4% 4% 2%; padding: 7% 8%; background: url("./resource-v10/信息卡/信息界面底图.png") center / 100% 100% no-repeat; color: #173d61; }
+    .info-card-v101-meta { display: grid; gap: 6px; font-size: clamp(11px, 1.5vw, 17px); font-weight: 800; }
+    .info-card-v101-meta > div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid rgba(35,100,145,.2); }
+    .info-card-v101-meta span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .info-card-v101-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 12px; }
+    .info-card-v101-stat { padding: 7px; border: 1px solid #9ed8f1; border-radius: 8px; background: rgba(255,255,255,.66); text-align: center; font-size: clamp(10px, 1.25vw, 14px); font-weight: 800; }
+    .info-card-v101-stat strong { display: block; margin-top: 2px; font-size: clamp(13px, 1.55vw, 18px); }
+    .info-card-v101-badge { min-height: 62px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; padding: 6px; border-radius: 10px; background: rgba(255,255,255,.55); font-size: 12px; font-weight: 800; }
+    .info-card-v101-badge img { width: 48px; height: 48px; object-fit: contain; }
+    .info-card-v101-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .info-card-v101-actions button { flex: 1; height: 35px; border: none; border-radius: 8px; background-size: 100% 100%; background-repeat: no-repeat; font-size: 0; }
+    .info-card-v101-logout { margin-top: 8px; width: 100%; height: 28px; border: none; border-radius: 7px; background: #ea3b3b; color: white; font-size: 12px; font-weight: 900; }
+    @media (max-width: 760px) { .info-card-v101 { width: 96vw; min-height: 0; padding: 9% 4% 6%; } .info-card-v101-layout { grid-template-columns: 1fr; } .info-card-v101-left { min-height: 180px; padding: 14% 10% 8%; } .info-card-v101-main { margin: 0 6% 6%; padding: 10% 9%; } }
     .info-card-close-btn {
       position: absolute;
       top: 12px;
@@ -13589,48 +13605,28 @@
 
   <div v-if="showInfoCardPanel" class="fixed inset-0 z-[132] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeInfoCardPanel">
     <div class="info-card-panel info-card-v101" @click.stop>
-      <button @click="closeInfoCardPanel" class="info-card-close-btn" title="关闭">X</button>
-      <div class="info-card-content">
-        <div class="info-card-title">信息卡</div>
-        <div class="info-card-account">
-          <div class="info-card-account-label">当前用户</div>
-          <div class="info-card-account-value">{{ authUser && authUser.username ? authUser.username : (authUsername || '游客') }}</div>
-          <div v-if="authUser" class="info-card-rename-row">
-            <input v-model="renameUsernameInput" class="info-card-rename-input" maxlength="32" placeholder="输入新账号名称" @keyup.enter="submitRenameUsername">
-            <button @click="submitRenameUsername" :disabled="renameUsernameLoading" class="info-card-rename-btn">{{ renameUsernameLoading ? '保存中' : '改名' }}</button>
+      <button @click="closeInfoCardPanel" class="info-card-close-btn" title="关闭" aria-label="关闭"></button>
+      <div class="info-card-v101-layout">
+        <section class="info-card-v101-left">
+          <div class="info-card-v101-left-name">{{ authUser && authUser.username ? authUser.username : (authUsername || '游客') }}</div>
+          <div class="info-card-v101-left-title">{{ equippedBadge ? equippedBadge.name : '暂无称号' }}</div>
+        </section>
+        <section class="info-card-v101-main">
+          <div class="info-card-v101-meta">
+            <div><span>奥拉名：</span><span>{{ authUser && authUser.username ? authUser.username : (authUsername || '游客') }}</span></div>
+            <div><span>多多号：</span><span>{{ authUser && authUser.id ? authUser.id : '—' }}</span></div>
+            <div><span>称号：</span><span>{{ equippedBadge ? equippedBadge.name : '暂无称号' }}</span></div>
           </div>
-        </div>
-        <div class="info-card-stats">
-          <div class="info-card-stat">
-            <div class="info-card-stat-label">星龄</div>
-            <div class="info-card-stat-value">{{ infoCardStarAge }}天</div>
+          <div class="info-card-v101-stats">
+            <div class="info-card-v101-stat">星龄<strong>{{ infoCardStarAge }}天</strong></div>
+            <div class="info-card-v101-stat">亚比数量<strong>{{ infoCardPetCount }}</strong></div>
+            <div class="info-card-v101-stat">最高等级<strong>{{ infoCardHighestLevel }}</strong></div>
+            <div class="info-card-v101-stat">PVP胜场<strong>{{ infoCardPvpWins }}</strong></div>
           </div>
-          <div class="info-card-stat">
-            <div class="info-card-stat-label">亚比数量</div>
-            <div class="info-card-stat-value">{{ infoCardPetCount }}</div>
-          </div>
-          <div class="info-card-stat">
-            <div class="info-card-stat-label">最高等级</div>
-            <div class="info-card-stat-value">{{ infoCardHighestLevel }}</div>
-          </div>
-          <div class="info-card-stat">
-            <div class="info-card-stat-label">PVP胜场</div>
-            <div class="info-card-stat-value">{{ infoCardPvpWins }}</div>
-          </div>
-        </div>
-        <div class="info-card-badge-section">
-          <div class="info-card-badge-circle">
-            <img v-if="equippedBadge && equippedBadge.imageSrc" :src="equippedBadge.imageSrc" :alt="equippedBadge.name" class="info-card-badge-image" @error="withFallback" />
-            <div v-else-if="equippedBadge" class="info-card-badge-text" :class="'is-' + (equippedBadge.tone || 'amber')">{{ equippedBadge.name }}</div>
-            <div v-else class="info-card-badge-empty">未佩戴徽章</div>
-          </div>
-          <div class="info-card-badge-name" v-if="equippedBadge">{{ equippedBadge.name }}</div>
-        </div>
-        <div class="info-card-actions">
-          <button @click="triggerLocalSaveImport" class="info-card-action-btn info-card-import-btn">导入</button>
-          <button @click="exportLocalSave" class="info-card-action-btn info-card-export-btn">导出</button>
-          <button @click="authUser ? logoutUser() : logoutGuest()" class="info-card-action-btn info-card-logout-btn">退出</button>
-        </div>
+          <div class="info-card-v101-badge"><img v-if="equippedBadge && equippedBadge.imageSrc" :src="equippedBadge.imageSrc" :alt="equippedBadge.name" @error="withFallback"><span>{{ equippedBadge ? equippedBadge.name : '未佩戴徽章' }}</span></div>
+          <div class="info-card-v101-actions"><button @click="triggerLocalSaveImport" class="info-card-import-btn" title="导入存档">导入存档</button><button @click="exportLocalSave" class="info-card-export-btn" title="导出存档">导出存档</button></div>
+          <button @click="authUser ? logoutUser() : logoutGuest()" class="info-card-v101-logout">退出登录</button>
+        </section>
       </div>
     </div>
   </div>
