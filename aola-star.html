@@ -3986,268 +3986,6 @@
       font-weight: 900;
       cursor: pointer;
     }
-    .info-card-panel {
-      position: relative;
-      width: min(85vw, 400px);
-      background: linear-gradient(180deg, rgba(56,189,248,0.95) 0%, rgba(14,165,233,0.95) 50%, rgba(6,182,212,0.95) 100%);
-      border-radius: 24px;
-      border: 3px solid rgba(255,255,255,0.3);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    }
-    .info-card-close-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 36px;
-      height: 36px;
-      border: none;
-      background: rgba(255,255,255,0.2);
-      border-radius: 50%;
-      color: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-    }
-    .info-card-close-btn:hover {
-      background: rgba(255,255,255,0.4);
-    }
-    .info-card-content {
-      padding: 16px;
-    }
-    .info-card-title {
-      text-align: center;
-      font-size: 20px;
-      font-weight: black;
-      color: white;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      margin-bottom: 10px;
-    }
-    .info-card-account {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .info-card-account-label {
-      font-size: 11px;
-      font-weight: bold;
-      color: rgba(255,255,255,0.7);
-      margin-bottom: 2px;
-    }
-    .info-card-account-value {
-      font-size: 16px;
-      font-weight: black;
-      color: white;
-    }
-    .info-card-rename-row {
-      display: flex;
-      gap: 6px;
-      margin-top: 8px;
-    }
-    .info-card-rename-input {
-      flex: 1;
-      min-width: 0;
-      height: 30px;
-      border: 1px solid rgba(255,255,255,0.35);
-      border-radius: 8px;
-      background: rgba(15,23,42,0.28);
-      padding: 0 8px;
-      color: white;
-      font-size: 12px;
-      font-weight: 800;
-      outline: none;
-    }
-    .info-card-rename-input::placeholder {
-      color: rgba(255,255,255,0.55);
-    }
-    .info-card-rename-btn {
-      width: 58px;
-      height: 30px;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #f59e0b, #f97316);
-      color: white;
-      font-size: 12px;
-      font-weight: 900;
-      cursor: pointer;
-    }
-    .info-card-rename-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .info-card-stats {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
-    .info-card-stat {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 12px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 8px;
-    }
-    .info-card-stat-label {
-      font-size: 12px;
-      font-weight: bold;
-      color: rgba(255,255,255,0.9);
-    }
-    .info-card-stat-value {
-      font-size: 14px;
-      font-weight: black;
-      color: white;
-    }
-    .hcoin-display {
-      display: inline-flex;
-      align-items: center;
-      gap: .25em;
-      white-space: nowrap;
-    }
-    .hcoin-display > img {
-      width: 1.1em;
-      height: 1.1em;
-      flex: 0 0 auto;
-      object-fit: contain;
-    }
-    .info-card-badge-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 10px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 12px;
-      margin-bottom: 12px;
-    }
-    .info-card-badge-circle {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.3);
-      border: 3px solid rgba(255,255,255,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    .info-card-badge-image {
-      width: 80%;
-      height: 80%;
-      object-fit: contain;
-    }
-    .info-card-badge-text {
-      font-size: 12px;
-      font-weight: bold;
-      text-align: center;
-      color: white;
-      padding: 8px;
-    }
-    .info-card-badge-text.is-amber { color: #fbbf24; }
-    .info-card-badge-text.is-blue { color: #60a5fa; }
-    .info-card-badge-text.is-green { color: #4ade80; }
-    .info-card-badge-text.is-red { color: #f87171; }
-    .info-card-badge-text.is-purple { color: #c084fc; }
-    .info-card-badge-empty {
-      font-size: 12px;
-      font-weight: bold;
-      color: rgba(255,255,255,0.6);
-      text-align: center;
-    }
-    .info-card-badge-name {
-      margin-top: 6px;
-      font-size: 12px;
-      font-weight: black;
-      color: white;
-      text-align: center;
-    }
-    .info-card-actions {
-      display: flex;
-      gap: 8px;
-    }
-    .info-card-action-btn {
-      flex: 1;
-      height: 32px;
-      border: none;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: black;
-      cursor: pointer;
-      transition: transform 0.14s ease, filter 0.14s ease;
-    }
-    .info-card-action-btn:active {
-      transform: scale(0.96);
-    }
-    .info-card-import-btn {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: white;
-    }
-    .info-card-export-btn {
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-      color: white;
-    }
-    .info-card-logout-btn {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      color: white;
-    }
-    @media (max-width: 760px) {
-      .bag2-panel {
-        width: min(88vw, 560px);
-      }
-      .bag-mobile-panel {
-        width: min(88vw, 760px) !important;
-        max-width: min(88vw, 760px) !important;
-        height: min(84vh, 640px) !important;
-        padding: 12px !important;
-        border-radius: 18px !important;
-      }
-      .info-card-panel {
-        width: min(76vw, 320px);
-        max-height: 82vh;
-        overflow-y: auto;
-        border-radius: 18px;
-        border-width: 2px;
-      }
-      .info-card-content {
-        padding: 12px;
-      }
-      .info-card-title {
-        font-size: 17px;
-        margin-bottom: 7px;
-      }
-      .info-card-account {
-        margin-bottom: 7px;
-      }
-      .info-card-stats {
-        gap: 4px;
-        margin-bottom: 8px;
-      }
-      .info-card-stat {
-        padding: 5px 9px;
-        border-radius: 7px;
-      }
-      .info-card-badge-section {
-        padding: 8px;
-        margin-bottom: 8px;
-      }
-      .info-card-badge-circle {
-        width: 60px;
-        height: 60px;
-        border-width: 2px;
-      }
-      .info-card-actions {
-        gap: 6px;
-      }
-      .info-card-action-btn {
-        height: 28px;
-      }
-      .info-card-close-btn {
-        top: 8px;
-        right: 8px;
-        width: 30px;
-        height: 30px;
-      }
-    }
     .bag-responsive-modal {
       aspect-ratio: 1848 / 1137;
       width: min(96vw, calc(1152 * var(--ui-px))) !important;
@@ -4260,6 +3998,18 @@
         width: min(98vw, calc(90vh * 1848 / 1137)) !important;
         max-width: min(98vw, calc(90vh * 1848 / 1137)) !important;
         height: min(90vh, calc(98vw * 1137 / 1848)) !important;
+      }
+    }
+    @media (max-width: 760px) {
+      .bag2-panel {
+        width: min(88vw, 560px);
+      }
+      .bag-mobile-panel {
+        width: min(88vw, 760px) !important;
+        max-width: min(88vw, 760px) !important;
+        height: min(84vh, 640px) !important;
+        padding: 12px !important;
+        border-radius: 18px !important;
       }
     }
     html.android-webview.android-landscape .bag2-panel {
@@ -4307,18 +4057,482 @@
       height: min(82vh, calc(600 * var(--ui-px))) !important;
       padding: calc(10 * var(--ui-px)) !important;
     }
+    .info-card-panel {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      width: min(92vw, calc(88vh * 1575 / 1171));
+      aspect-ratio: 1575 / 1171;
+      background: transparent;
+      border: none;
+      overflow: visible;
+    }
+    .info-card-outfit-card,
+    .info-card-data-card {
+      position: relative;
+      container-type: size;
+    }
+    .info-card-outfit-card {
+      width: calc(802 / 1575 * 100%);
+      aspect-ratio: 802 / 1120;
+    }
+    .info-card-data-card {
+      width: calc(773 / 1575 * 100%);
+      aspect-ratio: 773 / 1171;
+    }
+    .info-card-card-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      pointer-events: none;
+      user-select: none;
+    }
+    .info-card-name-bar {
+      position: absolute;
+      left: 28.7%;
+      top: 3.4%;
+      width: 48%;
+      height: 7.8%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+    }
+    .info-card-name-text {
+      font-size: 3.1cqh;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 4px rgba(0,40,90,0.65);
+      white-space: nowrap;
+    }
+    /* 服装卡名称栏左侧：当前佩戴徽章 */
+    .info-card-equipped-badge {
+      position: absolute;
+      left: 8.2%;
+      top: 1.8%;
+      width: 16%;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 8;
+    }
+    .info-card-equipped-badge > img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .info-card-equipped-badge-text {
+      width: 100%;
+      max-height: 100%;
+      overflow: hidden;
+      border-radius: 12%;
+      background: rgba(20,60,120,0.72);
+      color: #ffe9a8;
+      font-size: 2cqh;
+      font-weight: 900;
+      line-height: 1.15;
+      text-align: center;
+      padding: 5%;
+      word-break: break-all;
+    }
+    .info-card-rename-popup {
+      position: absolute;
+      left: 12%;
+      top: 12.2%;
+      width: 76%;
+      display: flex;
+      gap: 6px;
+      z-index: 20;
+      background: rgba(10,30,60,0.88);
+      padding: 1%;
+      border-radius: 10px;
+    }
+    .info-card-rename-input {
+      flex: 1;
+      min-width: 0;
+      height: 4.4cqh;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 6px;
+      background: rgba(15,23,42,0.6);
+      padding: 0 8px;
+      color: white;
+      font-size: 2.6cqh;
+      font-weight: 800;
+      outline: none;
+    }
+    .info-card-rename-input::placeholder {
+      color: rgba(255,255,255,0.55);
+    }
+    .info-card-rename-btn {
+      height: 4.4cqh;
+      padding: 0 10px;
+      border: none;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      color: white;
+      font-size: 2.6cqh;
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .info-card-rename-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .info-card-outfit-stage {
+      position: absolute;
+      left: 9.2%;
+      top: 14.7%;
+      width: 80.6%;
+      height: 70.7%;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .info-card-outfit-layer {
+      position: absolute;
+      max-width: none;
+    }
+    .info-card-outfit-layer > img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      pointer-events: none;
+      user-select: none;
+    }
+    .info-card-tabs {
+      position: absolute;
+      left: 26.5%;
+      top: 1%;
+      display: flex;
+      align-items: center;
+      gap: 7.5cqw;
+      z-index: 15;
+    }
+    .info-card-tab-btn {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0.55;
+      transition: opacity 0.15s, transform 0.15s;
+      width: 18.4cqw;
+    }
+    .info-card-tab-btn > img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+    .info-card-tab-btn.active {
+      opacity: 1;
+      transform: translateY(-6%) scale(1.05);
+    }
+    .info-card-close-btn {
+      position: absolute;
+      top: 1%;
+      right: -3.4%;
+      width: 9.9%;
+      aspect-ratio: 1;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      z-index: 20;
+    }
+    .info-card-close-btn > img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    /* 信息标签页舞台：坐标系按信息界面底图 686x966；新底图向下加高，顶部对齐 */
+    .info-card-info-stage {
+      position: absolute;
+      left: 7.1%;
+      top: 7.9%;
+      width: 88.8%;
+      height: 82.8%;
+      container-type: size;
+    }
+    .info-card-info-bg {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: auto;
+      pointer-events: none;
+    }
+    /* 数据值：只显示文字，透明背景，位置对齐底图标签 */
+    .icv {
+      position: absolute;
+      transform: translateY(-50%);
+      color: #1f3a5f;
+      font-weight: 900;
+      font-size: 3.6cqh;
+      white-space: nowrap;
+      pointer-events: none;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+    }
+    .icv-name { left: 21.9%; top: 5.8%; }
+    .icv-id { left: 21.9%; top: 11.3%; }
+    .icv-age { left: 21.9%; top: 16.8%; }
+    .icv-title { left: 37.5%; top: 24%; font-size: 3.5cqh; }
+    .icv-talent { left: 32.5%; top: 37.1%; font-size: 3.7cqh; }
+    .icv-level { left: 82.5%; top: 37.1%; font-size: 3.7cqh; }
+    .icv-capture { left: 32.5%; top: 43%; font-size: 3.7cqh; }
+    .icv-count { left: 82.5%; top: 43%; font-size: 3.7cqh; }
+    /* 右上角图鉴等级图（1-10级，按图鉴激活数量切换） */
+    .icv-dex-level {
+      position: absolute;
+      right: 3.2%;
+      top: 3%;
+      width: 18.5%;
+      height: auto;
+      z-index: 5;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    /* 奥拉名/多多号/星龄值避让右上角等级图，超长省略 */
+    .icv-name, .icv-id, .icv-age {
+      max-width: 54%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* 挑战梯度封面小框 */
+    .ic-chal-arrow {
+      position: absolute;
+      top: 46.6%;
+      height: 10.4%;
+      width: 7.8%;
+      z-index: 6;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+    }
+    .ic-chal-prev { left: 20.3%; }
+    .ic-chal-next { left: 89.4%; }
+    .ic-chal-arrow:disabled {
+      pointer-events: none;
+    }
+    .ic-chal-track {
+      position: absolute;
+      left: 27.7%;
+      top: 48%;
+      width: 61.8%;
+      height: 9.6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+    .ic-chal-frame {
+      height: 84%;
+      aspect-ratio: 1;
+      border-radius: 16%;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.65);
+      box-shadow: 0 1px 3px rgba(0,40,90,0.35), inset 0 0 0 1px rgba(10,60,120,0.25);
+      background: rgba(180,220,250,0.25);
+      pointer-events: auto;
+    }
+    .ic-chal-frame > img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 26%;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .ic-chal-frame.is-dim {
+      filter: brightness(0.38) saturate(0.5);
+    }
+    .ic-chal-frame.is-empty {
+      background: transparent;
+    }
+    /* 四项数据：底图蓝框上只叠文字 */
+    .ic-stat {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .ic-stat > b {
+      font-size: 4.5cqh;
+      line-height: 1.05;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 2px 3px rgba(0,60,130,0.55);
+      white-space: nowrap;
+    }
+    .ic-stat > span {
+      margin-top: 0.5cqh;
+      font-size: 2.5cqh;
+      font-weight: 800;
+      color: rgba(255,255,255,0.92);
+      white-space: nowrap;
+    }
+    .ic-stat-1 { left: 26.1%; top: 65.2%; }
+    .ic-stat-2 { left: 72.3%; top: 65.2%; }
+    .ic-stat-3 { left: 26.1%; top: 75.1%; }
+    .ic-stat-4 { left: 72.3%; top: 75.1%; }
+    /* 导入导出按钮 */
+    .ic-save {
+      position: absolute;
+      top: 84%;
+      height: 8.6%;
+      width: 30%;
+      border: none;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      transition: transform 0.14s, filter 0.14s;
+    }
+    .ic-save:active {
+      transform: scale(0.96);
+    }
+    .ic-save-import { left: 11%; }
+    .ic-save-export { left: 59%; }
+    .ic-save > img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    /* 退出登录按钮：导入存档正下方，尺寸与导入导出一致（底图向下延伸区） */
+    .ic-logout {
+      position: absolute;
+      top: 94%;
+      left: 11%;
+      width: 30%;
+      height: 8.6%;
+      border: none;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      transition: transform 0.14s, filter 0.14s;
+    }
+    .ic-logout:active {
+      transform: scale(0.96);
+    }
+    .ic-logout > img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    /* 背包标签页：右卡内框区域 */
+    .info-card-bag-stage {
+      position: absolute;
+      left: 9.3%;
+      top: 10.5%;
+      width: 81.9%;
+      height: 80.4%;
+      display: flex;
+      flex-direction: column;
+    }
+    .info-card-bag-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 1.8% 2.8%;
+      min-height: 0;
+    }
+    .info-card-bag-slot {
+      position: relative;
+      min-height: 0;
+    }
+    .info-card-bag-slot-btn {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      transition: filter 0.14s, transform 0.14s;
+    }
+    .info-card-bag-slot-btn.equipped {
+      filter: drop-shadow(0 0 6px rgba(60,220,160,0.85));
+    }
+    .info-card-bag-slot-btn:active {
+      transform: scale(0.96);
+    }
+    .info-card-bag-slot-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .info-card-bag-slot-icon {
+      position: absolute;
+      inset: 8%;
+      width: 84%;
+      height: 84%;
+      object-fit: contain;
+    }
+    .info-card-bag-pager {
+      flex-shrink: 0;
+      height: 5%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-size: clamp(11px, 1.2vw, 15px);
+      font-weight: 900;
+      color: #dcefff;
+    }
+    .info-card-bag-pager button {
+      border: none;
+      background: rgba(255,255,255,0.25);
+      color: #eaf6ff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 900;
+    }
+    .info-card-bag-pager button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    .hcoin-display {
+      display: inline-flex;
+      align-items: center;
+      gap: .25em;
+      white-space: nowrap;
+    }
+    .hcoin-display > img {
+      width: 1.1em;
+      height: 1.1em;
+      flex: 0 0 auto;
+      object-fit: contain;
+    }
+    @media (max-width: 760px) {
+      .info-card-panel {
+        width: min(96vw, calc(80vh * 1575 / 1171));
+      }
+    }
     html.android-webview.android-landscape .info-card-panel {
-      width: min(64vw, calc(320 * var(--ui-px)));
-      max-height: 78vh;
-      overflow-y: auto;
-      border-radius: calc(18 * var(--ui-px));
-    }
-    html.android-webview.android-landscape .info-card-content {
-      padding: calc(11 * var(--ui-px));
-    }
-    html.android-webview.android-landscape .info-card-badge-circle {
-      width: calc(58 * var(--ui-px));
-      height: calc(58 * var(--ui-px));
+      width: min(90vw, calc((100vh - 16px) * 1575 / 1171));
     }
     .strong-road-panel {
       position: relative;
@@ -13561,47 +13775,87 @@
 
   <div v-if="showInfoCardPanel" class="fixed inset-0 z-[132] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeInfoCardPanel">
     <div class="info-card-panel" @click.stop>
-      <button @click="closeInfoCardPanel" class="info-card-close-btn" title="关闭">X</button>
-      <div class="info-card-content">
-        <div class="info-card-title">信息卡</div>
-        <div class="info-card-account">
-          <div class="info-card-account-label">当前用户</div>
-          <div class="info-card-account-value">{{ authUser && authUser.username ? authUser.username : (authUsername || '游客') }}</div>
-          <div v-if="authUser" class="info-card-rename-row">
-            <input v-model="renameUsernameInput" class="info-card-rename-input" maxlength="32" placeholder="输入新账号名称" @keyup.enter="submitRenameUsername">
-            <button @click="submitRenameUsername" :disabled="renameUsernameLoading" class="info-card-rename-btn">{{ renameUsernameLoading ? '保存中' : '改名' }}</button>
+      <!-- 左卡：服装卡 -->
+      <div class="info-card-outfit-card">
+        <img src="./resource-v11/信息卡/服装卡底图.png" class="info-card-card-bg" alt="">
+        <button type="button" class="info-card-name-bar">
+          <span class="info-card-name-text">{{ authUser && authUser.username ? authUser.username : (authUsername || '游客') }}</span>
+        </button>
+        <div v-if="equippedBadge" class="info-card-equipped-badge" :title="equippedBadge.name">
+          <img v-if="equippedBadge.imageSrc" :src="equippedBadge.imageSrc" :alt="equippedBadge.name" draggable="false" @error="(e) => { e.target.parentElement.style.display = 'none'; }">
+          <span v-else class="info-card-equipped-badge-text">{{ equippedBadge.name }}</span>
+        </div>
+        <div class="info-card-outfit-stage">
+          <div v-for="(layer, idx) in outfitRenderLayers" :key="idx" class="info-card-outfit-layer" :style="{ zIndex: layer.z, left: (layer.l || 0) + '%', top: (layer.t || 0) + '%', width: (layer.w || 100) + '%' }">
+            <img v-if="layer.imageSrc" :src="layer.imageSrc" alt="" draggable="false">
           </div>
         </div>
-        <div class="info-card-stats">
-          <div class="info-card-stat">
-            <div class="info-card-stat-label">图鉴激活</div>
-            <div class="info-card-stat-value">{{ activatedDexCount }}</div>
-          </div>
-          <div class="info-card-stat">
-            <div class="info-card-stat-label">仓库亚比</div>
-            <div class="info-card-stat-value">{{ warehouseCount }}</div>
-          </div>
-          <div class="info-card-stat">
-            <div class="info-card-stat-label">最大战力</div>
-            <div class="info-card-stat-value">{{ maxBagBattlePower }}</div>
-          </div>
-          <div class="info-card-stat">
-            <div class="info-card-stat-label">H币</div>
-            <div class="info-card-stat-value hcoin-display"><img src="./resource/小图标/h币.png" alt="H币"><span>{{ state && state.hCoins || 0 }}</span></div>
-          </div>
+      </div>
+      <!-- 右卡：信息卡 -->
+      <div class="info-card-data-card">
+        <img src="./resource-v11/信息卡/信息卡底图.png" class="info-card-card-bg" alt="">
+        <div class="info-card-tabs">
+          <button type="button" class="info-card-tab-btn" :class="{ active: infoCardTab === 'info' }" @click="infoCardTab = 'info'">
+            <img src="./resource-v11/信息卡/信息按钮.png" alt="信息">
+          </button>
+          <button type="button" class="info-card-tab-btn" :class="{ active: infoCardTab === 'bag' }" @click="infoCardTab = 'bag'">
+            <img src="./resource-v11/信息卡/背包按钮.png" alt="背包">
+          </button>
         </div>
-        <div class="info-card-badge-section">
-          <div class="info-card-badge-circle">
-            <img v-if="equippedBadge && equippedBadge.imageSrc" :src="equippedBadge.imageSrc" :alt="equippedBadge.name" class="info-card-badge-image" @error="withFallback" />
-            <div v-else-if="equippedBadge" class="info-card-badge-text" :class="'is-' + (equippedBadge.tone || 'amber')">{{ equippedBadge.name }}</div>
-            <div v-else class="info-card-badge-empty">未佩戴徽章</div>
+        <button type="button" @click="closeInfoCardPanel" class="info-card-close-btn" title="关闭">
+          <img src="./resource-v11/信息卡/信息卡关闭按钮.png" alt="关闭">
+        </button>
+        <!-- 信息标签页：仅在信息界面底图对应位置填数据，不加标签与底色 -->
+        <div v-show="infoCardTab === 'info'" class="info-card-info-stage">
+          <img src="./resource-v11/信息卡/信息界面底图.png?v=20260917b" class="info-card-info-bg" alt="">
+          <img v-if="dexLevelImageSrc" :src="dexLevelImageSrc" class="icv-dex-level" :alt="'图鉴等级' + dexLevel + '级'" draggable="false">
+          <span class="icv icv-name" :title="authUser && authUser.username ? authUser.username : (authUsername || '游客')">{{ authUser && authUser.username ? authUser.username : (authUsername || '游客') }}</span>
+          <span class="icv icv-id" :title="authUser && authUser.id ? authUser.id : ''">{{ authUser && authUser.id ? authUser.id : '——' }}</span>
+          <span class="icv icv-age" :title="playerStarAge + ' 天'">{{ playerStarAge }} 天</span>
+          <span class="icv icv-title">{{ playerTitle }}</span>
+          <span class="icv icv-talent">{{ maxPetTalentGrade }}</span>
+          <span class="icv icv-level">{{ maxPetLevel }}</span>
+          <span class="icv icv-capture">——</span>
+          <span class="icv icv-count">{{ warehouseCount + (state && state.bagPetIds ? state.bagPetIds.filter(Boolean).length : 0) }}</span>
+          <button type="button" class="ic-chal-arrow ic-chal-prev" @click="infoCardChallengePage = Math.max(0, infoCardChallengePage - 1)" :disabled="infoCardChallengePage <= 0" aria-label="上一组"></button>
+          <button type="button" class="ic-chal-arrow ic-chal-next" @click="infoCardChallengePage = Math.min(infoCardChallengePageCount - 1, infoCardChallengePage + 1)" :disabled="infoCardChallengePage >= infoCardChallengePageCount - 1" aria-label="下一组"></button>
+          <div class="ic-chal-track">
+            <div v-for="(tier, idx) in infoCardChallengeVisible" :key="tier ? tier.key : 'empty' + idx" class="ic-chal-frame" :class="{ 'is-dim': tier && !tier.completed, 'is-empty': !tier }" :title="tier ? tier.title : ''">
+              <img v-if="tier && tier.cover" :src="tier.cover" :alt="tier.title" draggable="false" @error="(e) => { e.target.style.display = 'none'; }">
+            </div>
           </div>
-          <div class="info-card-badge-name" v-if="equippedBadge">{{ equippedBadge.name }}</div>
+          <div class="ic-stat ic-stat-1"><b>{{ activatedDexCount }}</b><span>图鉴激活</span></div>
+          <div class="ic-stat ic-stat-2"><b>{{ maxBagBattlePower }}</b><span>最大战斗力</span></div>
+          <div class="ic-stat ic-stat-3"><b>{{ pvpWinCount }}</b><span>PVP获胜次数</span></div>
+          <div class="ic-stat ic-stat-4"><b>{{ timeTunnelMaxClearedFloor }}</b><span>时空隧道层数</span></div>
+          <button type="button" @click="triggerLocalSaveImport" class="ic-save ic-save-import">
+            <img src="./resource-v11/信息卡/导入存档按钮.png" alt="导入存档">
+          </button>
+          <button type="button" @click="exportLocalSave" class="ic-save ic-save-export">
+            <img src="./resource-v11/信息卡/导出存档按钮.png" alt="导出存档">
+          </button>
+          <button type="button" @click="logoutCurrentAccount" class="ic-logout">
+            <img src="./resource-v11/信息卡/退出登录按钮.png" alt="退出登录">
+          </button>
         </div>
-        <div class="info-card-actions">
-          <button @click="triggerLocalSaveImport" class="info-card-action-btn info-card-import-btn">导入</button>
-          <button @click="exportLocalSave" class="info-card-action-btn info-card-export-btn">导出</button>
-          <button @click="authUser ? logoutUser() : logoutGuest()" class="info-card-action-btn info-card-logout-btn">退出</button>
+        <!-- 背包标签页 -->
+        <div v-show="infoCardTab === 'bag'" class="info-card-bag-stage">
+          <div class="info-card-bag-grid">
+            <div v-for="(slot, idx) in infoCardBagSlots" :key="idx" class="info-card-bag-slot">
+              <button v-if="slot" type="button" class="info-card-bag-slot-btn" :class="{ equipped: equippedOutfitItemIds.includes(slot.id) }" @click="toggleOutfitItem(slot.id)">
+                <img src="./resource-v11/信息卡/信息卡背包物品底图.png" class="info-card-bag-slot-bg" alt="">
+                <img v-if="slot.icon" :src="slot.icon" class="info-card-bag-slot-icon" :alt="slot.name">
+              </button>
+              <div v-else class="info-card-bag-slot-btn">
+                <img src="./resource-v11/信息卡/信息卡背包物品底图.png" class="info-card-bag-slot-bg" alt="">
+              </div>
+            </div>
+          </div>
+          <div v-if="infoCardBagPageCount > 1" class="info-card-bag-pager">
+            <button type="button" @click="infoCardBagPage = Math.max(0, infoCardBagPage - 1)" :disabled="infoCardBagPage <= 0">◀</button>
+            <span>{{ infoCardBagPage + 1 }} / {{ infoCardBagPageCount }}</span>
+            <button type="button" @click="infoCardBagPage = Math.min(infoCardBagPageCount - 1, infoCardBagPage + 1)" :disabled="infoCardBagPage >= infoCardBagPageCount - 1">▶</button>
+          </div>
         </div>
       </div>
     </div>
@@ -16430,6 +16684,6 @@
 </teleport>
 
 <script src="./aola-dex-1-100.js?v=20260617_fix_weekly_and_action_fx"></script>
-<script src="./aola-star-app.js?v=20260913_core_recursion_fix"></script>
+<script src="./aola-star-app.js?v=20260917_info_logout"></script>
 </body>
 </html>

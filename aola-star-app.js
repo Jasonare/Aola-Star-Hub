@@ -13700,8 +13700,10 @@ createApp({
         fateGate: { currentGate: "white", pendingRewards: [], purpleOpenCount: 0, purpleLingfengPityCount: 0 },
         qixingGacha: { pity: 0, pityByKey: { phase1_ice_princess: 0, phase2_qiankun_skin: 0, phase2_da_yaoshen_wuyue_skin: 0, phase2_dark_future_nian_skin: 0, phase2_donghuang_taiyi_egg: 0, phase2_donghuang_taichu: 0, energy_core_nian_beast: 0, energy_core_dragon_mage: 0 }, limitedEggs: {}, donghuangRewardStateVersion: QIXING_DONGHUANG_REWARD_STATE_VERSION },
         equippedBadgeId: "",
+        equippedOutfitItemIds: ["novice_top", "novice_pants", "novice_shoes", "novice_face", "novice_hair", "novice_headwear"],
         targetLevel: 10,
         timeTunnelMaxClearedFloor: 0,
+        pvpWinCount: 0,
         timeTunnelRewardClaimedFloors: [],
         battleLog: [],
         showDexPanel: false,
@@ -14325,12 +14327,14 @@ createApp({
           };
         })(),
         equippedBadgeId: normalize(loaded.equippedBadgeId),
+        equippedOutfitItemIds: Array.isArray(loaded.equippedOutfitItemIds) ? loaded.equippedOutfitItemIds.flatMap((id) => String(id) === "novice" ? ["novice_top", "novice_pants", "novice_shoes", "novice_face", "novice_hair", "novice_headwear"] : [String(id)]).filter(Boolean) : [],
         selectedDexId: dexEntries.some((d) => d.dexId === Number(loaded.selectedDexId)) ? Number(loaded.selectedDexId) : null,
         challengeFormIndex: clamp(Number(loaded.challengeFormIndex) || 0, 0, 2),
         selectedAttackerId,
         selectedPetId: activePets.some((p) => p.id === loaded.selectedPetId) ? loaded.selectedPetId : ((activePets[0] && activePets[0].id) || ""),
         targetLevel: clamp(Number(loaded.targetLevel) || 10, 1, 100),
         timeTunnelMaxClearedFloor: readSavedTimeTunnelMaxClearedFloor(loaded),
+        pvpWinCount: Math.max(0, Math.floor(Number(loaded.pvpWinCount) || 0)),
         timeTunnelRewardClaimedFloors,
         battleLog: sanitizeBattleLog(loaded.battleLog),
         showDexPanel: false,
@@ -15161,6 +15165,8 @@ createApp({
     const showBag2Panel = ref(false);
     const lockedDexEntry = ref(null);
     const showInfoCardPanel = ref(false);
+    const infoCardTab = ref("info");
+    const infoCardBagPage = ref(0);
     const showAbilityBreakthroughPanel = ref(false);
     const abilityBreakthroughSession = ref(null);
     const bag2Loading = ref(false);
@@ -16142,6 +16148,42 @@ createApp({
     const filteredTextBadges = computed(() => filteredBadges.value.filter((badge) => badge && !badge.imageSrc));
     const equippedBadge = computed(() => ownedBadges.value.find((b) => b.id === state.value.equippedBadgeId) || null);
     const homeDisplayBadge = computed(() => equippedBadge.value || imageBadges.value[0] || textBadges.value[0] || null);
+    const playerTitle = computed(() => (equippedBadge.value && equippedBadge.value.name) || "无称号");
+    const playerStarAge = computed(() => {
+      const createdAt = (authUser.value && authUser.value.createdAt) ? new Date(authUser.value.createdAt).getTime() : 0;
+      const firstPetTime = (state.value.activePets && state.value.activePets[0] && state.value.activePets[0].createdAt) ? Number(state.value.activePets[0].createdAt) : 0;
+      const base = createdAt || firstPetTime || Date.now();
+      const days = Math.max(0, Math.floor((Date.now() - base) / 86400000));
+      return days;
+    });
+    const maxPetLevel = computed(() => {
+      const pets = Array.isArray(state.value.activePets) ? state.value.activePets : [];
+      return pets.reduce((max, p) => Math.max(max, Math.floor(Number(p && p.level) || 0)), 0);
+    });
+    const maxPetTalentGrade = computed(() => {
+      const pets = Array.isArray(state.value.activePets) ? state.value.activePets : [];
+      let bestTotal = 0;
+      pets.forEach((p) => {
+        const t = talentTotal(p && p.talent);
+        if (t > bestTotal) bestTotal = t;
+      });
+      return talentGradeByTotal(bestTotal);
+    });
+    const pvpWinCount = computed(() => Math.max(0, Math.floor(Number(state.value.pvpWinCount) || 0)));
+    const infoCardChallengeTiers = computed(() => (challengeRoadTiers.value || []).map((tier) => ({
+      key: tier.key || `tier_${tier.tierIndex}`,
+      title: tier.title || "",
+      cover: tier.cover || "",
+      completed: Boolean(tier.completed)
+    })));
+    const infoCardChallengePage = ref(0);
+    const infoCardChallengePageCount = computed(() => Math.max(1, Math.ceil(infoCardChallengeTiers.value.length / 5)));
+    const infoCardChallengeVisible = computed(() => {
+      const page = clamp(infoCardChallengePage.value, 0, infoCardChallengePageCount.value - 1);
+      const rows = infoCardChallengeTiers.value.slice(page * 5, page * 5 + 5);
+      while (rows.length < 5) rows.push(null);
+      return rows;
+    });
     const recordGuardianBadgeWin = (guardianName) => {
       const name = resolveGuardianName(guardianName);
       if (!name) return;
@@ -18021,6 +18063,14 @@ createApp({
       showToast("已退出游客登录。");
       refreshSceneBgm();
     };
+    const logoutCurrentAccount = async () => {
+      if (authUser.value) {
+        await logoutUser();
+      } else {
+        logoutGuest();
+      }
+      closeInfoCardPanel();
+    };
     const saveToServer = async () => {
       if (!authUser.value) {
         showToast("请先登录后再存档。");
@@ -19492,6 +19542,14 @@ createApp({
     const selectedDexChallengeLocked = computed(() => !canStartChallengeByDex(selectedDexEntry.value));
     const activatedDexCount = computed(() => new Set(state.value.activatedDexIds).size);
     const dexTotal = computed(() => visibleDexEntries.length);
+    // 信息卡图鉴等级：按图鉴激活数量对应1-10级（20/60/120/200/320/480/700/980/1350/2000）
+    const DEX_LEVEL_THRESHOLDS = [2000, 1350, 980, 700, 480, 320, 200, 120, 60, 20];
+    const dexLevel = computed(() => {
+      const count = activatedDexCount.value;
+      const idx = DEX_LEVEL_THRESHOLDS.findIndex((threshold) => count >= threshold);
+      return idx < 0 ? 0 : 10 - idx;
+    });
+    const dexLevelImageSrc = computed(() => (dexLevel.value > 0 ? encodeAssetSrc(`./resource-v11/信息卡/等级${dexLevel.value}.png`) : ""));
 
     const resolvePetCurrentDexId = (pet) => {
       if (!pet || typeof pet !== "object") return 0;
@@ -23760,6 +23818,9 @@ const applyBossChainFinalBuff = (scene) => {
       const isRoomPvp = Boolean(scene.pvpMeta && scene.pvpMeta.roomId);
       scene.ended = true;
       scene.win = Boolean(localWin);
+      if (localWin) {
+        state.value.pvpWinCount = Math.max(0, Math.floor(Number(state.value.pvpWinCount) || 0)) + 1;
+      }
       scene.expGain = 0;
       scene.hCoinGain = 0;
       scene.unlockText = isRoomPvp ? (localWin ? "房间对战获胜，正在返回对战准备。" : "房间对战失利，正在返回对战准备。") : (localWin ? "精英大赛本场获胜，正在同步晋级结果。" : "精英大赛本场失利。");
@@ -26341,6 +26402,200 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const closeBagPanel = () => {
       showBag2Panel.value = false;
+    };
+    const OUTFIT_SLOT_DEFS = {
+      body: { label: "身体", z: 20, hasBase: true },
+      pants: { label: "裤子", z: 21, hasBase: false },
+      shoes: { label: "鞋子", z: 22, hasBase: false },
+      wings: { label: "翅膀", z: 9, hasBase: false },
+      head: { label: "头型", z: 40, hasBase: true },
+      face: { label: "表情", z: 41, hasBase: false },
+      hair: { label: "头发", z: 42, hasBase: false },
+      headwear: { label: "头饰", z: 43, hasBase: false },
+      weapon: { label: "武器", z: 25, hasBase: false },
+      rightArm: { label: "右臂", z: 30, hasBase: true, sleeveZ: 31 },
+      leftArm: { label: "左臂", z: 10, hasBase: true, sleeveZ: 11 },
+      top: { label: "上衣", z: 23, hasBase: false }
+    };
+    // 基础角色（v11 信息卡服装素材）：默认常驻显示，不会被替换；素材保持原始大小，位置按基础身体参考.png校准。
+    // v11 叠层顺序（z 从低到高）：基础左手10 < 新手左臂11 < 基础身体20 < 裤子21 < 鞋子22 < 上衣23 < 基础右手30 < 新手右臂31 < 基础头型40 < 表情41 < 头发42 < 耳饰43。
+    // 部件画布已按最终相对位置排版（新手套参考.png实测），直接按百分比摆放即可。
+    const BASE_OUTFIT_LAYERS = [
+      { slot: "leftArm", z: 10, l: 56.96, t: 32.88, w: 32.49, imageSrc: "./resource-v11/信息卡/服装/2上半身/6左臂/基础左手.png" },
+      { slot: "body", z: 20, l: 32.68, t: 26.57, w: 36.2, imageSrc: "./resource-v11/信息卡/服装/2上半身/4上衣/基础身体.png" },
+      { slot: "rightArm", z: 30, l: 28.5, t: 33.39, w: 17.95, imageSrc: "./resource-v11/信息卡/服装/2上半身/2右臂/基础右手.png" },
+      { slot: "head", z: 40, l: 37.53, t: 12.83, w: 27.71, imageSrc: "./resource-v11/信息卡/服装/1头部/4头型/基础头型.png" }
+    ];
+    const OUTFIT_ITEMS = {
+      novice_top: {
+        name: "新手上衣",
+        icon: "./resource-v11/信息卡/服装/2上半身/4上衣/新手上衣.png",
+        parts: [
+          { slot: "leftArm", imageSrc: "./resource-v11/信息卡/服装/2上半身/6左臂/新手左臂.png", l: 56.35, t: 34.4, w: 28.15 },
+          { slot: "top", imageSrc: "./resource-v11/信息卡/服装/2上半身/4上衣/新手上衣.png", l: 41.97, t: 28.11, w: 23.45 },
+          { slot: "rightArm", imageSrc: "./resource-v11/信息卡/服装/2上半身/2右臂/新手右臂.png", l: 27.22, t: 31.44, w: 24.44 }
+        ]
+      },
+      novice_pants: {
+        name: "新手裤子",
+        icon: "./resource-v11/信息卡/服装/3下半身/2裤子/新手裤子.png",
+        parts: [
+          { slot: "pants", imageSrc: "./resource-v11/信息卡/服装/3下半身/2裤子/新手裤子.png", l: 32.44, t: 49.23, w: 41.28 }
+        ]
+      },
+      novice_shoes: {
+        name: "新手鞋子",
+        icon: "./resource-v11/信息卡/服装/3下半身/1鞋子/新手鞋子.png",
+        parts: [
+          { slot: "shoes", imageSrc: "./resource-v11/信息卡/服装/3下半身/1鞋子/新手鞋子.png", l: 31.59, t: 78.47, w: 38.83 }
+        ]
+      },
+      novice_face: {
+        name: "新手表情",
+        icon: "./resource-v11/信息卡/服装/1头部/3表情/新手表情.png",
+        parts: [
+          { slot: "face", imageSrc: "./resource-v11/信息卡/服装/1头部/3表情/新手表情.png", l: 46.54, t: 21.6, w: 14.62 }
+        ]
+      },
+      novice_hair: {
+        name: "新手发型",
+        icon: "./resource-v11/信息卡/服装/1头部/2头发/新手头发.png",
+        parts: [
+          { slot: "hair", imageSrc: "./resource-v11/信息卡/服装/1头部/2头发/新手头发.png", l: 35.39, t: 4.21, w: 31.6 }
+        ]
+      },
+      novice_headwear: {
+        name: "新手耳饰",
+        icon: "./resource-v11/信息卡/服装/1头部/1头盔/新手耳饰.png",
+        parts: [
+          { slot: "headwear", imageSrc: "./resource-v11/信息卡/服装/1头部/1头盔/新手耳饰.png", l: 39.71, t: 19.11, w: 10.44 }
+        ]
+      },
+      // 天使莱特套：头盔/右臂按天使莱特套参考.png实测，其余部件按新手套位置类比初值（待人工微调）。
+      // 图层规则：服装文件夹数字越小图层越高；翅膀(7)位于背部最底层 z9，武器(3)位于右臂之下 z25。
+      angel_wings: {
+        name: "天使莱特翅膀",
+        icon: "./resource-v11/信息卡/服装/2上半身/7翅膀/天使莱特翅膀.png",
+        parts: [
+          { slot: "wings", imageSrc: "./resource-v11/信息卡/服装/2上半身/7翅膀/天使莱特翅膀.png", l: -7.5, t: -2.7, w: 104.11 }
+        ]
+      },
+      angel_top: {
+        name: "天使莱特上衣",
+        icon: "./resource-v11/信息卡/服装/2上半身/4上衣/天使莱特上衣.png",
+        parts: [
+          { slot: "leftArm", imageSrc: "./resource-v11/信息卡/服装/2上半身/6左臂/天使莱特左手.png", l: 56.0, t: 33.1, w: 33.26 },
+          { slot: "top", imageSrc: "./resource-v11/信息卡/服装/2上半身/4上衣/天使莱特上衣.png", l: 34.0, t: 28.6, w: 36.97 },
+          { slot: "rightArm", imageSrc: "./resource-v11/信息卡/服装/2上半身/2右臂/天使莱特右臂.png", l: 18.32, t: 25.94, w: 37.95 }
+        ]
+      },
+      angel_weapon: {
+        name: "天使莱特武器",
+        icon: "./resource-v11/信息卡/服装/2上半身/3右手武器/天使莱特武器.png",
+        parts: [
+          { slot: "weapon", imageSrc: "./resource-v11/信息卡/服装/2上半身/3右手武器/天使莱特武器.png", l: 12.9, t: 45.1, w: 80.29 }
+        ]
+      },
+      angel_helmet: {
+        name: "天使莱特头盔",
+        icon: "./resource-v11/信息卡/服装/1头部/1头盔/天使莱特头盔.png",
+        // 头盔覆盖整个头部：穿戴时自动脱下头发（2头发文件夹）；耳饰与头盔同属1头盔文件夹，按同分类互斥处理。
+        coverSlots: ["hair"],
+        parts: [
+          { slot: "headwear", imageSrc: "./resource-v11/信息卡/服装/1头部/1头盔/天使莱特头盔.png", l: 28.4, t: 6.49, w: 40.01 }
+        ]
+      },
+      angel_pants: {
+        name: "天使莱特裤子",
+        icon: "./resource-v11/信息卡/服装/3下半身/2裤子/天使莱特裤子.png",
+        parts: [
+          { slot: "pants", imageSrc: "./resource-v11/信息卡/服装/3下半身/2裤子/天使莱特裤子.png", l: 34.3, t: 47.2, w: 29.81 }
+        ]
+      },
+      angel_shoes: {
+        name: "天使莱特鞋子",
+        icon: "./resource-v11/信息卡/服装/3下半身/1鞋子/天使莱特鞋子.png",
+        parts: [
+          { slot: "shoes", imageSrc: "./resource-v11/信息卡/服装/3下半身/1鞋子/天使莱特鞋子.png", l: 32.3, t: 74, w: 39.64 }
+        ]
+      }
+    };
+    // 服饰冲突判定：部件槽位与素材文件夹一一对应（1头盔、2头发、3表情、2右臂、3右手武器、4上衣、6左臂、7翅膀、1鞋子、2裤子），
+    // 同一文件夹内的服饰互斥，同一时刻只会真正装备一件；coverSlots 声明跨文件夹覆盖（如天使莱特头盔覆盖头发），冲突双向生效。
+    const outfitItemsConflict = (a, b) => {
+      if (!a || !b) return false;
+      const aSlots = new Set((a.parts || []).map((p) => p.slot));
+      const bSlots = new Set((b.parts || []).map((p) => p.slot));
+      for (const slot of aSlots) {
+        if (bSlots.has(slot)) return true;
+      }
+      if ((a.coverSlots || []).some((slot) => bSlots.has(slot))) return true;
+      if ((b.coverSlots || []).some((slot) => aSlots.has(slot))) return true;
+      return false;
+    };
+    // 规范化已装备列表：同一分类只保留最后穿戴的一件，确保画面与背包高亮显示的是真正装备的服装（同时清理旧存档中的重复装备）。
+    const normalizeEquippedOutfitItemIds = (ids) => {
+      const kept = [];
+      (Array.isArray(ids) ? ids : []).forEach((id) => {
+        if (!OUTFIT_ITEMS[id]) return;
+        for (let i = kept.length - 1; i >= 0; i--) {
+          if (outfitItemsConflict(OUTFIT_ITEMS[id], OUTFIT_ITEMS[kept[i]])) kept.splice(i, 1);
+        }
+        kept.push(id);
+      });
+      return kept;
+    };
+    const equippedOutfitItemIds = computed(() => normalizeEquippedOutfitItemIds(state.value.equippedOutfitItemIds));
+    const outfitRenderLayers = computed(() => {
+      // 基础角色图层常驻，坐标与尺寸均为基础身体参考.png实测值；后续服装部件按 z 值穿插叠加。
+      const layers = BASE_OUTFIT_LAYERS.map((layer) => ({ ...layer, layer: "base" }));
+      equippedOutfitItemIds.value.forEach((itemId) => {
+        const item = OUTFIT_ITEMS[itemId];
+        if (!item || !Array.isArray(item.parts)) return;
+        item.parts.forEach((part) => {
+          const slot = part.slot;
+          const def = OUTFIT_SLOT_DEFS[slot];
+          if (!def) return;
+          const z = def.hasBase && def.sleeveZ ? def.sleeveZ : def.z;
+          layers.push({ slot, layer: "item", z, imageSrc: part.imageSrc || "", l: part.l, t: part.t, w: part.w, itemId });
+        });
+      });
+      return layers.sort((a, b) => a.z - b.z);
+    });
+    const outfitBagItems = computed(() => Object.keys(OUTFIT_ITEMS).map((id) => ({
+      id, name: OUTFIT_ITEMS[id].name || id, icon: OUTFIT_ITEMS[id].icon || ""
+    })));
+    const infoCardBagPageSize = 12;
+    const infoCardBagPageCount = computed(() => Math.max(1, Math.ceil(outfitBagItems.value.length / infoCardBagPageSize)));
+    const infoCardBagVisibleItems = computed(() => {
+      const page = clamp(infoCardBagPage.value, 0, infoCardBagPageCount.value - 1);
+      return outfitBagItems.value.slice(page * infoCardBagPageSize, page * infoCardBagPageSize + infoCardBagPageSize);
+    });
+    const infoCardBagSlots = computed(() => {
+      const items = infoCardBagVisibleItems.value;
+      const slots = [];
+      for (let i = 0; i < infoCardBagPageSize; i++) {
+        slots.push(items[i] || null);
+      }
+      return slots;
+    });
+    const toggleOutfitItem = (itemId) => {
+      if (!OUTFIT_ITEMS[itemId]) return;
+      // 基于规范化后的装备列表操作，保证同一文件夹只会真正装备一件。
+      const ids = equippedOutfitItemIds.value.slice();
+      const idx = ids.indexOf(itemId);
+      if (idx >= 0) {
+        ids.splice(idx, 1);
+      } else {
+        // 穿戴前脱下所有同分类（同文件夹/槽位）服饰及 coverSlots 覆盖的服饰（头盔→头发/耳饰）。
+        for (let i = ids.length - 1; i >= 0; i--) {
+          if (outfitItemsConflict(OUTFIT_ITEMS[itemId], OUTFIT_ITEMS[ids[i]])) ids.splice(i, 1);
+        }
+        ids.push(itemId);
+      }
+      state.value.equippedOutfitItemIds = ids;
+      saveState(state.value);
+      showToast(idx >= 0 ? `已脱下 ${OUTFIT_ITEMS[itemId].name}` : `已穿戴 ${OUTFIT_ITEMS[itemId].name}`);
     };
     const openInfoCardPanel = () => {
       renameUsernameInput.value = authUser.value ? normalize(authUser.value.username || authUsername.value) : "";
@@ -30233,6 +30488,26 @@ const applyBossChainFinalBuff = (scene) => {
       openInfoCardPanel,
       closeInfoCardPanel,
       submitRenameUsername,
+      infoCardTab,
+      infoCardBagPage,
+      playerTitle,
+      playerStarAge,
+      maxPetLevel,
+      maxPetTalentGrade,
+      infoCardChallengeTiers,
+      infoCardChallengePage,
+      infoCardChallengePageCount,
+      infoCardChallengeVisible,
+      pvpWinCount,
+      outfitRenderLayers,
+      outfitBagItems,
+      infoCardBagPageCount,
+      infoCardBagVisibleItems,
+      infoCardBagSlots,
+      equippedOutfitItemIds,
+      toggleOutfitItem,
+      OUTFIT_SLOT_DEFS,
+      OUTFIT_ITEMS,
       showAbilityBreakthroughPanel,
       abilityBreakthroughRows,
       abilityBreakthroughEntryRows,
@@ -30423,6 +30698,8 @@ const applyBossChainFinalBuff = (scene) => {
       dexElementOptions,
       activatedDexCount,
       dexTotal,
+      dexLevel,
+      dexLevelImageSrc,
       bagSlots,
       selectedBagSlotIndex,
       firstPet,
@@ -30930,6 +31207,7 @@ const applyBossChainFinalBuff = (scene) => {
       userImportInput,
       logoutUser,
       logoutGuest,
+      logoutCurrentAccount,
       saveToServer,
       loadServerSave,
       withFallback
