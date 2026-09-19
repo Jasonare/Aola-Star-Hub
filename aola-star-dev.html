@@ -573,6 +573,7 @@
       --w: 10%;
     }
     .home-action-gift { --x: 1.2%; --y: 83.4%; --w: 7.1%; }
+    .home-action-mid-autumn { --x: 10%; --y: 87.6%; --w: 5.6%; }
     .home-action-mail { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
     .home-action-dragonboat { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
     .home-action-rank { --x: 22%; --y: 86.2%; --w: 7.8%; }
@@ -1123,6 +1124,7 @@
       }
       .home-action-gift { --x: 2%; --y: 76%; --w: 18%; }
       .home-action-mail { --x: 21%; --y: 76%; --w: 18%; }
+      .home-action-mid-autumn { --x: 40%; --y: 76%; --w: 18%; }
       .home-action-monthly { --x: 2%; --y: 58.5%; --w: 24.3%; }
       .home-action-dragonboat { --x: 2%; --y: 60%; --w: 18%; }
       .home-action-rank { --x: 18%; --y: 82%; --w: 18%; }
@@ -4448,8 +4450,95 @@
       display: flex;
       flex-direction: column;
     }
+    /* 背包左上角筛选胶囊 */
+    .info-card-bag-toolbar {
+      flex-shrink: 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 6.2%;
+      min-height: 20px;
+      margin-bottom: 1%;
+      z-index: 25;
+    }
+    .info-card-filter {
+      position: relative;
+    }
+    .info-card-filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: clamp(20px, 3.4cqh, 30px);
+      padding: 0 14px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(208,236,255,0.92));
+      box-shadow: 0 2px 6px rgba(0,60,120,0.35), inset 0 0 0 1px rgba(255,255,255,0.85);
+      color: #0b5cad;
+      font-size: clamp(11px, 1.55cqh, 14px);
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
+      transition: transform 0.12s, filter 0.12s;
+    }
+    .info-card-filter-btn:hover {
+      filter: brightness(1.05);
+    }
+    .info-card-filter-btn:active {
+      transform: scale(0.95);
+    }
+    .info-card-filter-caret {
+      font-size: 0.82em;
+      line-height: 1;
+    }
+    .info-card-filter-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 24;
+      border: none;
+      background: transparent;
+      cursor: default;
+      padding: 0;
+    }
+    .info-card-filter-menu {
+      position: absolute;
+      left: 0;
+      top: calc(100% + 5px);
+      z-index: 26;
+      min-width: clamp(96px, 13cqh, 150px);
+      padding: 4px;
+      border-radius: 12px;
+      background: rgba(239,248,255,0.98);
+      box-shadow: 0 8px 20px rgba(0,40,90,0.38), inset 0 0 0 1px rgba(255,255,255,0.9);
+      overflow: hidden;
+    }
+    .info-card-filter-option {
+      display: block;
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 7px 14px;
+      border-radius: 8px;
+      color: #16456f;
+      font-size: clamp(11px, 1.55cqh, 14px);
+      font-weight: 800;
+      line-height: 1.2;
+      text-align: left;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+    .info-card-filter-option:hover {
+      background: rgba(60,160,230,0.16);
+    }
+    .info-card-filter-option.active {
+      background: linear-gradient(180deg, #38bdf8, #0284c7);
+      color: #fff;
+      font-weight: 900;
+    }
     .info-card-bag-grid {
       flex: 1;
+      position: relative;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(4, 1fr);
@@ -4489,6 +4578,38 @@
       width: 84%;
       height: 84%;
       object-fit: contain;
+    }
+    /* 已装备角标：左上角深绿缎带 */
+    .info-card-bag-equipped-tag {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 5;
+      padding: 3px 7px 4px;
+      border-radius: 0 0 9px 0;
+      background: linear-gradient(180deg, #10b981, #047857);
+      box-shadow: 0 1px 3px rgba(0,60,40,0.45), inset 0 0 0 1px rgba(255,255,255,0.35);
+      color: #fff;
+      font-size: clamp(8px, 1.2cqh, 11px);
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+    }
+    /* 筛选无结果空态 */
+    .info-card-bag-empty {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      color: rgba(255,255,255,0.9);
+      font-size: clamp(12px, 1.9cqh, 17px);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-shadow: 0 1px 4px rgba(0,40,90,0.6);
     }
     .info-card-bag-pager {
       flex-shrink: 0;
@@ -4863,6 +4984,141 @@
     .fate-gate-action-btn:active {
       transform: scale(0.96);
       filter: brightness(1.18);
+    }
+    /* ===== 中秋活动 ===== */
+    .mid-autumn-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 140;
+      background: rgba(2, 6, 23, 0.78);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .mid-autumn-overlay.is-sub { z-index: 141; }
+    .mid-autumn-panel {
+      position: relative;
+      width: min(96vw, calc((100vh - 32px) * 1667 / 968));
+      aspect-ratio: 1667 / 968;
+    }
+    .mid-autumn-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      max-width: none;
+    }
+    .mid-autumn-close-btn {
+      position: absolute;
+      top: 3.6%;
+      right: 3.6%;
+      width: 4.6%;
+      aspect-ratio: 96 / 77;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      z-index: 10;
+      transition: transform 0.14s ease, filter 0.14s ease;
+    }
+    .mid-autumn-close-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .mid-autumn-close-btn:hover {
+      transform: scale(1.06);
+      filter: brightness(1.12) drop-shadow(0 0 6px rgba(255, 255, 255, 0.65));
+    }
+    .mid-autumn-close-btn:active {
+      transform: scale(0.96);
+      filter: brightness(1.18);
+    }
+    .mid-autumn-task-btn {
+      position: absolute;
+      left: 5.5%;
+      top: 75%;
+      width: 12.8%;
+      height: 23.5%;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      z-index: 8;
+    }
+    .mid-autumn-boss-btn {
+      position: absolute;
+      left: 70.5%;
+      top: 35%;
+      width: 25.5%;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      z-index: 8;
+      transition: transform 0.14s ease, filter 0.14s ease;
+    }
+    .mid-autumn-boss-btn img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+      max-width: none;
+    }
+    .mid-autumn-boss-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1) drop-shadow(0 0 10px rgba(150, 255, 240, 0.75));
+    }
+    .mid-autumn-boss-btn:active {
+      transform: scale(0.96);
+      filter: brightness(1.18);
+    }
+    .mid-autumn-task-panel {
+      position: relative;
+      width: min(72vw, calc((100vh - 32px) * 731 / 511));
+      aspect-ratio: 731 / 511;
+    }
+    .mid-autumn-task-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      max-width: none;
+    }
+    .mid-autumn-task-close {
+      top: 9%;
+      right: 1%;
+      width: 10%;
+    }
+    .mid-autumn-boss-panel {
+      position: relative;
+      width: min(88vw, calc((100vh - 32px) * 1574 / 1181));
+      aspect-ratio: 1574 / 1181;
+    }
+    .mid-autumn-boss-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      max-width: none;
+    }
+    .mid-autumn-boss-back {
+      position: absolute;
+      left: 78.5%;
+      top: 8%;
+      width: 14%;
+      height: 10%;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      z-index: 10;
     }
     .bag2-top-tabs {
       position: absolute;
@@ -8944,6 +9200,7 @@
       background-repeat: no-repeat !important;
     }
     html.android-webview.android-landscape header.home-hub-scene .home-action-gift { --x: 1.2%; --y: 68.8%; --w: 6.5%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-mid-autumn { --x: 17%; --y: 84.6%; --w: 5.6%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-mail { --x: 8.5%; --y: 67.6%; --w: 7.3%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-monthly { --x: 1.2%; --y: 55.8%; --w: 9.2%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-dragonboat { --x: 8.5%; --y: 67.6%; --w: 7.3%; }
@@ -12389,6 +12646,7 @@
     </div>
     <div class="home-action-grid">
       <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./resource/ui/背景/赠礼.png" alt=""></button>
+      <button @click="openMidAutumnPanel" class="home-action-btn home-action-mid-autumn" title="中秋活动" aria-label="中秋活动"><img src="./resource-v11/中秋节活动/中秋活动ui.png" alt=""></button>
       <button @click="openMailPanel" class="home-action-btn home-action-mail" title="邮件" aria-label="邮件"><img src="./resource/邮件.png" alt=""></button>
       <button @click="openMonthlySignPanel" class="home-action-btn home-action-monthly" title="月签到" aria-label="月签到"><img src="./resource/button/签到.png" alt=""></button>
       <button @click.stop.prevent="openLeaderboardPanel" class="home-action-btn home-action-rank" title="排行榜" aria-label="排行榜"><img src="./resource/ui/背景/排行榜.png" alt=""></button>
@@ -13845,16 +14103,29 @@
         </div>
         <!-- 背包标签页 -->
         <div v-show="infoCardTab === 'bag'" class="info-card-bag-stage">
+          <div class="info-card-bag-toolbar">
+            <div class="info-card-filter">
+              <button type="button" class="info-card-filter-btn" @click.stop="infoCardBagFilterOpen = !infoCardBagFilterOpen">
+                <span>{{ infoCardBagFilterLabel }}</span><span class="info-card-filter-caret">▾</span>
+              </button>
+              <button v-if="infoCardBagFilterOpen" type="button" class="info-card-filter-backdrop" @click="infoCardBagFilterOpen = false" aria-label="关闭筛选"></button>
+              <div v-if="infoCardBagFilterOpen" class="info-card-filter-menu">
+                <button v-for="opt in infoCardBagFilterOptions" :key="opt.key" type="button" class="info-card-filter-option" :class="{ active: infoCardBagFilter === opt.key }" @click.stop="setInfoCardBagFilter(opt.key)">{{ opt.name }}</button>
+              </div>
+            </div>
+          </div>
           <div class="info-card-bag-grid">
             <div v-for="(slot, idx) in infoCardBagSlots" :key="idx" class="info-card-bag-slot">
               <button v-if="slot" type="button" class="info-card-bag-slot-btn" :class="{ equipped: equippedOutfitItemIds.includes(slot.id) }" @click="toggleOutfitItem(slot.id)">
                 <img src="./resource-v11/信息卡/信息卡背包物品底图.png" class="info-card-bag-slot-bg" alt="">
                 <img v-if="slot.icon" :src="slot.icon" class="info-card-bag-slot-icon" :alt="slot.name">
+                <span v-if="equippedOutfitItemIds.includes(slot.id)" class="info-card-bag-equipped-tag">已装备</span>
               </button>
               <div v-else class="info-card-bag-slot-btn">
                 <img src="./resource-v11/信息卡/信息卡背包物品底图.png" class="info-card-bag-slot-bg" alt="">
               </div>
             </div>
+            <div v-if="infoCardBagVisibleItems.length === 0" class="info-card-bag-empty">暂无服装</div>
           </div>
           <div v-if="infoCardBagPageCount > 1" class="info-card-bag-pager">
             <button type="button" @click="infoCardBagPage = Math.max(0, infoCardBagPage - 1)" :disabled="infoCardBagPage <= 0">◀</button>
@@ -13926,6 +14197,35 @@
       <button @click="closeFateGatePanel" class="fate-gate-close-btn" title="关闭">
         <img src="./resource/命运之门/关闭按钮.png" alt="关闭">
       </button>
+    </div>
+  </div>
+
+  <div v-if="showMidAutumnPanel" class="mid-autumn-overlay" @click="closeMidAutumnPanel">
+    <div class="mid-autumn-panel" @click.stop>
+      <img src="./resource-v11/中秋节活动/中秋活动底图.png" alt="中秋活动" class="mid-autumn-bg">
+      <button @click="closeMidAutumnPanel" class="mid-autumn-close-btn" title="关闭">
+        <img src="./resource-v11/中秋节活动/中秋活动关闭按钮.png" alt="关闭">
+      </button>
+      <button @click="openMidAutumnTaskPanel" class="mid-autumn-task-btn" title="月饼任务" aria-label="月饼任务"></button>
+      <button @click="openMidAutumnBossCard" class="mid-autumn-boss-btn" title="满月巨灵">
+        <img src="./resource-v11/中秋节活动/满月巨灵.png" alt="满月巨灵">
+      </button>
+    </div>
+  </div>
+
+  <div v-if="showMidAutumnTaskPanel" class="mid-autumn-overlay is-sub" @click="closeMidAutumnTaskPanel">
+    <div class="mid-autumn-task-panel" @click.stop>
+      <img src="./resource-v11/中秋节活动/任务框.png" alt="月饼任务" class="mid-autumn-task-bg">
+      <button @click="closeMidAutumnTaskPanel" class="mid-autumn-close-btn mid-autumn-task-close" title="关闭">
+        <img src="./resource-v11/中秋节活动/中秋活动关闭按钮.png" alt="关闭">
+      </button>
+    </div>
+  </div>
+
+  <div v-if="showMidAutumnBossCard" class="mid-autumn-overlay is-sub" @click="closeMidAutumnBossCard">
+    <div class="mid-autumn-boss-panel" @click.stop>
+      <img src="./resource-v11/中秋节活动/挑战信息卡.png" alt="满月巨灵挑战信息" class="mid-autumn-boss-bg">
+      <button @click="closeMidAutumnBossCard" class="mid-autumn-boss-back" title="返回" aria-label="返回"></button>
     </div>
   </div>
 

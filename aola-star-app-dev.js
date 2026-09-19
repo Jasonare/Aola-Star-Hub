@@ -26509,6 +26509,11 @@ const applyBossChainFinalBuff = (scene) => {
         ]
       }
     };
+    // 套装注册表：背包筛选按 item id 前缀归类整套（新增套装只需在此追加一行）。
+    const OUTFIT_SUITS = [
+      { key: "novice", name: "新手套装", prefix: "novice_" },
+      { key: "angel", name: "天使莱特套装", prefix: "angel_" }
+    ];
     // 服饰冲突判定：部件槽位与素材文件夹一一对应（1头盔、2头发、3表情、2右臂、3右手武器、4上衣、6左臂、7翅膀、1鞋子、2裤子），
     // 同一文件夹内的服饰互斥，同一时刻只会真正装备一件；coverSlots 声明跨文件夹覆盖（如天使莱特头盔覆盖头发），冲突双向生效。
     const outfitItemsConflict = (a, b) => {
@@ -26554,11 +26559,36 @@ const applyBossChainFinalBuff = (scene) => {
     const outfitBagItems = computed(() => Object.keys(OUTFIT_ITEMS).map((id) => ({
       id, name: OUTFIT_ITEMS[id].name || id, icon: OUTFIT_ITEMS[id].icon || ""
     })));
+    // 背包筛选：all=全部 / equipped=已装备 / 套装key=整套；纯视图状态，不改原始物品数据。
+    const infoCardBagFilter = ref("all");
+    const infoCardBagFilterOpen = ref(false);
+    const infoCardBagFilterOptions = computed(() => [
+      { key: "all", name: "全部服装" },
+      { key: "equipped", name: "已装备" },
+      ...OUTFIT_SUITS.map((suit) => ({ key: suit.key, name: suit.name }))
+    ]);
+    const infoCardBagFilterLabel = computed(() => {
+      const hit = infoCardBagFilterOptions.value.find((opt) => opt.key === infoCardBagFilter.value);
+      return hit ? hit.name : "全部服装";
+    });
+    const setInfoCardBagFilter = (key) => {
+      infoCardBagFilter.value = key;
+      infoCardBagPage.value = 0;
+      infoCardBagFilterOpen.value = false;
+    };
+    const filteredOutfitBagItems = computed(() => {
+      const all = outfitBagItems.value;
+      const filter = infoCardBagFilter.value;
+      if (filter === "equipped") return all.filter((item) => equippedOutfitItemIds.value.includes(item.id));
+      const suit = OUTFIT_SUITS.find((entry) => entry.key === filter);
+      if (suit) return all.filter((item) => item.id.indexOf(suit.prefix) === 0);
+      return all;
+    });
     const infoCardBagPageSize = 12;
-    const infoCardBagPageCount = computed(() => Math.max(1, Math.ceil(outfitBagItems.value.length / infoCardBagPageSize)));
+    const infoCardBagPageCount = computed(() => Math.max(1, Math.ceil(filteredOutfitBagItems.value.length / infoCardBagPageSize)));
     const infoCardBagVisibleItems = computed(() => {
       const page = clamp(infoCardBagPage.value, 0, infoCardBagPageCount.value - 1);
-      return outfitBagItems.value.slice(page * infoCardBagPageSize, page * infoCardBagPageSize + infoCardBagPageSize);
+      return filteredOutfitBagItems.value.slice(page * infoCardBagPageSize, page * infoCardBagPageSize + infoCardBagPageSize);
     });
     const infoCardBagSlots = computed(() => {
       const items = infoCardBagVisibleItems.value;
@@ -26646,6 +26676,31 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const closeFateGatePanel = () => {
       showFateGatePanel.value = false;
+    };
+    const showMidAutumnPanel = ref(false);
+    const showMidAutumnTaskPanel = ref(false);
+    const showMidAutumnBossCard = ref(false);
+    const openMidAutumnPanel = () => {
+      showMidAutumnTaskPanel.value = false;
+      showMidAutumnBossCard.value = false;
+      showMidAutumnPanel.value = true;
+    };
+    const closeMidAutumnPanel = () => {
+      showMidAutumnPanel.value = false;
+      showMidAutumnTaskPanel.value = false;
+      showMidAutumnBossCard.value = false;
+    };
+    const openMidAutumnTaskPanel = () => {
+      showMidAutumnTaskPanel.value = true;
+    };
+    const closeMidAutumnTaskPanel = () => {
+      showMidAutumnTaskPanel.value = false;
+    };
+    const openMidAutumnBossCard = () => {
+      showMidAutumnBossCard.value = true;
+    };
+    const closeMidAutumnBossCard = () => {
+      showMidAutumnBossCard.value = false;
     };
     const openBag2Panel = () => {
       if (!bagPets.value.some((pet) => pet && petId(pet) === petId(selectedPet.value))) {
@@ -30437,6 +30492,11 @@ const applyBossChainFinalBuff = (scene) => {
       submitRenameUsername,
       infoCardTab,
       infoCardBagPage,
+      infoCardBagFilter,
+      infoCardBagFilterOpen,
+      infoCardBagFilterOptions,
+      infoCardBagFilterLabel,
+      setInfoCardBagFilter,
       playerTitle,
       playerStarAge,
       maxPetLevel,
@@ -30484,6 +30544,15 @@ const applyBossChainFinalBuff = (scene) => {
       fateGateRewardLabel,
       openFateGatePanel,
       closeFateGatePanel,
+      showMidAutumnPanel,
+      showMidAutumnTaskPanel,
+      showMidAutumnBossCard,
+      openMidAutumnPanel,
+      closeMidAutumnPanel,
+      openMidAutumnTaskPanel,
+      closeMidAutumnTaskPanel,
+      openMidAutumnBossCard,
+      closeMidAutumnBossCard,
       openFateGate,
       openFateGateToPurple,
       claimFateGateRewards,
