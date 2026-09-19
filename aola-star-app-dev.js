@@ -19831,6 +19831,18 @@ createApp({
       Math.floor(Number(state.value.maxBagBattlePower) || 0),
       Math.floor(Number(currentMaxBagBattlePower.value) || 0)
     ));
+    // 信息卡统计只读取当前状态，不改变既有存档结构。
+    const infoCardStarAge = computed(() => {
+      const ts = new Date(authUser.value && authUser.value.createdAt).getTime();
+      return Number.isFinite(ts) ? Math.max(0, Math.floor((Date.now() - ts) / 86400000)) : 0;
+    });
+    const infoCardPetCount = computed(() => safeActivePets.value.length);
+    const infoCardHighestLevel = computed(() => safeActivePets.value.reduce((max, pet) => Math.max(max, Math.floor(Number(pet.level) || 0)), 0));
+    const infoCardHighestTalentGrade = computed(() => {
+      const best = safeActivePets.value.reduce((max, pet) => Math.max(max, talentTotal(pet.talent)), 0);
+      return best > 0 ? talentGradeByTotal(best) : "—";
+    });
+    const infoCardPvpWins = computed(() => Math.max(0, Math.floor(Number(state.value.pvpWins) || 0)));
     const calcPetAbilityByRace = (raceStats, level, talentRaw, studyRaw) => {
       const race = raceStats && typeof raceStats === "object" ? raceStats : createZeroStats();
       const talent = normalizeTalent(talentRaw);
@@ -30415,6 +30427,11 @@ const applyBossChainFinalBuff = (scene) => {
       showBag2Panel,
       bag2Loading,
       showInfoCardPanel,
+      infoCardStarAge,
+      infoCardPetCount,
+      infoCardHighestLevel,
+      infoCardHighestTalentGrade,
+      infoCardPvpWins,
       openInfoCardPanel,
       closeInfoCardPanel,
       submitRenameUsername,
