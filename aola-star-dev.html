@@ -8125,6 +8125,52 @@
       clip-path: inset(0 calc(100% - var(--login-loading-progress, 0%)) 0 0);
       filter: drop-shadow(0 4px 8px rgba(0,0,0,.28));
     }
+    .dark-guardian-skill-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+    }
+    .dark-guardian-skill-card,
+    .dark-guardian-awaken-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid rgba(196,181,253,.34);
+      background: linear-gradient(150deg, rgba(30,27,75,.98), rgba(15,23,42,.98));
+      padding: 15px;
+    }
+    .dark-guardian-skill-card > *,
+    .dark-guardian-awaken-card > * {
+      position: relative;
+      z-index: 1;
+    }
+    .dark-guardian-awaken-card {
+      border: 2px solid rgba(216,180,254,.78);
+      box-shadow: 0 0 28px rgba(147,51,234,.48), inset 0 0 20px rgba(88,28,135,.55);
+    }
+    .dark-guardian-awaken-card::before,
+    .dark-guardian-awaken-card::after {
+      content: "";
+      position: absolute;
+      inset: -38%;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 22% 28%, rgba(192,132,252,.42), transparent 26%),
+        radial-gradient(circle at 78% 68%, rgba(124,58,237,.48), transparent 30%),
+        radial-gradient(circle at 52% 88%, rgba(72,28,100,.62), transparent 34%);
+      filter: blur(12px);
+      animation: darkGuardianFlame 3.2s ease-in-out infinite alternate;
+    }
+    .dark-guardian-awaken-card::after {
+      inset: -28%;
+      animation-duration: 2.3s;
+      animation-direction: alternate-reverse;
+      opacity: .78;
+    }
+    @keyframes darkGuardianFlame {
+      from { transform: rotate(-4deg) scale(1); opacity: .78; }
+      to { transform: rotate(5deg) scale(1.08); opacity: 1; }
+    }
     .double-reward-marquee {
       position: relative;
       overflow: hidden;
@@ -14900,7 +14946,6 @@
       </div>
     </div>
   </div>
-  </div>
 
   <teleport to="body">
   <div v-show="showSkinPreview" class="skin-preview-overlay app-top-dialog-overlay fixed inset-0 z-[2147483646] bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4" style="display:none; z-index:2147483646 !important;" @click="closeSkinPreview">
@@ -14916,6 +14961,57 @@
       <div class="relative z-10 flex h-[calc(100%-76px)] items-center justify-center p-5">
         <img :src="selectedSkinPreview.animationSrc" :alt="selectedSkinPreview.name" class="skin-preview-animation" @error="withFallback">
       </div>
+    </div>
+  </div>
+  </teleport>
+
+  <teleport to="body">
+  <div v-if="darkGuardianAwakeningDialog" class="app-top-dialog-overlay fixed inset-0 z-[2147483646] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4" style="z-index:2147483646 !important;">
+    <div class="w-full max-w-3xl overflow-hidden rounded-3xl border border-violet-300/70 bg-slate-950 shadow-2xl">
+      <template v-if="darkGuardianAwakeningDialog.stage === 'video'">
+        <div class="border-b border-violet-300/30 px-5 py-4 text-center">
+          <div class="text-xs font-black tracking-[0.3em] text-violet-200">黑暗守卫觉醒</div>
+          <h3 class="mt-1 text-2xl font-black text-white">觉醒仪式进行中</h3>
+        </div>
+        <video :src="darkGuardianAwakeningDialog.videoSrc" class="block w-full max-h-[72vh] bg-black" autoplay controls playsinline @ended="finishDarkGuardianAwakeningVideo" @error="finishDarkGuardianAwakeningVideo"></video>
+      </template>
+      <template v-else-if="darkGuardianAwakeningDialog.stage === 'stats'">
+        <div class="bg-gradient-to-r from-violet-950 via-slate-900 to-cyan-950 px-6 py-6 text-center">
+          <div class="text-xs font-black tracking-[0.3em] text-violet-200">觉醒完成</div>
+          <h3 class="mt-2 text-3xl font-black text-white">混沌终焉-闇</h3>
+          <p class="mt-2 text-sm font-bold text-violet-100">黑暗守卫的种族值得到提升</p>
+        </div>
+        <div class="grid grid-cols-2 gap-3 p-5 sm:grid-cols-3">
+          <div v-for="stat in darkGuardianAwakeningStatRows" :key="stat.label" class="rounded-2xl border border-violet-200/20 bg-slate-900 px-4 py-3 text-center">
+            <div class="text-xs font-black text-slate-300">{{ stat.label }}</div>
+            <div class="mt-1 text-lg font-black text-white"><span class="text-slate-400">{{ stat.before }}</span><span class="mx-2 text-violet-300">→</span><span class="text-cyan-300">{{ stat.after }}</span></div>
+          </div>
+        </div>
+        <div class="px-5 pb-5">
+          <button @click="closeDarkGuardianAwakeningDialog" class="h-11 w-full rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-base font-black text-white shadow-lg">查看新增技能</button>
+        </div>
+      </template>
+      <template v-else>
+        <div class="bg-gradient-to-r from-violet-950 via-slate-900 to-fuchsia-950 px-6 py-6 text-center">
+          <div class="text-xs font-black tracking-[0.3em] text-violet-200">新增技能</div>
+          <h3 class="mt-2 text-3xl font-black text-white">黑暗守卫掌握新力量</h3>
+        </div>
+        <div class="dark-guardian-skill-grid p-5">
+          <article v-for="skill in darkGuardianAwakeningSkills" :key="skill.skillId" class="dark-guardian-skill-card">
+            <div class="text-lg font-black text-white">{{ skill.name }}</div>
+            <div class="mt-2 text-[11px] font-black text-violet-200">{{ skill.element }} · {{ skill.attackType }} · 威力{{ skill.power }} · 命中{{ skill.accuracy }} · PP{{ skill.pp }}</div>
+            <p class="mt-3 text-xs font-bold leading-5 text-violet-100">{{ skill.desc }}</p>
+          </article>
+          <article class="dark-guardian-awaken-card">
+            <div class="text-lg font-black text-fuchsia-100">觉醒技：{{ darkGuardianAwakenSkill.name }}</div>
+            <div class="mt-2 text-[11px] font-black text-fuchsia-200">{{ darkGuardianAwakenSkill.element }} · {{ darkGuardianAwakenSkill.attackType }} · 威力{{ darkGuardianAwakenSkill.power }} · 命中{{ darkGuardianAwakenSkill.accuracy }} · PP{{ darkGuardianAwakenSkill.pp }}</div>
+            <p class="mt-3 text-xs font-bold leading-5 text-fuchsia-100">{{ darkGuardianAwakenSkill.desc }}</p>
+          </article>
+        </div>
+        <div class="px-5 pb-5">
+          <button @click="closeDarkGuardianAwakeningDialog" class="h-11 w-full rounded-xl bg-gradient-to-r from-fuchsia-600 to-violet-600 text-base font-black text-white shadow-lg">确认觉醒</button>
+        </div>
+      </template>
     </div>
   </div>
   </teleport>
@@ -15085,6 +15181,17 @@
               <div class="text-sm font-black text-center truncate">重铸荣光</div>
             </div>
           </button>
+          <button
+            @click="openReincarnationDreamChallenge"
+            class="challenge-road-tier-card relative overflow-hidden rounded-2xl border text-left transition bg-slate-900 hover:border-violet-300"
+          >
+            <img :src="reincarnationDreamCoverSrc" @error="withFallback" class="challenge-road-tier-cover absolute inset-0 w-full h-full opacity-95">
+            <div class="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-white/72 via-white/30 to-transparent"></div>
+            <span class="challenge-road-tier-status rounded-full px-2.5 py-1 text-[11px] font-black bg-violet-100 text-violet-900">挑战</span>
+            <div class="challenge-road-tier-progress">
+              <div class="text-sm font-black text-center truncate">轮回溯梦</div>
+            </div>
+          </button>
         </div>
       </div>
     </div>
@@ -15248,7 +15355,7 @@
             <button @click="openSelectedBossDetail" class="mt-2 h-8 px-3 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-black">查看详情</button>
           </div>
           <div class="space-y-3 challenge-detail-right">
-            <div class="grid grid-cols-3 gap-2">
+            <div v-if="selectedBossEntry.dexId !== 2387" class="grid grid-cols-3 gap-2">
               <button
                 v-for="option in bossDifficultyOptions"
                 :key="'boss_difficulty_' + option.key"
@@ -16662,6 +16769,14 @@
               class="battle-skin-transform-btn"
             ><img src="./resource/ui/灵皮启耀.png" alt="灵皮启耀"></button>
           </div>
+          <div v-else-if="canShowDarkGuardianAwakenSkill()" class="battle-skin-transform-slot">
+            <button
+              type="button"
+              @click.stop="castDarkGuardianAwakenSkill"
+              :disabled="!canCastDarkGuardianAwakenSkill()"
+              class="battle-skin-transform-btn"
+            ><img src="./resource/觉醒技按钮.jpg" alt="觉醒技"></button>
+          </div>
         </div>
       </div>
       <div class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3 battle-mobile-attacker-card battle-mobile-hpbox">
@@ -16951,11 +17066,12 @@
     <div class="rounded-xl bg-slate-900 text-white text-sm font-bold px-4 py-2 shadow-xl">{{ toast.message }}</div>
   </div>
 </teleport>
+</div>
 
 <script src="./aola-dex-1-100.js?v=20260617_fix_weekly_and_action_fx"></script>
 <script src="./aola-species-data.js?v=20260702_data_split"></script>
 <script src="./aola-skill-data.js?v=20260702_data_split"></script>
 <script src="./aola-evolution-chains.js?v=20260702_data_split"></script>
-<script src="./aola-star-app-dev.js?v=20260917_info_logout"></script>
+  <script src="./aola-star-app-dev.js?v=20260921_dark_guardian_awakening_v1"></script>
 </body>
 </html>
