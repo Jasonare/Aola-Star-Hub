@@ -13,5 +13,11 @@ contextBridge.exposeInMainWorld("aolaDesktop", {
   },
   closeWindow() {
     ipcRenderer.send("aola:force-close-window");
+  },
+  getLoginCaptchaVerified() {
+    return ipcRenderer.sendSync("aola:get-login-captcha-verified") === true;
+  },
+  setLoginCaptchaVerified() {
+    return ipcRenderer.sendSync("aola:set-login-captcha-verified") === true;
   }
 });

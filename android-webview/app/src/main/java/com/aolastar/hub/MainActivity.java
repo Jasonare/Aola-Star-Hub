@@ -37,7 +37,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends AppCompatActivity {
-
     private WebView webView;
     private ValueCallback<Uri[]> filePathCallback;
     private ActivityResultLauncher<Intent> fileChooserLauncher;
@@ -122,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        webView.loadUrl("file:///android_asset/www/aola-star.html");
+        webView.loadUrl("file:///android_asset/www/aola-star-dev.html");
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override

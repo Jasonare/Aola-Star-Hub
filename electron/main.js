@@ -1,8 +1,30 @@
 const { app, BrowserWindow, ipcMain, desktopCapturer } = require("electron");
+const fs = require("fs");
 const net = require("net");
 const path = require("path");
 
 let localServer = null;
+const LOGIN_CAPTCHA_STATE_FILE = "login-captcha-state.json";
+
+const loginCaptchaStatePath = () => path.join(app.getPath("userData"), LOGIN_CAPTCHA_STATE_FILE);
+const readLoginCaptchaState = () => {
+  try {
+    const value = JSON.parse(fs.readFileSync(loginCaptchaStatePath(), "utf8"));
+    return Boolean(value && value.verified);
+  } catch {
+    return false;
+  }
+};
+const writeLoginCaptchaState = () => {
+  try {
+    const filePath = loginCaptchaStatePath();
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, JSON.stringify({ verified: true }), "utf8");
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 const DEFAULT_BACKEND_PORT = 3030;
 const MAX_PORT_ATTEMPTS = 50;
@@ -121,10 +143,18 @@ ipcMain.on("aola:force-close-window", (event) => {
   win.close();
 });
 
+ipcMain.on("aola:get-login-captcha-verified", (event) => {
+  event.returnValue = readLoginCaptchaState();
+});
+
+ipcMain.on("aola:set-login-captcha-verified", (event) => {
+  event.returnValue = writeLoginCaptchaState();
+});
+
 app.whenReady().then(async () => {
   try {
     const backendPort = await startLocalBackend();
-    const localAppUrl = `http://127.0.0.1:${backendPort}/aola-star-dev.html`;
+    const localAppUrl = `http://127.0.0.1:${backendPort}/aola-star.html`;
     console.log(`[main:local-app] ${localAppUrl}`);
     createWindow(localAppUrl);
   } catch (err) {

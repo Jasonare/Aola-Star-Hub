@@ -511,7 +511,7 @@
       --w: 10%;
     }
     .home-action-gift { --x: 1.2%; --y: 83.4%; --w: 7.1%; }
-    .home-action-mid-autumn { --x: 10%; --y: 87.6%; --w: 5.6%; }
+    .home-action-mid-autumn { --x: 13.25%; --y: 64%; --w: 7.1%; }
     .home-action-mail { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
     .home-action-dragonboat { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
     .home-action-rank { --x: 22%; --y: 86.2%; --w: 7.8%; }
@@ -1067,7 +1067,9 @@
       }
       .home-action-gift { --x: 2%; --y: 76%; --w: 18%; }
       .home-action-mail { --x: 21%; --y: 76%; --w: 18%; }
-      .home-action-mid-autumn { --x: 40%; --y: 76%; --w: 18%; }
+      .home-action-mid-autumn { --x: 12%; --y: 58.5%; --w: 18%; transform: translateY(-40%); }
+      .home-action-btn.home-action-mid-autumn:hover { transform: translateY(calc(-40% - 3px)) scale(1.04); }
+      .home-action-btn.home-action-mid-autumn:active { transform: translateY(-40%) scale(.98); }
       .home-action-monthly { --x: 2%; --y: 58.5%; --w: 24.3%; }
       .home-action-dragonboat { --x: 2%; --y: 60%; --w: 18%; }
       .home-action-rank { --x: 18%; --y: 82%; --w: 18%; }
@@ -5039,7 +5041,7 @@
     .mid-autumn-task-btn {
       position: absolute;
       left: 5.5%;
-      top: 75%;
+      top: 62%;
       width: 12.8%;
       height: 23.5%;
       border: none;
@@ -5075,6 +5077,16 @@
       transform: scale(0.96);
       filter: brightness(1.18);
     }
+    .mid-autumn-redeem-content { position: absolute; z-index: 7; left: 18.2%; right: 34.5%; top: 27%; bottom: 9%; display: flex; flex-direction: column; color: #fff1a2; }
+    .mid-autumn-wallet { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 2.2vw, 38px); min-height: 12%; }
+    .mid-autumn-wallet-item { display: inline-flex; align-items: center; gap: 5px; color: #ffe55f; font-size: clamp(13px, 1.45vw, 23px); font-weight: 1000; text-shadow: 1px 2px 0 #8e2500; white-space: nowrap; }
+    .mid-autumn-wallet-item img { width: clamp(24px, 2.3vw, 38px); height: clamp(24px, 2.3vw, 38px); object-fit: contain; filter: drop-shadow(0 2px 1px rgba(91, 25, 0, .6)); }
+    .mid-autumn-wallet-item img.mid-autumn-big-mooncake-icon { width: clamp(36px, 3.45vw, 57px); height: clamp(36px, 3.45vw, 57px); }
+    .mid-autumn-redeem-title { margin: 2% 0 1.5%; text-align: center; color: #ffeb66; font-size: clamp(17px, 2vw, 31px); font-weight: 1000; text-shadow: 1px 3px 0 #9b2800, 0 0 6px rgba(255, 239, 128, .6); }
+    .mid-autumn-main-redeem-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; overflow-y: auto; padding: 2px 4px 5px; scrollbar-width: thin; }
+    .mid-autumn-main-redeem-list .mid-autumn-redeem-row { background: rgba(122, 26, 5, .76); border-color: rgba(255, 218, 90, .72); color: #fff6bf; }
+    .mid-autumn-main-redeem-list .mid-autumn-redeem-meta { color: #ffe777; }
+    .mid-autumn-main-redeem-list .mid-autumn-redeem-btn { padding: 4px 7px; }
     .mid-autumn-task-panel {
       position: relative;
       width: min(72vw, calc((100vh - 32px) * 731 / 511));
@@ -5093,6 +5105,18 @@
       right: 1%;
       width: 10%;
     }
+    .mid-autumn-task-content { position: absolute; inset: 11% 8% 9% 8%; overflow-y: auto; padding: 2.5% 3% 3%; color: #5a2700; scrollbar-width: thin; }
+    .mid-autumn-task-title { color: #ffe56a; font-size: clamp(20px, 3vw, 42px); font-weight: 1000; line-height: 1; letter-spacing: .04em; -webkit-text-stroke: 2px #8c2600; paint-order: stroke fill; text-shadow: 2px 3px 0 #b23b00, 0 0 7px rgba(255, 244, 170, .8); }
+    .mid-autumn-task-subtitle { margin-top: 10px; color: #ffd85c; font-size: clamp(15px, 1.65vw, 23px); font-weight: 900; text-shadow: 1px 2px 0 #7d2500; }
+    .mid-autumn-drop-details { margin-top: 8px; border-radius: 12px; padding: 10px 12px; background: rgba(255, 236, 169, .78); color: #642c08; font-size: clamp(11px, 1.1vw, 16px); font-weight: 800; line-height: 1.55; }
+    .mid-autumn-drop-row { display: grid; grid-template-columns: minmax(132px, 36%) 1fr; gap: 8px; padding: 6px 0; border-bottom: 1px dashed rgba(128, 54, 8, .32); }
+    .mid-autumn-drop-row:last-child { border-bottom: 0; }
+    .mid-autumn-drop-row b { color: #9a3500; }
+    .mid-autumn-redeem-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+    .mid-autumn-redeem-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; border: 1px solid rgba(118, 47, 0, .42); border-radius: 10px; padding: 7px 8px; background: rgba(255, 246, 204, .86); color: #5c2600; }
+    .mid-autumn-redeem-name { font-size: clamp(11px, 1.1vw, 16px); font-weight: 1000; line-height: 1.2; }
+    .mid-autumn-redeem-meta { margin-top: 2px; font-size: clamp(10px, .95vw, 13px); font-weight: 800; color: #984300; }
+    .mid-autumn-redeem-btn { flex: 0 0 auto; border: 2px solid #fff1a4; border-radius: 8px; padding: 5px 8px; background: linear-gradient(#ffb529, #d85800); color: #fff8cb; cursor: pointer; font-weight: 1000; text-shadow: 1px 1px 0 #8a2500; }
     .mid-autumn-boss-panel {
       position: relative;
       width: min(88vw, calc((100vh - 32px) * 1574 / 1181));
@@ -5118,6 +5142,37 @@
       padding: 0;
       z-index: 10;
     }
+    .mid-autumn-boss-start {
+      position: absolute;
+      left: 75.2%;
+      top: 57%;
+      width: 6.75%;
+      aspect-ratio: 1;
+      height: auto;
+      border: 2px solid #f4d39a;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #d8b184, #a9784f);
+      box-shadow: 0 3px 0 #32150b, 0 0 9px rgba(116, 57, 25, .82), inset 0 0 0 1.5px rgba(255, 230, 167, .25);
+      color: #fff7dc;
+      cursor: pointer;
+      font-size: clamp(12px, 1.7vw, 27px);
+      font-weight: 1000;
+      letter-spacing: .03em;
+      text-shadow: 1px 2px 0 #754a2d, 0 0 8px rgba(255, 246, 188, .55);
+      z-index: 11;
+    }
+    .mid-autumn-boss-start small { display: none; }
+    .mid-autumn-boss-start:active { transform: translateY(1.5px); box-shadow: 0 1px 0 #6d472b, 0 0 5px rgba(154, 102, 61, .6); }
+    .mid-autumn-map-overlay { position: fixed; inset: 0; z-index: 160; background: #090613; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .mid-autumn-map-stage { position: relative; flex: none; width: max(100vw, calc(100vh * 1.6341)); height: max(100vh, calc(100vw * .61197)); }
+    .mid-autumn-map-bg { width: 100%; height: 100%; display: block; }
+    .mid-autumn-boss-hotspot { position: absolute; left: 64.5%; top: 43%; width: 13%; height: 32%; border: 0; padding: 0; border-radius: 48% 52% 46% 54%; background: transparent; cursor: pointer; z-index: 2; }
+    .mid-autumn-boss-hotspot::before { content: ''; position: absolute; inset: 5%; border-radius: inherit; background: radial-gradient(ellipse, rgba(255, 245, 74, .42) 0%, rgba(255, 220, 20, .2) 38%, transparent 72%); filter: drop-shadow(0 0 8px rgba(255, 226, 34, .95)); animation: mid-autumn-boss-hotspot-pulse 1.35s ease-in-out infinite; pointer-events: none; }
+    .mid-autumn-boss-hotspot:hover::before, .mid-autumn-boss-hotspot:focus-visible::before { animation-duration: .62s; filter: drop-shadow(0 0 14px rgba(255, 236, 54, 1)); }
+    .mid-autumn-boss-hotspot:focus-visible { outline: 3px solid #fff4a3; outline-offset: 4px; }
+    @keyframes mid-autumn-boss-hotspot-pulse { 0%, 100% { opacity: .35; transform: scale(.92); } 50% { opacity: .95; transform: scale(1.08); } }
+    .mid-autumn-map-back { position: absolute; top: 18px; right: 22px; z-index: 2; border: 3px solid #f4d39a; border-radius: 999px; padding: 8px 22px; background: #5a2b16; color: #fffbd0; font-weight: 1000; font-size: clamp(15px, 1.5vw, 24px); box-shadow: 0 4px 0 #32150b; cursor: pointer; }
+    .mid-autumn-map-back:active { transform: translateY(3px); }
     .bag2-top-tabs {
       position: absolute;
       top: 2.1%;
@@ -7157,6 +7212,10 @@
       animation: battlePrepareFloat 2.6s ease-in-out infinite;
       transform-origin: center bottom;
     }
+    .battle-prepare-awakened-float {
+      animation: battlePrepareFloat 2.15s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
     .battle-prepare-target-float > img {
       display: block;
     }
@@ -8123,18 +8182,155 @@
       clip-path: inset(0 calc(100% - var(--login-loading-progress, 0%)) 0 0);
       filter: drop-shadow(0 4px 8px rgba(0,0,0,.28));
     }
+    .battle-effect-badge {
+      border: 0;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1.2;
+      cursor: pointer;
+      transition: filter .12s ease, transform .12s ease;
+    }
+    .battle-effect-badge:hover { filter: brightness(1.12); transform: translateY(-1px); }
+    .battle-effect-list-row {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr) minmax(0, 110px);
+      gap: 10px;
+      align-items: start;
+      border-radius: 14px;
+      border: 1px solid rgba(125,211,252,.24);
+      background: rgba(224,242,254,.92);
+      padding: 10px 12px;
+    }
+    .battle-effect-list-dialog {
+      display: flex;
+      flex-direction: column;
+      max-height: min(82vh, calc(100dvh - 32px));
+    }
+    .battle-effect-list-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
+    }
+    .dark-guardian-awakening-dialog {
+      width: min(100%, 48rem);
+      max-height: calc(100dvh - 32px);
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+    .dark-guardian-awakening-video {
+      width: 100%;
+      max-height: min(72vh, calc(100dvh - 88px));
+      object-fit: contain;
+    }
+    @media (max-width: 767px) {
+      .dark-guardian-awakening-overlay,
+      .battle-effect-list-overlay {
+        padding: 8px !important;
+      }
+      .dark-guardian-awakening-dialog,
+      .battle-effect-list-dialog {
+        width: min(94vw, 42rem);
+        max-height: calc(100dvh - 16px);
+        border-radius: 18px !important;
+      }
+      .dark-guardian-awakening-header,
+      .battle-effect-list-header {
+        padding: 10px 12px !important;
+      }
+      .dark-guardian-awakening-header h3,
+      .battle-effect-list-header h3 {
+        margin-top: 2px !important;
+        font-size: 18px !important;
+        line-height: 1.25 !important;
+      }
+      .dark-guardian-awakening-body {
+        padding: 10px !important;
+      }
+      .dark-guardian-awakening-footer {
+        padding: 0 10px 10px !important;
+      }
+      .dark-guardian-awakening-stat-list {
+        gap: 6px !important;
+      }
+      .dark-guardian-awakening-stat-list > div {
+        border-radius: 12px !important;
+        padding: 7px 10px !important;
+      }
+      .dark-guardian-awakening-stat-list > div > div:last-child {
+        gap: 5px !important;
+        font-size: 14px !important;
+      }
+      .dark-guardian-skill-card,
+      .dark-guardian-awaken-card {
+        border-radius: 14px;
+        padding: 10px;
+      }
+      .dark-guardian-awakening-video {
+        max-height: calc(100dvh - 72px);
+      }
+      .battle-effect-list-scroll {
+        max-height: none !important;
+        padding: 10px !important;
+      }
+      .battle-effect-list-row {
+        grid-template-columns: 60px minmax(0, 1fr);
+        gap: 6px 8px;
+        border-radius: 12px;
+        padding: 8px 10px;
+      }
+      .battle-effect-list-row > :last-child {
+        grid-column: 2;
+        text-align: left;
+      }
+    }
+    @media (max-width: 900px) and (orientation: landscape) {
+      .dark-guardian-awakening-dialog {
+        width: min(86vw, 42rem);
+      }
+      .dark-guardian-awakening-header {
+        padding: 6px 12px !important;
+      }
+      .dark-guardian-awakening-body {
+        padding: 8px 12px !important;
+      }
+      .dark-guardian-awakening-stat-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .dark-guardian-awakening-video {
+        max-height: calc(100dvh - 58px);
+      }
+    }
     .dark-guardian-skill-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 14px;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
     }
+    .dark-guardian-awakening-action {
+      border: 1px solid rgba(14, 116, 144, .5);
+      background: linear-gradient(135deg, #dff6ff, #8de5ff 52%, #68c8ed);
+      box-shadow: 0 5px 0 #0e7490, 0 10px 20px rgba(14, 116, 144, .25);
+      color: #111827;
+      letter-spacing: .08em;
+      text-shadow: 0 1px rgba(255,255,255,.7);
+      transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+    }
+    .dark-guardian-awakening-action:hover { filter: brightness(1.06); transform: translateY(-1px); box-shadow: 0 6px 0 #0e7490, 0 13px 24px rgba(14, 116, 144, .3); }
+    .dark-guardian-awakening-action:active { transform: translateY(4px); box-shadow: 0 2px 0 #0e7490, 0 5px 10px rgba(14, 116, 144, .22); }
     .dark-guardian-skill-card,
     .dark-guardian-awaken-card {
       position: relative;
       overflow: hidden;
       border-radius: 18px;
-      border: 1px solid rgba(196,181,253,.34);
-      background: linear-gradient(150deg, rgba(30,27,75,.98), rgba(15,23,42,.98));
+      border: 1px solid rgba(125,211,252,.72);
+      background: linear-gradient(150deg, rgba(240,249,255,.98), rgba(224,242,254,.98));
       padding: 15px;
     }
     .dark-guardian-skill-card > *,
@@ -8143,31 +8339,68 @@
       z-index: 1;
     }
     .dark-guardian-awaken-card {
-      border: 2px solid rgba(216,180,254,.78);
-      box-shadow: 0 0 28px rgba(147,51,234,.48), inset 0 0 20px rgba(88,28,135,.55);
+      isolation: isolate;
+      overflow: visible;
+      border: 2px solid transparent;
+      background:
+        linear-gradient(150deg, rgba(240,249,255,.98), rgba(224,242,254,.98)) padding-box,
+        linear-gradient(125deg, #4c1d95, #a855f7 22%, #f0abfc 42%, #6d28d9 63%, #2e1065 82%, #c084fc) border-box;
+      box-shadow: 0 0 0 2px rgba(88,28,135,.7), 0 0 14px rgba(147,51,234,.86), 0 0 32px rgba(76,29,149,.65), inset 0 0 20px rgba(186,230,253,.6);
     }
     .dark-guardian-awaken-card::before,
     .dark-guardian-awaken-card::after {
       content: "";
       position: absolute;
-      inset: -38%;
+      inset: -8px;
+      z-index: 0;
+      border-radius: 24px;
+      padding: 4px;
       pointer-events: none;
-      background:
-        radial-gradient(circle at 22% 28%, rgba(192,132,252,.42), transparent 26%),
-        radial-gradient(circle at 78% 68%, rgba(124,58,237,.48), transparent 30%),
-        radial-gradient(circle at 52% 88%, rgba(72,28,100,.62), transparent 34%);
-      filter: blur(12px);
-      animation: darkGuardianFlame 3.2s ease-in-out infinite alternate;
+      background: conic-gradient(from 0deg, #2e1065, #7e22ce, #f0abfc, #581c87, #c084fc, #2e1065);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      filter: drop-shadow(0 0 4px rgba(192,132,252,.95)) drop-shadow(0 0 10px rgba(109,40,217,.85));
+      animation: darkGuardianFlame 2.4s ease-in-out infinite alternate;
     }
     .dark-guardian-awaken-card::after {
-      inset: -28%;
-      animation-duration: 2.3s;
+      inset: -14px;
+      padding: 3px;
+      opacity: .72;
+      filter: blur(1px) drop-shadow(0 0 9px rgba(168,85,247,.92));
+      animation-duration: 1.55s;
       animation-direction: alternate-reverse;
-      opacity: .78;
     }
     @keyframes darkGuardianFlame {
-      from { transform: rotate(-4deg) scale(1); opacity: .78; }
-      to { transform: rotate(5deg) scale(1.08); opacity: 1; }
+      from { transform: scale(1); opacity: .58; }
+      to { transform: scale(1.025); opacity: 1; }
+    }
+    .dark-guardian-awaken-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #7e22ce;
+      border-radius: 999px;
+      padding: 3px 9px;
+      color: #581c87;
+      background: linear-gradient(90deg, #f3e8ff, #fdf4ff);
+      box-shadow: 0 1px 0 rgba(255,255,255,.9), inset 0 0 8px rgba(216,180,254,.72);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .12em;
+    }
+    .bag2-awaken-skill-item {
+      grid-column: 1 / -1;
+      min-height: 0;
+      padding: 10px 12px 8px;
+    }
+    .bag2-awaken-skill-item .bag2-skill-name { color: #3b0764; }
+    .bag2-awaken-skill-item .bag2-skill-meta { color: #6b21a8; }
+    .bag2-awaken-skill-item .bag2-skill-desc { color: #4c1d95; }
+    .bag2-awaken-skill-item .dark-guardian-awaken-badge {
+      margin-bottom: 5px;
+      font-size: 9px;
+      padding: 2px 7px;
     }
     .double-reward-marquee {
       position: relative;
@@ -9244,7 +9477,9 @@
       background-repeat: no-repeat !important;
     }
     html.android-webview.android-landscape header.home-hub-scene .home-action-gift { --x: 1.2%; --y: 68.8%; --w: 6.5%; }
-    html.android-webview.android-landscape header.home-hub-scene .home-action-mid-autumn { --x: 17%; --y: 84.6%; --w: 5.6%; }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-mid-autumn { --x: 4.85%; --y: 53.5%; --w: 7.3%; transform: translateY(-40%); }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-btn.home-action-mid-autumn:hover { transform: translateY(calc(-40% - 3px)) scale(1.04); }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-btn.home-action-mid-autumn:active { transform: translateY(-40%) scale(.98); }
     html.android-webview.android-landscape header.home-hub-scene .home-action-mail { --x: 8.5%; --y: 67.6%; --w: 7.3%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-monthly { --x: 1.2%; --y: 55.8%; --w: 9.2%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-dragonboat { --x: 8.5%; --y: 67.6%; --w: 7.3%; }
@@ -12685,7 +12920,7 @@
     </div>
     <div class="home-action-grid">
       <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./resource/ui/背景/赠礼.png" alt=""></button>
-      <button @click="openMidAutumnPanel" class="home-action-btn home-action-mid-autumn" title="中秋活动" aria-label="中秋活动"><img src="./resource-v11/中秋节活动/中秋活动ui.png" alt=""></button>
+      <button @click="openMidAutumnPanel" class="home-action-btn home-action-mid-autumn" title="中秋活动" aria-label="中秋活动"><img src="./resource/中秋节活动/中秋活动ui.png" alt=""></button>
       <button @click="openMailPanel" class="home-action-btn home-action-mail" title="邮件" aria-label="邮件"><img src="./resource/邮件.png" alt=""></button>
       <button @click="openMonthlySignPanel" class="home-action-btn home-action-monthly" title="月签到" aria-label="月签到"><img src="./resource/button/签到.png" alt=""></button>
       <button @click.stop.prevent="openLeaderboardPanel" class="home-action-btn home-action-rank" title="排行榜" aria-label="排行榜"><img src="./resource/ui/背景/排行榜.png" alt=""></button>
@@ -12833,7 +13068,7 @@
                   <div class="text-sm font-black text-sky-950">当前特性</div>
                   <div class="mt-1">{{ selectedPetFeatureText }}</div>
                   <div v-if="selectedPetSkinEquipped" class="mt-2 flex flex-wrap items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-2 py-2 text-[11px] font-black text-violet-700">
-                    <span>已装配未来计划·神秘战无炎皮肤</span>
+                    <span>已装配{{ selectedPetSkinName }}</span>
                     <button @click="unequipPetSkin(petId(selectedPet))" class="h-7 px-3 rounded-lg bg-white text-violet-700 border border-violet-200 font-black">卸下皮肤</button>
                   </div>
                   <div class="mt-3 grid grid-cols-3 md:grid-cols-6 gap-2">
@@ -13399,6 +13634,15 @@
                 <div v-if="skillName" class="bag2-skill-meta">威力 {{ safeSkillPower(selectedPetSkillByName(skillName) || {}) }} | PP {{ safeSkillPP(selectedPetSkillByName(skillName) || {}) }}</div>
                 <div v-if="skillName" class="bag2-skill-desc">{{ skillDisplayDesc(selectedPetSkillByName(skillName) || {}) }}</div>
               </div>
+              <div v-if="selectedPetAwakenSkill" class="bag2-skill-item dark-guardian-awaken-card bag2-awaken-skill-item">
+                <div class="dark-guardian-awaken-badge">✦ 专属觉醒技</div>
+                <div class="bag2-skill-name">
+                  <span class="bag2-skill-type-dot" :style="petElementIconStyle(skillTypeMeta(safeSkillType(selectedPetAwakenSkill)).label, 12)"></span>
+                  {{ selectedPetAwakenSkill.name }}
+                </div>
+                <div class="bag2-skill-meta">威力 {{ safeSkillPower(selectedPetAwakenSkill) }} | PP {{ safeSkillPP(selectedPetAwakenSkill) }}</div>
+                <div class="bag2-skill-desc">{{ skillDisplayDesc(selectedPetAwakenSkill) }}</div>
+              </div>
             </div>
           </template>
           <template v-else-if="bag2InfoTab === 'talent'">
@@ -13511,7 +13755,7 @@
                   </div>
                   <div class="bag2-gear-list-actions">
                     <button v-if="gear.equippedOnBag2Pet" @click="unequipSelectedPetGear(petId(bag2DisplayPet), gear.slot)" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
-                    <button v-else @click="equipGearToSelectedPet(gear.id, petId(bag2DisplayPet))" :disabled="!gear.canEquip || !bag2DisplayPet" class="h-8 px-3 rounded-lg text-white font-black" :class="{ 'bg-sky-600': gear.canEquip && bag2DisplayPet, 'bg-slate-400 text-slate-100': !gear.canEquip || !bag2DisplayPet }">装备</button>
+                    <button v-else @click="equipGearToSelectedPet(gear.id, petId(bag2DisplayPet))" :disabled="!gear.canEquip || !bag2DisplayPet" class="h-8 px-3 rounded-lg font-black transition-colors" :class="{ 'bg-sky-600 text-white': gear.canEquip && bag2DisplayPet, 'cursor-not-allowed border border-slate-800 bg-slate-700 text-slate-300 shadow-inner': !gear.canEquip || !bag2DisplayPet }">装备</button>
                   </div>
                 </div>
                 <div v-if="filteredGearInventoryRows.length <= 0" class="text-center text-xs font-black text-sky-700 py-3">当前筛选下没有装备。</div>
@@ -13712,7 +13956,7 @@
                     </div>
                     <div class="absolute top-2 right-2 z-10 rounded-full bg-slate-950/70 px-2 py-0.5 text-[11px] font-black text-cyan-100">Lv.{{ slot.level }}</div>
                     <div class="battle-prepare-team-pet-anchor">
-                      <div class="battle-prepare-pet-frame battle-prepare-team-float w-full h-full">
+                      <div class="battle-prepare-pet-frame w-full h-full" :class="slot.staticOnly ? 'battle-prepare-awakened-float' : 'battle-prepare-team-float'">
                         <img :src="slot.image" @error="withStaticPetFallback" class="battle-prepare-slot-img drop-shadow-[0_14px_18px_rgba(0,0,0,.45)]">
                       </div>
                     </div>
@@ -13784,7 +14028,7 @@
                   </div>
                   <div class="absolute top-2 right-2 z-10 rounded-full bg-slate-950/70 px-2 py-0.5 text-[11px] font-black text-cyan-100">Lv.{{ slot.level }}</div>
                   <div class="battle-prepare-team-pet-anchor">
-                    <div class="battle-prepare-pet-frame battle-prepare-team-float w-full h-full">
+                    <div class="battle-prepare-pet-frame w-full h-full" :class="slot.staticOnly ? 'battle-prepare-awakened-float' : 'battle-prepare-team-float'">
                       <img :src="slot.image" @error="withStaticPetFallback" class="battle-prepare-slot-img drop-shadow-[0_14px_18px_rgba(0,0,0,.45)]">
                     </div>
                   </div>
@@ -13921,7 +14165,7 @@
                   <div class="text-sm font-black text-sky-950">当前特性</div>
                   <div class="mt-1">{{ selectedPetFeatureText }}</div>
                   <div v-if="selectedPetSkinEquipped" class="mt-2 flex flex-wrap items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-2 py-2 text-[11px] font-black text-violet-700">
-                    <span>已装配未来计划·神秘战无炎皮肤</span>
+                    <span>已装配{{ selectedPetSkinName }}</span>
                     <button @click="unequipPetSkin(petId(selectedPet))" class="h-7 px-3 rounded-lg bg-white text-violet-700 border border-violet-200 font-black">卸下皮肤</button>
                   </div>
                   <div class="mt-3 grid grid-cols-3 md:grid-cols-6 gap-2">
@@ -14081,7 +14325,7 @@
     <div class="info-card-panel" @click.stop>
       <!-- 左卡：服装卡 -->
       <div class="info-card-outfit-card">
-        <img src="./resource-v11/信息卡/服装卡底图.png" class="info-card-card-bg" alt="">
+        <img src="./resource/信息卡/服装卡底图.png" class="info-card-card-bg" alt="">
         <button type="button" class="info-card-name-bar">
           <span class="info-card-name-text">{{ authUser && authUser.username ? authUser.username : (authUsername || '游客') }}</span>
         </button>
@@ -14097,21 +14341,21 @@
       </div>
       <!-- 右卡：信息卡 -->
       <div class="info-card-data-card">
-        <img src="./resource-v11/信息卡/信息卡底图.png" class="info-card-card-bg" alt="">
+        <img src="./resource/信息卡/信息卡底图.png" class="info-card-card-bg" alt="">
         <div class="info-card-tabs">
           <button type="button" class="info-card-tab-btn" :class="{ active: infoCardTab === 'info' }" @click="infoCardTab = 'info'">
-            <img src="./resource-v11/信息卡/信息按钮.png" alt="信息">
+            <img src="./resource/信息卡/信息按钮.png" alt="信息">
           </button>
           <button type="button" class="info-card-tab-btn" :class="{ active: infoCardTab === 'bag' }" @click="infoCardTab = 'bag'">
-            <img src="./resource-v11/信息卡/背包按钮.png" alt="背包">
+            <img src="./resource/信息卡/背包按钮.png" alt="背包">
           </button>
         </div>
         <button type="button" @click="closeInfoCardPanel" class="info-card-close-btn" title="关闭">
-          <img src="./resource-v11/信息卡/信息卡关闭按钮.png" alt="关闭">
+          <img src="./resource/信息卡/信息卡关闭按钮.png" alt="关闭">
         </button>
         <!-- 信息标签页：仅在信息界面底图对应位置填数据，不加标签与底色 -->
         <div v-show="infoCardTab === 'info'" class="info-card-info-stage">
-          <img src="./resource-v11/信息卡/信息界面底图.png?v=20260917b" class="info-card-info-bg" alt="">
+          <img src="./resource/信息卡/信息界面底图.png?v=20260917b" class="info-card-info-bg" alt="">
           <img v-if="dexLevelImageSrc" :src="dexLevelImageSrc" class="icv-dex-level" :alt="'图鉴等级' + dexLevel + '级'" draggable="false">
           <span class="icv icv-name" :title="authUser && authUser.username ? authUser.username : (authUsername || '游客')">{{ authUser && authUser.username ? authUser.username : (authUsername || '游客') }}</span>
           <span class="icv icv-id" :title="authUser && authUser.id ? authUser.id : ''">{{ authUser && authUser.id ? authUser.id : '——' }}</span>
@@ -14133,13 +14377,13 @@
           <div class="ic-stat ic-stat-3"><b>{{ pvpWinCount }}</b><span>PVP获胜次数</span></div>
           <div class="ic-stat ic-stat-4"><b>{{ timeTunnelMaxClearedFloor }}</b><span>时空隧道层数</span></div>
           <button type="button" @click="triggerLocalSaveImport" class="ic-save ic-save-import">
-            <img src="./resource-v11/信息卡/导入存档按钮.png" alt="导入存档">
+            <img src="./resource/信息卡/导入存档按钮.png" alt="导入存档">
           </button>
           <button type="button" @click="exportLocalSave" class="ic-save ic-save-export">
-            <img src="./resource-v11/信息卡/导出存档按钮.png" alt="导出存档">
+            <img src="./resource/信息卡/导出存档按钮.png" alt="导出存档">
           </button>
           <button type="button" @click="logoutCurrentAccount" class="ic-logout">
-            <img src="./resource-v11/信息卡/退出登录按钮.png" alt="退出登录">
+            <img src="./resource/信息卡/退出登录按钮.png" alt="退出登录">
           </button>
         </div>
         <!-- 背包标签页 -->
@@ -14158,12 +14402,12 @@
           <div class="info-card-bag-grid">
             <div v-for="(slot, idx) in infoCardBagSlots" :key="idx" class="info-card-bag-slot">
               <button v-if="slot" type="button" class="info-card-bag-slot-btn" :class="{ equipped: equippedOutfitItemIds.includes(slot.id) }" @click="toggleOutfitItem(slot.id)">
-                <img src="./resource-v11/信息卡/信息卡背包物品底图.png" class="info-card-bag-slot-bg" alt="">
+                <img src="./resource/信息卡/信息卡背包物品底图.png" class="info-card-bag-slot-bg" alt="">
                 <img v-if="slot.icon" :src="slot.icon" class="info-card-bag-slot-icon" :alt="slot.name">
                 <span v-if="equippedOutfitItemIds.includes(slot.id)" class="info-card-bag-equipped-tag">已装备</span>
               </button>
               <div v-else class="info-card-bag-slot-btn">
-                <img src="./resource-v11/信息卡/信息卡背包物品底图.png" class="info-card-bag-slot-bg" alt="">
+                <img src="./resource/信息卡/信息卡背包物品底图.png" class="info-card-bag-slot-bg" alt="">
               </div>
             </div>
             <div v-if="infoCardBagVisibleItems.length === 0" class="info-card-bag-empty">暂无服装</div>
@@ -14234,7 +14478,7 @@
           <button @click="openFateGateToPurple" class="fate-gate-action-btn" title="消耗50000H币直接开启至紫门"><img src="./resource/命运之门/获取.png" alt="一键直达紫门"><span class="fate-gate-action-label fate-gate-action-purple">一键直达紫门</span></button>
         </div>
       </div>
-      <div class="fate-gate-status">当前可开启：{{ fateGateCurrentConfig.name }}（<span class="fate-gate-hcoin-inline"><img src="./resource/小图标/h币.png" alt="H币"><span>{{ fateGateCurrentConfig.cost }}</span></span>） · 暂存 {{ fateGatePendingRewards.length }}/16 · 紫门特性保底 {{ fateGatePurplePity }}/100 · 灵锋之噬保底 {{ fateGatePurpleLingfengPity }}/350 · 直达 <span class="fate-gate-hcoin-inline"><img src="./resource/小图标/h币.png" alt="H币"><span>50000</span></span></div>
+      <div class="fate-gate-status">当前可开启：{{ fateGateCurrentConfig.name }}（<span class="fate-gate-hcoin-inline"><img src="./resource/小图标/h币.png" alt="H币"><span>{{ fateGateCurrentConfig.cost }}</span></span>） · 暂存 {{ fateGatePendingRewards.length }}/16 · 紫门特性保底 {{ fateGatePurplePity }}/100 · 圣洁之心保底 {{ fateGatePurpleLingfengPity }}/350 · 直达 <span class="fate-gate-hcoin-inline"><img src="./resource/小图标/h币.png" alt="H币"><span>50000</span></span></div>
       <button @click="closeFateGatePanel" class="fate-gate-close-btn" title="关闭">
         <img src="./resource/命运之门/关闭按钮.png" alt="关闭">
       </button>
@@ -14243,31 +14487,49 @@
 
   <div v-if="showMidAutumnPanel" class="mid-autumn-overlay" @click="closeMidAutumnPanel">
     <div class="mid-autumn-panel" @click.stop>
-      <img src="./resource-v11/中秋节活动/中秋活动底图.png" alt="中秋活动" class="mid-autumn-bg">
+      <img src="./resource/中秋节活动/中秋活动底图.png" alt="中秋活动" class="mid-autumn-bg">
       <button @click="closeMidAutumnPanel" class="mid-autumn-close-btn" title="关闭">
-        <img src="./resource-v11/中秋节活动/中秋活动关闭按钮.png" alt="关闭">
+        <img src="./resource/中秋节活动/中秋活动关闭按钮.png" alt="关闭">
       </button>
       <button @click="openMidAutumnTaskPanel" class="mid-autumn-task-btn" title="月饼任务" aria-label="月饼任务"></button>
       <button @click="openMidAutumnBossCard" class="mid-autumn-boss-btn" title="满月巨灵">
-        <img src="./resource-v11/中秋节活动/满月巨灵.png" alt="满月巨灵">
+        <img src="./resource/中秋节活动/满月巨灵.png" alt="满月巨灵">
       </button>
+      <div class="mid-autumn-redeem-content">
+        <div class="mid-autumn-wallet"><div class="mid-autumn-wallet-item"><img src="./resource/中秋节活动/大月饼.png" class="mid-autumn-big-mooncake-icon" alt="大月饼">{{ midAutumnBigMooncakeCount }}</div><div class="mid-autumn-wallet-item"><img src="./resource/中秋节活动/小月饼.png" alt="小月饼">{{ midAutumnSmallMooncakeCount }}</div></div>
+        <div class="mid-autumn-redeem-title">中秋兑换奖励</div>
+        <div class="mid-autumn-main-redeem-list"><div v-for="entry in midAutumnRedeemEntries" :key="'main_'+entry.id" class="mid-autumn-redeem-row"><div class="min-w-0"><div class="mid-autumn-redeem-name">{{ entry.name }}</div><div class="mid-autumn-redeem-meta">{{ entry.skinGrade ? entry.skinGrade + '皮肤 · ' : '' }}{{ entry.currency === 'big' ? '大月饼' : '小月饼' }}×{{ entry.cost }} · {{ midAutumnRedeemRemainingText(entry) }}</div></div><button @click="redeemMidAutumnReward(entry)" class="mid-autumn-redeem-btn">兑换</button></div></div>
+      </div>
     </div>
   </div>
 
   <div v-if="showMidAutumnTaskPanel" class="mid-autumn-overlay is-sub" @click="closeMidAutumnTaskPanel">
     <div class="mid-autumn-task-panel" @click.stop>
-      <img src="./resource-v11/中秋节活动/任务框.png" alt="月饼任务" class="mid-autumn-task-bg">
+      <img src="./resource/中秋节活动/任务框.png" alt="月饼任务" class="mid-autumn-task-bg">
       <button @click="closeMidAutumnTaskPanel" class="mid-autumn-close-btn mid-autumn-task-close" title="关闭">
-        <img src="./resource-v11/中秋节活动/中秋活动关闭按钮.png" alt="关闭">
+        <img src="./resource/中秋节活动/中秋活动关闭按钮.png" alt="关闭">
       </button>
+      <div class="mid-autumn-task-content scrollbar">
+        <div class="mid-autumn-task-subtitle">月饼掉落详情（每天20:00—22:00）</div>
+        <div class="mid-autumn-drop-details"><div class="mid-autumn-drop-row"><b>小月饼｜图鉴挑战</b><span>80%×1 / 12%×3 / 6%×5 / 2%×10</span></div><div class="mid-autumn-drop-row"><b>小月饼｜时空隧道</b><span>1—10层×3；11—20层×5；21—30层×7；31—40层×9；41—50层×11</span></div><div class="mid-autumn-drop-row"><b>小月饼｜挑战之路第五梯度</b><span>普通×16；困难×34</span></div><div class="mid-autumn-drop-row"><b>大月饼｜装备秘境</b><span>S×4；SS×6；SSS×10</span></div><div class="mid-autumn-drop-row"><b>大月饼｜挑战之路第五梯度</b><span>噩梦×8</span></div><div class="mid-autumn-drop-row"><b>大月饼｜中秋限时满月巨灵</b><span>按伤害结算：0—5千×5，5千—1万×10，之后每增1万伤害+5，10万以上×66</span></div></div>
+      </div>
     </div>
   </div>
 
   <div v-if="showMidAutumnBossCard" class="mid-autumn-overlay is-sub" @click="closeMidAutumnBossCard">
     <div class="mid-autumn-boss-panel" @click.stop>
-      <img src="./resource-v11/中秋节活动/挑战信息卡.png" alt="满月巨灵挑战信息" class="mid-autumn-boss-bg">
+      <img src="./resource/中秋节活动/挑战信息卡.png" alt="满月巨灵挑战信息" class="mid-autumn-boss-bg">
       <button @click="closeMidAutumnBossCard" class="mid-autumn-boss-back" title="返回" aria-label="返回"></button>
+      <button @click="startMidAutumnBossChallenge" class="mid-autumn-boss-start" title="GO">GO</button>
     </div>
+  </div>
+
+  <div v-if="showMidAutumnBossMap" class="mid-autumn-map-overlay" @click="closeMidAutumnBossMap">
+    <div class="mid-autumn-map-stage">
+      <img src="./resource/满月天涯.png" alt="满月天涯" class="mid-autumn-map-bg">
+      <button @click.stop="enterMidAutumnBossBattle" class="mid-autumn-boss-hotspot" title="挑战满月巨灵" aria-label="挑战满月巨灵"></button>
+    </div>
+    <button @click.stop="closeMidAutumnBossMap" class="mid-autumn-map-back" title="返回">返回</button>
   </div>
 
   <div v-if="showAbilityBreakthroughPanel" class="app-top-overlay fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeAbilityBreakthroughPanel">
@@ -14799,7 +15061,7 @@
             <button @click="shopTab='skins'" class="skin-shop-tab h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='skins' ? 'skin-shop-tab-active' : 'text-slate-600'">皮肤商店</button>
           </div>
           <div class="panel-stat-chip hcoin-display"><img src="./resource/小图标/h币.png" alt="H币"><span>{{ state.hCoins || 0 }}</span></div>
-          <div class="panel-stat-chip">秘境晶石 {{ equipmentDungeonCrystalCount }}</div>
+          <div class="panel-stat-chip hcoin-display"><img src="./resource/秘境晶石.jpg" alt="秘境晶石"><span>{{ equipmentDungeonCrystalCount }}</span></div>
         </div>
         <button @click="closeShopPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
@@ -14876,7 +15138,7 @@
             <div class="min-w-0">
               <div class="gear-shop-name text-sm font-black text-sky-950 truncate">{{ it.name }}</div>
               <div class="gear-shop-desc text-[11px] font-bold text-sky-800">{{ it.desc }}</div>
-              <div class="gear-shop-price text-[11px] font-black text-cyan-700 mt-1">{{ it.price }} 秘境晶石</div>
+              <div class="gear-shop-price inline-flex items-center gap-1 text-[11px] font-black text-cyan-700 mt-1"><img src="./resource/秘境晶石.jpg" @error="withFallback" class="h-4 w-4 rounded object-contain" alt="秘境晶石"><span>{{ it.price }}</span></div>
             </div>
           </div>
           <div class="flex flex-col items-end gap-2 shrink-0">
@@ -14961,50 +15223,55 @@
   </teleport>
 
   <teleport to="body">
-  <div v-if="darkGuardianAwakeningDialog" class="app-top-dialog-overlay fixed inset-0 z-[2147483646] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4" style="z-index:2147483646 !important;">
-    <div class="w-full max-w-3xl overflow-hidden rounded-3xl border border-violet-300/70 bg-slate-950 shadow-2xl">
+  <div v-if="darkGuardianAwakeningDialog" class="dark-guardian-awakening-overlay app-top-dialog-overlay fixed inset-0 z-[2147483646] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4" style="z-index:2147483646 !important;">
+    <div class="dark-guardian-awakening-dialog w-full max-w-3xl overflow-hidden rounded-3xl border border-sky-300/70 bg-sky-50 shadow-2xl">
       <template v-if="darkGuardianAwakeningDialog.stage === 'video'">
-        <div class="border-b border-violet-300/30 px-5 py-4 text-center">
+        <div class="dark-guardian-awakening-header border-b border-violet-300/30 px-5 py-4 text-center">
           <div class="text-xs font-black tracking-[0.3em] text-violet-200">黑暗守卫觉醒</div>
           <h3 class="mt-1 text-2xl font-black text-white">觉醒仪式进行中</h3>
         </div>
-        <video :src="darkGuardianAwakeningDialog.videoSrc" class="block w-full max-h-[72vh] bg-black" autoplay controls playsinline @ended="finishDarkGuardianAwakeningVideo" @error="finishDarkGuardianAwakeningVideo"></video>
+        <video :src="darkGuardianAwakeningDialog.videoSrc" class="dark-guardian-awakening-video block w-full max-h-[72vh] bg-black" autoplay controls playsinline @ended="finishDarkGuardianAwakeningVideo" @error="finishDarkGuardianAwakeningVideo"></video>
       </template>
       <template v-else-if="darkGuardianAwakeningDialog.stage === 'stats'">
-        <div class="bg-gradient-to-r from-violet-950 via-slate-900 to-cyan-950 px-6 py-6 text-center">
-          <div class="text-xs font-black tracking-[0.3em] text-violet-200">觉醒完成</div>
-          <h3 class="mt-2 text-3xl font-black text-white">混沌终焉-闇</h3>
-          <p class="mt-2 text-sm font-bold text-violet-100">黑暗守卫的种族值得到提升</p>
+        <div class="dark-guardian-awakening-header bg-gradient-to-r from-sky-100 via-cyan-50 to-blue-100 px-6 py-6 text-center">
+          <div class="text-xs font-black tracking-[0.3em] text-sky-600">觉醒完成</div>
+          <h3 class="mt-2 text-3xl font-black text-sky-950">混沌终焉-闇</h3>
+          <p class="mt-2 text-sm font-bold text-sky-700">黑暗守卫的种族值得到提升</p>
         </div>
-        <div class="grid grid-cols-2 gap-3 p-5 sm:grid-cols-3">
-          <div v-for="stat in darkGuardianAwakeningStatRows" :key="stat.label" class="rounded-2xl border border-violet-200/20 bg-slate-900 px-4 py-3 text-center">
-            <div class="text-xs font-black text-slate-300">{{ stat.label }}</div>
-            <div class="mt-1 text-lg font-black text-white"><span class="text-slate-400">{{ stat.before }}</span><span class="mx-2 text-violet-300">→</span><span class="text-cyan-300">{{ stat.after }}</span></div>
+        <div class="dark-guardian-awakening-body dark-guardian-awakening-stat-list space-y-2 p-5">
+          <div v-for="stat in darkGuardianAwakeningStatRows" :key="stat.label" class="flex items-center justify-between rounded-2xl border border-sky-200 bg-white px-4 py-3">
+            <div class="text-sm font-black text-sky-900">{{ stat.label }}</div>
+            <div class="flex items-center gap-2 text-lg font-black"><span class="text-slate-500">{{ stat.before }}</span><img src="./resource/提升/上箭头.png" class="h-5 w-5 object-contain" alt="提升"><span class="text-cyan-700">{{ stat.after }}</span><span class="text-sm text-emerald-600">+{{ stat.after - stat.before }}</span></div>
           </div>
         </div>
-        <div class="px-5 pb-5">
-          <button @click="closeDarkGuardianAwakeningDialog" class="h-11 w-full rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-base font-black text-white shadow-lg">查看新增技能</button>
+        <div class="dark-guardian-awakening-footer px-5 pb-5">
+          <button @click="closeDarkGuardianAwakeningDialog" class="dark-guardian-awakening-action h-11 w-full rounded-xl text-base font-black">查看新增技能</button>
         </div>
       </template>
       <template v-else>
-        <div class="bg-gradient-to-r from-violet-950 via-slate-900 to-fuchsia-950 px-6 py-6 text-center">
-          <div class="text-xs font-black tracking-[0.3em] text-violet-200">新增技能</div>
-          <h3 class="mt-2 text-3xl font-black text-white">黑暗守卫掌握新力量</h3>
+        <div class="dark-guardian-awakening-header bg-gradient-to-r from-sky-100 via-cyan-50 to-blue-100 px-6 py-6 text-center">
+          <div class="text-xs font-black tracking-[0.3em] text-sky-600">新增技能</div>
+          <h3 class="mt-2 text-3xl font-black text-sky-950">黑暗守卫掌握新力量</h3>
         </div>
-        <div class="dark-guardian-skill-grid p-5">
+        <div class="dark-guardian-awakening-body p-5">
+          <div class="mb-3 flex items-center justify-between text-xs font-black text-sky-700"><span>新增技能</span><span>2 项</span></div>
+          <div class="dark-guardian-skill-grid">
           <article v-for="skill in darkGuardianAwakeningSkills" :key="skill.skillId" class="dark-guardian-skill-card">
-            <div class="text-lg font-black text-white">{{ skill.name }}</div>
-            <div class="mt-2 text-[11px] font-black text-violet-200">{{ skill.element }} · {{ skill.attackType }} · 威力{{ skill.power }} · 命中{{ skill.accuracy }} · PP{{ skill.pp }}</div>
-            <p class="mt-3 text-xs font-bold leading-5 text-violet-100">{{ skill.desc }}</p>
+            <div class="text-lg font-black text-sky-950">{{ skill.name }}</div>
+            <div class="mt-2 text-[11px] font-black text-sky-700">{{ skill.element }} · {{ skill.attackType }} · 威力{{ skill.power }} · 命中{{ skill.accuracy }} · PP{{ skill.pp }}</div>
+            <p class="mt-3 text-xs font-bold leading-5 text-sky-900">{{ skill.desc }}</p>
           </article>
+          </div>
+          <div class="my-4 flex items-center gap-3"><div class="h-px flex-1 bg-violet-300"></div><span class="text-xs font-black tracking-[.2em] text-violet-800">觉醒技</span><div class="h-px flex-1 bg-violet-300"></div></div>
           <article class="dark-guardian-awaken-card">
-            <div class="text-lg font-black text-fuchsia-100">觉醒技：{{ darkGuardianAwakenSkill.name }}</div>
-            <div class="mt-2 text-[11px] font-black text-fuchsia-200">{{ darkGuardianAwakenSkill.element }} · {{ darkGuardianAwakenSkill.attackType }} · 威力{{ darkGuardianAwakenSkill.power }} · 命中{{ darkGuardianAwakenSkill.accuracy }} · PP{{ darkGuardianAwakenSkill.pp }}</div>
-            <p class="mt-3 text-xs font-bold leading-5 text-fuchsia-100">{{ darkGuardianAwakenSkill.desc }}</p>
+            <div class="dark-guardian-awaken-badge">✦ 专属觉醒技</div>
+            <div class="text-lg font-black text-sky-950">觉醒技：{{ darkGuardianAwakenSkill.name }}</div>
+            <div class="mt-2 text-[11px] font-black text-sky-700">{{ darkGuardianAwakenSkill.element }} · {{ darkGuardianAwakenSkill.attackType }} · 威力{{ darkGuardianAwakenSkill.power }} · 命中{{ darkGuardianAwakenSkill.accuracy }} · PP{{ darkGuardianAwakenSkill.pp }}</div>
+            <p class="mt-3 text-xs font-bold leading-5 text-sky-900">{{ darkGuardianAwakenSkill.desc }}</p>
           </article>
         </div>
-        <div class="px-5 pb-5">
-          <button @click="closeDarkGuardianAwakeningDialog" class="h-11 w-full rounded-xl bg-gradient-to-r from-fuchsia-600 to-violet-600 text-base font-black text-white shadow-lg">确认觉醒</button>
+        <div class="dark-guardian-awakening-footer px-5 pb-5">
+          <button @click="closeDarkGuardianAwakeningDialog" class="dark-guardian-awakening-action h-11 w-full rounded-xl text-base font-black">确认觉醒</button>
         </div>
       </template>
     </div>
@@ -15284,6 +15551,30 @@
               <div class="challenge-road-entry-name">
                 <div class="text-sm font-black text-center truncate">{{ boss.name }}</div>
               </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template v-if="showReincarnationDreamPanel">
+    <div class="fixed inset-0 z-40 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" @click="closeReincarnationDreamPanel">
+      <div class="w-full max-w-6xl h-[86vh] rounded-3xl border border-white bg-white p-3 md:p-4 shadow-2xl flex flex-col app-panel-modal" @click.stop>
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <div>
+            <div class="text-lg font-black text-slate-900">轮回溯梦</div>
+            <div class="text-xs font-bold text-slate-500">怀旧之旅 · 选择BOSS挑战</div>
+          </div>
+          <button @click="closeReincarnationDreamPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">返回</button>
+        </div>
+        <div class="flex-1 min-h-0 challenge-road-entry-scroll scrollbar">
+          <div class="challenge-road-entry-track">
+            <button @click="openReincarnationDreamBoss" class="challenge-road-entry-card relative overflow-hidden rounded-2xl border border-slate-200 bg-white text-left transition hover:border-violet-300">
+              <img :src="reincarnationDreamBossStaticSrc" @error="withFallback" class="challenge-road-entry-cover absolute inset-0 w-full h-full object-contain p-3 opacity-95">
+              <div class="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-white/72 via-white/30 to-transparent"></div>
+              <span class="challenge-road-entry-badge rounded-full px-2.5 py-1 text-[11px] font-black bg-violet-100 text-violet-900">BOSS</span>
+              <div class="challenge-road-entry-name"><div class="text-sm font-black text-center truncate">上古星龙</div></div>
             </button>
           </div>
         </div>
@@ -15695,7 +15986,7 @@
     <div class="qixing-gacha-modal w-full max-w-5xl rounded-3xl border border-cyan-200/35 p-3 md:p-5 shadow-2xl max-h-[92vh] overflow-y-auto app-modal text-white" @click.stop>
       <div class="flex items-center justify-between gap-3 mb-4">
         <div>
-          <div class="text-[11px] font-black text-cyan-200">神宠之匙抽取</div>
+          <div class="text-[11px] font-black text-cyan-200 inline-flex items-center gap-1"><img src="./resource/神宠之匙.jpg" class="h-4 w-4 rounded object-contain" alt="神宠之匙">神宠之匙抽取</div>
           <h3 class="text-2xl font-black leading-7">启星转盘</h3>
         </div>
         <button @click="closeQixingGachaPanel" class="h-9 px-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm font-black">关闭</button>
@@ -15735,8 +16026,8 @@
             <div class="rounded-xl border border-cyan-200/25 bg-slate-950/35 p-3">
               <div v-if="selectedQixingGachaPhase && selectedQixingGachaPhase.costType === 'hcoin'" class="text-2xl font-black hcoin-display"><img src="./resource/小图标/h币.png" alt="H币"><span>{{ qixingGachaPhaseCurrencyCount }}</span></div>
               <template v-else>
-                <div class="text-[10px] font-black text-cyan-200">{{ qixingGachaPhaseCurrencyLabel }}</div>
-                <div class="text-2xl font-black">{{ qixingGachaPhaseCurrencyCount }}</div>
+                <div class="text-[10px] font-black text-cyan-200 inline-flex items-center gap-1"><img src="./resource/神宠之匙.jpg" class="h-4 w-4 rounded object-contain" alt="神宠之匙">{{ qixingGachaPhaseCurrencyLabel }}</div>
+                <div class="text-2xl font-black inline-flex items-center gap-1"><img src="./resource/神宠之匙.jpg" class="h-6 w-6 rounded object-contain" alt="神宠之匙">{{ qixingGachaPhaseCurrencyCount }}</div>
               </template>
             </div>
             <div class="rounded-xl border border-sky-200/35 bg-slate-950/35 p-3">
@@ -15751,8 +16042,8 @@
             {{ qixingGachaPhaseLockText }}
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <button @click="drawQixingGacha(1)" :disabled="qixingGachaDrawing || !canDrawQixingGacha(1)" class="h-11 rounded-xl bg-cyan-400 text-slate-950 font-black disabled:opacity-50">单抽 <span v-if="selectedQixingGachaPhase && selectedQixingGachaPhase.costType === 'hcoin'" class="hcoin-display"><img src="./resource/小图标/h币.png" alt="H币"><span>{{ qixingGachaDrawCost(1) }}</span></span><span v-else>{{ qixingGachaDrawCostText(1) }}</span></button>
-            <button @click="drawQixingGacha(10)" :disabled="qixingGachaDrawing || !canDrawQixingGacha(10)" class="h-11 rounded-xl bg-amber-300 text-slate-950 font-black disabled:opacity-50">十连 <span v-if="selectedQixingGachaPhase && selectedQixingGachaPhase.costType === 'hcoin'" class="hcoin-display"><img src="./resource/小图标/h币.png" alt="H币"><span>{{ qixingGachaDrawCost(10) }}</span></span><span v-else>{{ qixingGachaDrawCostText(10) }}</span></button>
+            <button @click="drawQixingGacha(1)" :disabled="qixingGachaDrawing || !canDrawQixingGacha(1)" class="h-11 rounded-xl bg-cyan-400 text-slate-950 font-black disabled:opacity-50">单抽 <span v-if="selectedQixingGachaPhase && selectedQixingGachaPhase.costType === 'hcoin'" class="hcoin-display"><img src="./resource/小图标/h币.png" alt="H币"><span>{{ qixingGachaDrawCost(1) }}</span></span><span v-else class="inline-flex items-center gap-1"><img src="./resource/神宠之匙.jpg" class="h-4 w-4 rounded object-contain" alt="神宠之匙">{{ qixingGachaDrawCost(1) }}</span></button>
+            <button @click="drawQixingGacha(10)" :disabled="qixingGachaDrawing || !canDrawQixingGacha(10)" class="h-11 rounded-xl bg-amber-300 text-slate-950 font-black disabled:opacity-50">十连 <span v-if="selectedQixingGachaPhase && selectedQixingGachaPhase.costType === 'hcoin'" class="hcoin-display"><img src="./resource/小图标/h币.png" alt="H币"><span>{{ qixingGachaDrawCost(10) }}</span></span><span v-else class="inline-flex items-center gap-1"><img src="./resource/神宠之匙.jpg" class="h-4 w-4 rounded object-contain" alt="神宠之匙">{{ qixingGachaDrawCost(10) }}</span></button>
           </div>
         </div>
       </div>
@@ -16663,8 +16954,8 @@
         </div>
       </div>
       <div class="battle-target-status battle-target-status-outside">
-        <span v-for="b in battleTargetStatusBadges" :key="'tar_st_out_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
-        <span v-for="e in battleTargetTimedEffects" :key="'tar_fx_out_' + e.key" :title="`${e.desc}｜${e.durationLabel || ('剩余' + e.turns + '回合')}`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
+        <button v-for="b in battleTargetStatusBadges" :key="'tar_st_out_' + b.key" type="button" @click.stop="openBattleEffectList('target')" :title="`${b.desc}｜${b.durationLabel || ('剩余' + b.turns + '回合')}`" class="battle-effect-badge bg-rose-500/70 text-white">{{ b.label }}{{ b.turns > 0 ? b.turns : '' }}</button>
+        <button v-for="e in battleTargetTimedEffects" :key="'tar_fx_out_' + e.key" type="button" @click.stop="openBattleEffectList('target')" :title="`${e.desc}｜${e.durationLabel || ('剩余' + e.turns + '回合')}`" class="battle-effect-badge" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</button>
       </div>
         <div class="mt-2 flex items-end justify-end gap-1 battle-mobile-target-sprite">
           <div
@@ -16826,8 +17117,8 @@
             </div>
           </div>
           <div class="battle-player-status">
-            <span v-for="b in battleAttackerStatusBadges" :key="'atk_st_' + b.key" :title="`${b.desc}｜剩余${b.turns}回合`" class="px-1.5 py-0.5 rounded bg-rose-500/70 text-[10px] font-black text-white">{{ b.label }}{{ b.turns }}</span>
-            <span v-for="e in battleAttackerTimedEffects" :key="'atk_fx_' + e.key" :title="`${e.desc}｜${e.durationLabel || ('剩余' + e.turns + '回合')}`" class="px-1.5 py-0.5 rounded text-[10px] font-black" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</span>
+            <button v-for="b in battleAttackerStatusBadges" :key="'atk_st_' + b.key" type="button" @click.stop="openBattleEffectList('attacker')" :title="`${b.desc}｜${b.durationLabel || ('剩余' + b.turns + '回合')}`" class="battle-effect-badge bg-rose-500/70 text-white">{{ b.label }}{{ b.turns > 0 ? b.turns : '' }}</button>
+            <button v-for="e in battleAttackerTimedEffects" :key="'atk_fx_' + e.key" type="button" @click.stop="openBattleEffectList('attacker')" :title="`${e.desc}｜${e.durationLabel || ('剩余' + e.turns + '回合')}`" class="battle-effect-badge" :class="e.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ e.label }}</button>
           </div>
         </div>
         <div class="battle-player-elements">
@@ -16911,6 +17202,31 @@
 </div>
 
 <teleport to="body">
+  <div v-if="battleScene && battleScene.open && battleEffectListSide" class="battle-effect-list-overlay fixed inset-0 flex items-center justify-center p-4 bg-slate-950/78 backdrop-blur-sm" style="z-index:2147483647" @click.stop="closeBattleEffectList">
+    <div class="battle-effect-list-dialog w-full max-w-2xl max-h-[82vh] overflow-hidden rounded-3xl border border-sky-300 bg-sky-50 shadow-2xl" @click.stop>
+      <div class="battle-effect-list-header flex items-start justify-between gap-3 border-b border-cyan-200/20 px-5 py-4">
+        <div>
+          <div class="text-xs font-black tracking-[0.24em] text-sky-600">{{ battleEffectListSide === 'target' ? '敌方亚比' : '我方亚比' }}</div>
+          <h3 class="mt-1 text-xl font-black text-sky-950">{{ battleEffectListSide === 'target' ? battleScene.targetName : battleScene.attackerName }}的效果列表</h3>
+        </div>
+        <button type="button" class="h-9 px-3 rounded-xl border border-sky-500 bg-sky-100 text-slate-950 text-sm font-black" @click.stop="closeBattleEffectList">关闭</button>
+      </div>
+      <div class="battle-effect-list-scroll max-h-[62vh] overflow-y-auto p-4">
+        <div class="space-y-2">
+          <div v-for="row in battleEffectListRows" :key="'battle_effect_list_' + row.key" class="battle-effect-list-row">
+            <span class="rounded-lg px-2 py-1 text-[10px] font-black" :class="row.tone === 'buff' ? 'bg-rose-500/22 text-rose-100' : 'bg-emerald-500/22 text-emerald-100'">{{ row.category }}</span>
+            <div class="min-w-0">
+              <div class="text-sm font-black text-sky-950">{{ row.label }}</div>
+              <div class="mt-1 text-xs font-bold leading-5 text-slate-950">{{ row.desc }}</div>
+            </div>
+            <div class="text-right text-[11px] font-black text-slate-950">{{ row.duration }}</div>
+          </div>
+        </div>
+        <div v-if="battleEffectListRows.length === 0" class="rounded-2xl border border-dashed border-sky-300 bg-white/70 p-6 text-center text-sm font-black text-slate-950">当前没有任何状态或持续效果。</div>
+      </div>
+    </div>
+  </div>
+
   <div v-if="battleScene && battleScene.open && battleSkillLongPressTip.show" class="fixed inset-0 flex items-center justify-center p-4" style="z-index:2147483647" @click.stop="hideBattleSkillLongPressTip">
     <div class="w-[min(90vw,430px)] rounded-2xl border border-cyan-200 bg-slate-950 p-4 text-slate-100 shadow-2xl" @click.stop>
       <div class="flex items-center justify-between gap-3">
@@ -17100,6 +17416,6 @@
 </div>
 
 <script src="./aola-dex-1-100.js?v=20260617_fix_weekly_and_action_fx"></script>
-  <script src="./aola-star-app.js?v=20260921_dark_guardian_awakening_v1"></script>
+  <script src="./aola-star-app.js?v=20260923_skill_effects_2033_2036_v24"></script>
 </body>
 </html>

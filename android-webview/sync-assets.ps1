@@ -1,9 +1,10 @@
 ﻿param(
-  [string]$ProjectRoot = ".."
+  [string]$ProjectRoot = ""
 )
 
 $ErrorActionPreference = 'Stop'
-$srcRoot = Resolve-Path -LiteralPath $ProjectRoot
+$resolvedProjectRoot = if ($ProjectRoot) { $ProjectRoot } else { Join-Path $PSScriptRoot ".." }
+$srcRoot = Resolve-Path -LiteralPath $resolvedProjectRoot
 $dstRoot = Join-Path $PSScriptRoot "app/src/main/assets/www"
 
 if (Test-Path -LiteralPath $dstRoot) {
@@ -12,8 +13,8 @@ if (Test-Path -LiteralPath $dstRoot) {
 New-Item -ItemType Directory -Path $dstRoot | Out-Null
 
 $copyFiles = @(
-  "aola-star.html",
-  "aola-star-app.js",
+  "aola-star-dev.html",
+  "aola-star-app-dev.js",
   "aola-star-crash.js",
   "aola-dex-1-100.js",
   "aola-species-data.js",

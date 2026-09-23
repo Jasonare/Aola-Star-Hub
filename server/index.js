@@ -11,6 +11,33 @@ const TEAMS_FILE = path.join(DATA_DIR, "teams.json");
 const ELITE_TOURNAMENT_FILE = path.join(DATA_DIR, "elite-tournament.json");
 const PVP_ROOMS_FILE = path.join(DATA_DIR, "pvp-rooms.json");
 const WEEKLY_BOSS_FIRST_CLEAR_FILE = path.join(DATA_DIR, "weekly-boss-first-clears.json");
+const MID_AUTUMN_REWARD_FILE = path.join(DATA_DIR, "mid-autumn-rewards.json");
+const MID_AUTUMN_BIG_MOONCAKE_ITEM_ID = "mid_autumn_big_mooncake";
+const MID_AUTUMN_MOONCAKE_ITEM_ID = "mid_autumn_mooncake";
+const MID_AUTUMN_REDEEM_ID_PREFIX = "mid_autumn_redeem_";
+const MID_AUTUMN_UNIQUE_REWARD_EVIDENCE = Object.freeze([
+  { id: `${MID_AUTUMN_REDEEM_ID_PREFIX}awakening_stone`, itemId: "dark_guardian_awakening_stone" },
+  { id: `${MID_AUTUMN_REDEEM_ID_PREFIX}ancient_star_dragon_skin`, itemId: "mid_autumn_ancient_star_dragon_skin", skinKey: "mid_autumn_ancient_star_dragon" },
+  { id: `${MID_AUTUMN_REDEEM_ID_PREFIX}haoyue_giant_skin`, itemId: "mid_autumn_haoyue_giant_skin", skinKey: "mid_autumn_haoyue_giant" },
+  { id: `${MID_AUTUMN_REDEEM_ID_PREFIX}dragon_boat_blade`, itemId: "dragon_boat_battle_blade" }
+]);
+const MID_AUTUMN_REDEEM_CATALOG = Object.freeze({
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}awakening_stone`]: { currency: "big", cost: 5000, limit: 1, itemId: "dark_guardian_awakening_stone" },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}ancient_star_dragon_skin`]: { currency: "big", cost: 3500, limit: 1, itemId: "mid_autumn_ancient_star_dragon_skin" },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}haoyue_giant_skin`]: { currency: "big", cost: 2500, limit: 1, itemId: "mid_autumn_haoyue_giant_skin" },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}lingfeng_trait`]: { currency: "big", cost: 2000, limit: 1, traitKey: "lingfeng" },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}sacred_heart_trait`]: { currency: "big", cost: 2000, limit: 1, traitKey: "sacred_heart" },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}dragon_boat_blade`]: { currency: "big", cost: 2000, limit: 1, itemId: "dragon_boat_battle_blade" },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}divine_pet_key`]: { currency: "big", cost: 1500, limit: 2, itemId: "divine_pet_key", amount: 100 },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}equipment_crystal`]: { currency: "big", cost: 800, limit: 3, itemId: "equipment_dungeon_crystal", amount: 100 },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}tianxia_fruit`]: { currency: "small", cost: 1000, limit: 3, itemId: "talent_grade_tianxia_fruit" },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}trait_fragment`]: { currency: "small", cost: 800, limit: 3, itemId: "qixing_fragment", amount: 50 },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}wangzhe_fruit`]: { currency: "small", cost: 600, limit: 5, itemId: "talent_grade_wangzhe_fruit" },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}double_hcoin`]: { currency: "small", cost: 400, limit: 10, itemId: "double_hcoin_device" },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}level_down_spray`]: { currency: "small", cost: 200, limit: 0, itemId: "level_down_spray" },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}study_reset_fruit`]: { currency: "small", cost: 200, limit: 0, itemId: "study_reset_fruit" },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}big_mooncake`]: { currency: "small", cost: 10, limit: 0, itemId: MID_AUTUMN_BIG_MOONCAKE_ITEM_ID }
+});
 const WEEKLY_BOSS_DIFFICULTY_KEYS = new Set(["normal", "hard", "nightmare"]);
 const ELITE_TOURNAMENT_SIZE = 128;
 const ELITE_TOURNAMENT_GROUP_COUNT = 8;
@@ -119,13 +146,174 @@ const verifyPassword = (password, user) => {
 
 const userSaveDir = (userId) => path.join(SAVE_ROOT, String(userId));
 const userSaveFile = (userId) => path.join(userSaveDir(userId), "save.json");
+
+const chinaDateParts = (date = new Date()) => {
+  const parts = new Intl.DateTimeFormat("zh-CN", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23"
+  }).formatToParts(date).reduce((out, part) => {
+    out[part.type] = part.value;
+    return out;
+  }, {});
+  return {
+    date: `${parts.year}-${parts.month}-${parts.day}`,
+    hour: Number(parts.hour) || 0,
+    minute: Number(parts.minute) || 0,
+    second: Number(parts.second) || 0
+  };
+};
+
+const midAutumnEventSnapshot = (date = new Date()) => {
+  const parts = chinaDateParts(date);
+  return {
+    now: date.getTime(),
+    date: parts.date,
+    active: parts.hour >= 20 && parts.hour < 22,
+    timezone: "Asia/Shanghai"
+  };
+};
+
+const midAutumnRewardDb = () => {
+  const raw = readJsonFile(MID_AUTUMN_REWARD_FILE, { users: {} });
+  return { users: raw && raw.users && typeof raw.users === "object" && !Array.isArray(raw.users) ? raw.users : {} };
+};
+
+const saveMidAutumnRewardDb = (db) => writeJsonFile(MID_AUTUMN_REWARD_FILE, { users: db && db.users && typeof db.users === "object" ? db.users : {} });
+
+const normalizeMidAutumnRewardState = (source = {}, event = midAutumnEventSnapshot()) => {
+  const raw = source && typeof source === "object" ? source : {};
+  const redeemPurchases = raw.redeemPurchases && typeof raw.redeemPurchases === "object" ? raw.redeemPurchases : {};
+  const normalizedPurchases = {};
+  Object.keys(redeemPurchases).forEach((id) => {
+    const key = String(id || "").trim();
+    if (!key.startsWith(MID_AUTUMN_REDEEM_ID_PREFIX)) return;
+    normalizedPurchases[key] = Math.max(0, Math.floor(Number(redeemPurchases[id]) || 0));
+  });
+  const settledBattles = Array.isArray(raw.settledBattles)
+    ? Array.from(new Set(raw.settledBattles.map((id) => String(id || "").trim()).filter(Boolean))).slice(-2000)
+    : [];
+  return {
+    bigMooncakeBalance: Math.max(0, Math.floor(Number(raw.bigMooncakeBalance) || 0)),
+    bigMooncakeEarned: Math.max(0, Math.floor(Number(raw.bigMooncakeEarned) || 0)),
+    smallMooncakeBalance: Math.max(0, Math.floor(Number(raw.smallMooncakeBalance) || 0)),
+    bossAttemptsDate: String(raw.bossAttemptsDate || event.date),
+    bossAttemptsUsed: Math.max(0, Math.floor(Number(raw.bossAttemptsUsed) || 0)),
+    redeemPurchases: normalizedPurchases,
+    settledBattles
+  };
+};
+
+const mergeMidAutumnRedeemPurchasesFromSave = (state, save) => {
+  if (!state || typeof state !== "object" || !save || typeof save !== "object") return false;
+  if (!state.redeemPurchases || typeof state.redeemPurchases !== "object") state.redeemPurchases = {};
+  let changed = false;
+  const mergeSource = (source, legacy = false) => {
+    if (!source || typeof source !== "object" || Array.isArray(source)) return;
+    Object.entries(source).forEach(([rawId, count]) => {
+      const raw = String(rawId || "").trim();
+      const id = legacy && !raw.startsWith(MID_AUTUMN_REDEEM_ID_PREFIX) ? `${MID_AUTUMN_REDEEM_ID_PREFIX}${raw}` : raw;
+      if (!id.startsWith(MID_AUTUMN_REDEEM_ID_PREFIX) || id === MID_AUTUMN_REDEEM_ID_PREFIX) return;
+      const nextCount = Math.max(0, Math.floor(Number(state.redeemPurchases[id]) || 0), Math.floor(Number(count) || 0));
+      if (nextCount === Math.max(0, Math.floor(Number(state.redeemPurchases[id]) || 0))) return;
+      state.redeemPurchases[id] = nextCount;
+      changed = true;
+    });
+  };
+  mergeSource(save.shopLimitedPurchases, false);
+  mergeSource(save.midAutumnRedeemPurchases, true);
+  return changed;
+};
+
+const midAutumnRewardStateForUser = (user, options = {}) => {
+  const event = midAutumnEventSnapshot();
+  const db = midAutumnRewardDb();
+  const userId = String(user && user.id || "");
+  const hasStoredState = Boolean(db.users[userId]);
+  let state = normalizeMidAutumnRewardState(db.users[userId], event);
+  const savedGame = extractGameSaveState(readJsonFile(userSaveFile(userId), null)) || {};
+  let stateChanged = !hasStoredState;
+  if (!hasStoredState) {
+    const items = savedGame.items && typeof savedGame.items === "object" ? savedGame.items : {};
+    const balance = Math.max(0, Math.floor(Number(items[MID_AUTUMN_BIG_MOONCAKE_ITEM_ID]) || 0));
+    state.bigMooncakeBalance = balance;
+    state.bigMooncakeEarned = Math.max(balance, Math.floor(Number(savedGame.midAutumnBigMooncakeEarned) || 0));
+    state.smallMooncakeBalance = Math.max(0, Math.floor(Number(items[MID_AUTUMN_MOONCAKE_ITEM_ID]) || 0));
+  }
+  stateChanged = mergeMidAutumnRedeemPurchasesFromSave(state, savedGame) || stateChanged;
+  stateChanged = mergeMidAutumnRedeemPurchasesFromSave(state, options && options.save) || stateChanged;
+  const savedItems = savedGame.items && typeof savedGame.items === "object" ? savedGame.items : {};
+  const savedPets = Array.isArray(savedGame.activePets) ? savedGame.activePets : [];
+  let repairedUniquePurchases = false;
+  MID_AUTUMN_UNIQUE_REWARD_EVIDENCE.forEach((entry) => {
+    const ownsItem = Math.max(0, Math.floor(Number(savedItems[entry.itemId]) || 0)) > 0;
+    const hasEquippedSkin = entry.skinKey && savedPets.some((pet) => String(pet && pet.skinKey || "").trim() === entry.skinKey);
+    if (!ownsItem && !hasEquippedSkin) return;
+    if (Math.max(0, Math.floor(Number(state.redeemPurchases[entry.id]) || 0)) >= 1) return;
+    state.redeemPurchases[entry.id] = 1;
+    repairedUniquePurchases = true;
+    stateChanged = true;
+  });
+  if (state.bossAttemptsDate !== event.date) {
+    state.bossAttemptsDate = event.date;
+    state.bossAttemptsUsed = 0;
+    stateChanged = true;
+  }
+  if (stateChanged) {
+    db.users[userId] = state;
+    saveMidAutumnRewardDb(db);
+  }
+  if (repairedUniquePurchases) persistMidAutumnRewardState(user, state);
+  return { db, state, event };
+};
+
+const applyMidAutumnRewardStateToSave = (save, state) => {
+  const next = save && typeof save === "object" && !Array.isArray(save) ? { ...save } : {};
+  next.items = next.items && typeof next.items === "object" && !Array.isArray(next.items) ? { ...next.items } : {};
+  next.items[MID_AUTUMN_BIG_MOONCAKE_ITEM_ID] = Math.max(0, Math.floor(Number(state && state.bigMooncakeBalance) || 0));
+  next.items[MID_AUTUMN_MOONCAKE_ITEM_ID] = Math.max(0, Math.floor(Number(state && state.smallMooncakeBalance) || 0));
+  next.midAutumnBigMooncakeEarned = Math.max(0, Math.floor(Number(state && state.bigMooncakeEarned) || 0));
+  next.midAutumnBossAttempts = {
+    date: String(state && state.bossAttemptsDate || ""),
+    used: Math.max(0, Math.floor(Number(state && state.bossAttemptsUsed) || 0))
+  };
+  next.shopLimitedPurchases = next.shopLimitedPurchases && typeof next.shopLimitedPurchases === "object" ? { ...next.shopLimitedPurchases } : {};
+  Object.entries((state && state.redeemPurchases) || {}).forEach(([id, count]) => {
+    next.shopLimitedPurchases[id] = Math.max(0, Math.floor(Number(count) || 0));
+  });
+  next.midAutumnRedeemPurchases = { ...((next.midAutumnRedeemPurchases && typeof next.midAutumnRedeemPurchases === "object") ? next.midAutumnRedeemPurchases : {}), ...((state && state.redeemPurchases) || {}) };
+  return next;
+};
+
+const persistMidAutumnRewardState = (user, state, itemGrant = null) => {
+  const current = readJsonFile(userSaveFile(user.id), null);
+  const currentSave = extractGameSaveState(current) || {};
+  const save = applyMidAutumnRewardStateToSave(currentSave, state);
+  if (itemGrant && itemGrant.itemId) {
+    save.items[itemGrant.itemId] = Math.max(0, Math.floor(Number(save.items[itemGrant.itemId]) || 0)) + Math.max(1, Math.floor(Number(itemGrant.amount) || 1));
+  }
+  const payload = normalizeSaveForUser(user, {
+    userId: user.id,
+    username: user.username,
+    savedAt: new Date().toISOString(),
+    save
+  });
+  writeJsonFile(userSaveFile(user.id), payload);
+  return payload;
+};
 const TEST_USER_ID = "test-account-all-pets-1-1960";
 const LEGACY_TEST_USER_IDS = ["test-account-all-pets-1-1928", "test-account-all-pets-1-796"];
 const TEST_USERNAME = "test";
 const TEST_PASSWORD = "test123456";
 const LEADERBOARD_MAX_OPEN_DEX_ID = 3000;
 const LEADERBOARD_MAX_HCOINS = 100000000;
-const LEADERBOARD_METRICS = new Set(["battlePower", "activatedDexCount", "hCoins", "timeTunnelMaxClearedFloor", "equipmentDungeonBestScore"]);
+const LEADERBOARD_MAX_BATTLE_POWER = 180000;
+const LEADERBOARD_METRICS = new Set(["battlePower", "activatedDexCount", "hCoins", "timeTunnelMaxClearedFloor", "equipmentDungeonBestScore", "bigMooncakeTotal"]);
 const LEADERBOARD_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 const TEAM_LEVEL_RULES = [
   { level: 1, memberLimit: 20, nextHonor: 15000 },
@@ -418,7 +606,7 @@ const createTestSaveState = () => {
     challengeFormIndex: 0,
     selectedAttackerId: bagPetIds[0] || "",
     selectedPetId: activePets[0] ? activePets[0].id : "",
-    items: { level_40_fruit: 1, divine_pet_key: 10000 },
+    items: { level_40_fruit: 1, divine_pet_key: 0, mid_autumn_big_mooncake: 0, mid_autumn_mooncake: 0 },
     hCoins: 100000,
     guardianWinCounts: {},
     equippedBadgeId: "",
@@ -508,7 +696,7 @@ const createFullTestSaveState = () => {
     if (difficulty) acc[difficulty] = true;
     return acc;
   }, {});
-  const items = { level_40_fruit: 1, divine_pet_key: 10000 };
+  const items = { level_40_fruit: 1, divine_pet_key: 0, mid_autumn_big_mooncake: 0, mid_autumn_mooncake: 0 };
   if (progressionMeta.weeklyMedalItemId) items[progressionMeta.weeklyMedalItemId] = 50;
   return {
     activatedDexIds,
@@ -604,8 +792,8 @@ const normalizeFullTestSavePayload = (payload) => {
     weeklyBossRewardState: fullSeed.weeklyBossRewardState,
     equippedBadgeId: fullSeed.equippedBadgeId,
     items: {
-      ...(save.items && typeof save.items === "object" ? save.items : {}),
-      ...(fullSeed.items && typeof fullSeed.items === "object" ? fullSeed.items : {})
+      ...(fullSeed.items && typeof fullSeed.items === "object" ? fullSeed.items : {}),
+      ...(save.items && typeof save.items === "object" ? save.items : {})
     }
   };
 };
@@ -614,10 +802,6 @@ const normalizeTestSavePayload = (payload) => {
   const seed = createTestSaveState();
   const save = payload && typeof payload.save === "object" && !Array.isArray(payload.save) ? payload.save : null;
   if (!save) return seed;
-  if (!seed.items || typeof seed.items !== "object") seed.items = {};
-  seed.items.divine_pet_key = 10000;
-  if (!save.items || typeof save.items !== "object") save.items = {};
-  save.items.divine_pet_key = 10000;
   const activePets = Array.isArray(save.activePets) ? save.activePets : [];
   const seedPetIds = new Set(seed.activePets.map((pet) => pet.id));
   const activePetIds = new Set(activePets.map((pet) => String(pet && pet.id || "")));
@@ -997,6 +1181,11 @@ const buildLeaderboardRows = () => {
       maxBagBattlePower,
       activatedDexCount: new Set(Array.isArray(save.activatedDexIds) ? save.activatedDexIds.map((id) => Number(id) || 0).filter(Boolean) : []).size,
       hCoins: Math.max(0, Math.floor(Number(save.hCoins) || 0)),
+      bigMooncakeTotal: Math.max(
+        0,
+        Math.floor(Number(save.midAutumnBigMooncakeEarned) || 0),
+        Math.floor(Number(save.items && save.items.mid_autumn_big_mooncake) || 0)
+      ),
       timeTunnelMaxClearedFloor: readLeaderboardTimeTunnelFloor(save),
       equipmentDungeonBestScore: readLeaderboardEquipmentDungeonBestScore(save),
       savedAt: payload && payload.savedAt ? payload.savedAt : ""
@@ -1004,14 +1193,15 @@ const buildLeaderboardRows = () => {
   });
 };
 
-const isLegalLeaderboardRow = (row) => (
+const isLegalLeaderboardRow = (row, metric) => (
   Math.max(0, Math.floor(Number(row && row.activatedDexCount) || 0)) <= LEADERBOARD_MAX_OPEN_DEX_ID &&
-  Math.max(0, Math.floor(Number(row && row.hCoins) || 0)) <= LEADERBOARD_MAX_HCOINS
+  Math.max(0, Math.floor(Number(row && row.hCoins) || 0)) <= LEADERBOARD_MAX_HCOINS &&
+  (metric !== "battlePower" || Math.max(0, Math.floor(Number(row && row.battlePower) || 0)) <= LEADERBOARD_MAX_BATTLE_POWER)
 );
 
-const buildQualifiedLeaderboardRows = () => buildLeaderboardRows().filter(isLegalLeaderboardRow);
+const buildQualifiedLeaderboardRows = (metric) => buildLeaderboardRows().filter((row) => isLegalLeaderboardRow(row, metric));
 
-const buildRankedLeaderboardRows = (metric) => buildQualifiedLeaderboardRows()
+const buildRankedLeaderboardRows = (metric) => buildQualifiedLeaderboardRows(metric)
   .sort((a, b) => {
     const delta = Math.max(0, Number(b[metric]) || 0) - Math.max(0, Number(a[metric]) || 0);
     return delta || String(a.username).localeCompare(String(b.username), "zh-Hans-CN");
@@ -2043,6 +2233,147 @@ const handleApi = async (req, res) => {
       const user = currentUser(req);
       return sendJson(res, 200, { ok: true, user: user ? publicUser(user) : null });
     }
+    if (req.method === "GET" && pathname === "/api/mid-autumn/state") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const { state, event } = midAutumnRewardStateForUser(user);
+      return sendJson(res, 200, {
+        ok: true,
+        serverNow: event.now,
+        timezone: event.timezone,
+        doubleRewardActive: event.active,
+        bigMooncakeBalance: state.bigMooncakeBalance,
+        bigMooncakeEarned: state.bigMooncakeEarned,
+        smallMooncakeBalance: state.smallMooncakeBalance,
+        bossAttemptsDate: state.bossAttemptsDate,
+        bossAttemptsUsed: state.bossAttemptsUsed,
+        redeemPurchases: state.redeemPurchases
+      });
+    }
+    if (req.method === "POST" && pathname === "/api/mid-autumn/attempt/start") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const { db, state, event } = midAutumnRewardStateForUser(user);
+      if (state.bossAttemptsUsed >= 10) return sendJson(res, 409, { ok: false, message: "今日中秋BOSS挑战次数已用完。" });
+      state.bossAttemptsUsed += 1;
+      db.users[user.id] = state;
+      saveMidAutumnRewardDb(db);
+      persistMidAutumnRewardState(user, state);
+      return sendJson(res, 200, {
+        ok: true,
+        serverNow: event.now,
+        bossAttemptsDate: state.bossAttemptsDate,
+        bossAttemptsUsed: state.bossAttemptsUsed,
+        bigMooncakeBalance: state.bigMooncakeBalance,
+        bigMooncakeEarned: state.bigMooncakeEarned,
+        smallMooncakeBalance: state.smallMooncakeBalance,
+        redeemPurchases: state.redeemPurchases,
+        doubleRewardActive: event.active,
+        timezone: event.timezone
+      });
+    }
+    if (req.method === "POST" && pathname === "/api/mid-autumn/redeem") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const id = safeTeamText(body && body.id, 120);
+      const entry = MID_AUTUMN_REDEEM_CATALOG[id];
+      if (!entry) return sendJson(res, 404, { ok: false, message: "中秋兑换奖励不存在。" });
+      const { db, state, event } = midAutumnRewardStateForUser(user);
+      const bought = Math.max(0, Math.floor(Number(state.redeemPurchases[id]) || 0));
+      if (entry.limit > 0 && bought >= entry.limit) return sendJson(res, 409, { ok: false, message: "该中秋奖励已达到限购次数。" });
+      const currencyKey = entry.currency === "big" ? "bigMooncakeBalance" : "smallMooncakeBalance";
+      if (state[currencyKey] < entry.cost) return sendJson(res, 409, { ok: false, message: `${entry.currency === "big" ? "大月饼" : "小月饼"}不足。` });
+      state[currencyKey] -= entry.cost;
+      state.redeemPurchases[id] = bought + 1;
+      const grantAmount = Math.max(1, Math.floor(Number(entry.amount) || 1));
+      const isBigMooncakeGrant = entry.itemId === MID_AUTUMN_BIG_MOONCAKE_ITEM_ID;
+      if (isBigMooncakeGrant) {
+        state.bigMooncakeBalance += grantAmount;
+        state.bigMooncakeEarned += grantAmount;
+      }
+      const itemGrant = entry.itemId && !isBigMooncakeGrant ? { itemId: entry.itemId, amount: grantAmount } : null;
+      db.users[user.id] = state;
+      saveMidAutumnRewardDb(db);
+      persistMidAutumnRewardState(user, state, itemGrant);
+      return sendJson(res, 200, {
+        ok: true,
+        serverNow: event.now,
+        doubleRewardActive: event.active,
+        timezone: event.timezone,
+        bigMooncakeBalance: state.bigMooncakeBalance,
+        bigMooncakeEarned: state.bigMooncakeEarned,
+        smallMooncakeBalance: state.smallMooncakeBalance,
+        redeemPurchases: state.redeemPurchases,
+        itemGrant,
+        traitGrant: entry.traitKey ? { traitKey: entry.traitKey, amount: 1 } : null
+      });
+    }
+    if (req.method === "POST" && pathname === "/api/mid-autumn/settle") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const battleId = safeTeamText(body && body.battleId, 120);
+      if (!battleId) return sendJson(res, 400, { ok: false, message: "缺少中秋战斗结算编号。" });
+      const { db, state, event } = midAutumnRewardStateForUser(user);
+      if (state.settledBattles.includes(battleId)) {
+        return sendJson(res, 200, {
+          ok: true,
+          duplicate: true,
+          serverNow: event.now,
+          doubleRewardActive: event.active,
+          bigMooncakeBalance: state.bigMooncakeBalance,
+          bigMooncakeEarned: state.bigMooncakeEarned,
+          smallMooncakeBalance: state.smallMooncakeBalance,
+          bigMooncakeGranted: 0,
+          smallMooncakeGranted: 0
+        });
+      }
+      const won = Boolean(body && body.won);
+      const mode = safeTeamText(body && body.mode, 40);
+      let smallMooncakeGranted = 0;
+      let bigMooncakeGranted = 0;
+      if (won && event.active) {
+        if (mode === "timeTunnel") {
+          const floor = Math.max(1, Math.min(50, safeNonNegInt(body && body.floor, 1)));
+          smallMooncakeGranted = floor <= 10 ? 3 : (floor <= 20 ? 5 : (floor <= 30 ? 7 : (floor <= 40 ? 9 : 11)));
+        } else if (mode === "dexChallenge") {
+          smallMooncakeGranted = Math.max(0, Math.min(10, safeNonNegInt(body && body.smallMooncake, 0)));
+        } else if (mode === "midAutumnBoss") {
+          const damage = Math.max(0, Math.floor(Number(body && body.damage) || 0));
+          if (damage < 5000) bigMooncakeGranted = 5;
+          else if (damage < 10000) bigMooncakeGranted = 10;
+          else if (damage < 20000) bigMooncakeGranted = 15;
+          else if (damage < 30000) bigMooncakeGranted = 20;
+          else if (damage < 40000) bigMooncakeGranted = 25;
+          else if (damage < 50000) bigMooncakeGranted = 30;
+          else if (damage < 60000) bigMooncakeGranted = 35;
+          else if (damage < 70000) bigMooncakeGranted = 40;
+          else if (damage < 80000) bigMooncakeGranted = 45;
+          else if (damage < 90000) bigMooncakeGranted = 50;
+          else if (damage < 100000) bigMooncakeGranted = 55;
+          else bigMooncakeGranted = 66;
+        }
+      }
+      state.smallMooncakeBalance += smallMooncakeGranted;
+      state.bigMooncakeBalance += bigMooncakeGranted;
+      state.bigMooncakeEarned += bigMooncakeGranted;
+      state.settledBattles.push(battleId);
+      state.settledBattles = state.settledBattles.slice(-2000);
+      db.users[user.id] = state;
+      saveMidAutumnRewardDb(db);
+      persistMidAutumnRewardState(user, state);
+      return sendJson(res, 200, {
+        ok: true,
+        serverNow: event.now,
+        doubleRewardActive: event.active,
+        bigMooncakeBalance: state.bigMooncakeBalance,
+        bigMooncakeEarned: state.bigMooncakeEarned,
+        smallMooncakeBalance: state.smallMooncakeBalance,
+        bigMooncakeGranted,
+        smallMooncakeGranted
+      });
+    }
     if (req.method === "GET" && pathname === "/api/weekly-boss/first-clears") {
       const bossKey = normalizeWeeklyBossFirstClearBossKey(apiUrl.searchParams.get("bossKey"));
       if (!bossKey) return sendJson(res, 400, { ok: false, message: "当周BOSS标识不正确。" });
@@ -2805,6 +3136,10 @@ const handleApi = async (req, res) => {
       const user = requireUser(req, res);
       if (!user) return;
       let save = readJsonFile(userSaveFile(user.id), null);
+      const rewardState = midAutumnRewardStateForUser(user).state;
+      if (save && typeof save === "object" && save.save && typeof save.save === "object") {
+        save = { ...save, save: applyMidAutumnRewardStateToSave(save.save, rewardState) };
+      }
       const normalized = normalizeSaveForUser(user, save);
       if (normalized !== save) {
         save = normalized;
@@ -2820,12 +3155,39 @@ const handleApi = async (req, res) => {
         return sendJson(res, 400, { ok: false, message: "存档数据格式不正确。" });
       }
       ensureDir(userSaveDir(user.id));
+      const previousPayload = readJsonFile(userSaveFile(user.id), null);
+      const previousSave = extractGameSaveState(previousPayload);
+      const submittedShopPurchases = body.save.shopLimitedPurchases && typeof body.save.shopLimitedPurchases === "object"
+        ? body.save.shopLimitedPurchases
+        : {};
+      const submittedMidAutumnPurchases = body.save.midAutumnRedeemPurchases && typeof body.save.midAutumnRedeemPurchases === "object"
+        ? body.save.midAutumnRedeemPurchases
+        : {};
+      const previousShopPurchases = previousSave.shopLimitedPurchases && typeof previousSave.shopLimitedPurchases === "object"
+        ? previousSave.shopLimitedPurchases
+        : {};
+      const previousMidAutumnPurchases = previousSave.midAutumnRedeemPurchases && typeof previousSave.midAutumnRedeemPurchases === "object"
+        ? previousSave.midAutumnRedeemPurchases
+        : {};
+      const mergedPurchases = {};
+      [[submittedShopPurchases, false], [submittedMidAutumnPurchases, true], [previousShopPurchases, false], [previousMidAutumnPurchases, true]].forEach(([source, isLegacyMidAutumn]) => {
+        Object.keys(source).forEach((id) => {
+          const storageId = isLegacyMidAutumn && !String(id).startsWith("mid_autumn_redeem_") ? `mid_autumn_redeem_${id}` : id;
+          mergedPurchases[storageId] = Math.max(
+            0,
+            Math.floor(Number(mergedPurchases[storageId]) || 0),
+            Math.floor(Number(source[id]) || 0)
+          );
+        });
+      });
       const payload = {
         userId: user.id,
         username: user.username,
         savedAt: new Date().toISOString(),
-        save: body.save
+        save: { ...body.save, shopLimitedPurchases: mergedPurchases }
       };
+      const rewardState = midAutumnRewardStateForUser(user, { save: body.save }).state;
+      payload.save = applyMidAutumnRewardStateToSave(payload.save, rewardState);
       const normalized = normalizeSaveForUser(user, payload);
       writeJsonFile(userSaveFile(user.id), normalized);
       return sendJson(res, 200, { ok: true, savedAt: normalized.savedAt, saveDir: `server/data/saves/${user.id}` });
