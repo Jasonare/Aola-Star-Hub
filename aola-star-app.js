@@ -29528,7 +29528,7 @@ const applyBossChainFinalBuff = (scene) => {
         return showToast("该兑换码已经使用过了。");
       }
       const bigMooncakeReward = Math.max(0, Math.floor(Number(SHOP_REDEEM_CODE_BIG_MOONCAKE_REWARDS[code]) || 0));
-      if (bigMooncakeReward > 0) {
+      if (bigMooncakeReward > 0 && code !== SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_M) {
         if (playMode.value === "user" && authUser.value) {
           try {
             const data = await apiJson("/api/mid-autumn/redeem-code", {
@@ -29548,6 +29548,14 @@ const applyBossChainFinalBuff = (scene) => {
           addItemCount(MID_AUTUMN_BIG_MOONCAKE_ITEM_ID, bigMooncakeReward);
         }
         if (!state.value.redeemedCodes.map((row) => normalize(row).toUpperCase()).includes(code)) state.value.redeemedCodes.push(code);
+        shopRedeemCodeInput.value = "";
+        queueRewardFlyToasts([`获得${MID_AUTUMN_BIG_MOONCAKE_ITEM_NAME}×${bigMooncakeReward}！`]);
+        showToast(`兑换成功，获得${MID_AUTUMN_BIG_MOONCAKE_ITEM_NAME}×${bigMooncakeReward}。`);
+        return;
+      }
+      if (code === SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_M) {
+        state.value.redeemedCodes.push(code);
+        addItemCount(MID_AUTUMN_BIG_MOONCAKE_ITEM_ID, bigMooncakeReward);
         shopRedeemCodeInput.value = "";
         queueRewardFlyToasts([`获得${MID_AUTUMN_BIG_MOONCAKE_ITEM_NAME}×${bigMooncakeReward}！`]);
         showToast(`兑换成功，获得${MID_AUTUMN_BIG_MOONCAKE_ITEM_NAME}×${bigMooncakeReward}。`);
