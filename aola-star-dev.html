@@ -16859,6 +16859,7 @@
           <div class="team-boss-desc">
             <div class="team-boss-desc-title">挑战说明</div>
             <div class="team-boss-desc-line">每日可无限次挑战，取伤害最高的一次计入排行。</div>
+            <div class="team-boss-desc-line">单回合累计伤害上限为30万，超过上限本次挑战直接失败。</div>
             <div class="team-boss-desc-line">BOSS每回合有50%概率提升双防1级。</div>
             <div class="team-boss-desc-line">我方每阵亡1只亚比，苍穹圣龙增加2500点护盾值（可叠加）。</div>
             <div class="team-boss-desc-line">战队BOSS减伤20%，每回合末80%概率令对方陷入冰冻、麻痹、烧伤、束缚中的其中1种状态。</div>
@@ -17393,8 +17394,8 @@
       </div>
     </div>
     <div class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
-      <div v-if="battleResult.teamBossDamageLimitExceeded" class="rounded-2xl border border-fuchsia-300 bg-fuchsia-50 p-4 text-center text-lg font-black text-fuchsia-800">
-        Hub不允许有你这么牛逼的存在
+      <div v-if="battleResult.bossDamageLimitExceeded || battleResult.teamBossDamageLimitExceeded" class="rounded-2xl border border-fuchsia-300 bg-fuchsia-50 p-4 text-center text-lg font-black text-fuchsia-800">
+        Hub不允许你这么牛逼的存在
       </div>
       <div v-if="battleResult.hCoinGain > 0" class="rounded-2xl border border-yellow-200 bg-yellow-50 p-3 text-sm font-black text-yellow-800">
         获得 <span class="hcoin-display"><img src="./resource/小图标/h币.png" alt="H币"><span>+{{ battleResult.hCoinGain }}</span></span>
@@ -17468,6 +17469,6 @@
 <script src="./aola-species-data.js?v=20260702_data_split"></script>
 <script src="./aola-skill-data.js?v=20260702_data_split"></script>
 <script src="./aola-evolution-chains.js?v=20260702_data_split"></script>
-  <script src="./aola-star-app-dev.js?v=20260924_mid_autumn_limit_v2"></script>
+  <script src="./aola-star-app-dev.js?v=20260925_mid_autumn_compensation_codes_v1"></script>
 </body>
 </html>

@@ -207,6 +207,12 @@ const SHOP_REDEEM_CODE_TEAM_BOSS = "战队BOSS由我们一起挑战";
 const SHOP_REDEEM_CODE_TRAIT_CHOICE_BUNDLE = "特性自选礼包";
 const SHOP_REDEEM_CODE_OPEN_TRAIT_GATE = "命运之门为我而开";
 const SHOP_REDEEM_CODE_GET_RICH = "我要发财啦";
+const SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_M = "中秋月饼补偿M";
+const SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_D = "中秋月饼补偿D";
+const SHOP_REDEEM_CODE_BIG_MOONCAKE_REWARDS = Object.freeze({
+  [SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_M]: 1200,
+  [SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_D]: 300
+});
 const HUB_TOGETHER_SPONSOR_BADGE_ID = "hub_together_sponsor_badge";
 const HUB_TOGETHER_SPONSOR_BADGE_NAME = "Hub同辉赞助徽章";
 const STARTER_DEX_IDS = [1, 4, 7];
@@ -463,6 +469,7 @@ const MID_AUTUMN_MOONCAKE_IMAGE_SRC = "./resource/中秋节活动/小月饼.png"
 const MID_AUTUMN_BIG_MOONCAKE_ITEM_ID = "mid_autumn_big_mooncake";
 const MID_AUTUMN_BIG_MOONCAKE_ITEM_NAME = "大月饼";
 const MID_AUTUMN_BIG_MOONCAKE_IMAGE_SRC = "./resource/中秋节活动/大月饼.png";
+const SHARED_BOSS_SINGLE_ROUND_DAMAGE_LIMIT = 300000;
 const MID_AUTUMN_BOSS_CONFIG = Object.freeze({
   key: "full_moon_giant",
   dexId: 639,
@@ -471,6 +478,7 @@ const MID_AUTUMN_BOSS_CONFIG = Object.freeze({
   battleTurnLimit: 15,
   fixedHp: 9990000,
   damageReductionRatio: 0.3,
+  singleRoundDamageLimit: SHARED_BOSS_SINGLE_ROUND_DAMAGE_LIMIT,
   skillNames: ["光爆", "银光照耀", "光明祝福", "银光护盾"],
   skillWeights: [
     { name: "光爆", weight: 30 }, { name: "银光照耀", weight: 30 },
@@ -4683,6 +4691,7 @@ const damageSideByMaxHpRatio = (scene, side, ratio) => {
     if (idx >= 0) scene.team[idx].hp = clamp(Number(scene.attackerHp) || 0, 0, Number(scene.team[idx].maxHp) || 1);
   }
   syncBattleUiHpForSide(scene, side);
+  if (side === "target") recordTeamBossDamage(scene, actual);
   return { damage, actual };
 };
 const healSideByFlatAmount = (scene, side, amount) => {
@@ -6424,20 +6433,30 @@ const applyDirectHpDamage = (scene, side, amount) => {
   return actual;
 };
 const recordTeamBossDamage = (scene, amount) => {
-  if (!scene || !scene.guardianMeta || !scene.guardianMeta.teamBoss) return;
+  if (!scene || !scene.guardianMeta || (!scene.guardianMeta.teamBoss && !scene.guardianMeta.midAutumnBoss)) return;
   const actual = Math.max(0, Math.floor(Number(amount) || 0));
   if (actual <= 0) return;
+  const isMidAutumnBoss = Boolean(scene.guardianMeta.midAutumnBoss);
   const round = Math.max(1, Math.floor(Number(scene.turnCount) || 1));
-  const singleRoundLimit = Math.max(0, Math.floor(Number(scene.guardianMeta.teamBossSingleRoundDamageLimit) || 0));
+  const singleRoundLimit = Math.max(0, Math.floor(Number(
+    isMidAutumnBoss
+      ? scene.guardianMeta.midAutumnBossSingleRoundDamageLimit
+      : scene.guardianMeta.teamBossSingleRoundDamageLimit
+  ) || 0));
   if (Number(scene.teamBossDamageRound) !== round) {
     scene.teamBossDamageRound = round;
     scene.teamBossDamageThisRound = 0;
   }
   scene.teamBossDamageThisRound = Math.max(0, Math.floor(Number(scene.teamBossDamageThisRound) || 0)) + actual;
   if (singleRoundLimit > 0 && scene.teamBossDamageThisRound > singleRoundLimit) {
-    if (!scene.teamBossDamageLimitExceeded) {
-      scene.teamBossDamageLimitExceeded = true;
-      pushBattleLog(scene, `战队BOSS单回合伤害达到${scene.teamBossDamageThisRound}点，超过${singleRoundLimit}点上限，本次挑战判定失败。`);
+    const exceededKey = isMidAutumnBoss ? "midAutumnBossDamageLimitExceeded" : "teamBossDamageLimitExceeded";
+    if (!scene[exceededKey]) {
+      scene[exceededKey] = true;
+      const bossLabel = isMidAutumnBoss ? "中秋限时BOSS" : "战队BOSS";
+      pushBattleLog(scene, `${bossLabel}单回合伤害达到${scene.teamBossDamageThisRound}点，超过${singleRoundLimit}点上限。Hub不允许你这么牛逼的存在，本次挑战判定失败。`);
+      if (isMidAutumnBoss && typeof scene.onMidAutumnBossDamageLimitExceeded === "function") {
+        scene.onMidAutumnBossDamageLimitExceeded(singleRoundLimit);
+      }
     }
     return;
   }
@@ -6508,6 +6527,7 @@ const applyBattleMaxHpDrain = (scene, fromSide, toSide, ratio, label = "吸取",
   const fromName = fromSide === "attacker" ? scene.attackerName : scene.targetName;
   const toName = toSide === "attacker" ? scene.attackerName : scene.targetName;
   pushBattleLog(scene, `${label}：${toName}吸取${fromName}${actual}点体力。`);
+  if (fromSide === "target") recordTeamBossDamage(scene, actual);
   return { actual, healed };
 };
 const isWeeklyBossCounterPetActive = (scene, side = "attacker") => {
@@ -10178,6 +10198,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
   let diminishingGateSuccess = true;
   const chanceFailKeys = new Set();
   effects.forEach((e) => {
+    if (scene && scene.ended) return;
     if (!shouldApplySkillEffectByCondition(scene, actor, e)) return;
     if (normalize(e && e.shengyuDomain) && !isBattleShengyuDomainActive(scene, e.shengyuDomain)) return;
     if (normalize(e && e.kind) === "diminishingSuccessGate") {
@@ -10969,6 +10990,7 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       }
       const cap = Math.max(0, Math.floor(Number(e.cap) || Number(e.maxAmount) || 0));
       const { actual, healed } = applyBattleMaxHpDrain(scene, side, actor, ratio, skill.name, cap);
+      if (scene.ended) return;
       queueAfterDamageFloat(scene, () => {
         if (!scene || scene.ended) return;
         clearBattleFloatTextIfExpired(scene, true);
@@ -15798,7 +15820,7 @@ createApp({
     const showTeamRecruit = ref(false);
     const showTeamBoss = ref(false);
     const TEAM_BOSS_MAX_HP = 10000000;
-    const TEAM_BOSS_SINGLE_ROUND_DAMAGE_LIMIT = 200000;
+    const TEAM_BOSS_SINGLE_ROUND_DAMAGE_LIMIT = SHARED_BOSS_SINGLE_ROUND_DAMAGE_LIMIT;
     const TEAM_BOSS_BATTLE_TURN_LIMIT = 15;
     const TEAM_BOSS_DAILY_BOSS_KEY = "sky_sacred_dragon";
     const TEAM_BOSS_DAILY_BOSS_NAME = "苍穹圣龙";
@@ -18190,20 +18212,26 @@ createApp({
     };
     const settleOnlineMidAutumnReward = async (scene, win) => {
       if (!scene || playMode.value !== "user" || !isDesktopRuntime() || !scene.midAutumnBattleId) return;
-      const mode = isMidAutumnBossScene(scene)
-        ? "midAutumnBoss"
-        : (scene.mode === "timeTunnel" ? "timeTunnel" : (scene.guardianMeta && scene.guardianMeta.dexChallenge ? "dexChallenge" : ""));
+      const challengeRoadTier5 = scene.mode === "boss" && normalize(scene.guardianMeta && scene.guardianMeta.challengeRoadTierKey) === "tier_5";
+      let mode = "";
+      if (isMidAutumnBossScene(scene)) mode = "midAutumnBoss";
+      else if (scene.mode === "timeTunnel") mode = "timeTunnel";
+      else if (scene.guardianMeta && scene.guardianMeta.dexChallenge) mode = "dexChallenge";
+      else if (challengeRoadTier5) mode = "challengeRoadTier5";
+      else if (scene.mode === "equipmentDungeon") mode = "equipmentDungeon";
       if (!mode) return;
       try {
         const data = await apiJson("/api/mid-autumn/settle", {
           method: "POST",
           body: JSON.stringify({
             battleId: scene.midAutumnBattleId,
-            won: Boolean(win || mode === "midAutumnBoss"),
+            won: mode === "midAutumnBoss" ? !scene.midAutumnBossDamageLimitExceeded : Boolean(win),
             mode,
             floor: Math.max(1, Math.floor(Number(scene.timeTunnelMeta && scene.timeTunnelMeta.floor) || 1)),
             smallMooncake: Math.max(0, Math.floor(Number(scene.midAutumnPendingSmallMooncake) || 0)),
-            damage: Math.max(0, Math.floor(Number(scene.midAutumnBossDamage) || 0))
+            damage: Math.max(0, Math.floor(Number(scene.midAutumnBossDamage) || 0)),
+            challengeDifficulty: normalize(scene.guardianMeta && scene.guardianMeta.bossDifficulty),
+            equipmentDungeonRating: normalize(scene.midAutumnEquipmentDungeonRating)
           })
         });
         applyServerMidAutumnState(data);
@@ -18718,6 +18746,12 @@ createApp({
         state.value.items[MID_AUTUMN_MOONCAKE_ITEM_ID] = Math.max(0, Math.floor(Number(data.smallMooncakeBalance) || 0));
       }
       if (state.value) state.value.midAutumnBigMooncakeEarned = Math.max(0, Math.floor(Number(data.bigMooncakeEarned) || 0));
+      if (state.value && Array.isArray(data.redeemedCodes)) {
+        const currentCodes = Array.isArray(state.value.redeemedCodes) ? state.value.redeemedCodes : [];
+        state.value.redeemedCodes = Array.from(new Set([...currentCodes, ...data.redeemedCodes]
+          .map((code) => normalize(code).replace(/\s+/g, "").toUpperCase())
+          .filter(Boolean)));
+      }
       if (state.value && data.bossAttemptsDate) {
         state.value.midAutumnBossAttempts = {
           date: normalize(data.bossAttemptsDate),
@@ -24279,6 +24313,17 @@ const applyBossChainFinalBuff = (scene) => {
         pendingFinish: false,
         nextPetStageBoost: null
       };
+      if (guardianMeta && guardianMeta.midAutumnBoss) {
+        const midAutumnScene = battleScene.value;
+        midAutumnScene.onMidAutumnBossDamageLimitExceeded = (damageLimit) => {
+          if (!midAutumnScene || midAutumnScene.ended || !midAutumnScene.midAutumnBossDamageLimitExceeded) return;
+          midAutumnScene.pendingFinish = true;
+          midAutumnScene.pendingEndTurnTick = false;
+          midAutumnScene.isActing = true;
+          midAutumnScene._afterDamageFloatQueue = [];
+          finalizeBattleScene(midAutumnScene, false, `单回合造成伤害超过${Math.max(0, Math.floor(Number(damageLimit) || 0))}点上限，Hub不允许你这么牛逼的存在`);
+        };
+      }
       battlePrepareTrace("scene-created", {
         attackerImage: battleScene.value.attackerImage,
         attackerStaticImage: battleScene.value.attackerStaticImage,
@@ -26758,6 +26803,7 @@ const applyBossChainFinalBuff = (scene) => {
             }
             scheduleBattleSkillEffectVisual(scene, actorSide, targetSide, skill, atkKind, actionStateKey, actionSeq, showDamageVisual);
           }
+        if (scene.ended) return { ended: true, visualDelayMs: 0 };
         if (Number(scene.attackerHp) <= 0 || Number(scene.targetHp) <= 0) markBattleVisualHoldMs(scene, visualDelayMs);
         const damageTargetName = targetSide === actorSide ? `${actorName}自己` : targetName;
         if (splitDamageDisplay) {
@@ -26873,17 +26919,22 @@ const applyBossChainFinalBuff = (scene) => {
       if (canApplySkillEffect && atkKind !== "status" && hasUsablePower) applyOnAttackRandomStageEffects(scene, actorSide);
       if (canApplySkillEffect && atkKind !== "status" && hasUsablePower) applyShengyuOnAttackPassives(scene, actorSide, targetSide, true);
       applySkillEffects(scene, actorSide, skill, canApplySkillEffect);
+      if (scene.ended) return { ended: true, visualDelayMs: 0 };
       applyErlangWeeklyBossBoundSkillDebuff(scene, actorSide);
       applyEquipmentDungeonOnSkillEffects(scene, actorSide);
       advanceTurnSequenceAttackEffect(scene, actorSide, skill, canApplySkillEffect);
       if (atkKind !== "status" && hasConsumableNextAttackEffect(scene, actorSide)) consumeNextAttackEffects(scene, actorSide);
       showBattleStageTotalChangeFx(scene, stageTotalsBeforeSkill, 220);
       triggerWeeklyBossLowHpBuffIfNeeded(scene);
-      if (scene.teamBossDamageLimitExceeded) {
+      if (scene.teamBossDamageLimitExceeded || scene.midAutumnBossDamageLimitExceeded) {
         scene.totalDamageToTarget = 0;
         scene.teamBossDamageByPet = {};
-        const damageLimit = Math.max(0, Math.floor(Number(scene.guardianMeta && scene.guardianMeta.teamBossSingleRoundDamageLimit) || 0));
-        finalizeBattleScene(scene, false, `单回合造成伤害超过${damageLimit}点上限`);
+        const damageLimit = Math.max(0, Math.floor(Number(
+          scene.guardianMeta && (scene.guardianMeta.midAutumnBoss
+            ? scene.guardianMeta.midAutumnBossSingleRoundDamageLimit
+            : scene.guardianMeta.teamBossSingleRoundDamageLimit)
+        ) || 0));
+        finalizeBattleScene(scene, false, `单回合造成伤害超过${damageLimit}点上限，Hub不允许你这么牛逼的存在`);
         return { ended: true, visualDelayMs };
       }
       if (resolveBattleDefeatIfNeeded(scene, isAttacker ? "" : "我方背包亚比全部倒下")) {
@@ -27085,9 +27136,14 @@ const applyBossChainFinalBuff = (scene) => {
 
       if (isMidAutumnBossScene(scene) && !scene.midAutumnBigMooncakeClaimed) {
         const dealtDamage = Math.max(0, Math.floor(Number(scene.midAutumnBossDamage) || 0));
-        const bigMooncakeCount = getMidAutumnBossBigMooncakeCount(dealtDamage);
         scene.midAutumnBigMooncakeClaimed = true;
-        grantMidAutumnBigMooncakeReward(scene, bigMooncakeCount, `对中秋限时BOSS满月巨灵造成${dealtDamage}点伤害`);
+        if (scene.midAutumnBossDamageLimitExceeded) {
+          scene.midAutumnBossDamage = 0;
+          pushBattleLog(scene, "本次挑战因超过单回合限伤判定失败，不发放中秋BOSS伤害奖励。");
+        } else {
+          const bigMooncakeCount = getMidAutumnBossBigMooncakeCount(dealtDamage);
+          grantMidAutumnBigMooncakeReward(scene, bigMooncakeCount, `对中秋限时BOSS满月巨灵造成${dealtDamage}点伤害`);
+        }
       }
 
       if (scene.mode === "elitePvp") {
@@ -27462,6 +27518,7 @@ const applyBossChainFinalBuff = (scene) => {
           .filter((row) => row.damage > 0)
           .sort((a, b) => b.damage - a.damage || String(a.name).localeCompare(String(b.name), "zh-Hans-CN"));
       }
+      battleResult.value.bossDamageLimitExceeded = Boolean(scene.teamBossDamageLimitExceeded || scene.midAutumnBossDamageLimitExceeded);
       stopChallengeRecording();
       void settleOnlineMidAutumnReward(scene, win);
       if (scene.autoBattleMeta) {
@@ -28538,6 +28595,7 @@ const applyBossChainFinalBuff = (scene) => {
           midAutumnBoss: true,
           fixedHp: MID_AUTUMN_BOSS_CONFIG.fixedHp,
           damageReductionRatio: MID_AUTUMN_BOSS_CONFIG.damageReductionRatio,
+          midAutumnBossSingleRoundDamageLimit: MID_AUTUMN_BOSS_CONFIG.singleRoundDamageLimit,
           battleTurnLimit: MID_AUTUMN_BOSS_CONFIG.battleTurnLimit,
           bossSkillNames: MID_AUTUMN_BOSS_CONFIG.skillNames,
           bossSkillWeights: MID_AUTUMN_BOSS_CONFIG.skillWeights
@@ -29461,13 +29519,39 @@ const applyBossChainFinalBuff = (scene) => {
       completeClaimedTeamTaskByTrigger("shopPurchase");
       showToast(`已购买 ${entry.name} 亚比蛋，花费 ${price} H币。`);
     };
-    const redeemShopCode = () => {
+    const redeemShopCode = async () => {
       const code = normalize(shopRedeemCodeInput.value).replace(/\s+/g, "").toUpperCase();
       if (!code) return showToast("请输入兑换码。");
-      if (![SHOP_REDEEM_CODE_ALHUB666, SHOP_REDEEM_CODE_HUBDWAK, SHOP_REDEEM_CODE_EQUIPMENT_DUNGEON_STRONG_ROAD, SHOP_REDEEM_CODE_MID_AUTUMN_HUB, SHOP_REDEEM_CODE_HUB_TOGETHER, SHOP_REDEEM_CODE_SERVER_RECOVERY, SHOP_REDEEM_CODE_JOIN_TEAM, SHOP_REDEEM_CODE_TEAM_BOSS, SHOP_REDEEM_CODE_TRAIT_CHOICE_BUNDLE, SHOP_REDEEM_CODE_OPEN_TRAIT_GATE, SHOP_REDEEM_CODE_GET_RICH].includes(code)) return showToast("该兑换码无效。");
+      if (![SHOP_REDEEM_CODE_ALHUB666, SHOP_REDEEM_CODE_HUBDWAK, SHOP_REDEEM_CODE_EQUIPMENT_DUNGEON_STRONG_ROAD, SHOP_REDEEM_CODE_MID_AUTUMN_HUB, SHOP_REDEEM_CODE_HUB_TOGETHER, SHOP_REDEEM_CODE_SERVER_RECOVERY, SHOP_REDEEM_CODE_JOIN_TEAM, SHOP_REDEEM_CODE_TEAM_BOSS, SHOP_REDEEM_CODE_TRAIT_CHOICE_BUNDLE, SHOP_REDEEM_CODE_OPEN_TRAIT_GATE, SHOP_REDEEM_CODE_GET_RICH, SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_M, SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_D].includes(code)) return showToast("该兑换码无效。");
       if (!Array.isArray(state.value.redeemedCodes)) state.value.redeemedCodes = [];
       if (state.value.redeemedCodes.map((row) => normalize(row).toUpperCase()).includes(code)) {
         return showToast("该兑换码已经使用过了。");
+      }
+      const bigMooncakeReward = Math.max(0, Math.floor(Number(SHOP_REDEEM_CODE_BIG_MOONCAKE_REWARDS[code]) || 0));
+      if (bigMooncakeReward > 0) {
+        if (playMode.value === "user" && authUser.value) {
+          try {
+            const data = await apiJson("/api/mid-autumn/redeem-code", {
+              method: "POST",
+              body: JSON.stringify({ code })
+            });
+            applyServerMidAutumnState(data);
+            if (data.duplicate) {
+              shopRedeemCodeInput.value = "";
+              return showToast("该兑换码已经使用过了。");
+            }
+          } catch (err) {
+            return showToast(err && err.message ? err.message : "兑换码奖励领取失败，请稍后重试。");
+          }
+        } else {
+          state.value.redeemedCodes.push(code);
+          addItemCount(MID_AUTUMN_BIG_MOONCAKE_ITEM_ID, bigMooncakeReward);
+        }
+        if (!state.value.redeemedCodes.map((row) => normalize(row).toUpperCase()).includes(code)) state.value.redeemedCodes.push(code);
+        shopRedeemCodeInput.value = "";
+        queueRewardFlyToasts([`获得${MID_AUTUMN_BIG_MOONCAKE_ITEM_NAME}×${bigMooncakeReward}！`]);
+        showToast(`兑换成功，获得${MID_AUTUMN_BIG_MOONCAKE_ITEM_NAME}×${bigMooncakeReward}。`);
+        return;
       }
       if (code === SHOP_REDEEM_CODE_MID_AUTUMN_HUB) {
         state.value.redeemedCodes.push(code);
@@ -31874,13 +31958,15 @@ const applyBossChainFinalBuff = (scene) => {
       row.unlockedRegionKeys = ["aixi"];
       addItemCount(EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, reward.crystals);
       const bigMooncakeByRating = { S: 4, SS: 6, SSS: 10 };
-      const bigMooncakeCount = scene ? (bigMooncakeByRating[normalize(reward.rating)] || 0) : 0;
+      if (scene) scene.midAutumnEquipmentDungeonRating = normalize(reward.rating);
+      const bigMooncakeCount = scene ? (bigMooncakeByRating[scene.midAutumnEquipmentDungeonRating] || 0) : 0;
       const bigMooncakeGranted = grantMidAutumnBigMooncakeReward(scene, bigMooncakeCount, `装备秘境${reward.rating}评级结算`);
+      const bigMooncakeSettledLocally = bigMooncakeGranted > 0 && !(playMode.value === "user" && isDesktopRuntime());
       completeClaimedTeamTaskByTrigger("equipmentClearWin");
       const bigMooncakeText = bigMooncakeGranted > 0 ? `，大月饼×${bigMooncakeGranted}` : "";
       const text = `装备秘境${clearedAll ? "全部通关" : "挑战结束"}，最终${score}分，评级${reward.rating}，获得秘境晶石×${reward.crystals}${bigMooncakeText}。`;
       if (scene) pushBattleLog(scene, text);
-      queueRewardFlyToasts([`评级${reward.rating}！`, `获取秘境晶石×${reward.crystals}！`, ...(bigMooncakeGranted > 0 ? [`获取${MID_AUTUMN_BIG_MOONCAKE_ITEM_NAME}×${bigMooncakeGranted}！`] : [])]);
+      queueRewardFlyToasts([`评级${reward.rating}！`, `获取秘境晶石×${reward.crystals}！`, ...(bigMooncakeSettledLocally ? [`获取${MID_AUTUMN_BIG_MOONCAKE_ITEM_NAME}×${bigMooncakeGranted}！`] : [])]);
       return text;
     };
     const useEquipmentDungeonSssClearCard = () => {
@@ -31893,7 +31979,17 @@ const applyBossChainFinalBuff = (scene) => {
       row.score = sssScore;
       row.attemptsUsed = clamp(row.attemptsUsed + 1, 0, EQUIPMENT_DUNGEON_DAILY_ATTEMPT_LIMIT);
       addItemCount(EQUIPMENT_DUNGEON_SSS_CLEAR_CARD_ITEM_ID, -1);
-      const text = settleEquipmentDungeonRun(null, true);
+      const rewardScene = {
+        mode: "equipmentDungeon",
+        guardianMeta: { equipmentDungeon: true },
+        midAutumnMooncakeDropActive: Boolean(isDoubleRewardTime.value),
+        midAutumnBattleId: uid(),
+        midAutumnPendingSmallMooncake: 0,
+        midAutumnPendingBigMooncake: 0,
+        logs: []
+      };
+      const text = settleEquipmentDungeonRun(rewardScene, true);
+      void settleOnlineMidAutumnReward(rewardScene, true);
       showToast(`已使用装备秘境SSS通关卡。${text}`);
     };
     const sweepEquipmentDungeon = (times = 1) => {

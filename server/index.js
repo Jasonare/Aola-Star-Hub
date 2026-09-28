@@ -15,6 +15,10 @@ const MID_AUTUMN_REWARD_FILE = path.join(DATA_DIR, "mid-autumn-rewards.json");
 const MID_AUTUMN_BIG_MOONCAKE_ITEM_ID = "mid_autumn_big_mooncake";
 const MID_AUTUMN_MOONCAKE_ITEM_ID = "mid_autumn_mooncake";
 const MID_AUTUMN_REDEEM_ID_PREFIX = "mid_autumn_redeem_";
+const MID_AUTUMN_BIG_MOONCAKE_REDEEM_CODE_REWARDS = Object.freeze({
+  "中秋月饼补偿M": 1200,
+  "中秋月饼补偿D": 300
+});
 const MID_AUTUMN_UNIQUE_REWARD_EVIDENCE = Object.freeze([
   { id: `${MID_AUTUMN_REDEEM_ID_PREFIX}awakening_stone`, itemId: "dark_guardian_awakening_stone" },
   { id: `${MID_AUTUMN_REDEEM_ID_PREFIX}ancient_star_dragon_skin`, itemId: "mid_autumn_ancient_star_dragon_skin", skinKey: "mid_autumn_ancient_star_dragon" },
@@ -188,6 +192,11 @@ const saveMidAutumnRewardDb = (db) => writeJsonFile(MID_AUTUMN_REWARD_FILE, { us
 
 const normalizeMidAutumnRewardState = (source = {}, event = midAutumnEventSnapshot()) => {
   const raw = source && typeof source === "object" ? source : {};
+  const redeemedCodes = Array.isArray(raw.redeemedCodes)
+    ? Array.from(new Set(raw.redeemedCodes
+      .map((code) => String(code || "").replace(/\s+/g, "").toUpperCase())
+      .filter((code) => Object.prototype.hasOwnProperty.call(MID_AUTUMN_BIG_MOONCAKE_REDEEM_CODE_REWARDS, code))))
+    : [];
   const redeemPurchases = raw.redeemPurchases && typeof raw.redeemPurchases === "object" ? raw.redeemPurchases : {};
   const normalizedPurchases = {};
   Object.keys(redeemPurchases).forEach((id) => {
@@ -204,6 +213,7 @@ const normalizeMidAutumnRewardState = (source = {}, event = midAutumnEventSnapsh
     smallMooncakeBalance: Math.max(0, Math.floor(Number(raw.smallMooncakeBalance) || 0)),
     bossAttemptsDate: String(raw.bossAttemptsDate || event.date),
     bossAttemptsUsed: Math.max(0, Math.floor(Number(raw.bossAttemptsUsed) || 0)),
+    redeemedCodes,
     redeemPurchases: normalizedPurchases,
     settledBattles
   };
@@ -247,6 +257,16 @@ const midAutumnRewardStateForUser = (user, options = {}) => {
   }
   stateChanged = mergeMidAutumnRedeemPurchasesFromSave(state, savedGame) || stateChanged;
   stateChanged = mergeMidAutumnRedeemPurchasesFromSave(state, options && options.save) || stateChanged;
+  const savedRedeemedCodes = Array.isArray(savedGame.redeemedCodes)
+    ? savedGame.redeemedCodes
+      .map((code) => String(code || "").replace(/\s+/g, "").toUpperCase())
+      .filter((code) => Object.prototype.hasOwnProperty.call(MID_AUTUMN_BIG_MOONCAKE_REDEEM_CODE_REWARDS, code))
+    : [];
+  const mergedRedeemedCodes = Array.from(new Set([...(Array.isArray(state.redeemedCodes) ? state.redeemedCodes : []), ...savedRedeemedCodes]));
+  if (mergedRedeemedCodes.length !== state.redeemedCodes.length) {
+    state.redeemedCodes = mergedRedeemedCodes;
+    stateChanged = true;
+  }
   const savedItems = savedGame.items && typeof savedGame.items === "object" ? savedGame.items : {};
   const savedPets = Array.isArray(savedGame.activePets) ? savedGame.activePets : [];
   let repairedUniquePurchases = false;
@@ -278,6 +298,10 @@ const applyMidAutumnRewardStateToSave = (save, state) => {
   next.items[MID_AUTUMN_BIG_MOONCAKE_ITEM_ID] = Math.max(0, Math.floor(Number(state && state.bigMooncakeBalance) || 0));
   next.items[MID_AUTUMN_MOONCAKE_ITEM_ID] = Math.max(0, Math.floor(Number(state && state.smallMooncakeBalance) || 0));
   next.midAutumnBigMooncakeEarned = Math.max(0, Math.floor(Number(state && state.bigMooncakeEarned) || 0));
+  next.redeemedCodes = Array.from(new Set([
+    ...(Array.isArray(next.redeemedCodes) ? next.redeemedCodes : []),
+    ...(Array.isArray(state && state.redeemedCodes) ? state.redeemedCodes : [])
+  ].map((code) => String(code || "").replace(/\s+/g, "").toUpperCase()).filter(Boolean)));
   next.midAutumnBossAttempts = {
     date: String(state && state.bossAttemptsDate || ""),
     used: Math.max(0, Math.floor(Number(state && state.bossAttemptsUsed) || 0))
@@ -2247,6 +2271,7 @@ const handleApi = async (req, res) => {
         smallMooncakeBalance: state.smallMooncakeBalance,
         bossAttemptsDate: state.bossAttemptsDate,
         bossAttemptsUsed: state.bossAttemptsUsed,
+        redeemedCodes: state.redeemedCodes,
         redeemPurchases: state.redeemPurchases
       });
     }
@@ -2267,9 +2292,52 @@ const handleApi = async (req, res) => {
         bigMooncakeBalance: state.bigMooncakeBalance,
         bigMooncakeEarned: state.bigMooncakeEarned,
         smallMooncakeBalance: state.smallMooncakeBalance,
+        redeemedCodes: state.redeemedCodes,
         redeemPurchases: state.redeemPurchases,
         doubleRewardActive: event.active,
         timezone: event.timezone
+      });
+    }
+    if (req.method === "POST" && pathname === "/api/mid-autumn/redeem-code") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const code = safeTeamText(body && body.code, 120).replace(/\s+/g, "").toUpperCase();
+      const grantAmount = Math.max(0, Math.floor(Number(MID_AUTUMN_BIG_MOONCAKE_REDEEM_CODE_REWARDS[code]) || 0));
+      if (grantAmount <= 0) return sendJson(res, 404, { ok: false, message: "该兑换码无效。" });
+      const { db, state, event } = midAutumnRewardStateForUser(user);
+      if (state.redeemedCodes.includes(code)) {
+        return sendJson(res, 200, {
+          ok: true,
+          duplicate: true,
+          serverNow: event.now,
+          doubleRewardActive: event.active,
+          timezone: event.timezone,
+          bigMooncakeBalance: state.bigMooncakeBalance,
+          bigMooncakeEarned: state.bigMooncakeEarned,
+          smallMooncakeBalance: state.smallMooncakeBalance,
+          redeemedCodes: state.redeemedCodes,
+          redeemPurchases: state.redeemPurchases,
+          bigMooncakeGranted: 0
+        });
+      }
+      state.redeemedCodes.push(code);
+      state.bigMooncakeBalance += grantAmount;
+      state.bigMooncakeEarned += grantAmount;
+      db.users[user.id] = state;
+      saveMidAutumnRewardDb(db);
+      persistMidAutumnRewardState(user, state);
+      return sendJson(res, 200, {
+        ok: true,
+        serverNow: event.now,
+        doubleRewardActive: event.active,
+        timezone: event.timezone,
+        bigMooncakeBalance: state.bigMooncakeBalance,
+        bigMooncakeEarned: state.bigMooncakeEarned,
+        smallMooncakeBalance: state.smallMooncakeBalance,
+        redeemedCodes: state.redeemedCodes,
+        redeemPurchases: state.redeemPurchases,
+        bigMooncakeGranted: grantAmount
       });
     }
     if (req.method === "POST" && pathname === "/api/mid-autumn/redeem") {
@@ -2304,6 +2372,7 @@ const handleApi = async (req, res) => {
         bigMooncakeBalance: state.bigMooncakeBalance,
         bigMooncakeEarned: state.bigMooncakeEarned,
         smallMooncakeBalance: state.smallMooncakeBalance,
+        redeemedCodes: state.redeemedCodes,
         redeemPurchases: state.redeemPurchases,
         itemGrant,
         traitGrant: entry.traitKey ? { traitKey: entry.traitKey, amount: 1 } : null
@@ -2325,6 +2394,7 @@ const handleApi = async (req, res) => {
           bigMooncakeBalance: state.bigMooncakeBalance,
           bigMooncakeEarned: state.bigMooncakeEarned,
           smallMooncakeBalance: state.smallMooncakeBalance,
+          redeemedCodes: state.redeemedCodes,
           bigMooncakeGranted: 0,
           smallMooncakeGranted: 0
         });
@@ -2339,6 +2409,14 @@ const handleApi = async (req, res) => {
           smallMooncakeGranted = floor <= 10 ? 3 : (floor <= 20 ? 5 : (floor <= 30 ? 7 : (floor <= 40 ? 9 : 11)));
         } else if (mode === "dexChallenge") {
           smallMooncakeGranted = Math.max(0, Math.min(10, safeNonNegInt(body && body.smallMooncake, 0)));
+        } else if (mode === "challengeRoadTier5") {
+          const difficulty = safeTeamText(body && body.challengeDifficulty, 20).toLowerCase();
+          if (difficulty === "normal") smallMooncakeGranted = 16;
+          else if (difficulty === "hard") smallMooncakeGranted = 34;
+          else if (difficulty === "nightmare") bigMooncakeGranted = 8;
+        } else if (mode === "equipmentDungeon") {
+          const rating = safeTeamText(body && body.equipmentDungeonRating, 20).toUpperCase();
+          bigMooncakeGranted = ({ S: 4, SS: 6, SSS: 10 })[rating] || 0;
         } else if (mode === "midAutumnBoss") {
           const damage = Math.max(0, Math.floor(Number(body && body.damage) || 0));
           if (damage < 5000) bigMooncakeGranted = 5;
@@ -2370,6 +2448,7 @@ const handleApi = async (req, res) => {
         bigMooncakeBalance: state.bigMooncakeBalance,
         bigMooncakeEarned: state.bigMooncakeEarned,
         smallMooncakeBalance: state.smallMooncakeBalance,
+        redeemedCodes: state.redeemedCodes,
         bigMooncakeGranted,
         smallMooncakeGranted
       });
