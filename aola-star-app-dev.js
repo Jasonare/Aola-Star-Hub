@@ -28123,7 +28123,10 @@ const applyBossChainFinalBuff = (scene) => {
       weapon: { label: "武器", z: 25, hasBase: false },
       rightArm: { label: "右臂", z: 30, hasBase: true, sleeveZ: 31 },
       leftArm: { label: "左臂", z: 10, hasBase: true, sleeveZ: 11 },
-      top: { label: "上衣", z: 23, hasBase: false }
+      top: { label: "上衣", z: 23, hasBase: false },
+      // 套装特效层：背景特效在所有身体部件之下（低于翅膀z9），前景特效在所有部件之上（高于头饰z43）。
+      effectBack: { label: "背景特效", z: 1, hasBase: false },
+      effectFront: { label: "前景特效", z: 100, hasBase: false }
     };
     // 基础角色（v11 信息卡服装素材）：默认常驻显示，不会被替换；素材保持原始大小，位置按基础身体参考.png校准。
     // v11 叠层顺序（z 从低到高）：基础左手10 < 新手左臂11 < 基础身体20 < 裤子21 < 鞋子22 < 上衣23 < 基础右手30 < 新手右臂31 < 基础头型40 < 表情41 < 头发42 < 耳饰43。
@@ -28226,12 +28229,75 @@ const applyBossChainFinalBuff = (scene) => {
         parts: [
           { slot: "shoes", imageSrc: "./resource/信息卡/服装/3下半身/1鞋子/天使莱特鞋子.png", l: 32.3, t: 74, w: 39.64 }
         ]
+      },
+      // ===== 寒冰战神套：9个穿戴部件合成7个物品（上衣含左右臂），坐标均为类比初值，待人工微调 =====
+      ice_earring: {
+        name: "寒冰战神耳饰",
+        icon: "./resource/信息卡/服装/1头部/1头饰/寒冰战神耳饰.png",
+        parts: [
+          { slot: "headwear", imageSrc: "./resource/信息卡/服装/1头部/1头饰/寒冰战神耳饰.png", l: 32.71, t: 11.11, w: 17.23 }
+        ]
+      },
+      ice_hair: {
+        name: "寒冰战神头发",
+        icon: "./resource/信息卡/服装/1头部/2头发/寒冰战神头发.png",
+        parts: [
+          { slot: "hair", imageSrc: "./resource/信息卡/服装/1头部/2头发/寒冰战神头发.png", l: 37.39, t: 6.21, w: 31.6 }
+        ]
+      },
+      ice_face: {
+        name: "寒冰战神表情",
+        icon: "./resource/信息卡/服装/1头部/3表情/寒冰战神表情.png",
+        parts: [
+          { slot: "face", imageSrc: "./resource/信息卡/服装/1头部/3表情/寒冰战神表情.png", l: 46.04, t: 20.1, w: 14.62 }
+        ]
+      },
+      ice_top: {
+        name: "寒冰战神上衣",
+        icon: "./resource/信息卡/服装/2上半身/4上衣/寒冰战神上衣.png",
+        parts: [
+          { slot: "leftArm", imageSrc: "./resource/信息卡/服装/2上半身/6左臂/寒冰战神左手.png", l: 55.35, t: 33.4, w: 62.79 },
+          { slot: "top", imageSrc: "./resource/信息卡/服装/2上半身/4上衣/寒冰战神上衣.png", l: 34.97, t: 21.11, w: 44.32 },
+          { slot: "rightArm", imageSrc: "./resource/信息卡/服装/2上半身/2右臂/寒冰战神右臂.png", l: 4.22, t: 8.44, w: 52.51 }
+        ]
+      },
+      ice_pants: {
+        name: "寒冰战神裤子",
+        icon: "./resource/信息卡/服装/3下半身/2裤子/寒冰战神裤子.png",
+        parts: [
+          { slot: "pants", imageSrc: "./resource/信息卡/服装/3下半身/2裤子/寒冰战神裤子.png", l: 34.34, t: 48.23, w: 29.7 }
+        ]
+      },
+      ice_shoes: {
+        name: "寒冰战神鞋子",
+        icon: "./resource/信息卡/服装/3下半身/1鞋子/寒冰战神鞋子.png",
+        parts: [
+          { slot: "shoes", imageSrc: "./resource/信息卡/服装/3下半身/1鞋子/寒冰战神鞋子.png", l: 31.59, t: 65.47, w: 38.83 }
+        ]
+      },
+      // 背后悬浮的7把冰剑（扇形光环），占用翅膀槽位，位于背部最底层 z9。
+      ice_wings: {
+        name: "寒冰战神冰剑",
+        icon: "./resource/信息卡/服装/2上半身/7翅膀/寒冰战神翅膀.png",
+        parts: [
+          { slot: "wings", imageSrc: "./resource/信息卡/服装/2上半身/7翅膀/寒冰战神翅膀.png", l: -10.5, t: -5.7, w: 124.93 }
+        ]
+      },
+      // 冰晶特效：一个背包物品同时控制脚下冰锥（effectBack z1，角色最底层）与右侧冰晶（effectFront z100，角色最上层）。
+      ice_effect: {
+        name: "寒冰战神冰晶特效",
+        icon: "./resource/信息卡/服装/4背景/背景/寒冰战神背景.png",
+        parts: [
+          { slot: "effectBack", imageSrc: "./resource/信息卡/服装/4背景/背景/寒冰战神背景.png", l: 2, t: 61, w: 108 },
+          { slot: "effectFront", imageSrc: "./resource/信息卡/服装/4背景/前景/寒冰战神前景.png", l: -20, t: 63, w: 127.5 }
+        ]
       }
     };
     // 套装注册表：背包筛选按 item id 前缀归类整套（新增套装只需在此追加一行）。
     const OUTFIT_SUITS = [
       { key: "novice", name: "新手套装", prefix: "novice_" },
-      { key: "angel", name: "天使莱特套装", prefix: "angel_" }
+      { key: "angel", name: "天使莱特套装", prefix: "angel_" },
+      { key: "ice", name: "寒冰战神套装", prefix: "ice_" }
     ];
     // 服饰冲突判定：部件槽位与素材文件夹一一对应（1头盔、2头发、3表情、2右臂、3右手武器、4上衣、6左臂、7翅膀、1鞋子、2裤子），
     // 同一文件夹内的服饰互斥，同一时刻只会真正装备一件；coverSlots 声明跨文件夹覆盖（如天使莱特头盔覆盖头发），冲突双向生效。
