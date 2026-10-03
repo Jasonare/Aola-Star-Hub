@@ -15372,7 +15372,7 @@ createApp({
           };
         })(),
         equippedBadgeId: normalize(loaded.equippedBadgeId),
-        equippedOutfitItemIds: Array.isArray(loaded.equippedOutfitItemIds) ? loaded.equippedOutfitItemIds.flatMap((id) => String(id) === "novice" ? ["novice_top", "novice_pants", "novice_shoes", "novice_face", "novice_hair", "novice_headwear"] : [String(id)]).filter(Boolean) : [],
+        equippedOutfitItemIds: Array.isArray(loaded.equippedOutfitItemIds) ? loaded.equippedOutfitItemIds.flatMap((id) => String(id) === "novice" ? ["novice_top", "novice_pants", "novice_shoes", "novice_face", "novice_hair", "novice_headwear"] : String(id) === "if_rightArm" ? ["if_top"] : [String(id)]).filter(Boolean) : [],
         selectedDexId: dexEntries.some((d) => d.dexId === Number(loaded.selectedDexId)) ? Number(loaded.selectedDexId) : null,
         challengeFormIndex: clamp(Number(loaded.challengeFormIndex) || 0, 0, 2),
         selectedAttackerId,
@@ -28119,6 +28119,7 @@ const applyBossChainFinalBuff = (scene) => {
       head: { label: "头型", z: 40, hasBase: true },
       face: { label: "表情", z: 41, hasBase: false },
       hair: { label: "头发", z: 42, hasBase: false },
+      hairBack: { label: "背景头发", z: 8, hasBase: false },
       headwear: { label: "头饰", z: 43, hasBase: false },
       weapon: { label: "武器", z: 25, hasBase: false },
       rightArm: { label: "右臂", z: 30, hasBase: true, sleeveZ: 31 },
@@ -28291,13 +28292,53 @@ const applyBossChainFinalBuff = (scene) => {
           { slot: "effectBack", imageSrc: "./resource/信息卡/服装/4背景/背景/寒冰战神背景.png", l: 2, t: 61, w: 108 },
           { slot: "effectFront", imageSrc: "./resource/信息卡/服装/4背景/前景/寒冰战神前景.png", l: -20, t: 63, w: 127.5 }
         ]
+      },
+      // 冰拳艾司套装：头发物品含前景头发(hair)与背景头发(hairBack z38，在头型之下)两层；坐标为类比初值待微调。
+      if_hair: {
+        name: "冰拳艾司头发",
+        icon: "./resource/信息卡/服装/1头部/2头发/冰拳艾司头发.png",
+        parts: [
+          { slot: "hairBack", imageSrc: "./resource/信息卡/服装/1头部/2头发/冰拳艾司背景头发.png", l: 24, t: 21.5, w: 39.27 },
+          { slot: "hair", imageSrc: "./resource/信息卡/服装/1头部/2头发/冰拳艾司头发.png", l: 22, t: 0.5, w: 48.51 }
+        ]
+      },
+      if_face: {
+        name: "冰拳艾司表情",
+        icon: "./resource/信息卡/服装/1头部/3表情/冰拳艾司表情.png",
+        parts: [
+          { slot: "face", imageSrc: "./resource/信息卡/服装/1头部/3表情/冰拳艾司表情.png", l: 46.54, t: 22, w: 14.62 }
+        ]
+      },
+      // 上衣与右臂为同一背包物品：点击上衣同时装备右臂（与新手/寒冰等套装一致），不单独出现右臂按钮。
+      if_top: {
+        name: "冰拳艾司上衣",
+        icon: "./resource/信息卡/服装/2上半身/4上衣/冰拳艾司上衣.png",
+        parts: [
+          { slot: "top", imageSrc: "./resource/信息卡/服装/2上半身/4上衣/冰拳艾司上衣.png", l: 31.1, t: 30, w: 58.34 },
+          { slot: "rightArm", imageSrc: "./resource/信息卡/服装/2上半身/2右臂/冰拳艾司右臂.png", l: 23.1, t: 29, w: 24.36 }
+        ]
+      },
+      if_pants: {
+        name: "冰拳艾司裤子",
+        icon: "./resource/信息卡/服装/3下半身/2裤子/冰拳艾司裤子.png",
+        parts: [
+          { slot: "pants", imageSrc: "./resource/信息卡/服装/3下半身/2裤子/冰拳艾司裤子.png", l: 38.34, t: 45.63, w: 26.67 }
+        ]
+      },
+      if_shoes: {
+        name: "冰拳艾司鞋子",
+        icon: "./resource/信息卡/服装/3下半身/1鞋子/冰拳艾司鞋子.png",
+        parts: [
+          { slot: "shoes", imageSrc: "./resource/信息卡/服装/3下半身/1鞋子/冰拳艾司鞋子.png", l: 32.09, t: 71.47, w: 38.83 }
+        ]
       }
     };
     // 套装注册表：背包筛选按 item id 前缀归类整套（新增套装只需在此追加一行）。
     const OUTFIT_SUITS = [
       { key: "novice", name: "新手套装", prefix: "novice_" },
       { key: "angel", name: "天使莱特套装", prefix: "angel_" },
-      { key: "ice", name: "寒冰战神套装", prefix: "ice_" }
+      { key: "ice", name: "寒冰战神套装", prefix: "ice_" },
+      { key: "icefist", name: "冰拳艾司套装", prefix: "if_" }
     ];
     // 服饰冲突判定：部件槽位与素材文件夹一一对应（1头盔、2头发、3表情、2右臂、3右手武器、4上衣、6左臂、7翅膀、1鞋子、2裤子），
     // 同一文件夹内的服饰互斥，同一时刻只会真正装备一件；coverSlots 声明跨文件夹覆盖（如天使莱特头盔覆盖头发），冲突双向生效。
