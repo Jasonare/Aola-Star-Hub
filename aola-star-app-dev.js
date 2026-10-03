@@ -28115,22 +28115,25 @@ const applyBossChainFinalBuff = (scene) => {
       body: { label: "身体", z: 20, hasBase: true },
       pants: { label: "裤子", z: 21, hasBase: false },
       shoes: { label: "鞋子", z: 22, hasBase: false },
-      wings: { label: "翅膀", z: 9, hasBase: false },
+      wings: { label: "翅膀", z: 8, hasBase: false },
       head: { label: "头型", z: 40, hasBase: true },
       face: { label: "表情", z: 41, hasBase: false },
-      hair: { label: "头发", z: 42, hasBase: false },
-      hairBack: { label: "背景头发", z: 8, hasBase: false },
-      headwear: { label: "头饰", z: 43, hasBase: false },
+      // 面饰（1.2面饰文件夹）：层级在表情(z41)之上、头发(z43)之下（口罩在脸上、被头发遮挡）；与头盔/耳饰可同时穿戴。z-index必须为整数。
+      faceMask: { label: "面饰", z: 42, hasBase: false },
+      hair: { label: "头发", z: 43, hasBase: false },
+      // 背景头发：在翅膀(z8)之上、基础左臂(z10)之下，即角色身后、翅膀前面。
+      hairBack: { label: "背景头发", z: 9, hasBase: false },
+      headwear: { label: "头饰", z: 44, hasBase: false },
       weapon: { label: "武器", z: 25, hasBase: false },
       rightArm: { label: "右臂", z: 30, hasBase: true, sleeveZ: 31 },
       leftArm: { label: "左臂", z: 10, hasBase: true, sleeveZ: 11 },
       top: { label: "上衣", z: 23, hasBase: false },
-      // 套装特效层：背景特效在所有身体部件之下（低于翅膀z9），前景特效在所有部件之上（高于头饰z43）。
+      // 套装特效层：背景特效在所有身体部件之下（低于翅膀z8），前景特效在所有部件之上（高于头饰z44）。
       effectBack: { label: "背景特效", z: 1, hasBase: false },
       effectFront: { label: "前景特效", z: 100, hasBase: false }
     };
     // 基础角色（v11 信息卡服装素材）：默认常驻显示，不会被替换；素材保持原始大小，位置按基础身体参考.png校准。
-    // v11 叠层顺序（z 从低到高）：基础左手10 < 新手左臂11 < 基础身体20 < 裤子21 < 鞋子22 < 上衣23 < 基础右手30 < 新手右臂31 < 基础头型40 < 表情41 < 头发42 < 耳饰43。
+    // v11 叠层顺序（z 从低到高）：基础左手10 < 新手左臂11 < 基础身体20 < 裤子21 < 鞋子22 < 上衣23 < 基础右手30 < 新手右臂31 < 基础头型40 < 表情41 < 面饰42 < 头发43 < 头饰44。
     // 部件画布已按最终相对位置排版（新手套参考.png实测），直接按百分比摆放即可。
     const BASE_OUTFIT_LAYERS = [
       { slot: "leftArm", z: 10, l: 56.96, t: 32.88, w: 32.49, imageSrc: "./resource/信息卡/服装/2上半身/6左臂/基础左手.png" },
@@ -28293,7 +28296,7 @@ const applyBossChainFinalBuff = (scene) => {
           { slot: "effectFront", imageSrc: "./resource/信息卡/服装/4背景/前景/寒冰战神前景.png", l: -20, t: 63, w: 127.5 }
         ]
       },
-      // 冰拳艾司套装：头发物品含前景头发(hair)与背景头发(hairBack z38，在头型之下)两层；坐标为类比初值待微调。
+      // 冰拳艾司套装：头发物品含前景头发(hair z42)与背景头发(hairBack z9，在翅膀之上、身体之下)两层；坐标为类比初值待微调。
       if_hair: {
         name: "冰拳艾司头发",
         icon: "./resource/信息卡/服装/1头部/2头发/冰拳艾司头发.png",
@@ -28331,6 +28334,43 @@ const applyBossChainFinalBuff = (scene) => {
         parts: [
           { slot: "shoes", imageSrc: "./resource/信息卡/服装/3下半身/1鞋子/冰拳艾司鞋子.png", l: 32.09, t: 71.47, w: 38.83 }
         ]
+      },
+      // ===== 时尚套：5个背包物品（上衣含右臂，点击上衣同时装备右臂），w为素材原始像素尺寸换算（基准6.4641px/1%），l/t为类比初值待微调 =====
+      fs_mask: {
+        name: "时尚口罩",
+        icon: "./resource/信息卡/服装/1头部/1.2面饰/时尚口罩.png",
+        parts: [
+          { slot: "faceMask", imageSrc: "./resource/信息卡/服装/1头部/1.2面饰/时尚口罩.png", l: 45.5, t: 26, w: 16.02 }
+        ]
+      },
+      fs_hat: {
+        name: "时尚帽子",
+        icon: "./resource/信息卡/服装/1头部/1头盔/时尚帽子.png",
+        parts: [
+          { slot: "headwear", imageSrc: "./resource/信息卡/服装/1头部/1头盔/时尚帽子.png", l: 40.6, t: 9.5, w: 27.38 }
+        ]
+      },
+      fs_top: {
+        name: "时尚上衣",
+        icon: "./resource/信息卡/服装/2上半身/4上衣/时尚上衣.png",
+        parts: [
+          { slot: "top", imageSrc: "./resource/信息卡/服装/2上半身/4上衣/时尚上衣.png", l: 40.5, t: 28.3, w: 39.21 },
+          { slot: "rightArm", imageSrc: "./resource/信息卡/服装/2上半身/2右臂/时尚右臂.png", l: 30.5, t: 31.3, w: 19.35 }
+        ]
+      },
+      fs_pants: {
+        name: "时尚裤子",
+        icon: "./resource/信息卡/服装/3下半身/2裤子/时尚裤子.png",
+        parts: [
+          { slot: "pants", imageSrc: "./resource/信息卡/服装/3下半身/2裤子/时尚裤子.png", l: 34, t: 47, w: 30.32 }
+        ]
+      },
+      fs_shoes: {
+        name: "时尚鞋子",
+        icon: "./resource/信息卡/服装/3下半身/1鞋子/时尚鞋子.png",
+        parts: [
+          { slot: "shoes", imageSrc: "./resource/信息卡/服装/3下半身/1鞋子/时尚鞋子.png", l: 31.7, t: 80.47, w: 38.68 }
+        ]
       }
     };
     // 套装注册表：背包筛选按 item id 前缀归类整套（新增套装只需在此追加一行）。
@@ -28338,7 +28378,8 @@ const applyBossChainFinalBuff = (scene) => {
       { key: "novice", name: "新手套装", prefix: "novice_" },
       { key: "angel", name: "天使莱特套装", prefix: "angel_" },
       { key: "ice", name: "寒冰战神套装", prefix: "ice_" },
-      { key: "icefist", name: "冰拳艾司套装", prefix: "if_" }
+      { key: "icefist", name: "冰拳艾司套装", prefix: "if_" },
+      { key: "fashion", name: "时尚套装", prefix: "fs_" }
     ];
     // 服饰冲突判定：部件槽位与素材文件夹一一对应（1头盔、2头发、3表情、2右臂、3右手武器、4上衣、6左臂、7翅膀、1鞋子、2裤子），
     // 同一文件夹内的服饰互斥，同一时刻只会真正装备一件；coverSlots 声明跨文件夹覆盖（如天使莱特头盔覆盖头发），冲突双向生效。
