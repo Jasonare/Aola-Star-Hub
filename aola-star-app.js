@@ -28183,6 +28183,8 @@ const applyBossChainFinalBuff = (scene) => {
       hair: { label: "头发", z: 43, hasBase: false },
       // 背景头发：在翅膀(z8)之上、基础左臂(z10)之下，即角色身后、翅膀前面。
       hairBack: { label: "背景头发", z: 9, hasBase: false },
+      // 背景披风：翅膀(z8)上方一层(z9)；与背景头发同层但 tie 次序更靠后（披风盖住背景头发）。独立槽位，不与寒冰特效 effectBack(z1) 冲突。
+      capeBack: { label: "背景披风", z: 9, tie: 1, hasBase: false },
       headwear: { label: "头饰", z: 44, hasBase: false },
       weapon: { label: "武器", z: 25, hasBase: false },
       rightArm: { label: "右臂", z: 30, hasBase: true, sleeveZ: 31 },
@@ -28475,6 +28477,44 @@ const applyBossChainFinalBuff = (scene) => {
         parts: [
           { slot: "shoes", imageSrc: "./resource/信息卡/服装/3下半身/1鞋子/粉色凉鞋.png", l: 31.7, t: 84, w: 37.44 }
         ]
+      },
+      // ===== 木面侠套装：5个背包物品（上衣物品含背景披风capeBack(z9，翅膀之上)+top+rightArm三部件，点击上衣同时穿戴披风与右臂），w为素材原始像素尺寸换算（基准6.4641px/1%），l/t为参考图类比初值待微调 =====
+      wm_mask: {
+        name: "木面侠面具",
+        icon: "./resource/信息卡/服装/1头部/1头盔/木面侠面具.png",
+        parts: [
+          { slot: "headwear", imageSrc: "./resource/信息卡/服装/1头部/1头盔/木面侠面具.png", l: 38, t: 6, w: 27.43 }
+        ]
+      },
+      wm_top: {
+        name: "木面侠上衣",
+        icon: "./resource/信息卡/服装/2上半身/4上衣/木面侠上衣.png",
+        parts: [
+          { slot: "capeBack", imageSrc: "./resource/信息卡/服装/2上半身/4上衣/木面侠上衣背景披风.png", l: 14.1, t: 35, w: 72.12 },
+          { slot: "top", imageSrc: "./resource/信息卡/服装/2上半身/4上衣/木面侠上衣.png", l: 35.3, t: 27.8, w: 46.19 },
+          { slot: "rightArm", imageSrc: "./resource/信息卡/服装/2上半身/2右臂/木面侠右臂.png", l: 26.3, t: 10, w: 41.15 }
+        ]
+      },
+      wm_weapon: {
+        name: "木面侠武器",
+        icon: "./resource/信息卡/服装/2上半身/3右手武器/木面侠武器.png",
+        parts: [
+          { slot: "weapon", imageSrc: "./resource/信息卡/服装/2上半身/3右手武器/木面侠武器.png", l: 33, t: 57, w: 44.57 }
+        ]
+      },
+      wm_pants: {
+        name: "木面侠裤子",
+        icon: "./resource/信息卡/服装/3下半身/2裤子/木面侠裤子.png",
+        parts: [
+          { slot: "pants", imageSrc: "./resource/信息卡/服装/3下半身/2裤子/木面侠裤子.png", l: 35, t: 48, w: 29.55 }
+        ]
+      },
+      wm_shoes: {
+        name: "木面侠鞋子",
+        icon: "./resource/信息卡/服装/3下半身/1鞋子/木面侠鞋子.png",
+        parts: [
+          { slot: "shoes", imageSrc: "./resource/信息卡/服装/3下半身/1鞋子/木面侠鞋子.png", l: 27, t: 74, w: 42.08 }
+        ]
       }
     };
     // 套装注册表：背包筛选按 item id 前缀归类整套（新增套装只需在此追加一行）。
@@ -28484,7 +28524,8 @@ const applyBossChainFinalBuff = (scene) => {
       { key: "ice", name: "寒冰战神套装", prefix: "ice_" },
       { key: "icefist", name: "冰拳艾司套装", prefix: "if_" },
       { key: "fashion", name: "时尚套装", prefix: "fs_" },
-      { key: "pink", name: "粉色套装", prefix: "pink_" }
+      { key: "pink", name: "粉色套装", prefix: "pink_" },
+      { key: "woodmask", name: "木面侠套装", prefix: "wm_" }
     ];
     // 服饰冲突判定：部件槽位与素材文件夹一一对应（1头盔、2头发、3表情、2右臂、3右手武器、4上衣、6左臂、7翅膀、1鞋子、2裤子），
     // 同一文件夹内的服饰互斥，同一时刻只会真正装备一件；coverSlots 声明跨文件夹覆盖（如天使莱特头盔覆盖头发），冲突双向生效。
@@ -28523,10 +28564,10 @@ const applyBossChainFinalBuff = (scene) => {
           const def = OUTFIT_SLOT_DEFS[slot];
           if (!def) return;
           const z = def.hasBase && def.sleeveZ ? def.sleeveZ : def.z;
-          layers.push({ slot, layer: "item", z, imageSrc: part.imageSrc || "", l: part.l, t: part.t, w: part.w, itemId });
+          layers.push({ slot, layer: "item", z, tie: def.tie || 0, imageSrc: part.imageSrc || "", l: part.l, t: part.t, w: part.w, itemId });
         });
       });
-      return layers.sort((a, b) => a.z - b.z);
+      return layers.sort((a, b) => (a.z - b.z) || ((a.tie || 0) - (b.tie || 0)));
     });
     const outfitBagItems = computed(() => Object.keys(OUTFIT_ITEMS).map((id) => ({
       id, name: OUTFIT_ITEMS[id].name || id, icon: OUTFIT_ITEMS[id].icon || ""
