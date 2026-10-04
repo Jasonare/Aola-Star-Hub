@@ -28371,6 +28371,50 @@ const applyBossChainFinalBuff = (scene) => {
         parts: [
           { slot: "shoes", imageSrc: "./resource/信息卡/服装/3下半身/1鞋子/时尚鞋子.png", l: 31.7, t: 80.47, w: 38.68 }
         ]
+      },
+      // ===== 粉色套装：6个背包物品（头发含前景+背景；上衣为无袖泳衣无独立右臂；游泳圈走weapon槽），w为素材原始像素尺寸换算（基准6.4641px/1%），l/t为参考图类比初值待微调 =====
+      pink_hair: {
+        name: "粉色女发",
+        icon: "./resource/信息卡/服装/1头部/2头发/粉色女发.png",
+        parts: [
+          { slot: "hairBack", imageSrc: "./resource/信息卡/服装/1头部/2头发/粉色女发背景头发.png", l: 39, t: 12, w: 22.59 },
+          { slot: "hair", imageSrc: "./resource/信息卡/服装/1头部/2头发/粉色女发.png", l: 36, t: 7, w: 30.17 }
+        ]
+      },
+      pink_face: {
+        name: "粉色表情",
+        icon: "./resource/信息卡/服装/1头部/3表情/粉色表情.png",
+        parts: [
+          { slot: "face", imageSrc: "./resource/信息卡/服装/1头部/3表情/粉色表情.png", l: 45.8, t: 21.6, w: 14.86 }
+        ]
+      },
+      pink_top: {
+        name: "粉色上衣",
+        icon: "./resource/信息卡/服装/2上半身/4上衣/粉色上衣.png",
+        parts: [
+          { slot: "top", imageSrc: "./resource/信息卡/服装/2上半身/4上衣/粉色上衣.png", l: 43, t: 30, w: 19.92 }
+        ]
+      },
+      pink_weapon: {
+        name: "粉色游泳圈",
+        icon: "./resource/信息卡/服装/2上半身/3右手武器/粉色游泳圈.png",
+        parts: [
+          { slot: "weapon", imageSrc: "./resource/信息卡/服装/2上半身/3右手武器/粉色游泳圈.png", l: 4, t: 49, w: 43.78 }
+        ]
+      },
+      pink_pants: {
+        name: "粉色短裙",
+        icon: "./resource/信息卡/服装/3下半身/2裤子/粉色短裙.png",
+        parts: [
+          { slot: "pants", imageSrc: "./resource/信息卡/服装/3下半身/2裤子/粉色短裙.png", l: 38, t: 44, w: 30.76 }
+        ]
+      },
+      pink_shoes: {
+        name: "粉色凉鞋",
+        icon: "./resource/信息卡/服装/3下半身/1鞋子/粉色凉鞋.png",
+        parts: [
+          { slot: "shoes", imageSrc: "./resource/信息卡/服装/3下半身/1鞋子/粉色凉鞋.png", l: 31.7, t: 84, w: 37.44 }
+        ]
       }
     };
     // 套装注册表：背包筛选按 item id 前缀归类整套（新增套装只需在此追加一行）。
@@ -28379,7 +28423,8 @@ const applyBossChainFinalBuff = (scene) => {
       { key: "angel", name: "天使莱特套装", prefix: "angel_" },
       { key: "ice", name: "寒冰战神套装", prefix: "ice_" },
       { key: "icefist", name: "冰拳艾司套装", prefix: "if_" },
-      { key: "fashion", name: "时尚套装", prefix: "fs_" }
+      { key: "fashion", name: "时尚套装", prefix: "fs_" },
+      { key: "pink", name: "粉色套装", prefix: "pink_" }
     ];
     // 服饰冲突判定：部件槽位与素材文件夹一一对应（1头盔、2头发、3表情、2右臂、3右手武器、4上衣、6左臂、7翅膀、1鞋子、2裤子），
     // 同一文件夹内的服饰互斥，同一时刻只会真正装备一件；coverSlots 声明跨文件夹覆盖（如天使莱特头盔覆盖头发），冲突双向生效。
