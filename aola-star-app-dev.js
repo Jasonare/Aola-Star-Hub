@@ -209,6 +209,7 @@ const SHOP_REDEEM_CODE_OPEN_TRAIT_GATE = "命运之门为我而开";
 const SHOP_REDEEM_CODE_GET_RICH = "我要发财啦";
 const SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_M = "中秋月饼补偿M";
 const SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_D = "中秋月饼补偿D";
+const SHOP_REDEEM_CODE_NATIONAL_DAY_TOGETHER = "欢度国庆，与你同行";
 const SHOP_REDEEM_CODE_BIG_MOONCAKE_REWARDS = Object.freeze({
   [SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_M]: 1200,
   [SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_D]: 300
@@ -469,6 +470,13 @@ const MID_AUTUMN_MOONCAKE_IMAGE_SRC = "./resource/中秋节活动/小月饼.png"
 const MID_AUTUMN_BIG_MOONCAKE_ITEM_ID = "mid_autumn_big_mooncake";
 const MID_AUTUMN_BIG_MOONCAKE_ITEM_NAME = "大月饼";
 const MID_AUTUMN_BIG_MOONCAKE_IMAGE_SRC = "./resource/中秋节活动/大月饼.png";
+const MOONLIGHT_KEY_ITEM_ID = "moonlight_key";
+const DOUBLE_FESTIVAL_REDEEM_CODES_BY_LAST_DIGIT = Object.freeze({
+  1: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzA4OTcuMDI0NDEyMzI5NTE3MQ==", 2: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzE2NDUuMzc3Nzk1ODc1OTM5Nw==", 3: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzI2NjEuNjMzNjIzNDIwNzk2Nw==", 4: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzM3MzIuNDg4MTgxMTkxNjQyMQ==", 5: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzQyNDQuOTkwMDA1Njg1ODM2NjU=", 6: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzU4NTUuMzIxNzQ2NDI4MDg1NA==", 7: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzY0NjQuOTQ4NTE1Mzc5NjIzMTM=", 8: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzc3NS4yODk0NTg4MTE1NTI2NQ==", 9: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzg0NDYuOTc2MDgwMDgyMjkzNjY=", 0: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzk4MDUuNzQzNTEzOTI3Njc2NQ=="
+});
+const DOUBLE_FESTIVAL_ARENA_CODES_BY_LAST_DIGIT = Object.freeze({
+  1: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzEwMjQuODM3NDkyMDE3MzY1NDgy", 2: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzIwNDguNTkxMDI3MzY0ODUwMTkz", 3: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzMxNTcuNDYyODAxOTM3NTY0ODIw", 4: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzQyNjkuNzA4MzE1Mjk0NjA3MTUz", 5: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzUzODAuMTk0NzI2NTgzMDE5NDcy", 6: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzY0OTEuODIwNTQ3MzkxNjI1MDg0", 7: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzc1MDIuMzc2OTE4NDIwNTczNjE5", 8: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzg2MTMuOTQ1MjcwMTYzODQ5MjA1", 9: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzk3MjQuNjEzODA1OTI3NDgxMzYw", 0: "SHVi5aSp5ZCv6IGU5Yqo5YWR5o2i56CBXzE4MzUuMjU5NDM4NzA2MTkyNTQ3"
+});
 const SHARED_BOSS_SINGLE_ROUND_DAMAGE_LIMIT = 300000;
 const MID_AUTUMN_BOSS_CONFIG = Object.freeze({
   key: "full_moon_giant",
@@ -986,6 +994,8 @@ const QIXING_TRAIT_KEYS = {
   JILAN: "jilan",
   LINGFENG: "lingfeng",
   SACRED_HEART: "sacred_heart",
+  DARK_SOUL: "dark_soul",
+  MOONLIGHT_SEAL: "moonlight_seal",
   STAR_GOD_EYE: "star_god_eye",
   DONGHUANG_TAICHU: "donghuang_taichu"
 };
@@ -1054,6 +1064,28 @@ const QIXING_TRAIT_META = {
       2: { resistance: 0.02, statusImmuneChance: 0.22, statusImmuneTurns: 3, clearOpponentDualAttackChance: 0.1, label: "Lv.2：伤害抗性+2%，每回合22%概率免疫异常状态3回合，10%概率清除对方双攻增益" },
       3: { resistance: 0.04, statusImmuneChance: 0.28, statusImmuneTurns: 3, clearOpponentDualAttackChance: 0.15, label: "Lv.3：伤害抗性+4%，每回合28%概率免疫异常状态3回合，15%概率清除对方双攻增益" },
       4: { resistance: 0.06, statusImmuneChance: 0.35, statusImmuneTurns: 3, clearOpponentDualAttackChance: 0.2, label: "Lv.4：伤害抗性+6%，每回合35%概率免疫异常状态3回合，20%概率清除对方双攻增益" }
+    }
+  },
+  [QIXING_TRAIT_KEYS.DARK_SOUL]: {
+    key: QIXING_TRAIT_KEYS.DARK_SOUL,
+    name: "幽闇之魂",
+    image: "./resource/幽闇之魂.jpg",
+    battle: {
+      1: { turnAttackImmunityChance: 0.15, fatalStageDelta: 1, fatalStageKeys: ["atk", "accuracy", "critStage"], label: "Lv.1：每回合15%概率免疫普通攻击；幽闇虚影触发时提升攻击、命中、暴击各1级" },
+      2: { turnAttackImmunityChance: 0.2, fatalStageDelta: 2, fatalStageKeys: ["atk", "accuracy", "critStage"], label: "Lv.2：每回合20%概率免疫普通攻击；幽闇虚影触发时提升攻击、命中、暴击各2级" },
+      3: { turnAttackImmunityChance: 0.25, fatalStageDelta: 4, fatalStageKeys: ["atk", "accuracy", "critStage"], label: "Lv.3：每回合25%概率免疫普通攻击；幽闇虚影触发时提升攻击、命中、暴击各4级" },
+      4: { turnAttackImmunityChance: 0.35, fatalStageDelta: 6, fatalStageKeys: ["atk", "accuracy", "critStage"], label: "Lv.4：每回合35%概率免疫普通攻击；幽闇虚影触发时提升攻击、命中、暴击各6级" }
+    }
+  },
+  [QIXING_TRAIT_KEYS.MOONLIGHT_SEAL]: {
+    key: QIXING_TRAIT_KEYS.MOONLIGHT_SEAL,
+    name: "月光之印",
+    image: "./resource/月光之印.png",
+    battle: {
+      1: { chance: 0.15, idleHealRatio: 0.05, label: "Lv.1：攻击后15%概率提升双攻1级；属性技能后15%概率提升双防1级；未使用技能则回复5%最大体力" },
+      2: { chance: 0.2, idleHealRatio: 0.06, label: "Lv.2：攻击后20%概率提升双攻1级；属性技能后20%概率提升双防1级；未使用技能则回复6%最大体力" },
+      3: { chance: 0.25, idleHealRatio: 0.08, label: "Lv.3：攻击后25%概率提升双攻1级；属性技能后25%概率提升双防1级；未使用技能则回复8%最大体力" },
+      4: { chance: 0.35, idleHealRatio: 0.1, label: "Lv.4：攻击后35%概率提升双攻1级；属性技能后35%概率提升双防1级；未使用技能则回复10%最大体力" }
     }
   },
   [QIXING_TRAIT_KEYS.STAR_GOD_EYE]: {
@@ -1325,6 +1357,7 @@ const MID_AUTUMN_REDEEM_ENTRIES = Object.freeze([
   { id: midAutumnRedeemId("haoyue_giant_skin"), name: MID_AUTUMN_HAOYUE_GIANT_SKIN_NAME, skinGrade: MID_AUTUMN_HAOYUE_GIANT_SKIN_GRADE, currency: "big", cost: 2500, purchaseLimit: 1, type: "item", itemId: MID_AUTUMN_HAOYUE_GIANT_SKIN_ITEM_ID, amount: 1 },
   { id: midAutumnRedeemId("lingfeng_trait"), name: "灵锋之噬特性", currency: "big", cost: 2000, purchaseLimit: 1, type: "trait", traitKey: QIXING_TRAIT_KEYS.LINGFENG, amount: 1 },
   { id: midAutumnRedeemId("sacred_heart_trait"), name: "圣洁之心特性", currency: "big", cost: 2000, purchaseLimit: 1, type: "trait", traitKey: QIXING_TRAIT_KEYS.SACRED_HEART, amount: 1 },
+  { id: midAutumnRedeemId("dark_soul_trait"), name: "幽闇之魂特性", currency: "big", cost: 3500, purchaseLimit: 1, type: "trait", traitKey: QIXING_TRAIT_KEYS.DARK_SOUL, amount: 1 },
   { id: midAutumnRedeemId("dragon_boat_blade"), name: "端午竞技战刃", currency: "big", cost: 2000, purchaseLimit: 1, type: "item", itemId: DRAGON_BOAT_BLADE_ITEM_ID, amount: 1 },
   { id: midAutumnRedeemId("divine_pet_key"), name: "神宠之匙×100", currency: "big", cost: 1500, purchaseLimit: 2, type: "item", itemId: "divine_pet_key", amount: 100 },
   { id: midAutumnRedeemId("equipment_crystal"), name: "秘境晶石×100", currency: "big", cost: 800, purchaseLimit: 3, type: "item", itemId: EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, amount: 100 },
@@ -1758,6 +1791,7 @@ const BOSS_FIXED_SKILL_INTERVAL_BY_DEX_ID = {
   1926: { interval: 5, skillName: "玄雷甲" }
 };
 const BOSS_RANDOM_SKILL_POOL_BY_DEX_ID = {
+  105: ["上古血脉", "天狗食月", "巨兽之力", "妖之舞", "恢复性睡眠"],
   323: ["原·水源之力", "原·似水流年", "原·拉贝尔叹息", "龟息"],
   775: ["灭世飓风", "龙神霸绝击", "龙啸九天", "龙腾四海"],
   1362: ["破灵碎无双", "众神之力", "烈阳涤尘", "爆阳天变"],
@@ -1794,6 +1828,12 @@ const BOSS_RANDOM_SKILL_POOL_BY_DEX_ID = {
   2044: ["刀剑如梦", "攻守兼备", "混森难搜", "大力奇迹"],
   2049: ["王之降临", "剑芒之歌", "王之剑"],
   2050: ["炎魂破碎", "超钢圣星", "真芒无双", "古阳之力"]
+};
+const CHALLENGE_ROAD_GUARDIAN_SKILL_WEIGHTS_BY_DEX_ID = {
+  105: [
+    { name: "上古血脉", weight: 30 }, { name: "天狗食月", weight: 35 }, { name: "巨兽之力", weight: 10 },
+    { name: "妖之舞", weight: 10 }, { name: "恢复性睡眠", weight: 15 }
+  ]
 };
 const BOSS_CHAIN_CHALLENGE_BY_FINAL_DEX_ID = {
   1915: { firstDexId: 1461, firstName: "苍炎战神", finalName: "真·苍炎战神", finalDamageReduction: 0.3, finalDamageReductionTurns: 3 },
@@ -3857,6 +3897,7 @@ const parseSkillTypeMeta = (typeText) => {
 };
 const parseSkillAttackKind = (skillOrType) => {
   if (skillOrType && typeof skillOrType === "object" && (Number(skillOrType.skillId) === 19001 || normalize(skillOrType.name) === "银光护盾")) return "status";
+  if (skillOrType && typeof skillOrType === "object" && normalize(skillOrType.name) === "恢复性睡眠") return "status";
   if (skillOrType && typeof skillOrType === "object" && (Number(skillOrType.skillId) === 22031 || normalize(skillOrType.name) === "无毁湖光")) return "physical";
   if (skillOrType && typeof skillOrType === "object" && (normalize(skillOrType.name) === "无锋巨刃" || normalize(skillOrType.name) === "刺骨之刃" || normalize(skillOrType.name) === "混沌俱灭斩")) return "physical";
   if (skillOrType && typeof skillOrType === "object" && ["糖衣火箭炮", "糖衣能量炮"].includes(normalize(skillOrType.name))) return "special";
@@ -5650,7 +5691,7 @@ const hasLastStandEffect = (scene, side) => {
   const state = getSideState(scene, side);
   return (state.timedEffects || []).some((e) => normalize(e && e.kind) === "lastStand" && Math.max(0, Number(e && e.turns) || 0) > 0);
 };
-const getAttackImmunityEffect = (scene, side, atkKind, skillElement = "") => {
+const getAttackImmunityEffect = (scene, side, atkKind, skillElement = "", skill = null) => {
   if (atkKind !== "physical" && atkKind !== "special") return null;
   const state = getSideState(scene, side);
   const kind = atkKind === "special" ? "special" : "physical";
@@ -5660,6 +5701,8 @@ const getAttackImmunityEffect = (scene, side, atkKind, skillElement = "") => {
     if (normalize(e && e.kind) !== "attackImmunity") return false;
     if (Math.max(0, Number(e && e.turns) || 0) <= 0) return false;
     const d = e.data || {};
+    // 幽闇之魂仅可免疫实际造成直接伤害的普通攻击，避免把恢复、属性类技能误判为攻击。
+    if (d.requireDirectDamage && (parseSkillAttackKind(skill) !== "physical" || Math.max(0, Number(skill && skill.power) || 0) <= 0)) return false;
     const guardKind = normalize(d.attackKind) || "all";
     const exceptElements = Array.isArray(d.exceptElements) ? d.exceptElements.map(normalize).filter(Boolean) : [];
     if (element && exceptElements.includes(element)) return false;
@@ -6332,7 +6375,9 @@ const getDamageReflectFlatEffects = (scene, side, atkKind) => {
 const applyDirectHpDamage = (scene, side, amount) => {
   const hpKey = side === "attacker" ? "attackerHp" : "targetHp";
   const before = Math.max(0, Number(scene[hpKey]) || 0);
-  scene[hpKey] = Math.max(hasLastStandEffect(scene, side) && before > 0 ? 1 : 0, before - Math.max(1, Math.floor(Number(amount) || 1)));
+  const damage = Math.max(1, Math.floor(Number(amount) || 1));
+  if (triggerDarkSoulFatalShadow(scene, side, damage)) return 0;
+  scene[hpKey] = Math.max(hasLastStandEffect(scene, side) && before > 0 ? 1 : 0, before - damage);
   const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
   recordBattleDamageTakenThisTurn(scene, side, actual);
   if (side === "target") recordTeamBossDamage(scene, actual);
@@ -12625,15 +12670,73 @@ const getQixingSealTraitKeyFromScene = (scene, side) => {
   const key = side === "attacker" ? scene && scene.attackerQixingSealTraitKey : scene && scene.targetQixingSealTraitKey;
   return normalizeQixingTraitKey(key);
 };
+const triggerDarkSoulFatalShadow = (scene, side, damage) => {
+  if (!scene || Math.max(0, Math.floor(Number(damage) || 0)) <= 0) return false;
+  // 同一行动已被幽闇之魂的普通攻击免疫拦截时，不再消耗致命保护。
+  if (Number(scene.darkSoulAttackImmunityActionSeq) === Number(scene._petAnimActionSeq)) return false;
+  const itemId = side === "attacker" ? scene.attackerBattleItemId : scene.targetBattleItemId;
+  if (normalize(itemId) !== QIXING_SEAL_ITEM_ID || getQixingSealTraitKeyFromScene(scene, side) !== QIXING_TRAIT_KEYS.DARK_SOUL) return false;
+  const usedKey = side === "attacker" ? "attackerDarkSoulFatalShadowUsed" : "targetDarkSoulFatalShadowUsed";
+  if (scene[usedKey]) return false;
+  const hp = Math.max(0, Number(side === "attacker" ? scene.attackerHp : scene.targetHp) || 0);
+  if (hp <= 0 || hp > Math.max(0, Math.floor(Number(damage) || 0))) return false;
+  scene[usedKey] = true;
+  const level = getQixingSealLevelFromScene(scene, side);
+  const rule = getQixingTraitBattleRuleByKey(QIXING_TRAIT_KEYS.DARK_SOUL, level);
+  const delta = Math.max(1, Math.floor(Number(rule.fatalStageDelta) || 1));
+  const keys = (Array.isArray(rule.fatalStageKeys) ? rule.fatalStageKeys : []).filter((key) => ALL_ABILITY_STAGE_KEYS.includes(key));
+  const changed = applyStageDelta(scene, side, keys, delta);
+  const actorName = side === "attacker" ? scene.attackerName : scene.targetName;
+  showBattleMoraleStatusFx(scene, side, QIXING_TRAIT_KEYS.DARK_SOUL, "幽闇虚影");
+  showBattleActionNotice(scene, side, "幽闇虚影");
+  if (side === "attacker") scene.damageOnAttacker = "幽闇虚影";
+  else scene.damageOnTarget = "幽闇虚影";
+  markBattleFloatText(scene);
+  const stageText = changed.length > 0 ? `，提升${delta}级：${changed.map((key) => battleStatLabel(key)).join("、")}` : "，攻击、命中、暴击已达上限";
+  pushBattleLog(scene, `${actorName}的幽闇之魂Lv.${level}触发幽闇虚影，免疫本次致命伤害${stageText}。`);
+  return true;
+};
+const triggerMoonlightSealTurnStart = (scene, side) => {
+  if (!scene) return false;
+  const itemId = side === "attacker" ? scene.attackerBattleItemId : scene.targetBattleItemId;
+  if (normalize(itemId) !== QIXING_SEAL_ITEM_ID || getQixingSealTraitKeyFromScene(scene, side) !== QIXING_TRAIT_KEYS.MOONLIGHT_SEAL) return false;
+  const lastActionKey = side === "attacker" ? "attackerMoonlightLastActionKind" : "targetMoonlightLastActionKind";
+  if (!Object.prototype.hasOwnProperty.call(scene, lastActionKey)) return false;
+  const lastActionKind = normalize(scene[lastActionKey]) || "none";
+  const level = getQixingSealLevelFromScene(scene, side);
+  const rule = getQixingTraitBattleRuleByKey(QIXING_TRAIT_KEYS.MOONLIGHT_SEAL, level);
+  const actorName = side === "attacker" ? scene.attackerName : scene.targetName;
+  if (lastActionKind === "physical" || lastActionKind === "special" || lastActionKind === "status") {
+    const keys = lastActionKind === "status" ? ["def", "spDef"] : ["atk", "spAtk"];
+    if (Math.random() >= clamp(Number(rule.chance) || 0, 0, 1)) return false;
+    const changed = applyStageDelta(scene, side, keys, 1);
+    if (changed.length <= 0) return false;
+    showBattleMoraleStatusFx(scene, side, QIXING_TRAIT_KEYS.MOONLIGHT_SEAL, "月光之印");
+    pushBattleLog(scene, `${actorName}的月光之印Lv.${level}发动，提升${changed.map((key) => battleStatLabel(key)).join("、")}各1级。`);
+    return true;
+  }
+  const ratio = clamp(Number(rule.idleHealRatio) || 0, 0, 1);
+  const maxHp = Math.max(1, Number(side === "attacker" ? scene.attackerMaxHp : scene.targetMaxHp) || 1);
+  const healed = healSideByFlatAmount(scene, side, Math.max(1, Math.floor(maxHp * ratio))).actual;
+  if (healed <= 0) return false;
+  if (side === "attacker") scene.healOnAttacker = `+${healed}`;
+  else scene.healOnTarget = `+${healed}`;
+  markBattleFloatText(scene);
+  showBattleMoraleStatusFx(scene, side, QIXING_TRAIT_KEYS.MOONLIGHT_SEAL, "月光之印");
+  pushBattleLog(scene, `${actorName}的月光之印Lv.${level}发动，回复${Math.round(ratio * 100)}%最大体力（${healed}点）。`);
+  return true;
+};
 const pushQixingSealBattleEntryLog = (scene, side) => {
   if (!scene) return false;
   const itemId = side === "attacker" ? scene.attackerBattleItemId : scene.targetBattleItemId;
   if (normalize(itemId) !== QIXING_SEAL_ITEM_ID) return false;
   const level = getQixingSealLevelFromScene(scene, side);
   const traitKey = getQixingSealTraitKeyFromScene(scene, side);
+  if (traitKey === QIXING_TRAIT_KEYS.MOONLIGHT_SEAL) return false;
   const meta = getQixingTraitMetaByKey(traitKey);
   const rule = getQixingTraitBattleRuleByKey(traitKey, level);
   const actorName = side === "attacker" ? scene.attackerName : scene.targetName;
+  if (traitKey === QIXING_TRAIT_KEYS.MOONLIGHT_SEAL) return false;
   const chanceText = `${Math.round(clamp(Number(rule.chance) || 0, 0, 1) * 100)}%`;
   const fixedEffects = [];
   if (Number(rule.damageBonus) > 0) fixedEffects.push(`伤害加成+${Math.round(Number(rule.damageBonus) * 100)}%`);
@@ -12641,6 +12744,12 @@ const pushQixingSealBattleEntryLog = (scene, side) => {
   if (Number(rule.critDamageBonus) > 0) fixedEffects.push(`暴击伤害+${Math.round(Number(rule.critDamageBonus) * 100)}%`);
   if (Number(rule.lifestealRatio) > 0) fixedEffects.push(`攻击回血${Math.round(Number(rule.lifestealRatio) * 100)}%`);
   if (side === "target" && scene.guardianMeta && scene.guardianMeta.reincarnationDreamStarGodEye) fixedEffects.push("额外装配星神之眼Lv.4：伤害抗性+10%，35%概率清除自身异常状态");
+  if (traitKey === QIXING_TRAIT_KEYS.DARK_SOUL) {
+    fixedEffects.push(`每回合${Math.round(clamp(Number(rule.turnAttackImmunityChance) || 0, 0, 1) * 100)}%概率免疫普通攻击`);
+    fixedEffects.push(`幽闇虚影每场免疫1次致命伤害，并提升攻击、命中、暴击各${Math.max(1, Math.floor(Number(rule.fatalStageDelta) || 1))}级`);
+    pushBattleLog(scene, `${actorName}装配${meta.name}Lv.${level}：${fixedEffects.join("，")}。`);
+    return true;
+  }
   const stageKeys = Array.isArray(rule.keys) && rule.keys.length > 0 ? rule.keys.filter((k) => ALL_ABILITY_STAGE_KEYS.includes(k)) : [];
   const stageText = stageKeys.length > 0
     ? `${chanceText}概率提升${stageKeys.map((k) => battleStatLabel(k)).join("、")}各1级`
@@ -12654,6 +12763,7 @@ const applyQixingSealEffect = (scene, side) => {
   if (normalize(itemId) !== QIXING_SEAL_ITEM_ID) return false;
   const level = getQixingSealLevelFromScene(scene, side);
   const traitKey = getQixingSealTraitKeyFromScene(scene, side);
+  if (traitKey === QIXING_TRAIT_KEYS.MOONLIGHT_SEAL) return false;
   if (traitKey === QIXING_TRAIT_KEYS.LINGFENG) {
     if (!(side === "target" && scene.guardianMeta && scene.guardianMeta.reincarnationDreamStarGodEye)) return false;
     const starGodEyeRule = getQixingTraitBattleRuleByKey(QIXING_TRAIT_KEYS.STAR_GOD_EYE, QIXING_SEAL_MAX_LEVEL);
@@ -12671,6 +12781,15 @@ const applyQixingSealEffect = (scene, side) => {
   const meta = getQixingTraitMetaByKey(traitKey);
   const rule = getQixingTraitBattleRuleByKey(traitKey, level);
   const actorName = side === "attacker" ? scene.attackerName : scene.targetName;
+  if (traitKey === QIXING_TRAIT_KEYS.DARK_SOUL) {
+    const chance = clamp(Number(rule.turnAttackImmunityChance) || 0, 0, 1);
+    if (chance <= 0 || Math.random() >= chance) return false;
+    addTimedEffect(scene, side, { kind: "attackImmunity", turns: 1, data: { attackKind: "physical", chance: 1, label: "幽闇之魂", requireDirectDamage: true } });
+    showBattleMoraleStatusFx(scene, side, traitKey, meta.name);
+    showBattleActionNotice(scene, side, meta.name);
+    pushBattleLog(scene, `${actorName}的${meta.name}Lv.${level}发动，本回合免疫普通攻击。`);
+    return true;
+  }
   if (traitKey === QIXING_TRAIT_KEYS.SACRED_HEART) {
     let triggered = false;
     if (Math.random() < clamp(Number(rule.statusImmuneChance) || 0, 0, 1)) {
@@ -14644,6 +14763,9 @@ createApp({
         selectedAttackerId: bagSeed[0] || "",
         selectedPetId: (starterPets[0] && starterPets[0].id) || "",
         items: { level_40_fruit: 1, divine_pet_key: 0, [MID_AUTUMN_BIG_MOONCAKE_ITEM_ID]: 0, [MID_AUTUMN_MOONCAKE_ITEM_ID]: 0 },
+        challengeRoadShenwuyueFirstWinRewardClaimed: false,
+        doubleFestivalMoonlightBox: { opened: false, snowflakeId: "", redeemCode: "" },
+        doubleFestivalMoonlightSealClaimed: false,
         midAutumnBigMooncakeEarned: 0,
         hCoins: 200,
         dailyHcoinGain: { date: "", amount: 0 },
@@ -15103,6 +15225,10 @@ createApp({
         eggs,
         redeemedCodes,
         items,
+        // 旧存档不会由历史胜利自动补发，只在后续首次击败时写入该标记。
+        challengeRoadShenwuyueFirstWinRewardClaimed: Boolean(loaded.challengeRoadShenwuyueFirstWinRewardClaimed),
+        doubleFestivalMoonlightBox: (() => { const source = loaded.doubleFestivalMoonlightBox && typeof loaded.doubleFestivalMoonlightBox === "object" ? loaded.doubleFestivalMoonlightBox : {}; const snowflakeId = String(source.snowflakeId || "").replace(/\D/g, ""); const lastDigit = snowflakeId ? Number(snowflakeId.slice(-1)) : -1; return { opened: Boolean(source.opened && snowflakeId && DOUBLE_FESTIVAL_REDEEM_CODES_BY_LAST_DIGIT[lastDigit]), snowflakeId, redeemCode: DOUBLE_FESTIVAL_REDEEM_CODES_BY_LAST_DIGIT[lastDigit] || "" }; })(),
+        doubleFestivalMoonlightSealClaimed: Boolean(loaded.doubleFestivalMoonlightSealClaimed),
         midAutumnBigMooncakeEarned,
         abilityBreakthroughEntries,
         migrations,
@@ -16744,7 +16870,7 @@ createApp({
       }
     ]);
     const allHcoinShopItems = computed(() => shopItems.value.concat(skillShopItems.value, bundleShopItems.value, skinShopItems.value));
-    const itemCatalog = computed(() => initialOnlyItems.concat(shopItems.value, skillShopItems.value, gearShopItems.value, skinShopItems.value, [{ id: SKIN_FRAGMENT_ITEM_ID, name: SKIN_FRAGMENT_ITEM_NAME, price: 0, desc: "战队BOSS排名奖励，可在战队皮肤商店兑换皮肤" }]));
+    const itemCatalog = computed(() => initialOnlyItems.concat(shopItems.value, skillShopItems.value, gearShopItems.value, skinShopItems.value, [{ id: SKIN_FRAGMENT_ITEM_ID, name: SKIN_FRAGMENT_ITEM_NAME, price: 0, desc: "战队BOSS排名奖励，可在战队皮肤商店兑换皮肤" }, { id: MOONLIGHT_KEY_ITEM_ID, name: "月光钥匙", image: "./resource/月光宝盒.jpg", price: 0, desc: "首次在挑战之路击败神武月获得的双节联动纪念道具" }]));
     const equipmentDungeonCrystalCount = computed(() => getItemCount(EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID));
     const getTimeTunnelRewardInfo = (floor) => {
       const safeFloor = Math.max(1, Math.floor(Number(floor) || 1));
@@ -25090,6 +25216,23 @@ const applyBossChainFinalBuff = (scene) => {
         }
         return usable[usable.length - 1].skill;
       };
+      if (scene && scene.mode === "guardian" && Number(scene.targetDexId) === 105) {
+        const hpRatio = Math.max(0, Number(scene.targetHp) || 0) / Math.max(1, Number(scene.targetMaxHp) || 1);
+        if (!scene.shenwuyueLowHpBuffTriggered && hpRatio < 0.5) {
+          const recovery = findUsableSkillByName("恢复性睡眠", true);
+          if (recovery) {
+            scene.shenwuyueLowHpBuffTriggered = true;
+            const changed = applyStageDelta(scene, "target", ALL_ABILITY_STAGE_KEYS, 2);
+            showBattleMoraleStatusFx(scene, "target", "狂暴斗志", "狂暴斗志");
+            showBattleActionNotice(scene, "target", "狂暴斗志");
+            pushBattleLog(scene, `${scene.targetName}体力首次低于50%，触发狂暴斗志，全属性提升2级，并必定释放恢复性睡眠。`);
+            if (changed.length === 0) pushBattleLog(scene, `${scene.targetName}的全属性已达上限或受保护，能力等级未变化。`);
+            return recovery;
+          }
+        }
+        const weightedSkill = pickWeightedPoolSkill(CHALLENGE_ROAD_GUARDIAN_SKILL_WEIGHTS_BY_DEX_ID[105]);
+        if (weightedSkill) return weightedSkill;
+      }
       if (scene && scene.mode === "timeTunnel" && Math.max(1, Math.floor(Number(scene.timeTunnelMeta && scene.timeTunnelMeta.floor) || 1)) === 45) {
         if (Number(scene.targetDexId) === 1749) {
           const turn = Math.max(1, Math.floor(Number(scene.turnCount) || 1));
@@ -25732,6 +25875,13 @@ const applyBossChainFinalBuff = (scene) => {
           return;
         }
         pushBattleLog(battleScene.value, `第${battleScene.value.turnCount}回合开始。`);
+        ["attacker", "target"].forEach((side) => {
+          const currentKey = side === "attacker" ? "attackerMoonlightActionThisTurn" : "targetMoonlightActionThisTurn";
+          const lastKey = side === "attacker" ? "attackerMoonlightLastActionKind" : "targetMoonlightLastActionKind";
+          battleScene.value[lastKey] = normalize(battleScene.value[currentKey]) || "none";
+          battleScene.value[currentKey] = "none";
+          triggerMoonlightSealTurnStart(battleScene.value, side);
+        });
         updateBattleShengyuDomainForTurn(battleScene.value);
         triggerShengyuTurnStartPassives(battleScene.value).forEach((fx) => showBattleStatusEffectFx(battleScene.value, fx.side, [fx]));
         triggerWeeklyBossTurnStartEffectIfNeeded(battleScene.value).forEach((fx) => showBattleStatusEffectFx(battleScene.value, fx.side, [fx]));
@@ -26028,6 +26178,7 @@ const applyBossChainFinalBuff = (scene) => {
       if (!scene._petAnimActionStartedAt || typeof scene._petAnimActionStartedAt !== "object") scene._petAnimActionStartedAt = {};
       scene._petAnimActionStartedAt[actionSeq] = Date.now();
       const atkKind = parseSkillAttackKind(skill);
+      scene[actorSide === "attacker" ? "attackerMoonlightActionThisTurn" : "targetMoonlightActionThisTurn"] = atkKind;
       applyQixingSealOnSkillRelease(scene, actorSide);
       triggerFatalDragonShadowEffects(scene, actorSide, skill);
       const actorDexIdForDelay = resolveBattleSideDexId(scene, actorSide);
@@ -26213,12 +26364,13 @@ const applyBossChainFinalBuff = (scene) => {
       } else {
         if (targetSide === "target") applyBattleAnimImage(scene, "target", "hit", actionSeq);
         else applyBattleAnimImage(scene, "attacker", "hit", actionSeq);
-        const immuneEffect = getAttackImmunityEffect(scene, targetSide, atkKind, skillElement);
+        const immuneEffect = getAttackImmunityEffect(scene, targetSide, atkKind, skillElement, skill);
         const immuneChance = immuneEffect ? clamp(Number(immuneEffect.data && immuneEffect.data.chance) || 1, 0, 1) : 0;
         if (immuneEffect) {
           pushBattleLog(scene, `${targetName}的攻击免疫判定：${Math.round(immuneChance * 100)}%概率免受本次${atkKind === "special" ? "特殊攻击" : "普通攻击"}伤害。`);
         }
         if (!hardcodedMultiHit && immuneEffect && Math.random() <= immuneChance) {
+          if (normalize(immuneEffect.data && immuneEffect.data.label) === "幽闇之魂") scene.darkSoulAttackImmunityActionSeq = actionSeq;
           pushBattleLog(scene, `${targetName}的攻击免疫生效，免受本次${atkKind === "special" ? "特殊攻击" : "普通攻击"}伤害。`);
           const showImmuneVisual = () => {
             const live = battleScene.value;
@@ -26300,7 +26452,7 @@ const applyBossChainFinalBuff = (scene) => {
             powerStep = 0;
             continue;
           }
-          const perHitImmuneEffect = mh ? getAttackImmunityEffect(scene, targetSide, atkKind, skillElement) : null;
+          const perHitImmuneEffect = mh ? getAttackImmunityEffect(scene, targetSide, atkKind, skillElement, skill) : null;
           const perHitImmuneChance = perHitImmuneEffect ? clamp(Number(perHitImmuneEffect.data && perHitImmuneEffect.data.chance) || 1, 0, 1) : 0;
           if (perHitImmuneEffect && Math.random() <= perHitImmuneChance) {
             comboHitList.push("无效");
@@ -26665,6 +26817,12 @@ const applyBossChainFinalBuff = (scene) => {
           isComboSkill = false;
           splitDamageDisplay = null;
           pushBattleLog(scene, `${targetName}\u7684\u961f\u4f0d\u4fdd\u62a4\u751f\u6548\uff0c\u672c\u6b21\u4f24\u5bb3\u9650\u5236\u4e3a${teamDamageCap}\u70b9\u3002`);
+        }
+        if (triggerDarkSoulFatalShadow(scene, targetSide, damage)) {
+          damage = 0;
+          comboHitList = ["无效"];
+          isComboSkill = false;
+          splitDamageDisplay = null;
         }
         const showDamageVisual = () => {
           const live = battleScene.value;
@@ -27210,6 +27368,13 @@ const applyBossChainFinalBuff = (scene) => {
           markDefeatedDex(target.dexId);
           if (!state.value.activatedDexIds.includes(target.dexId)) state.value.activatedDexIds.push(target.dexId);
           recordGuardianBadgeWin(target.name);
+          if (Number(target.dexId) === 105 && !state.value.challengeRoadShenwuyueFirstWinRewardClaimed) {
+            state.value.challengeRoadShenwuyueFirstWinRewardClaimed = true;
+            addItemCount(MOONLIGHT_KEY_ITEM_ID, 1);
+            queueRewardFlyToasts(["首次击败神武月，获得月光钥匙×1！"]);
+            showToast("首次击败神武月，获得月光钥匙×1！");
+            pushBattleLog(scene, "挑战之路首次击败神武月，获得月光钥匙×1。");
+          }
           grantZongziReward(scene, 5, `${target.name}守护者挑战成功`);
           const canDropEgg = canDropEggByActionDexId(target.dexId);
           const alreadyHadEgg = hasObtainedEggDex(target.dexId);
@@ -28631,6 +28796,12 @@ const applyBossChainFinalBuff = (scene) => {
       showFateGatePanel.value = false;
     };
     const showMidAutumnPanel = ref(false);
+    const showDoubleFestivalPanel = ref(false);
+    const showDoubleFestivalCodePage = ref(false);
+    const showDoubleFestivalClaimPage = ref(false);
+    const doubleFestivalArenaId = ref("");
+    const doubleFestivalArenaRedeemCode = ref("");
+    const doubleFestivalMoonlightSealClaimed = computed(() => Boolean(state.value.doubleFestivalMoonlightSealClaimed));
     const showMidAutumnTaskPanel = ref(false);
     const showMidAutumnBossCard = ref(false);
     const showMidAutumnBossMap = ref(false);
@@ -28685,10 +28856,50 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const closeMidAutumnPanel = () => {
       showMidAutumnPanel.value = false;
+      showDoubleFestivalPanel.value = false;
       showMidAutumnTaskPanel.value = false;
       showMidAutumnBossCard.value = false;
       showMidAutumnBossMap.value = false;
     };
+    const doubleFestivalMoonlightBox = computed(() => state.value.doubleFestivalMoonlightBox && typeof state.value.doubleFestivalMoonlightBox === "object" ? state.value.doubleFestivalMoonlightBox : { opened: false, snowflakeId: "", redeemCode: "" });
+    const generateDoubleFestivalSnowflakeId = () => {
+      const epoch = 1704067200000n;
+      const timestamp = BigInt(Math.max(0, Date.now() - Number(epoch)));
+      const workerId = BigInt(Math.floor(Math.random() * 1024));
+      const sequence = BigInt(Math.floor(Math.random() * 4096));
+      return ((timestamp << 22n) | (workerId << 12n) | sequence).toString();
+    };
+    const openDoubleFestivalPanel = () => {
+      showDoubleFestivalCodePage.value = Boolean(doubleFestivalMoonlightBox.value.opened);
+      showDoubleFestivalClaimPage.value = false;
+      showDoubleFestivalPanel.value = true;
+    };
+    const openDoubleFestivalMoonlightBox = async () => {
+      if (doubleFestivalMoonlightBox.value.opened) { showDoubleFestivalCodePage.value = true; return; }
+      if (getItemCount(MOONLIGHT_KEY_ITEM_ID) <= 0) return showToast("当前未拥有月光钥匙，无法开启月光宝盒！");
+      const snowflakeId = generateDoubleFestivalSnowflakeId();
+      const redeemCode = DOUBLE_FESTIVAL_REDEEM_CODES_BY_LAST_DIGIT[Number(snowflakeId.slice(-1))];
+      addItemCount(MOONLIGHT_KEY_ITEM_ID, -1);
+      state.value.doubleFestivalMoonlightBox = { opened: true, snowflakeId, redeemCode };
+      showDoubleFestivalCodePage.value = true;
+      await autoSaveCurrentProgress({ silent: true });
+    };
+    const openDoubleFestivalClaimPage = () => { showDoubleFestivalClaimPage.value = true; };
+    const claimDoubleFestivalMoonlightSeal = async () => {
+      if (doubleFestivalMoonlightSealClaimed.value) return;
+      const arenaId = String(doubleFestivalArenaId.value || "").trim();
+      const redeemCode = String(doubleFestivalArenaRedeemCode.value || "").trim();
+      const lastDigit = /^\d+$/.test(arenaId) ? Number(arenaId.slice(-1)) : -1;
+      if (!arenaId || redeemCode !== DOUBLE_FESTIVAL_ARENA_CODES_BY_LAST_DIGIT[lastDigit]) {
+        showToast("天启多多号或者兑换码输入错误，请确认！");
+        return;
+      }
+      grantQixingSeal(QIXING_TRAIT_KEYS.MOONLIGHT_SEAL, 1);
+      state.value.doubleFestivalMoonlightSealClaimed = true;
+      showToast("领取成功，获得月光之印特性！");
+      await autoSaveCurrentProgress({ silent: true });
+    };
+    const closeDoubleFestivalPanel = () => { showDoubleFestivalPanel.value = false; showDoubleFestivalCodePage.value = false; showDoubleFestivalClaimPage.value = false; };
     const openMidAutumnTaskPanel = () => {
       showMidAutumnTaskPanel.value = true;
     };
@@ -29681,7 +29892,7 @@ const applyBossChainFinalBuff = (scene) => {
     const redeemShopCode = async () => {
       const code = normalize(shopRedeemCodeInput.value).replace(/\s+/g, "").toUpperCase();
       if (!code) return showToast("请输入兑换码。");
-      if (![SHOP_REDEEM_CODE_ALHUB666, SHOP_REDEEM_CODE_HUBDWAK, SHOP_REDEEM_CODE_EQUIPMENT_DUNGEON_STRONG_ROAD, SHOP_REDEEM_CODE_MID_AUTUMN_HUB, SHOP_REDEEM_CODE_HUB_TOGETHER, SHOP_REDEEM_CODE_SERVER_RECOVERY, SHOP_REDEEM_CODE_JOIN_TEAM, SHOP_REDEEM_CODE_TEAM_BOSS, SHOP_REDEEM_CODE_TRAIT_CHOICE_BUNDLE, SHOP_REDEEM_CODE_OPEN_TRAIT_GATE, SHOP_REDEEM_CODE_GET_RICH, SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_M, SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_D].includes(code)) return showToast("该兑换码无效。");
+      if (![SHOP_REDEEM_CODE_ALHUB666, SHOP_REDEEM_CODE_HUBDWAK, SHOP_REDEEM_CODE_EQUIPMENT_DUNGEON_STRONG_ROAD, SHOP_REDEEM_CODE_MID_AUTUMN_HUB, SHOP_REDEEM_CODE_HUB_TOGETHER, SHOP_REDEEM_CODE_SERVER_RECOVERY, SHOP_REDEEM_CODE_JOIN_TEAM, SHOP_REDEEM_CODE_TEAM_BOSS, SHOP_REDEEM_CODE_TRAIT_CHOICE_BUNDLE, SHOP_REDEEM_CODE_OPEN_TRAIT_GATE, SHOP_REDEEM_CODE_GET_RICH, SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_M, SHOP_REDEEM_CODE_MID_AUTUMN_COMPENSATION_D, SHOP_REDEEM_CODE_NATIONAL_DAY_TOGETHER].includes(code)) return showToast("该兑换码无效。");
       if (!Array.isArray(state.value.redeemedCodes)) state.value.redeemedCodes = [];
       if (state.value.redeemedCodes.map((row) => normalize(row).toUpperCase()).includes(code)) {
         return showToast("该兑换码已经使用过了。");
@@ -29730,6 +29941,17 @@ const applyBossChainFinalBuff = (scene) => {
           `获取${hcoinReward}H币！`
         ]);
         showToast("兑换成功，中秋奖励已发放。");
+        return;
+      }
+      if (code === SHOP_REDEEM_CODE_NATIONAL_DAY_TOGETHER) {
+        state.value.redeemedCodes.push(code);
+        const hcoinReward = grantHCoins(88888).granted;
+        addItemCount(TRAIT_CHOICE_BUNDLE_ITEM_ID, 1);
+        addItemCount("divine_pet_key", 88);
+        addItemCount(EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, 66);
+        shopRedeemCodeInput.value = "";
+        queueRewardFlyToasts(["获得特性自选礼包×1！", "获得神宠之匙×88！", "获得秘境晶石×66！", `获取${hcoinReward}H币！`]);
+        showToast("兑换成功，国庆同行奖励已发放。");
         return;
       }
       if (code === SHOP_REDEEM_CODE_HUB_TOGETHER) {
@@ -32690,6 +32912,13 @@ const applyBossChainFinalBuff = (scene) => {
       openFateGatePanel,
       closeFateGatePanel,
       showMidAutumnPanel,
+      showDoubleFestivalPanel,
+      showDoubleFestivalCodePage,
+      showDoubleFestivalClaimPage,
+      doubleFestivalMoonlightBox,
+      doubleFestivalArenaId,
+      doubleFestivalArenaRedeemCode,
+      doubleFestivalMoonlightSealClaimed,
       showMidAutumnTaskPanel,
       showMidAutumnBossCard,
       showMidAutumnBossMap,
@@ -32701,6 +32930,11 @@ const applyBossChainFinalBuff = (scene) => {
       redeemMidAutumnReward,
       openMidAutumnPanel,
       closeMidAutumnPanel,
+      openDoubleFestivalPanel,
+      openDoubleFestivalMoonlightBox,
+      openDoubleFestivalClaimPage,
+      claimDoubleFestivalMoonlightSeal,
+      closeDoubleFestivalPanel,
       openMidAutumnTaskPanel,
       closeMidAutumnTaskPanel,
       openMidAutumnBossCard,

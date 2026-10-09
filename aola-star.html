@@ -512,6 +512,7 @@
     }
     .home-action-gift { --x: 1.2%; --y: 83.4%; --w: 7.1%; }
     .home-action-mid-autumn { --x: 13.25%; --y: 64%; --w: 7.1%; }
+    .home-action-double-festival { --x: 21.5%; --y: 70%; --w: 7.1%; }
     .home-action-mail { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
     .home-action-dragonboat { --x: 8.8%; --y: 82.2%; --w: 8.0%; }
     .home-action-rank { --x: 22%; --y: 86.2%; --w: 7.8%; }
@@ -1068,6 +1069,7 @@
       .home-action-gift { --x: 2%; --y: 76%; --w: 18%; }
       .home-action-mail { --x: 21%; --y: 76%; --w: 18%; }
       .home-action-mid-autumn { --x: 12%; --y: 58.5%; --w: 18%; transform: translateY(-40%); }
+      .home-action-double-festival { --x: 34.5%; --y: 61%; --w: 18%; }
       .home-action-btn.home-action-mid-autumn:hover { transform: translateY(calc(-40% - 3px)) scale(1.04); }
       .home-action-btn.home-action-mid-autumn:active { transform: translateY(-40%) scale(.98); }
       .home-action-monthly { --x: 2%; --y: 58.5%; --w: 24.3%; }
@@ -5077,6 +5079,34 @@
       transform: scale(0.96);
       filter: brightness(1.18);
     }
+    .mid-autumn-double-festival-btn { position: absolute; right: 4.2%; bottom: 4%; width: 13%; aspect-ratio: 1; border: 0; padding: 0; background: transparent; cursor: pointer; z-index: 9; transition: transform .14s ease, filter .14s ease; }
+    .mid-autumn-double-festival-btn img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .mid-autumn-double-festival-btn:hover { transform: scale(1.06); filter: brightness(1.1) drop-shadow(0 0 9px rgba(255, 224, 90, .8)); }
+    .mid-autumn-double-festival-btn:active { transform: scale(.96); }
+    .double-festival-panel { position: relative; width: min(57.4vw, calc((100vh - 32px) * 1.029)); aspect-ratio: 535 / 364; }
+    .double-festival-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; max-width: none; }
+    .double-festival-title { position: absolute; z-index: 1; left: 50%; top: -22%; width: 82%; max-width: none; height: auto; transform: translateX(-50%); pointer-events: none; }
+    .double-festival-close { position: absolute; z-index: 3; top: -14%; right: -6%; box-sizing: border-box; display: grid; place-items: center; width: clamp(42px, 8vw, 80px); height: clamp(42px, 8vw, 80px); min-width: 0; min-height: 0; padding: 0; border: 3px solid #fff3ce; border-radius: 50%; background: #df3026; color: #fff9df; font-size: clamp(46px, 5vw, 76px); font-weight: 1000; line-height: 1; cursor: pointer; box-shadow: 0 3px 0 #8b1c17, 0 0 7px rgba(255, 255, 255, .75); }
+    .double-festival-close:hover { filter: brightness(1.13); transform: scale(1.06); }
+    .double-festival-close:active { transform: scale(.95); }
+    .double-festival-reward-text { position: absolute; z-index: 1; top: 25%; left: 8%; right: 8%; margin: 0; color: #702400; font-size: clamp(14px, 1.65vw, 26px); font-weight: 1000; text-align: center; letter-spacing: .025em; text-shadow: 1px 2px 0 #f6d58c, 0 0 2px rgba(255, 247, 211, .9); }
+    .double-festival-reward-image { position: absolute; z-index: 1; left: 50%; top: 43%; width: 29%; max-width: none; height: auto; transform: translateX(-50%); object-fit: contain; }
+    .double-festival-open-btn { position: absolute; z-index: 2; left: 50%; bottom: 2%; width: 23%; border: 0; padding: 0; background: transparent; cursor: pointer; transform: translateX(-50%); transition: transform .14s ease, filter .14s ease; }
+    .double-festival-open-btn img { width: 100%; height: auto; display: block; max-width: none; }
+    .double-festival-open-btn:hover { transform: translateX(-50%) scale(1.04); filter: brightness(1.1); }
+    .double-festival-open-btn:active { transform: translateX(-50%) scale(.97); }
+    .double-festival-code-label { position: absolute; z-index: 1; left: 8%; right: 8%; margin: 0; color: #702400; font-size: clamp(14px, 1.65vw, 26px); font-weight: 1000; text-align: left; letter-spacing: .025em; text-shadow: 1px 2px 0 #f6d58c, 0 0 2px rgba(255, 247, 211, .9); }
+    .double-festival-code-label.is-password { top: 22%; }
+    .double-festival-code-label.is-code { top: 55%; }
+    .double-festival-code-value { position: absolute; z-index: 1; left: 8%; right: 8%; margin: 0; color: #702400; font-size: clamp(11px, 1.25vw, 19px); font-weight: 900; text-align: center; overflow-wrap: anywhere; text-shadow: 1px 1px 0 #f6d58c; }
+    .double-festival-code-value.is-password { top: 35%; }
+    .double-festival-code-value.is-code { top: 68%; }
+    .double-festival-input { position: absolute; z-index: 1; left: 50%; width: 64%; aspect-ratio: 417 / 45; padding: 0 4%; border: 0; outline: 0; background: url('./resource/Hub天启联动素材包/兑换码界面/兑换码输入框.png?v=20260930_transparent_v2') center / 100% 100% no-repeat; color: #702400; font-size: clamp(12px, 1.3vw, 20px); font-weight: 900; transform: translateX(-50%); }
+    .double-festival-input.is-arena-id { top: 35%; }
+    .double-festival-input.is-arena-code { top: 68%; }
+    .double-festival-claim-btn { position: absolute; z-index: 2; left: 50%; bottom: 4%; width: 22%; border: 0; padding: 0; background: transparent; cursor: pointer; transform: translateX(-50%); }
+    .double-festival-claim-btn img { width: 100%; height: auto; display: block; max-width: none; }
+    .double-festival-claim-btn:disabled { cursor: not-allowed; opacity: .55; filter: grayscale(1) brightness(.72); }
     .mid-autumn-redeem-content { position: absolute; z-index: 7; left: 18.2%; right: 34.5%; top: 27%; bottom: 9%; display: flex; flex-direction: column; color: #fff1a2; }
     .mid-autumn-wallet { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 2.2vw, 38px); min-height: 12%; }
     .mid-autumn-wallet-item { display: inline-flex; align-items: center; gap: 5px; color: #ffe55f; font-size: clamp(13px, 1.45vw, 23px); font-weight: 1000; text-shadow: 1px 2px 0 #8e2500; white-space: nowrap; }
@@ -9478,6 +9508,7 @@
     }
     html.android-webview.android-landscape header.home-hub-scene .home-action-gift { --x: 1.2%; --y: 68.8%; --w: 6.5%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-mid-autumn { --x: 4.85%; --y: 53.5%; --w: 7.3%; transform: translateY(-40%); }
+    html.android-webview.android-landscape header.home-hub-scene .home-action-double-festival { --x: 15.5%; --y: 56.5%; --w: 7.3%; }
     html.android-webview.android-landscape header.home-hub-scene .home-action-btn.home-action-mid-autumn:hover { transform: translateY(calc(-40% - 3px)) scale(1.04); }
     html.android-webview.android-landscape header.home-hub-scene .home-action-btn.home-action-mid-autumn:active { transform: translateY(-40%) scale(.98); }
     html.android-webview.android-landscape header.home-hub-scene .home-action-mail { --x: 8.5%; --y: 67.6%; --w: 7.3%; }
@@ -12921,6 +12952,7 @@
     <div class="home-action-grid">
       <button @click="openRedeemGiftPanel" class="home-action-btn home-action-gift" title="兑换码兑换" aria-label="兑换码兑换"><img src="./resource/ui/背景/赠礼.png" alt=""></button>
       <button @click="openMidAutumnPanel" class="home-action-btn home-action-mid-autumn" title="中秋活动" aria-label="中秋活动"><img src="./resource/中秋节活动/中秋活动ui.png" alt=""></button>
+      <button @click="openDoubleFestivalPanel" class="home-action-btn home-action-double-festival" title="双节联动" aria-label="双节联动"><img src="./resource/双节联动按钮.png?v=20260930_transparent_v2" alt=""></button>
       <button @click="openMailPanel" class="home-action-btn home-action-mail" title="邮件" aria-label="邮件"><img src="./resource/邮件.png" alt=""></button>
       <button @click="openMonthlySignPanel" class="home-action-btn home-action-monthly" title="月签到" aria-label="月签到"><img src="./resource/button/签到.png" alt=""></button>
       <button @click.stop.prevent="openLeaderboardPanel" class="home-action-btn home-action-rank" title="排行榜" aria-label="排行榜"><img src="./resource/ui/背景/排行榜.png" alt=""></button>
@@ -14495,11 +14527,39 @@
       <button @click="openMidAutumnBossCard" class="mid-autumn-boss-btn" title="满月巨灵">
         <img src="./resource/中秋节活动/满月巨灵.png" alt="满月巨灵">
       </button>
+      <button @click="openDoubleFestivalPanel" class="mid-autumn-double-festival-btn" title="双节联动" aria-label="双节联动"><img src="./resource/双节联动按钮.png?v=20260930_transparent_v2" alt="双节联动"></button>
       <div class="mid-autumn-redeem-content">
         <div class="mid-autumn-wallet"><div class="mid-autumn-wallet-item"><img src="./resource/中秋节活动/大月饼.png" class="mid-autumn-big-mooncake-icon" alt="大月饼">{{ midAutumnBigMooncakeCount }}</div><div class="mid-autumn-wallet-item"><img src="./resource/中秋节活动/小月饼.png" alt="小月饼">{{ midAutumnSmallMooncakeCount }}</div></div>
         <div class="mid-autumn-redeem-title">中秋兑换奖励</div>
         <div class="mid-autumn-main-redeem-list"><div v-for="entry in midAutumnRedeemEntries" :key="'main_'+entry.id" class="mid-autumn-redeem-row"><div class="min-w-0"><div class="mid-autumn-redeem-name">{{ entry.name }}</div><div class="mid-autumn-redeem-meta">{{ entry.skinGrade ? entry.skinGrade + '皮肤 · ' : '' }}{{ entry.currency === 'big' ? '大月饼' : '小月饼' }}×{{ entry.cost }} · {{ midAutumnRedeemRemainingText(entry) }}</div></div><button @click="redeemMidAutumnReward(entry)" class="mid-autumn-redeem-btn">兑换</button></div></div>
       </div>
+    </div>
+  </div>
+
+  <div v-if="showDoubleFestivalPanel" class="mid-autumn-overlay is-sub" @click="closeDoubleFestivalPanel">
+    <div class="double-festival-panel" @click.stop>
+      <img src="./resource/Hub天启联动素材包/logo素材/活动background.png" alt="双节联动背景" class="double-festival-bg">
+      <img src="./resource/Hub天启联动素材包/logo素材/联动标题.png" alt="天启Hub共庆双节联动活动" class="double-festival-title">
+      <button @click="closeDoubleFestivalPanel" class="double-festival-close" title="关闭" aria-label="关闭">×</button>
+      <template v-if="!showDoubleFestivalCodePage">
+        <p class="double-festival-reward-text">在挑战之路击败神武月获得月光钥匙</p>
+        <img src="./resource/月光宝盒.jpg" alt="月光宝盒" class="double-festival-reward-image">
+        <button @click="openDoubleFestivalMoonlightBox" class="double-festival-open-btn" title="开启月光宝盒"><img src="./resource/Hub天启联动素材包/兑换码界面/开启按钮.png?v=20260930_transparent_v2" alt="开启"></button>
+      </template>
+      <template v-else-if="!showDoubleFestivalClaimPage">
+        <p class="double-festival-code-label is-password">你的Hub月光密码：</p>
+        <p class="double-festival-code-value is-password">{{ doubleFestivalMoonlightBox.snowflakeId }}</p>
+        <p class="double-festival-code-label is-code">你的Hub联动兑换码：</p>
+        <p class="double-festival-code-value is-code">{{ doubleFestivalMoonlightBox.redeemCode }}</p>
+        <button @click="openDoubleFestivalClaimPage" class="double-festival-open-btn" title="下一页"><img src="./resource/Hub天启联动素材包/兑换码界面/下一页按钮.png?v=20260930_transparent_v2" alt="下一页"></button>
+      </template>
+      <template v-else>
+        <p class="double-festival-code-label is-password">请输入你的天启竞技场多多号：</p>
+        <input v-model="doubleFestivalArenaId" class="double-festival-input is-arena-id" aria-label="天启竞技场多多号">
+        <p class="double-festival-code-label is-code">请输入你的天启竞技场联动兑换码：</p>
+        <input v-model="doubleFestivalArenaRedeemCode" class="double-festival-input is-arena-code" aria-label="天启竞技场联动兑换码">
+        <button @click="claimDoubleFestivalMoonlightSeal" :disabled="doubleFestivalMoonlightSealClaimed" class="double-festival-claim-btn" :title="doubleFestivalMoonlightSealClaimed ? '已领取' : '领取奖励'"><img src="./resource/Hub天启联动素材包/活动主界面/天启领取奖励按钮0001.png?v=20260930_transparent_v2" alt="领取奖励"></button>
+      </template>
     </div>
   </div>
 
@@ -17417,6 +17477,6 @@
 </div>
 
 <script src="./aola-dex-1-100.js?v=20260617_fix_weekly_and_action_fx"></script>
-<script src="./aola-star-app.js?v=20260925_mid_autumn_compensation_codes_v1"></script>
+<script src="./aola-star-app.js?v=20260930_double_festival_transparent_v2"></script>
 </body>
 </html>
