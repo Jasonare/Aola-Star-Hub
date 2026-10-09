@@ -17,7 +17,8 @@ const MID_AUTUMN_MOONCAKE_ITEM_ID = "mid_autumn_mooncake";
 const MID_AUTUMN_REDEEM_ID_PREFIX = "mid_autumn_redeem_";
 const MID_AUTUMN_BIG_MOONCAKE_REDEEM_CODE_REWARDS = Object.freeze({
   "中秋月饼补偿M": 1200,
-  "中秋月饼补偿D": 300
+  "中秋月饼补偿D": 300,
+  "中秋月饼补偿A45": 6000
 });
 const MID_AUTUMN_UNIQUE_REWARD_EVIDENCE = Object.freeze([
   { id: `${MID_AUTUMN_REDEEM_ID_PREFIX}awakening_stone`, itemId: "dark_guardian_awakening_stone" },
@@ -31,6 +32,7 @@ const MID_AUTUMN_REDEEM_CATALOG = Object.freeze({
   [`${MID_AUTUMN_REDEEM_ID_PREFIX}haoyue_giant_skin`]: { currency: "big", cost: 2500, limit: 1, itemId: "mid_autumn_haoyue_giant_skin" },
   [`${MID_AUTUMN_REDEEM_ID_PREFIX}lingfeng_trait`]: { currency: "big", cost: 2000, limit: 1, traitKey: "lingfeng" },
   [`${MID_AUTUMN_REDEEM_ID_PREFIX}sacred_heart_trait`]: { currency: "big", cost: 2000, limit: 1, traitKey: "sacred_heart" },
+  [`${MID_AUTUMN_REDEEM_ID_PREFIX}dark_soul_trait`]: { currency: "big", cost: 3500, limit: 1, traitKey: "dark_soul" },
   [`${MID_AUTUMN_REDEEM_ID_PREFIX}dragon_boat_blade`]: { currency: "big", cost: 2000, limit: 1, itemId: "dragon_boat_battle_blade" },
   [`${MID_AUTUMN_REDEEM_ID_PREFIX}divine_pet_key`]: { currency: "big", cost: 1500, limit: 2, itemId: "divine_pet_key", amount: 100 },
   [`${MID_AUTUMN_REDEEM_ID_PREFIX}equipment_crystal`]: { currency: "big", cost: 800, limit: 3, itemId: "equipment_dungeon_crystal", amount: 100 },

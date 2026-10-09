@@ -15536,15 +15536,6 @@
         </div>
         <button @click="closeChallengeRoadPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
-      <div class="flex items-center gap-2 mb-3 border-b border-slate-200 pb-2">
-        <button
-          v-for="tab in challengeRoadTabs"
-          :key="'challenge_road_tab_' + tab.key"
-          @click="challengeRoadTab = tab.key"
-          class="h-9 px-4 rounded-xl text-sm font-black transition"
-          :class="challengeRoadTab === tab.key ? 'bg-sky-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-        >{{ tab.label }}</button>
-      </div>
       <div v-if="challengeRoadTab === 'hero'" class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-3 scrollbar">
         <div class="challenge-road-cover-track flex items-stretch gap-4 pr-2">
           <button
@@ -15786,7 +15777,7 @@
             <button @click="openSelectedBossDetail" class="mt-2 h-8 px-3 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-black">查看详情</button>
           </div>
           <div class="space-y-3 challenge-detail-right">
-            <div v-if="selectedBossEntry.dexId !== 2387" class="grid grid-cols-3 gap-2">
+            <div v-if="![2387, 2050].includes(Number(selectedBossEntry.dexId))" class="grid grid-cols-3 gap-2">
               <button
                 v-for="option in bossDifficultyOptions"
                 :key="'boss_difficulty_' + option.key"
