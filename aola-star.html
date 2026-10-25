@@ -1388,6 +1388,44 @@
       pointer-events: none;
       user-select: none;
     }
+    .bag2-display-frame-bg {
+      position: absolute;
+      left: 6.5%;
+      top: 1.57%;
+      width: 38.64%;
+      height: 67.55%;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+      z-index: 2;
+    }
+    .bag2-region-cover {
+      position: absolute;
+      inset: 0;
+      background-image: url("./resource/背包ui/背包ui底图.png");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      pointer-events: none;
+      user-select: none;
+      z-index: 2;
+    }
+    .bag2-region-cover.is-gear {
+      clip-path: inset(0 92.3% 0 0);
+    }
+    .bag2-right-panel-bg {
+      position: absolute;
+      left: 43.5%;
+      top: 0;
+      width: 56.5%;
+      height: 68%;
+      object-fit: fill;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+      z-index: 2;
+    }
     .bag2-close-btn {
       position: absolute;
       top: 2.5%;
@@ -4035,9 +4073,15 @@
     }
     html.android-webview.android-landscape .bag2-side-tabs {
       top: 13.5%;
-      left: 47.2%;
+      left: 46.7%;
       width: 4.4%;
       height: 47%;
+    }
+    html.android-webview.android-landscape .bag2-side-tabs.bag2-side-tabs-bags {
+      top: 0;
+      left: 46.7%;
+      width: 4.4%;
+      height: 100%;
     }
     html.android-webview.android-landscape .bag2-content-area {
       top: 14.5%;
@@ -5439,10 +5483,10 @@
     }
     .bag2-side-tabs {
       position: absolute;
-      top: 15%;
-      left: 46%;
+      top: 14.7%;
+      left: 46.9%;
       width: 4.7%;
-      height: 43.5%;
+      height: 41.7%;
       display: grid;
       grid-template-rows: repeat(3, minmax(0, 1fr));
       align-items: center;
@@ -5450,13 +5494,62 @@
       z-index: 5;
     }
     .bag2-side-tabs-enhance {
-      top: 15%;
-      left: 46.2%;
-      width: 4.8%;
-      height: 31%;
-      grid-template-rows: 55% 40%;
+      top: 14.7%;
+      left: 46.6%;
+      width: 4.7%;
+      height: 38%;
+      grid-template-rows: repeat(3, minmax(0, 1fr));
       gap: 0%;
       align-items: start;
+    }
+
+    .bag2-side-tabs-bags {
+      top: 0;
+      left: 46.6%;
+      width: 4.7%;
+      height: 100%;
+      display: block;
+      gap: 0;
+    }
+    .bag2-side-tabs-bags .bag2-side-btn {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      aspect-ratio: 68 / 92;
+      display: block;
+      transform: scale(1.5606);
+      transform-origin: center center;
+      transition: none;
+    }
+    .bag2-side-tabs-bags .bag2-side-btn:nth-child(1) {
+      top: 16.7%;
+    }
+    .bag2-side-tabs-bags .bag2-side-btn:nth-child(2) {
+      top: 30.64%;
+      left: 0.3%;
+      transform: scale(1.6074);
+    }
+    .bag2-side-tabs-bags .bag2-side-btn:nth-child(3) {
+      top: 44.68%;
+      left: 0.3%;
+      transform: scale(1.6074);
+    }
+    .bag2-side-tabs-bags .bag2-side-btn.is-drop-target {
+      transform: scale(1.66);
+      filter: brightness(1.3) drop-shadow(0 0 6px rgba(56, 189, 248, 0.95));
+    }
+    .bag2-drag-ghost {
+      position: fixed;
+      z-index: 400;
+      transform: translate(-50%, -130%);
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(2, 132, 199, 0.94);
+      color: #fff;
+      font-size: clamp(9px, 0.9vw, 11px);
+      font-weight: 800;
+      white-space: nowrap;
+      pointer-events: none;
     }
     .bag2-side-tabs-enhance .bag2-side-btn:first-child {
       transform: translateY(-6%);
@@ -5467,6 +5560,8 @@
       transition: none !important;
     }
     .bag2-gear-btn {
+      position: relative;
+      top: 30.89%;
       transform: translateY(-22%) scaleX(0.93) scaleY(0.82);
       margin-top: -5%;
       transition: none !important;
@@ -5498,12 +5593,16 @@
     .bag2-side-btn:hover { opacity: 1; }
     .bag2-side-btn.active { opacity: 1; filter: brightness(1.2) drop-shadow(0 0 3px rgba(255,255,255,0.7)); }
     .bag2-side-btn:not(.bag2-gear-btn):active { transform: scale(0.96); }
+    .bag2-side-tabs-bags .bag2-side-btn:active { transform: none; }
+    .bag2-side-tabs-bags .bag2-side-btn:nth-child(2):active,
+    .bag2-side-tabs-bags .bag2-side-btn:nth-child(3):active { transform: scale(1.6074); }
+    .bag2-side-tabs-bags .bag2-side-btn:nth-child(1):active { transform: scale(1.5606); }
     .bag2-content-area {
       position: absolute;
-      top: 16%;
-      left: 50%;
-      right: 7%;
-      height: 45%;
+      top: 14.2%;
+      left: 52.1%;
+      right: 8.5%;
+      height: 47.2%;
       overflow-y: auto;
       overflow-x: hidden;
       z-index: 4;
@@ -6155,6 +6254,11 @@
       border-radius: 8px;
       padding: 7px 5px 6px;
       text-align: center;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: none;
+      cursor: grab;
     }
     .bag2-item-name {
       font-weight: 900;
@@ -6389,6 +6493,41 @@
       flex-direction: column;
       gap: 6px;
       align-items: flex-end;
+    }
+    .bag2-team-presets {
+      position: absolute;
+      bottom: 8.5%;
+      left: 0.9%;
+      width: 6.2%;
+      height: 19%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 5;
+    }
+    .bag2-team-preset-btn {
+      width: 100%;
+      height: 30%;
+      border: none;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #2563eb;
+      font-size: clamp(8px, 0.72vw, 11px);
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.25);
+      transition: filter 0.12s, transform 0.12s;
+      user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: none;
+      padding: 0;
+    }
+    .bag2-team-preset-btn:hover { filter: brightness(1.08); transform: scale(1.05); }
+    .bag2-team-preset-btn.is-saved { background: #dbeafe; color: #1d4ed8; }
+    .bag2-team-preset-btn.is-applied {
+      background: linear-gradient(180deg, #34d399, #10b981);
+      color: #fff;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
     }
     .bag2-slots {
       position: absolute;
@@ -13563,6 +13702,9 @@
   <div v-if="showBag2Panel" class="app-top-overlay fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeBag2Panel">
     <div class="bag2-panel bag-responsive-modal" @click.stop>
       <img src="./resource/背包ui/背包ui底图.png" class="bag2-bg" alt="">
+      <img src="./resource/背包ui/展示栏.png" class="bag2-display-frame-bg" alt="">
+      <div class="bag2-region-cover is-gear" aria-hidden="true"></div>
+      <img src="./resource/背包ui/右上底图.png" class="bag2-right-panel-bg" alt="">
       <div v-if="bag2Loading" class="bag2-loading-mask">
         <div class="bag2-spinner"></div>
         <div class="bag2-loading-text">正在加载...</div>
@@ -13627,7 +13769,26 @@
           <button @click="setBag2EnhanceTab('gear')" class="bag2-side-btn bag2-gear-btn" :class="{ active: bag2EnhanceTab === 'gear' }">
             <img src="./resource/背包ui/装备.png" alt="装备">
           </button>
+          <button @click="setBag2EnhanceTab('awaken')" class="bag2-side-btn" :class="{ active: bag2EnhanceTab === 'awaken' }">
+            <img src="./resource/背包ui/觉醒.png" alt="觉醒">
+          </button>
         </template>
+      </div>
+
+      <div class="bag2-side-tabs bag2-side-tabs-bags" v-if="bag2TopTab === 'items'">
+        <button @click="setBag2ItemsBag(1)" data-bag-target="1" @dragover.prevent="onBag2DragOverBag(1)" @dragleave="onBag2DragLeaveBag(1)" @drop.prevent="onBag2DropBag(1)" class="bag2-side-btn" :class="{ active: bag2ItemsBag === 1, 'is-drop-target': bag2DragTargetBag === 1 }">
+          <img src="./resource/背包ui/背包.png" alt="背包">
+        </button>
+        <button @click="setBag2ItemsBag(2)" data-bag-target="2" @dragover.prevent="onBag2DragOverBag(2)" @dragleave="onBag2DragLeaveBag(2)" @drop.prevent="onBag2DropBag(2)" class="bag2-side-btn" :class="{ active: bag2ItemsBag === 2, 'is-drop-target': bag2DragTargetBag === 2 }">
+          <img src="./resource/背包ui/背包一.png" alt="背包一">
+        </button>
+        <button @click="setBag2ItemsBag(3)" data-bag-target="3" @dragover.prevent="onBag2DragOverBag(3)" @dragleave="onBag2DragLeaveBag(3)" @drop.prevent="onBag2DropBag(3)" class="bag2-side-btn" :class="{ active: bag2ItemsBag === 3, 'is-drop-target': bag2DragTargetBag === 3 }">
+          <img src="./resource/背包ui/背包二.png" alt="背包二">
+        </button>
+      </div>
+
+      <div v-if="bag2Drag && bag2Drag.active" class="bag2-drag-ghost" :style="{ left: bag2Drag.x + 'px', top: bag2Drag.y + 'px' }">
+        {{ bag2Drag.name }} → {{ bag2DragTargetBag ? bag2ItemsBagLabels[bag2DragTargetBag] : '拖到左侧背包' }}
       </div>
 
       <div class="bag2-content-area">
@@ -13724,7 +13885,7 @@
         </template>
         <template v-else-if="bag2TopTab === 'items'">
           <div class="bag2-items-grid">
-            <div v-for="item in petItemInventoryRows" :key="'bag2_item_'+item.id" @click="item.canUse ? (item.supportsUseQuantity ? openBagItemUseDialog(item) : useBagItemOnSelectedPet(item.id)) : null" class="bag2-item-card" :class="item.canUse ? 'cursor-pointer' : 'opacity-60'">
+            <div v-for="item in bag2ItemInventoryRows" :key="'bag2_item_'+item.id" draggable="true" @dragstart="startBag2ItemNativeDrag(item, $event)" @dragend="endBag2ItemNativeDrag()" @pointerdown="startBag2ItemDrag(item, $event)" @click="bag2ItemCardClick(item)" class="bag2-item-card" :class="item.canUse ? 'cursor-pointer' : 'opacity-60'">
               <div class="bag2-item-name">{{ item.name }}</div>
               <div class="bag2-item-count">{{ item.countLabel }}</div>
               <div v-if="item.skinKey" class="mt-1 grid grid-cols-2 gap-1">
@@ -13769,7 +13930,7 @@
                 </button>
               </div>
             </template>
-            <template v-else>
+            <template v-else-if="bag2EnhanceTab === 'gear'">
               <div class="bag2-enhance-section-title">装备仓库</div>
               <div class="bag2-enhance-toolbar">
                 <button @click="bag2GearFilter='all'" class="bag2-enhance-chip" :class="{ 'is-active': bag2GearFilter === 'all' }">全部</button>
@@ -13791,6 +13952,20 @@
                   </div>
                 </div>
                 <div v-if="filteredGearInventoryRows.length <= 0" class="text-center text-xs font-black text-sky-700 py-3">当前筛选下没有装备。</div>
+              </div>
+            </template>
+            <template v-else-if="bag2EnhanceTab === 'awaken'">
+              <div class="bag2-enhance-section-title">觉醒仓库</div>
+              <div class="bag2-gear-list">
+                <div v-for="item in bag2AwakenItemRows" :key="'bag2_awaken_'+item.id" class="bag2-gear-list-card">
+                  <img :src="item.image" @error="withFallback" class="bag2-gear-list-img" :alt="item.name">
+                  <div>
+                    <div class="bag2-gear-list-name">{{ item.name }}</div>
+                    <div class="bag2-gear-list-desc">{{ item.desc }}</div>
+                    <div class="bag2-gear-list-meta">库存 {{ item.count }}</div>
+                  </div>
+                </div>
+                <div v-if="bag2AwakenItemRows.length <= 0" class="text-center text-xs font-black text-sky-700 py-3">暂无觉醒道具。</div>
               </div>
             </template>
           </div>
@@ -13819,6 +13994,20 @@
       <div v-if="bag2SortMode" class="bag2-sorting-hint">
         <span v-if="bag2SortFirstSlotIdx < 0">点击选择要交换的亚比</span>
         <span v-else>点击另一个亚比完成交换</span>
+      </div>
+
+      <div class="bag2-team-presets">
+        <button v-for="i in 3" :key="'bag2_team_preset_'+i"
+          @pointerdown.prevent="teamPresetPressStart(i - 1)"
+          @pointerup.prevent="teamPresetPressEnd(i - 1)"
+          @pointerleave="teamPresetPressCancel()"
+          @pointercancel="teamPresetPressCancel()"
+          @contextmenu.prevent
+          class="bag2-team-preset-btn"
+          :class="{ 'is-saved': !!teamPresetRows[i - 1], 'is-applied': isTeamPresetApplied(i - 1) }"
+          :title="teamPresetRows[i - 1] ? `配队${i}（${teamPresetSavedCount(i - 1)}只）｜点击切换，长按更新` : `配队${i}｜点击保存当前配队`">
+          配队{{ i }}
+        </button>
       </div>
 
       <div class="bag2-slots">

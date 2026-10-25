@@ -14841,6 +14841,8 @@ createApp({
         selectedAttackerId: bagSeed[0] || "",
         selectedPetId: (starterPets[0] && starterPets[0].id) || "",
         items: { level_40_fruit: 1, divine_pet_key: 0, [MID_AUTUMN_BIG_MOONCAKE_ITEM_ID]: 0, [MID_AUTUMN_MOONCAKE_ITEM_ID]: 0 },
+        bagItemAssignments: {},
+        teamPresets: [null, null, null],
         challengeRoadShenwuyueFirstWinRewardClaimed: false,
         doubleFestivalMoonlightBox: { opened: false, snowflakeId: "", redeemCode: "" },
         doubleFestivalMoonlightSealClaimed: false,
@@ -15161,6 +15163,26 @@ createApp({
         if (!id || delta <= 0) return;
         items[id] = Math.max(0, Math.floor(Number(items[id]) || 0)) + delta;
       };
+      const bagItemAssignments = (() => {
+        const source = loaded.bagItemAssignments && typeof loaded.bagItemAssignments === "object" ? loaded.bagItemAssignments : {};
+        const out = {};
+        Object.keys(source).forEach((key) => {
+          const id = normalize(key);
+          const bag = Math.floor(Number(source[key]) || 1);
+          if (!id || (bag !== 2 && bag !== 3)) return;
+          out[id] = bag;
+        });
+        return out;
+      })();
+      const teamPresets = (() => {
+        const source = Array.isArray(loaded.teamPresets) ? loaded.teamPresets : [];
+        return Array.from({ length: 3 }, (_, i) => {
+          const row = source[i];
+          if (!Array.isArray(row)) return null;
+          const ids = Array.from({ length: 6 }, (_, j) => normalize(row[j]) || "");
+          return ids.some((id) => id) ? ids : null;
+        });
+      })();
       const monthlySignIn = sanitizeMonthlySignInState(loaded.monthlySignIn);
       const timeTunnelRewardClaimedFloors = Array.isArray(loaded.timeTunnelRewardClaimedFloors)
         ? Array.from(new Set(loaded.timeTunnelRewardClaimedFloors.map((n) => Math.floor(Number(n) || 0)).filter((n) => n > 0 && n <= TIME_TUNNEL_OPEN_MAX_FLOOR && n % TIME_TUNNEL_REWARD_INTERVAL === 0))).sort((a, b) => a - b)
@@ -15312,6 +15334,8 @@ createApp({
         eggs,
         redeemedCodes,
         items,
+        bagItemAssignments,
+        teamPresets,
         // 旧存档不会由历史胜利自动补发，只在后续首次击败时写入该标记。
         challengeRoadShenwuyueFirstWinRewardClaimed: Boolean(loaded.challengeRoadShenwuyueFirstWinRewardClaimed),
         doubleFestivalMoonlightBox: (() => { const source = loaded.doubleFestivalMoonlightBox && typeof loaded.doubleFestivalMoonlightBox === "object" ? loaded.doubleFestivalMoonlightBox : {}; const snowflakeId = String(source.snowflakeId || "").replace(/\D/g, ""); const lastDigit = snowflakeId ? Number(snowflakeId.slice(-1)) : -1; return { opened: Boolean(source.opened && snowflakeId && DOUBLE_FESTIVAL_REDEEM_CODES_BY_LAST_DIGIT[lastDigit]), snowflakeId, redeemCode: DOUBLE_FESTIVAL_REDEEM_CODES_BY_LAST_DIGIT[lastDigit] || "" }; })(),
@@ -16457,6 +16481,14 @@ createApp({
     const bag2TopTab = ref("info");
     const bag2InfoTab = ref("skills");
     const bag2EnhanceTab = ref("traits");
+    const bag2ItemsBag = ref(1);
+    const bag2Drag = ref(null);
+    const bag2DragTargetBag = ref(0);
+    const bag2DragLongPressMs = 320;
+    let bag2DragTimer = null;
+    let bag2DragStart = null;
+    let bag2DragElement = null;
+    let bag2DragSuppressClickUntil = 0;
     const showWarehousePanel = ref(false);
     const showNewWarehousePanel = ref(false);
     const selectedNewWarehousePet = ref(null);
@@ -18050,6 +18082,23 @@ createApp({
           equipped: safeActivePets.value.filter((pet) => normalize(pet && pet.equippedItemId) === normalize(it.id)).length
         };
       }));
+    const bag2ItemInventoryRows = computed(() => {
+      const seen = new Set();
+      return petItemInventoryRows.value.filter((it) => {
+        const key = normalize(it && it.id);
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return bagOfItem(key) === bag2ItemsBag.value;
+      });
+    });
+    const bag2AwakenItemRows = computed(() => itemCatalog.value
+      .filter((it) => {
+        const id = normalize(it && it.id);
+        if (!id) return false;
+        if (id !== DARK_GUARDIAN_AWAKENING_STONE_ITEM_ID) return false;
+        return getItemCount(id) > 0;
+      })
+      .map((it) => ({ ...it, count: getItemCount(it.id) })));
     const petFeatureText = (pet) => {
       if (!pet) return "";
       const seal = qixingSealForPet(pet) || null;
@@ -29201,6 +29250,7 @@ const applyBossChainFinalBuff = (scene) => {
       bag2TopTab.value = "info";
       bag2InfoTab.value = "skills";
       bag2EnhanceTab.value = "traits";
+      bag2ItemsBag.value = 1;
       setTimeout(() => { bag2Loading.value = false; }, 600);
     };
     const closeBag2Panel = () => {
@@ -29215,6 +29265,193 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const setBag2EnhanceTab = (tab) => {
       bag2EnhanceTab.value = tab;
+    };
+    const bagOfItem = (itemId) => {
+      const id = normalize(itemId);
+      if (!id) return 1;
+      const source = state.value.bagItemAssignments && typeof state.value.bagItemAssignments === "object" ? state.value.bagItemAssignments : {};
+      const bag = Math.floor(Number(source[id]) || 1);
+      return bag === 2 || bag === 3 ? bag : 1;
+    };
+    const setBag2ItemsBag = (n) => {
+      const bag = Math.floor(Number(n) || 1);
+      bag2ItemsBag.value = bag === 2 || bag === 3 ? bag : 1;
+      resetBag2Drag();
+    };
+    const bag2ItemsBagLabels = { 1: "背包", 2: "背包一", 3: "背包二" };
+    const moveBagItemToBag = (itemId, target) => {
+      const id = normalize(itemId);
+      const bag = Math.floor(Number(target) || 1);
+      if (!id || (bag !== 1 && bag !== 2 && bag !== 3)) return;
+      if (bagOfItem(id) === bag) return;
+      if (!state.value.bagItemAssignments || typeof state.value.bagItemAssignments !== "object") state.value.bagItemAssignments = {};
+      if (bag === 1) delete state.value.bagItemAssignments[id];
+      else state.value.bagItemAssignments[id] = bag;
+      saveState(state.value);
+      showToast(`已放入${bag2ItemsBagLabels[bag]}`);
+    };
+    const teamPresetRows = computed(() => {
+      const source = Array.isArray(state.value.teamPresets) ? state.value.teamPresets : [];
+      return Array.from({ length: 3 }, (_, i) => {
+        const row = source[i];
+        return Array.isArray(row) ? row : null;
+      });
+    });
+    const teamPresetSavedCount = (idx) => {
+      const row = teamPresetRows.value[idx];
+      return row ? row.filter((id) => normalize(id)).length : 0;
+    };
+    const isTeamPresetApplied = (idx) => {
+      const row = teamPresetRows.value[idx];
+      if (!row) return false;
+      const current = Array.isArray(state.value.bagPetIds) ? state.value.bagPetIds : [];
+      return row.every((id, i) => normalize(id) === normalize(current[i] || ""));
+    };
+    const saveTeamPreset = (idx) => {
+      const n = Number(idx);
+      const i = Number.isFinite(n) ? Math.floor(n) : -1;
+      if (i < 0 || i > 2) return;
+      if (!Array.isArray(state.value.teamPresets) || state.value.teamPresets.length !== 3) state.value.teamPresets = [null, null, null];
+      const ids = Array.from({ length: 6 }, (_, j) => normalize(state.value.bagPetIds && state.value.bagPetIds[j]) || "");
+      if (!ids.some((id) => id)) { showToast("当前背包没有亚比，无法保存配队"); return; }
+      state.value.teamPresets.splice(i, 1, ids);
+      saveState(state.value);
+      showToast(`已保存当前配队到配队${i + 1}`);
+    };
+    const applyTeamPreset = (idx) => {
+      const n = Number(idx);
+      const i = Number.isFinite(n) ? Math.floor(n) : -1;
+      if (i < 0 || i > 2) return;
+      const row = teamPresetRows.value[i];
+      if (!row) { saveTeamPreset(i); return; }
+      if (isTeamPresetApplied(i)) { showToast(`当前已是配队${i + 1}，长按可更新`); return; }
+      const ownedIds = new Set((Array.isArray(state.value.activePets) ? state.value.activePets : []).map((p) => normalize(p && p.id)).filter(Boolean));
+      const missing = row.filter((id) => normalize(id) && !ownedIds.has(normalize(id)));
+      if (missing.length > 0) { showToast(`配队${i + 1}中有亚比已不在背包，无法切换`); return; }
+      state.value.bagPetIds = row.map((id) => normalize(id) || "");
+      const firstId = state.value.bagPetIds.find((id) => id) || "";
+      if (firstId) { state.value.selectedPetId = firstId; state.value.selectedAttackerId = firstId; }
+      saveState(state.value);
+      showToast(`已切换到配队${i + 1}`);
+    };
+    let teamPresetPressTimer = 0;
+    let teamPresetPressFired = false;
+    const teamPresetPressStart = (idx) => {
+      teamPresetPressFired = false;
+      clearTimeout(teamPresetPressTimer);
+      teamPresetPressTimer = setTimeout(() => {
+        teamPresetPressFired = true;
+        saveTeamPreset(idx);
+      }, 550);
+    };
+    const teamPresetPressEnd = (idx) => {
+      clearTimeout(teamPresetPressTimer);
+      if (!teamPresetPressFired) applyTeamPreset(idx);
+      teamPresetPressFired = false;
+    };
+    const teamPresetPressCancel = () => {
+      clearTimeout(teamPresetPressTimer);
+      teamPresetPressFired = false;
+    };
+    const bag2ItemCardClick = (item) => {
+      if (!item || Date.now() < bag2DragSuppressClickUntil) return;
+      if (!item.canUse) return;
+      if (item.supportsUseQuantity) openBagItemUseDialog(item);
+      else useBagItemOnSelectedPet(item.id);
+    };
+    const bag2DragHitBag = (x, y) => {
+      const el = document.elementFromPoint(x, y);
+      const btn = el && el.closest ? el.closest("[data-bag-target]") : null;
+      return btn ? Math.floor(Number(btn.getAttribute("data-bag-target")) || 0) : 0;
+    };
+    const onBag2DragMove = (event) => {
+      const drag = bag2Drag.value;
+      if (!drag) return;
+      if (!drag.active) {
+        if (!bag2DragStart) return;
+        if (Math.hypot(event.clientX - bag2DragStart.x, event.clientY - bag2DragStart.y) > 8) resetBag2Drag();
+        return;
+      }
+      if (event.cancelable) event.preventDefault();
+      bag2Drag.value = { ...drag, x: event.clientX, y: event.clientY };
+      bag2DragTargetBag.value = bag2DragHitBag(event.clientX, event.clientY);
+    };
+    const onBag2DragCancel = () => resetBag2Drag();
+    const onBag2DragTouchMove = (event) => {
+      if (bag2Drag.value && bag2Drag.value.active && event.cancelable) event.preventDefault();
+    };
+    const onBag2DragEnd = (event) => {
+      const drag = bag2Drag.value;
+      const targetBag = drag && drag.active ? bag2DragHitBag(event.clientX, event.clientY) : 0;
+      if (drag && drag.active) bag2DragSuppressClickUntil = Date.now() + 400;
+      if (drag && drag.active && targetBag && bagOfItem(drag.itemId) !== targetBag) {
+        moveBagItemToBag(drag.itemId, targetBag);
+      }
+      resetBag2Drag();
+    };
+    const resetBag2Drag = () => {
+      if (bag2DragTimer) { clearTimeout(bag2DragTimer); bag2DragTimer = null; }
+      if (bag2DragElement) {
+        bag2DragElement.draggable = true;
+        bag2DragElement = null;
+      }
+      bag2DragStart = null;
+      bag2Drag.value = null;
+      bag2DragTargetBag.value = 0;
+      window.removeEventListener("pointermove", onBag2DragMove);
+      window.removeEventListener("pointerup", onBag2DragEnd);
+      window.removeEventListener("pointercancel", onBag2DragCancel);
+      window.removeEventListener("touchmove", onBag2DragTouchMove);
+    };
+    const bag2NativeDragItemId = ref("");
+    const startBag2ItemNativeDrag = (item, event) => {
+      if (!item || !item.id) return;
+      resetBag2Drag();
+      bag2NativeDragItemId.value = item.id;
+      bag2DragSuppressClickUntil = Date.now() + 250;
+      if (event && event.dataTransfer) {
+        event.dataTransfer.effectAllowed = "move";
+        try { event.dataTransfer.setData("text/plain", item.id); } catch (e) {}
+      }
+    };
+    const endBag2ItemNativeDrag = () => {
+      bag2NativeDragItemId.value = "";
+      bag2DragTargetBag.value = 0;
+    };
+    const onBag2DragOverBag = (bag) => {
+      if (bag2NativeDragItemId.value || (bag2Drag.value && bag2Drag.value.active)) bag2DragTargetBag.value = bag;
+    };
+    const onBag2DragLeaveBag = (bag) => {
+      if (bag2DragTargetBag.value === bag) bag2DragTargetBag.value = 0;
+    };
+    const onBag2DropBag = (bag) => {
+      const id = bag2NativeDragItemId.value || (bag2Drag.value && bag2Drag.value.active ? bag2Drag.value.itemId : "");
+      bag2NativeDragItemId.value = "";
+      bag2DragTargetBag.value = 0;
+      resetBag2Drag();
+      bag2DragSuppressClickUntil = Date.now() + 400;
+      if (id && bagOfItem(id) !== bag) moveBagItemToBag(id, bag);
+    };
+    const startBag2ItemDrag = (item, event) => {
+      if (!item || !item.id || !event) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      const target = event.target;
+      if (target && target.closest && target.closest("button")) return;
+      resetBag2Drag();
+      bag2DragElement = event.currentTarget || null;
+      bag2DragStart = { x: event.clientX, y: event.clientY };
+      bag2Drag.value = { itemId: item.id, name: item.name || "", x: event.clientX, y: event.clientY, active: false };
+      window.addEventListener("pointermove", onBag2DragMove, { passive: false });
+      window.addEventListener("pointerup", onBag2DragEnd);
+      window.addEventListener("pointercancel", onBag2DragCancel);
+      bag2DragTimer = setTimeout(() => {
+        bag2DragTimer = null;
+        if (!bag2DragStart || !bag2Drag.value) return;
+        if (bag2DragElement) bag2DragElement.draggable = false;
+        bag2Drag.value = { ...bag2Drag.value, active: true };
+        window.addEventListener("touchmove", onBag2DragTouchMove, { passive: false });
+        if (navigator.vibrate) { try { navigator.vibrate(15); } catch (e) {} }
+      }, bag2DragLongPressMs);
     };
     const openWarehousePanel = () => {
       showWarehousePanel.value = true;
@@ -33235,6 +33472,28 @@ const applyBossChainFinalBuff = (scene) => {
       bag2TopTab,
       bag2InfoTab,
       bag2EnhanceTab,
+      bag2ItemsBag,
+      setBag2ItemsBag,
+      bagOfItem,
+      bag2ItemsBagLabels,
+      moveBagItemToBag,
+      teamPresetRows,
+      teamPresetSavedCount,
+      isTeamPresetApplied,
+      teamPresetPressStart,
+      teamPresetPressEnd,
+      teamPresetPressCancel,
+      bag2Drag,
+      bag2DragTargetBag,
+      startBag2ItemDrag,
+      bag2ItemCardClick,
+      startBag2ItemNativeDrag,
+      endBag2ItemNativeDrag,
+      onBag2DragOverBag,
+      onBag2DragLeaveBag,
+      onBag2DropBag,
+      bag2ItemInventoryRows,
+      bag2AwakenItemRows,
       bag2GearFilter,
       showWarehousePanel,
       showNewWarehousePanel,
