@@ -14953,7 +14953,7 @@ window.AOLA_DEX_1_100 = [
     "petId": 1662,
     "name": "圣盾奇凌王",
     "image": "./resource/pet-img/pet1662_1_1_cropped.png",
-    "element": "上古?",
+    "element": "神兵系",
     "subElement": "",
     "sourceUrl": "http://aola.100bt.com/tujian/1662.html"
   },

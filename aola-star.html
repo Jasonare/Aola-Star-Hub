@@ -4784,6 +4784,24 @@
     .strong-road-item img.strong-road-item-img-fate {
       transform: translate(10px, 12px);
     }
+    .element-tower-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 134;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .element-tower-bg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
     .fate-gate-overlay {
       position: fixed;
       inset: 0;
@@ -12997,6 +13015,81 @@
     html.android-webview.android-landscape .bag2-skill-meta { margin-top: 2px; font-size: 6px; }
     html.android-webview.android-landscape .bag2-skill-desc { margin-top: 2px; font-size: 5px; line-height: 1.2; }
 
+        /* ===== 挑战随机Buff 老虎机抽取弹窗 ===== */
+    .buff-draft-dialog {
+      position: relative; flex-shrink: 0; transform-origin: center; border-radius: 22px; padding: 20px 22px 18px; color: #eaf6ff;
+      background: radial-gradient(130% 80% at 50% -10%, rgba(86,180,255,.32), transparent 58%), linear-gradient(180deg, #13499c 0%, #0b2f72 52%, #071d4d 100%);
+      border: 2px solid #5ecbff;
+      box-shadow: 0 0 0 3px rgba(14,54,120,.7), 0 26px 70px rgba(0,0,0,.6), inset 0 0 40px rgba(96,185,255,.16);
+    }
+    .buff-draft-kicker { font-size: 12px; font-weight: 900; letter-spacing: 3px; color: #9fdcff; }
+    .buff-draft-title { margin-top: 2px; font-size: 26px; font-weight: 900; letter-spacing: 3px; color: #fff; text-shadow: 0 2px 0 #0b3a86, 0 0 14px rgba(120,210,255,.85); }
+    .buff-draft-sub { margin-top: 4px; font-size: 12px; font-weight: 700; color: #bcd9ff; }
+    .buff-draft-close { flex: none; width: 36px; height: 36px; border-radius: 10px; border: 1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.12); color: #fff; font-size: 20px; font-weight: 900; line-height: 1; }
+    .buff-draft-close:hover { background: rgba(255,255,255,.22); }
+    .buff-slot-tag { margin: 0 auto 8px; width: max-content; padding: 3px 14px; border-radius: 999px; font-size: 12px; font-weight: 900; letter-spacing: 2px; color: #dff3ff; background: linear-gradient(180deg, rgba(64,150,240,.55), rgba(20,70,150,.55)); border: 1px solid rgba(140,215,255,.55); }
+    .buff-reel-machine { display: flex; align-items: center; gap: 8px; }
+    .buff-reel-viewport {
+      position: relative; flex: 1; height: 192px; overflow: hidden; border-radius: 14px; cursor: pointer;
+      background: linear-gradient(180deg, #031029 0%, #081d45 28%, #0e3c80 50%, #081d45 72%, #031029 100%);
+      border: 2px solid #2f8fe0;
+      box-shadow: inset 0 0 26px rgba(0,0,0,.85), inset 0 0 10px rgba(80,170,255,.28), 0 6px 18px rgba(0,0,0,.35);
+      -webkit-mask-image: linear-gradient(180deg, transparent, #000 24%, #000 76%, transparent);
+      mask-image: linear-gradient(180deg, transparent, #000 24%, #000 76%, transparent);
+    }
+    .buff-reel-strip {
+      position: absolute; left: 0; right: 0; top: 0; display: flex; flex-direction: column;
+      animation-name: buffReelSpin; animation-duration: var(--spin-dur, 2.6s); animation-delay: var(--spin-delay, 0s);
+      animation-timing-function: cubic-bezier(.18, .82, .14, 1); animation-fill-mode: both;
+    }
+    .buff-slot.is-skipped .buff-reel-strip { animation: none; transform: translateY(var(--to)); }
+    @keyframes buffReelSpin { from { transform: translateY(0); } to { transform: translateY(var(--to)); } }
+    .buff-reel-item {
+      position: relative; height: 64px;
+      background: linear-gradient(180deg, #8fe4ff 0%, #2f9ef0 45%, #1264c4 100%);
+      clip-path: polygon(22px 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 22px 100%, 0 50%);
+    }
+    .buff-reel-item-inner {
+      position: absolute; inset: 2px; display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: linear-gradient(180deg, #1b5fc4 0%, #0d3b88 52%, #071f4e 100%);
+      clip-path: polygon(22px 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 22px 100%, 0 50%);
+    }
+    .buff-reel-name { font-size: 18px; font-weight: 900; letter-spacing: 1px; color: #ffffff; text-shadow: 0 2px 2px rgba(4,24,60,.9), 0 0 8px rgba(120,200,255,.55); white-space: nowrap; }
+    .buff-reel-chevron { width: 15px; height: 15px; flex: none; color: #7ddcff; filter: drop-shadow(0 0 3px rgba(120,220,255,.8)); }
+    .buff-reel-center { position: absolute; left: 0; right: 0; top: 64px; width: 100%; height: 64px; pointer-events: none; color: #bfe9ff; opacity: .95; filter: drop-shadow(0 0 6px rgba(110,210,255,.85)); }
+    .buff-slot.is-done .buff-reel-center { opacity: 1; }
+    .buff-slot.is-good .buff-reel-center { color: #83ffbf; filter: drop-shadow(0 0 9px rgba(70,255,160,.95)); }
+    .buff-slot.is-bad .buff-reel-center { color: #ff9b9b; filter: drop-shadow(0 0 9px rgba(255,90,90,.95)); }
+    .buff-side-arrow { flex: none; width: 24px; color: #dfeeff; filter: drop-shadow(0 0 4px rgba(150,220,255,.8)); }
+    .buff-side-arrow svg { width: 24px; height: 30px; display: block; }
+    .buff-slot.is-running .buff-side-arrow-left svg { animation: buffArrowLeft .45s ease-in-out infinite alternate; }
+    .buff-slot.is-running .buff-side-arrow-right svg { animation: buffArrowRight .45s ease-in-out infinite alternate; }
+    .buff-slot.is-done .buff-side-arrow { opacity: .35; }
+    @keyframes buffArrowLeft { from { transform: translateX(0); opacity: .6; } to { transform: translateX(-4px); opacity: 1; } }
+    @keyframes buffArrowRight { from { transform: translateX(0); opacity: .6; } to { transform: translateX(4px); opacity: 1; } }
+    .buff-result-card { margin-top: 10px; border-radius: 14px; padding: 9px 12px; min-height: 64px; border: 2px solid; }
+    .buff-result-card.tone-good { border-color: rgba(80,230,150,.75); background: rgba(16,120,70,.28); box-shadow: inset 0 0 18px rgba(40,200,120,.18); }
+    .buff-result-card.tone-bad { border-color: rgba(255,110,110,.75); background: rgba(140,40,40,.25); box-shadow: inset 0 0 18px rgba(255,90,90,.16); }
+    .buff-result-card.tone-pending { border-color: rgba(120,170,255,.5); background: rgba(28,58,116,.3); box-shadow: inset 0 0 18px rgba(90,150,255,.12); }
+    .tone-pending .buff-result-name { color: #cfe3ff; }
+    .tone-pending .buff-result-desc { color: #9fc3f0; }
+    .tone-pending .buff-result-badge { background: #3366aa; color: #dceaff; }
+    .buff-result-name { font-size: 15px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .buff-result-badge { flex: none; font-size: 11px; padding: 1px 8px; border-radius: 999px; font-weight: 900; }
+    .tone-good .buff-result-badge { background: #2fbf71; color: #eafff3; }
+    .tone-bad .buff-result-badge { background: #e04545; color: #ffecec; }
+    .buff-result-desc { margin-top: 3px; font-size: 12px; font-weight: 700; color: #d5e8ff; }
+    .buff-draft-btn-ghost { flex: none; height: 44px; padding: 0 18px; border-radius: 12px; font-weight: 900; color: #dfeeff; border: 1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.1); }
+    .buff-draft-btn-ghost:hover { background: rgba(255,255,255,.2); }
+    .buff-draft-btn-main {
+      flex: 1; height: 44px; border-radius: 12px; font-size: 16px; font-weight: 900; letter-spacing: 2px; color: #3a2400;
+      background: linear-gradient(180deg, #ffe98a 0%, #ffc83d 55%, #f0991a 100%);
+      border: 2px solid #fff0b8;
+      box-shadow: 0 8px 20px rgba(255,180,40,.35), inset 0 1px 0 rgba(255,255,255,.7);
+    }
+    .buff-draft-btn-main:disabled { filter: grayscale(.55) brightness(.82); cursor: wait; }
+    .buff-draft-hint { margin-top: 10px; text-align: center; font-size: 12px; font-weight: 700; color: #9fdcff; }
+    /* ===== 挑战随机Buff 老虎机抽取弹窗 END ===== */
   </style>
 </head>
 <body class="text-slate-800 min-h-screen">
@@ -13104,7 +13197,7 @@
       <button @click="openBagPanel" class="home-action-btn home-action-bag" title="亚比背包" aria-label="亚比背包"><img src="./resource/界面ui/亚比背包.png" alt=""></button>
       <button @click="openShopPanel" class="home-action-btn home-action-shop" title="亚比商店" aria-label="亚比商店"><img src="./resource/ui/背景/道具商城.png" alt=""></button>
       <button @click="openChallengeRoadPanel" class="home-action-btn home-action-challenge" title="挑战之路" aria-label="挑战之路"><img src="./resource/ui/背景/boss挑战.png" alt=""></button>
-      <button @click="openWeeklyBossPanel" class="home-action-btn home-action-weekly" title="每周BOSS" aria-label="每周BOSS"><img src="./resource/ui/背景/每周boss.png" alt=""></button>
+      <button @click="openWeeklyBossPanel" class="home-action-btn home-action-weekly" title="版本BOSS" aria-label="版本BOSS"><img src="./resource/版本BOSS.png?v=20261013_version_boss_icon_v2" alt="版本BOSS"></button>
       <button @click="openQixingGachaPanel" class="home-action-btn home-action-gacha" title="启星转盘" aria-label="启星转盘"><img src="./resource/ui/背景/转盘.png" alt=""></button>
       <button @click="openChallengeRecordPanel" class="home-action-btn home-action-record" title="挑战录像" aria-label="挑战录像"><img src="./resource/界面ui/录像.png" alt=""></button>
       <button @click="openElementPanel" class="home-action-btn home-action-element" title="属性克制" aria-label="属性克制"><img src="./resource/界面ui/属性.png" alt=""></button>
@@ -14669,9 +14762,17 @@
             <img src="./resource/命运之门/ui命运之门.png" alt="命运之门" class="strong-road-item-img-fate">
             <div class="strong-road-item-label">命运之门</div>
           </button>
+          <button @click="openElementTowerPanel(); closeStrongRoadPanel()" class="strong-road-item">
+            <img src="./resource/元素塔按钮.png" alt="元素塔">
+            <div class="strong-road-item-label">元素塔</div>
+          </button>
         </div>
       </div>
     </div>
+  </div>
+
+  <div v-if="showElementTowerPanel" class="element-tower-overlay" @click="closeElementTowerPanel">
+    <img src="./resource/元素塔背景.png" alt="元素塔" class="element-tower-bg">
   </div>
 
   <div v-if="showFateGatePanel" class="fate-gate-overlay" @click="closeFateGatePanel">
@@ -15640,7 +15741,7 @@
         </div>
         <button @click="closeChallengeRoadPanel" class="h-9 px-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-black">关闭</button>
       </div>
-      <div class="flex items-center gap-2 mb-3">
+      <div class="flex shrink-0 items-center gap-2 mb-3" aria-label="挑战之路分类">
         <button
           v-for="tab in challengeRoadTabs"
           :key="'challenge_road_tab_' + tab.key"
@@ -15941,6 +16042,59 @@
     </div>
   </template>
 
+  <template v-if="challengeRoadBuffDraft && challengeRoadBuffDraft.open">
+    <div class="app-top-dialog-overlay fixed inset-0 z-[2147483646] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4" style="z-index:2147483646 !important;">
+      <div class="buff-draft-dialog" :style="challengeRoadBuffDraftStyle">
+        <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="buffArrowGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#c7d8ef"/><stop offset="1" stop-color="#8fa6c6"/></linearGradient></defs></svg>
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="buff-draft-kicker">{{ challengeRoadBuffDraft.source === 'weeklyBoss' ? '版本BOSS' : '挑战之路' }}</div>
+            <h3 class="buff-draft-title">随机Buff抽取</h3>
+            <p class="buff-draft-sub">{{ challengeRoadBuffDraft.difficulty ? challengeRoadBuffDraft.difficulty.label : '' }}难度 · 以下效果整场生效</p>
+          </div>
+        </div>
+        <div class="mt-4 grid gap-4" :class="challengeRoadBuffDraft.slots.length > 1 ? 'grid-cols-2' : 'grid-cols-1'">
+          <div
+            v-for="(reel, ri) in challengeRoadBuffDraft.slots"
+            :key="'buff_slot_' + ri"
+            class="buff-slot"
+            :class="[challengeRoadBuffDraft.skipped ? 'is-skipped' : '', reel.done ? (isPositiveChallengeBuff(reel.target.key) ? 'is-good is-done' : 'is-bad is-done') : 'is-running']"
+          >
+            <div class="buff-slot-tag">{{ challengeRoadBuffDraft.slots.length > 1 ? 'Buff ' + (ri + 1) : '本次Buff' }}</div>
+            <div class="buff-reel-machine">
+              <span class="buff-side-arrow buff-side-arrow-left"><svg viewBox="0 0 24 24"><path d="M16 3 L6 12 L16 21 Z" fill="url(#buffArrowGrad)"/></svg></span>
+              <div class="buff-reel-viewport">
+                <div
+                  class="buff-reel-strip"
+                  :style="{ '--target-index': String(reel.items.length - 1), '--to': 'calc(64px - var(--target-index) * 64px)', '--spin-dur': (2.6 + ri * 0.5) + 's', '--spin-delay': (ri * 0.4) + 's' }"
+                  @animationend="onBuffReelEnd(ri, $event)"
+                >
+                  <div v-for="(item, ii) in reel.items" :key="'buff_item_' + ri + '_' + ii" class="buff-reel-item">
+                    <div class="buff-reel-item-inner">
+                      <svg class="buff-reel-chevron" viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13 M15 3 L10 8 L15 13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      <span class="buff-reel-name">{{ item.name }}</span>
+                      <svg class="buff-reel-chevron" viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13 M1 3 L6 8 L1 13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                  </div>
+                </div>
+                <svg class="buff-reel-center" viewBox="0 0 100 32" preserveAspectRatio="none"><path d="M7 1 H93 L99 16 L93 31 H7 L1 16 Z" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>
+              </div>
+              <span class="buff-side-arrow buff-side-arrow-right"><svg viewBox="0 0 24 24"><path d="M8 3 L18 12 L8 21 Z" fill="url(#buffArrowGrad)"/></svg></span>
+            </div>
+            <div class="buff-result-card" :class="reel.done ? (isPositiveChallengeBuff(reel.target.key) ? 'tone-good' : 'tone-bad') : 'tone-pending'">
+              <div class="buff-result-name">
+                <span class="buff-result-badge">{{ reel.done ? (isPositiveChallengeBuff(reel.target.key) ? '增益' : '减益') : '？' }}</span>
+                <span>{{ reel.done ? reel.target.name : '命运转动中' }}</span>
+              </div>
+              <div class="buff-result-desc">{{ reel.done ? reel.target.desc : '点击滚轮可立即揭晓结果' }}</div>
+            </div>
+          </div>
+        </div>
+        <p class="buff-draft-hint">{{ challengeRoadBuffDraft.spinning ? '滚轮转动中，请稍候…' : '抽取完成，1秒后自动进入挑战…' }}</p>
+      </div>
+    </div>
+  </template>
+
   <div v-if="showMonthlySignPanel" class="fixed inset-0 z-[70] bg-slate-950/35 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeMonthlySignPanel">
     <div class="w-[98vw] max-w-[1500px] max-h-[92vh] overflow-y-auto rounded-3xl border border-sky-100 p-4 shadow-2xl app-modal" style="background: linear-gradient(180deg, #38bdf8 0%, #0ea5e9 100%);" @click.stop>
       <div class="flex flex-wrap items-center justify-between gap-3 text-slate-900">
@@ -16022,7 +16176,7 @@
     <div class="weekly-boss-modal w-full max-w-5xl rounded-3xl border border-yellow-200/60 p-3 md:p-4 shadow-2xl max-h-[92vh] overflow-y-auto app-modal" @click.stop>
       <div class="flex items-center justify-between mb-3 text-white">
         <div>
-          <div class="text-[11px] font-black text-yellow-200">当周BOSS</div>
+          <div class="text-[11px] font-black text-yellow-200">版本BOSS</div>
           <h3 class="text-xl font-black leading-6">{{ weeklyBossEntry.name }}</h3>
         </div>
         <button @click="closeWeeklyBossPanel" class="h-9 px-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm font-black">关闭</button>
@@ -16107,7 +16261,7 @@
               </button>
             </div>
             <div class="rounded-xl border border-yellow-200 bg-yellow-50 p-3">
-              <div class="text-[10px] font-black text-yellow-700">当周BOSS勋章</div>
+              <div class="text-[10px] font-black text-yellow-700">版本BOSS勋章</div>
               <div class="text-2xl font-black text-slate-900">{{ weeklyBossMedalCount }}/50</div>
             </div>
             <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 col-span-2">
@@ -16117,7 +16271,7 @@
               </button>
             </div>
           </div>
-          <button @click="startWeeklyBossChallenge" :disabled="bagPets.length===0 || weeklyBossAttemptsLeft<=0" class="h-11 w-full rounded-xl bg-yellow-400 text-slate-950 font-black shadow-lg disabled:opacity-50">进入{{ selectedWeeklyBossDifficultyOption.label }}挑战</button>
+          <button @click="openWeeklyBossBuffDraft" :disabled="bagPets.length===0 || weeklyBossAttemptsLeft<=0" class="h-11 w-full rounded-xl bg-yellow-400 text-slate-950 font-black shadow-lg disabled:opacity-50">抽取Buff并进入{{ selectedWeeklyBossDifficultyOption.label }}挑战</button>
           <div class="flex items-center gap-3 pt-1">
             <button @click.stop="openBagPanel" class="time-env-tool-btn" title="亚比背包" aria-label="亚比背包">
               <svg viewBox="0 0 24 24" class="fill-none stroke-current stroke-[1.9]" stroke-linecap="round" stroke-linejoin="round">
@@ -17624,7 +17778,7 @@
   </div>
 </div>
 
-<div v-cloak v-if="activeEvolution" class="fixed inset-0 z-[131] bg-slate-950/88 backdrop-blur-md flex items-center justify-center p-4" @click="closeEvolutionModal">
+<div v-cloak v-if="activeEvolution" class="fixed inset-0 z-[131] bg-slate-950/88 backdrop-blur-md flex items-center justify-center p-4" :class="{ 'app-top-dialog-overlay': activeEvolution.kind === 'qixingSealUpgrade' }" :style="activeEvolution.kind === 'qixingSealUpgrade' ? { zIndex: 2147483647 } : null" @click="closeEvolutionModal">
   <div class="w-full max-w-2xl rounded-3xl border border-indigo-300/40 bg-slate-900 p-4 shadow-2xl shadow-indigo-900/40 relative overflow-hidden app-modal" @click.stop>
     <div class="absolute -top-10 -left-10 w-48 h-48 rounded-full bg-indigo-500/20 blur-2xl pointer-events-none"></div>
     <div class="absolute -bottom-10 -right-8 w-56 h-56 rounded-full bg-cyan-400/20 blur-2xl pointer-events-none"></div>
@@ -17656,7 +17810,7 @@
 </teleport>
 </div>
 
-<script src="./aola-dex-1-100.js?v=20260617_fix_weekly_and_action_fx"></script>
-<script src="./aola-star-app.js?v=20260930_double_festival_transparent_v2"></script>
+<script src="./aola-dex-1-100.js?v=20261013_sacred_shield_qiling_king_divine_weapon_v2"></script>
+    <script src="./aola-star-app.js?v=20261015_release_notes_no_prefix_v1"></script>
 </body>
 </html>

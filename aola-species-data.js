@@ -85916,15 +85916,15 @@
     ],
     "skills": [
       {
-        "name": "迅杀",
+        "name": "迅猛猎杀",
         "level": 0,
         "power": 100,
         "pp": 10,
         "accuracy": 100,
         "type": "普通系/特殊攻击",
-        "desc": "先发；连续攻击对方单体5回合，每次威力加倍，攻击失误则清除加倍效果",
+        "desc": "先发；连续攻击对方单体10-20次",
         "skillId": 1211,
-        "skillKey": "迅杀#普通系",
+        "skillKey": "迅猛猎杀#普通系",
         "attackTypeCode": 1,
         "attackTypeLabel": "特殊攻击"
       }
@@ -356386,10 +356386,10 @@
   "1662": {
     "dexId": 1662,
     "name": "圣盾奇凌王",
-    "element": "上古系",
+    "element": "神兵系",
     "subElement": "",
     "elements": [
-      "上古系"
+      "神兵系"
     ],
     "sourceUrl": "http://aola.100bt.com/tujian/1662.html",
     "forms": [
