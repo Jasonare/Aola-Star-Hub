@@ -538,6 +538,60 @@
       z-index: 4;
       pointer-events: none;
     }
+    .home-player-move-area {
+      position: absolute;
+      z-index: 1;
+      left: 15%;
+      top: 24%;
+      width: 69%;
+      height: 59%;
+      cursor: pointer;
+    }
+    .home-player-character {
+      position: absolute;
+      z-index: 2;
+      width: 12%;
+      height: 29%;
+      transform: translate(-50%, -100%);
+      pointer-events: none;
+      transition: left .35s ease, top .35s ease;
+      filter: drop-shadow(0 8px 7px rgba(15,23,42,.28));
+    }
+    .home-player-character.is-other {
+      pointer-events: auto;
+      cursor: pointer;
+      z-index: 3;
+    }
+    .home-player-character-name {
+      position: absolute;
+      left: 50%;
+      top: -13%;
+      transform: translateX(-50%);
+      max-width: 180%;
+      overflow: hidden;
+      color: #fff;
+      font-size: clamp(10px, 1.05vw, 16px);
+      font-weight: 900;
+      line-height: 1.1;
+      white-space: nowrap;
+      text-shadow: 0 2px 4px rgba(0,0,0,.85);
+    }
+    .home-player-character-stage {
+      position: absolute;
+      inset: 0;
+    }
+    .home-player-character-layer {
+      position: absolute;
+      max-width: none;
+    }
+    .home-player-character-layer img {
+      display: block;
+      width: 100%;
+      height: auto;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
     .home-action-btn {
       position: absolute;
       z-index: 20;
@@ -4760,6 +4814,289 @@
       object-position: center;
       display: block;
     }
+    .element-tower-ui { position: absolute; inset: 0; padding: clamp(16px, 3vw, 42px); display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; color: #e0f2fe; text-shadow: 0 2px 4px rgba(0,0,0,.75); }
+    .element-tower-topbar, .element-tower-tools, .element-tower-elements { display: flex; align-items: center; gap: 10px; }
+    .element-tower-topbar { justify-content: space-between; align-items: flex-start; }
+    .element-tower-floor-card { padding: 12px 18px; border: 2px solid rgba(125,211,252,.75); border-radius: 14px; background: rgba(2,6,23,.68); font-size: clamp(15px, 2vw, 26px); font-weight: 900; line-height: 1.6; }
+    .element-tower-floor-actions { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+    .element-tower-exchange-btn, .element-tower-exchange-action { border: 1px solid #bae6fd; border-radius: 10px; background: linear-gradient(180deg, #38bdf8, #0369a1); color: #fff; font-weight: 900; cursor: pointer; }
+    .element-tower-exchange-btn { pointer-events: auto; padding: 9px 16px; font-size: clamp(14px, 1.4vw, 19px); }
+    .element-tower-exchange-mask { position: fixed; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(2,6,23,.78); pointer-events: auto; cursor: default; }
+    .element-tower-exchange-dialog { width: min(720px, 100%); max-height: min(90vh, 720px); overflow-y: auto; padding: clamp(16px, 3vw, 28px); border: 2px solid #7dd3fc; border-radius: 20px; background: linear-gradient(160deg, #0c4a6e, #0f172a 70%); color: #f0f9ff; box-shadow: 0 20px 60px rgba(0,0,0,.5); text-shadow: none; }
+    .element-tower-exchange-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .element-tower-exchange-header h2 { margin: 0; font-size: clamp(20px, 2.4vw, 28px); font-weight: 900; }
+    .element-tower-exchange-balance { margin: 8px 0 16px; color: #bae6fd; font-size: 14px; font-weight: 800; }
+    .element-tower-exchange-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .element-tower-exchange-card { display: flex; flex-direction: column; gap: 8px; min-width: 0; padding: 14px; border: 1px solid rgba(125,211,252,.5); border-radius: 14px; background: rgba(15,23,42,.75); }
+    .element-tower-exchange-card img { width: 44px; height: 44px; object-fit: contain; }
+    .element-tower-exchange-card h3 { margin: 0; color: #fff; font-size: 15px; font-weight: 900; overflow-wrap: anywhere; }
+    .element-tower-exchange-meta { color: #bae6fd; font-size: 12px; font-weight: 700; line-height: 1.5; }
+    .element-tower-exchange-action { min-height: 38px; margin-top: auto; padding: 7px 12px; }
+    .element-tower-exchange-action:disabled { opacity: .5; cursor: not-allowed; }
+    .element-tower-exchange-btn:focus-visible, .element-tower-exchange-dialog button:focus-visible, .bag2-element-stone-actions button:focus-visible { outline: 3px solid #facc15; outline-offset: 2px; }
+    @media (max-width: 600px) { .element-tower-exchange-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .element-tower-exchange-dialog { max-height: 90dvh; } }
+    @media (max-width: 360px) { .element-tower-exchange-grid { grid-template-columns: 1fr; } }
+    .element-tower-tools { pointer-events: auto; padding: 8px 10px; border: 2px solid rgba(125,211,252,.6); border-radius: 16px; background: rgba(2,6,23,.62); }
+    .element-tower-elements { font-size: clamp(11px, 1.2vw, 16px); font-weight: 900; }
+    .element-tower-element-icon { width: clamp(30px, 4vw, 48px); height: clamp(30px, 4vw, 48px); display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,.82); padding: 4px; }
+    .element-tower-element-icon img { width: 100%; height: 100%; object-fit: contain; }
+    .element-tower-tool-btn, .element-tower-close-btn { width: clamp(36px, 4.2vw, 54px); height: clamp(36px, 4.2vw, 54px); border: 0; border-radius: 12px; background: rgba(2,6,23,.72); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+    .element-tower-tool-btn img { width: 100%; height: 100%; object-fit: contain; }
+    .element-tower-close-btn { color: #fff; font-size: 32px; font-weight: 900; }
+    .element-tower-boss-preview { flex: 1; min-height: 0; display: flex; align-items: flex-end; justify-content: center; gap: min(5vw, 7.5vh, 72px); padding: 10vh 6vw 6vh; pointer-events: none; }
+    .element-tower-boss-card { flex: 0 1 25%; width: 25%; max-width: min(25vw, 33.16vh, 300px); min-width: 0; text-align: center; font-size: clamp(11px, 1.5vw, 20px); font-weight: 900; }
+    .element-tower-boss-card img { width: 100%; max-height: 33.16vh; height: auto; aspect-ratio: 300 / 380; object-fit: contain; display: block; }
+    .element-tower-bottom { position: absolute; left: 50%; bottom: 4vh; z-index: 5; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; width: max-content; max-width: 92vw; transform: translateX(-50%); pointer-events: auto; }
+    .element-tower-rule { display: none; padding: 8px 14px; border-radius: 10px; background: rgba(2,6,23,.68); font-size: clamp(11px, 1.2vw, 16px); font-weight: 800; }
+    .element-tower-challenge-btn { min-width: 210px; padding: 12px 28px; border: 2px solid #bae6fd; border-radius: 999px; background: linear-gradient(180deg,#38bdf8,#2563eb); color: white; font-size: clamp(15px, 1.8vw, 24px); font-weight: 900; cursor: pointer; box-shadow: 0 8px 24px rgba(2,132,199,.45); }
+    .element-tower-challenge-btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
+    @media (max-width: 700px) { .element-tower-tools { flex-wrap: wrap; justify-content: flex-end; max-width: 62vw; } .element-tower-elements { width: 100%; justify-content: flex-end; } .element-tower-boss-preview { gap: 12px; padding-top: 8vh; } }
+    .element-tower-battle-extra { position: absolute; z-index: 12; pointer-events: none; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #f8fafc; font-weight: 900; text-shadow: 0 2px 5px rgba(0,0,0,.85); }
+    .element-tower-battle-extra img { width: min(20vw, 230px); height: min(26vh, 230px); object-fit: contain; filter: drop-shadow(0 12px 18px rgba(0,0,0,.45)); }
+    .element-tower-battle-shura { right: 27%; bottom: 19%; }
+    .element-tower-battle-enemy { left: 25%; top: 36%; }
+    .element-tower-battle-layout { position: absolute; left: 50%; top: 50%; width: min(100vw, 163.015vh); height: min(100vh, 61.344vw); aspect-ratio: 1265 / 776; transform: translate(-50%, -50%); z-index: 40; pointer-events: none; overflow: visible; }
+    .element-tower-battle-unit { position: absolute; width: 22%; color: #f8fafc; font-weight: 900; text-shadow: 0 2px 5px rgba(0,0,0,.9); pointer-events: auto; }
+    .element-tower-battle-unit-visual { position: relative; width: 100%; height: 34%; display: block; pointer-events: auto; }
+    .element-tower-battle-unit-visual .battle-pet-visual-anchor { position: absolute; left: 50%; bottom: 0; width: 0; height: 0; }
+    .element-tower-battle-unit-visual .battle-pet-img { pointer-events: none; filter: drop-shadow(0 12px 18px rgba(0,0,0,.5)); }
+    .element-tower-value-float { position: absolute; z-index: 260; transform: translate(-50%, -100%); pointer-events: none; white-space: nowrap; font-size: clamp(1.2rem, 2.6vw, 2.5rem); font-weight: 900; text-shadow: 0 2px 10px rgba(0,0,0,.55); }
+    .element-tower-value-damage { color: #fecdd3; display: flex; align-items: center; gap: 4px; }
+    .element-tower-value-tag { padding: 3px 6px; border-radius: 6px; color: #fff; font-size: .5em; line-height: 1.2; text-shadow: none; }
+    .element-tower-value-tag-weak { background: #059669; }
+    .element-tower-value-tag-strong { background: #e11d48; }
+    .element-tower-value-tag-invalid { background: #64748b; }
+    .element-tower-value-tag-crit { background: #fbbf24; color: #1e293b; }
+    .element-tower-value-heal { color: #86efac; }
+    .element-tower-battle-unit-visual .battle-stage-popover { position: absolute; top: 6%; left: calc(50% + clamp(70px, 6vw, 112px)); z-index: 220; display: grid; grid-template-columns: 1fr; gap: 4px; min-width: 76px; opacity: 0; transform: translate(6px, -6px); pointer-events: none; transition: opacity .12s ease, transform .12s ease; }
+    .element-tower-battle-unit-visual:hover .battle-stage-popover,
+    .element-tower-battle-unit-visual:focus-within .battle-stage-popover { opacity: 1; transform: translate(0, 0); }
+    .element-tower-battle-unit .battle-stage-popover-row { display: block; min-width: 68px; padding: 3px 6px; border: 1px solid rgba(226,243,255,.72); border-radius: 5px; color: #fff; font-size: clamp(10px, .86vw, 13px); font-weight: 900; line-height: 1; text-align: left; white-space: nowrap; text-shadow: 0 1px 2px rgba(0,0,0,.72); box-shadow: 0 2px 5px rgba(0,0,0,.24); }
+    .element-tower-battle-unit .battle-stage-popover-row.stage-up { background: rgba(225,58,58,.88); border-color: rgba(255,202,202,.9); }
+    .element-tower-battle-unit .battle-stage-popover-row.stage-down { background: rgba(18,144,86,.9); border-color: rgba(177,255,218,.86); }
+    .element-tower-battle-unit .battle-stage-popover-row.stage-zero { background: rgba(15,53,92,.86); border-color: rgba(170,217,255,.78); }
+    .element-tower-battle-unit-card-row { display: flex; align-items: center; justify-content: flex-start; gap: 8px; width: 100%; min-width: 0; overflow: visible; }
+    .element-tower-battle-unit-card-row > .battle-target-element-stack { display: flex; flex: 0 0 auto; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
+    .element-tower-battle-unit-card-row > .battle-target-element-stack .element-icon { width: 22px; height: 22px; min-width: 22px; filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+    .element-tower-battle-unit-card { position: relative; z-index: 10; flex: 0 0 70% !important; min-width: 0; width: 70% !important; max-width: 70% !important; margin-top: 0 !important; padding: 6px 8px !important; border-radius: 6px !important; background: linear-gradient(180deg, rgba(4,21,61,.92), rgba(2,10,32,.88)); border: 2px solid rgba(109,191,255,.72); box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 8px 18px rgba(0,0,0,.34); font-size: clamp(10px, .9vw, 14px); line-height: 1.25; }
+    .element-tower-battle-unit-card .battle-mobile-target-card { min-width: 0; overflow: visible; }
+    .element-tower-battle-unit-card .battle-target-info-main { display: block; min-width: 0; }
+    .element-tower-battle-unit-card .battle-target-info-body { min-width: 0; }
+    .element-tower-battle-unit-card .battle-target-name-row { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; min-width: 0; }
+    .element-tower-battle-unit-card .battle-target-name,
+    .element-tower-battle-unit-card .battle-target-level { color: #fff; font-size: clamp(11px, 1vw, 15px); font-weight: 900; line-height: 1.05; text-shadow: 0 2px 4px rgba(0,0,0,.85); }
+    .element-tower-battle-unit-card .battle-target-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .element-tower-battle-unit-card .battle-target-hp-track { height: 10px; margin-top: 4px; border-radius: 7px; overflow: hidden; background: linear-gradient(180deg,#27090c,#4b1014); border: 1px solid rgba(255,210,210,.7); box-shadow: inset 0 1px 3px rgba(0,0,0,.55); }
+    .element-tower-battle-unit-card .battle-target-hp-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg,#ff433b,#dd0f20 68%,#9b0614); box-shadow: inset 0 1px 0 rgba(255,255,255,.48); }
+    .element-tower-battle-unit .battle-target-status-outside { position: relative; z-index: 12; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 3px; width: 100%; max-width: 100%; min-height: 20px; margin-top: 5px; pointer-events: auto; }
+    .element-tower-battle-unit .battle-target-status-outside { width: 70%; margin-left: calc(30 * var(--ui-px)); }
+    .element-tower-battle-unit .battle-effect-badge { min-height: 18px; padding: 2px 6px; font-size: clamp(9px, .78vw, 12px); }
+    .element-tower-battle-unit.player { display: flex; flex-direction: column; align-items: stretch; }
+    .element-tower-battle-unit.player .element-tower-battle-unit-visual { order: 2; }
+    .element-tower-player-info { order: 1; position: relative; z-index: 12; width: 100%; }
+    .element-tower-battle-unit.is-targetable { cursor: crosshair; }
+    .element-tower-battle-unit.is-targetable:hover .element-tower-battle-unit-card { outline: 3px solid #facc15; box-shadow: 0 0 18px #facc15; }
+    .element-tower-battle-unit.player { right: 38%; top: 53%; }
+    .element-tower-battle-unit.shura { right: 18%; top: 24%; }
+    .element-tower-battle-unit.boss-one { left: 5%; top: 32%; }
+    .element-tower-battle-unit.boss-two { left: 19%; top: 2%; }
+    .element-tower-battle-unit.player .element-tower-battle-unit-visual { height: 29%; margin-top: .47%; }
+    .element-tower-battle-layout.is-target-selecting { cursor: crosshair; }
+    .element-tower-battle-prompt { position: absolute; left: 50%; bottom: 2%; max-width: 90%; box-sizing: border-box; text-align: center; transform: translateX(-50%); padding: 8px 14px; border-radius: 10px; background: rgba(127,29,29,.9); color: #fef3c7; font-weight: 900; pointer-events: none; }
+    .element-tower-battle-legacy { display: none !important; }
+    .element-tower-battle-mode .battle-mobile-root .battle-mobile-target,
+    .element-tower-battle-mode .battle-mobile-root .battle-mobile-attacker-card,
+    .element-tower-battle-mode .battle-mobile-root .battle-mobile-attacker-main,
+    .element-tower-battle-mode .battle-mobile-root .battle-mobile-log,
+    .element-tower-battle-mode .element-tower-battle-extra,
+    .element-tower-battle-mode .element-tower-battle-legacy { display: none !important; }
+    .element-tower-battle-mode .element-tower-battle-unit { width: 22% !important; }
+    .element-tower-battle-mode .element-tower-battle-unit-visual { height: 34% !important; }
+    .element-tower-battle-mode .element-tower-battle-unit.player { right: 38% !important; top: 53% !important; }
+    .element-tower-battle-mode .element-tower-battle-unit.shura { right: 18% !important; top: 24% !important; }
+    .element-tower-battle-mode .element-tower-battle-unit.boss-one { left: 5% !important; top: 32% !important; }
+    .element-tower-battle-mode .element-tower-battle-unit.boss-two { left: 19% !important; top: 2% !important; }
+    .element-tower-battle-mode .element-tower-battle-unit.player .element-tower-battle-unit-visual { height: 29% !important; }
+    .element-tower-battle-mode .element-tower-battle-unit.player .element-tower-player-info.battle-mobile-hpbox { top: -14% !important; right: 0 !important; left: auto !important; width: 150% !important; height: 10% !important; }
+    .element-tower-battle-unit.player .element-tower-player-info.battle-mobile-hpbox {
+      position: absolute !important;
+      top: -14% !important;
+      right: 0 !important;
+      left: auto !important;
+      order: 1 !important;
+      width: 150% !important;
+      min-width: 0 !important;
+      height: 10% !important;
+      min-height: 0 !important;
+      padding: 0 !important;
+      overflow: visible !important;
+      background: transparent !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    .element-tower-battle-unit.player .element-tower-player-info.battle-mobile-hpbox::before {
+      content: "";
+      position: absolute !important;
+      inset: 0 !important;
+      z-index: 0;
+      pointer-events: none;
+      background: url("./resource/fight-ui/sprites/DefineSprite_273_fightui_fla.HP_1v1_Background_70/1.png") center / 100% 100% no-repeat;
+      transform: scaleX(-1);
+    }
+    .element-tower-battle-unit.player .battle-player-hp-topline {
+      position: absolute !important;
+      inset: 0 !important;
+      z-index: 2;
+      display: block !important;
+      min-width: 0;
+    }
+    .element-tower-battle-unit.player .battle-player-hp-main {
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      min-width: 0;
+      display: block !important;
+    }
+    .element-tower-battle-unit.player .battle-player-name-row {
+      position: absolute;
+      top: 12%;
+      right: 3.2%;
+      width: 27%;
+      height: 28%;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 5px;
+      z-index: 3;
+      text-align: right;
+    }
+    .element-tower-battle-unit.player .battle-player-name {
+      color: #fff;
+      font-size: clamp(13px, 1.23vw, 18px);
+      line-height: 1;
+      text-align: right;
+      text-shadow: 0 1px 2px rgba(0,0,0,.65);
+    }
+    .element-tower-battle-unit.player .battle-player-level {
+      position: absolute;
+      top: 168%;
+      right: 3%;
+      color: #fff;
+      font-size: clamp(11px, 1vw, 15px);
+      line-height: 1;
+      text-shadow: 0 1px 2px rgba(0,0,0,.7);
+    }
+    .element-tower-battle-unit.player .battle-player-hp-track {
+      position: absolute;
+      left: 1.5%;
+      top: 7.2%;
+      width: 68.5%;
+      height: 30%;
+      margin: 0;
+      border-radius: 999px;
+      overflow: visible;
+      background: transparent;
+      border: 2px solid rgba(237,252,255,.95);
+      box-shadow: inset 0 1px 2px rgba(255,255,255,.9), inset 0 -2px 3px rgba(10,72,144,.48);
+    }
+    .element-tower-battle-unit.player .battle-player-hp-fill {
+      position: relative;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffeaa0 0 18%, #ffb735 20% 58%, #f27f12 60% 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.74), inset 0 -1px 2px rgba(161,73,0,.45);
+    }
+    .element-tower-battle-unit.player .battle-player-hp-text {
+      color: #fff;
+      font-size: clamp(15px, 1.33vw, 21px);
+      text-shadow: 0 1px 2px rgba(0,0,0,.85);
+    }
+    .element-tower-battle-unit.player .battle-player-portrait {
+      position: absolute;
+      top: -8px;
+      right: clamp(-78px, -6.5vw, -58px);
+      z-index: 12;
+      width: clamp(78px, 8.5vw, 128px);
+      height: clamp(78px, 8.5vw, 128px);
+      padding: 11px;
+      border: 0;
+      border-radius: 999px;
+      background: url("./resource/fight-ui/sprites/DefineSprite_65/1.png") center / 100% 100% no-repeat;
+      box-shadow: 0 3px 7px rgba(0,0,0,.38);
+      overflow: hidden;
+      transform: none;
+    }
+    .element-tower-battle-unit.player .battle-player-portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 0;
+      transform: scaleX(-1) scale(2.2) translate(-4px, -20px);
+      transform-origin: 50% 0;
+    }
+    .element-tower-battle-unit.player .battle-player-status {
+      position: absolute;
+      left: 2.3%;
+      top: calc(100% + 4px);
+      width: 72%;
+      max-width: none;
+      min-height: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: flex-start;
+      align-content: flex-start;
+      gap: 4px;
+      padding: 2px;
+      z-index: 45;
+      pointer-events: auto;
+    }
+    .element-tower-battle-unit.player .battle-player-status .battle-effect-badge {
+      min-height: 18px;
+      padding: 2px 6px;
+      border: 1px solid rgba(255,255,255,.55);
+      border-radius: 5px;
+      font-size: clamp(10px, .78vw, 12px);
+      line-height: 1;
+      white-space: nowrap;
+      box-shadow: 0 2px 5px rgba(0,0,0,.28);
+    }
+    .element-tower-battle-unit.player .battle-player-elements {
+      position: absolute;
+      inset: 0;
+      z-index: 14;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      pointer-events: none;
+    }
+    .element-tower-battle-unit.player .battle-player-elements .element-icon {
+      position: absolute;
+      top: 68%;
+      width: clamp(18px, 5.5vw, 32px);
+      height: clamp(18px, 5.5vw, 32px);
+      min-width: clamp(18px, 5.5vw, 32px);
+      transform: translate(-50%, -50%);
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,.5));
+    }
+    .element-tower-battle-unit.player .battle-player-primary-element { left: 69.5%; }
+    .element-tower-battle-unit.player .battle-player-sub-element { left: 76.8%; }
+    @media (max-width: 700px) {
+      .element-tower-battle-unit.player .battle-player-status { width: 78%; }
+    }
+    @media (max-width: 900px) {
+      .element-tower-battle-unit.player .element-tower-player-info.battle-mobile-hpbox {
+        top: -14% !important;
+        right: 0 !important;
+        left: auto !important;
+        width: 150% !important;
+        height: 10% !important;
+      }
+    }
     .fate-gate-overlay {
       position: fixed;
       inset: 0;
@@ -5541,8 +5878,8 @@
       top: 15%;
       left: 46.2%;
       width: 4.8%;
-      height: 31%;
-      grid-template-rows: 55% 40%;
+      height: 43.5%;
+      grid-template-rows: repeat(3, minmax(0, 1fr));
       gap: 0%;
       align-items: start;
     }
@@ -6478,6 +6815,65 @@
       gap: 6px;
       align-items: flex-end;
     }
+    .bag2-team-presets {
+      position: absolute;
+      bottom: 8.5%;
+      left: 0.9%;
+      width: clamp(42px, 6.2%, 72px);
+      height: 19%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 8;
+    }
+    .bag2-team-preset-btn {
+      width: 100%;
+      min-height: 28px;
+      height: 30%;
+      border: none;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #2563eb;
+      font-size: clamp(8px, 0.72vw, 11px);
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.25);
+      transition: filter 0.12s, transform 0.12s;
+      user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: none;
+      padding: 0;
+    }
+    .bag2-team-preset-btn:hover { filter: brightness(1.08); transform: scale(1.05); }
+    .bag2-team-preset-btn.is-saved { background: #dbeafe; color: #1d4ed8; }
+    .bag2-team-preset-btn.is-applied {
+      background: linear-gradient(180deg, #34d399, #10b981);
+      color: #fff;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+    }
+    @media (max-width: 760px) {
+      .bag2-team-presets {
+        left: 1%;
+        width: clamp(48px, 9%, 64px);
+        height: 21%;
+        bottom: 7.5%;
+      }
+      .bag2-team-preset-btn {
+        min-height: 30px;
+        font-size: clamp(9px, 1.8vw, 12px);
+        touch-action: manipulation;
+      }
+    }
+    html.android-webview.android-landscape .bag2-team-presets {
+      left: 0.5%;
+      width: 7%;
+      height: 22%;
+      bottom: 5%;
+    }
+    html.android-webview.android-landscape .bag2-team-preset-btn {
+      min-height: 24px;
+      font-size: clamp(8px, 1.2vw, 10px);
+    }
     .bag2-slots {
       position: absolute;
       bottom: 6.5%;
@@ -6600,10 +6996,40 @@
       height: 140%;
       width: 14%;
       flex-shrink: 0;
-      position: relative;
-      left: 71%;
+      position: absolute;
+      right: -7%;
       top: 200%;
       z-index: 2;
+    }
+    .bag2-update-team-btn {
+      position: absolute;
+      right: -7%;
+      top: 340%;
+      width: 14%;
+      height: 140%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bag2-sort-btn img,
+    .bag2-update-team-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .bag2-update-team-btn img { transform: translateX(-1.5%); }
+    .bag2-update-team-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
     }
     .bag2-slot-btn.is-sorting {
       cursor: pointer;
@@ -7605,7 +8031,7 @@
     .time-env-control-card {
       position: absolute;
       right: 3.2vw;
-      bottom: 7vh;
+      bottom: 14vh;
       z-index: 20;
       width: 18vw;
       min-width: 15vw;
@@ -13026,6 +13452,160 @@
     .buff-draft-btn-main:disabled { filter: grayscale(.55) brightness(.82); cursor: wait; }
     .buff-draft-hint { margin-top: 10px; text-align: center; font-size: 12px; font-weight: 700; color: #9fdcff; }
     /* ===== 挑战随机Buff 老虎机抽取弹窗 END ===== */
+    /* Element tower uses one 16:9 stage on every viewport. Keep mobile controls on the same desktop anchor. */
+    .element-tower-battle-mode .element-tower-battle-layout {
+      width: min(100vw, 163.015vh) !important;
+      height: min(100vh, 61.344vw) !important;
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+    }
+    .element-tower-battle-mode .element-tower-battle-unit {
+      width: min(22vw, 35.86vh) !important;
+    }
+    .element-tower-battle-mode .element-tower-battle-unit-visual,
+    .element-tower-battle-mode .element-tower-battle-unit.player .element-tower-battle-unit-visual {
+      height: min(16.6vw, 27.06vh) !important;
+      margin-top: 0 !important;
+    }
+    .element-tower-battle-mode .battle-mobile-root {
+      display: block !important;
+      position: absolute !important;
+      inset: 0 !important;
+      padding: 0 !important;
+      pointer-events: none !important;
+      overflow: hidden !important;
+    }
+    .element-tower-battle-mode .battle-mobile-root .battle-mobile-target,
+    .element-tower-battle-mode .battle-mobile-root .battle-mobile-attacker-card,
+    .element-tower-battle-mode .battle-mobile-root .battle-mobile-attacker-main {
+      display: none !important;
+    }
+    .element-tower-battle-mode .battle-mobile-root .battle-mobile-attacker {
+      display: block !important;
+      position: absolute !important;
+      left: auto !important;
+      right: 3.2vw !important;
+      top: 30vh !important;
+      bottom: auto !important;
+      width: 22vw !important;
+      max-width: 22vw !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      pointer-events: auto !important;
+      z-index: 120 !important;
+    }
+    .element-tower-battle-mode .battle-mobile-root .battle-command-layout {
+      display: block !important;
+      position: relative !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      gap: 0 !important;
+    }
+    .element-tower-battle-mode .battle-mobile-root .battle-mobile-actions {
+      display: block !important;
+      width: 100% !important;
+      height: auto !important;
+      aspect-ratio: auto !important;
+    }
+    .element-tower-battle-mode .battle-mobile-root .battle-mobile-speed {
+      display: none !important;
+    }
+    .element-tower-battle-mode .battle-mobile-root .battle-mobile-skills {
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+    }
+    .element-tower-battle-mode .battle-mobile-root .battle-command-actions-panel,
+    .element-tower-battle-mode .battle-mobile-root .battle-command-skill-list {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    .element-tower-battle-mode .battle-mobile-root .battle-mobile-btns {
+      display: grid !important;
+    }
+    .element-tower-battle-mode .battle-mobile-root .battle-command-skill-list {
+      max-height: 46vh !important;
+      overflow-y: auto !important;
+    }
+    .element-tower-battle-mode .battle-speed-floating {
+      left: 2vw !important;
+      top: 27vh !important;
+      z-index: 120 !important;
+      pointer-events: auto !important;
+    }
+    @media (max-width: 900px) {
+      .element-tower-battle-mode .battle-mobile-root .battle-mobile-attacker {
+        right: 3.2vw !important;
+        top: 30vh !important;
+        width: 22vw !important;
+        max-width: 22vw !important;
+      }
+      .element-tower-battle-mode .battle-speed-floating {
+        left: 2vw !important;
+        top: 27vh !important;
+      }
+    }
+    html.android-webview.android-landscape .element-tower-battle-mode .battle-speed-floating { left: 2vw !important; top: 3vh !important; width: auto !important; }
+    html.android-webview.android-landscape .element-tower-battle-mode .battle-speed-floating .battle-speed-panel { flex-direction: row !important; align-items: center !important; }
+    html.android-webview.android-landscape .element-tower-battle-mode .battle-speed-floating .battle-speed-title span:nth-child(2) { display: inline !important; }
+    html.android-webview.android-landscape .element-tower-battle-mode .battle-speed-floating .battle-speed-options { display: flex !important; width: auto !important; }
+    html.android-webview.android-landscape .element-tower-battle-mode .battle-speed-floating .battle-speed-option { width: min(3vw, 5vh) !important; height: min(3vw, 5vh) !important; }
+    html.android-webview.android-landscape .element-tower-battle-mode .battle-mobile-root .battle-mobile-log { display: block !important; left: 2vw !important; right: auto !important; top: auto !important; bottom: 2vh !important; width: 32vw !important; max-width: 32vw !important; pointer-events: auto !important; }
+    html.android-webview.android-landscape .element-tower-battle-layout .battle-stage-popover { opacity: 0; pointer-events: none; }
+    html.android-webview.android-landscape .element-tower-battle-layout .battle-stage-hover-zone:focus-within .battle-stage-popover { opacity: 1; }
+    html.android-webview .element-tower-battle-mode .element-tower-battle-unit.player .element-tower-player-info.battle-mobile-hpbox { position: fixed !important; top: 0 !important; left: 40.5% !important; right: auto !important; width: 43% !important; height: 9% !important; }
+    html.android-webview .element-tower-battle-mode .element-tower-player-info .battle-player-portrait { top: -10% !important; right: -16% !important; width: 24% !important; height: auto !important; aspect-ratio: 1 / 1; padding: 2.5% !important; box-sizing: border-box; }
+    html.android-webview .element-tower-battle-mode .element-tower-player-info .battle-player-elements .element-icon { width: 6% !important; height: auto !important; min-width: 0 !important; aspect-ratio: 1 / 1; }
+    @media (hover: none) and (pointer: coarse) {
+      .element-tower-battle-mode .element-tower-battle-unit.player .element-tower-player-info.battle-mobile-hpbox { position: fixed !important; top: 0 !important; left: 40.5% !important; right: auto !important; width: 43% !important; height: 9% !important; }
+      .element-tower-battle-mode .element-tower-player-info .battle-player-portrait { top: -10% !important; right: -16% !important; width: 24% !important; height: auto !important; aspect-ratio: 1 / 1; padding: 2.5% !important; box-sizing: border-box; }
+      .element-tower-battle-mode .element-tower-player-info .battle-player-elements .element-icon { width: 6% !important; height: auto !important; min-width: 0 !important; aspect-ratio: 1 / 1; }
+    }
+    .strong-road-panel { --strong-road-px: min(1px, .18vw, .16vh); width: calc(500 * var(--strong-road-px)); border-width: calc(3 * var(--strong-road-px)); border-radius: calc(24 * var(--strong-road-px)); }
+    .strong-road-content { padding: calc(20 * var(--strong-road-px)); }
+    .strong-road-title { font-size: calc(22 * var(--strong-road-px)); margin-bottom: calc(16 * var(--strong-road-px)); }
+    .strong-road-items { gap: calc(20 * var(--strong-road-px)); }
+    .strong-road-item { padding: calc(12 * var(--strong-road-px)); gap: calc(8 * var(--strong-road-px)); border-width: calc(2 * var(--strong-road-px)); border-radius: calc(16 * var(--strong-road-px)); }
+    .strong-road-item img { width: calc(80 * var(--strong-road-px)); height: calc(80 * var(--strong-road-px)); }
+    .strong-road-item-label { font-size: calc(14 * var(--strong-road-px)); }
+    .strong-road-item-img-tunnel { transform: translate(calc(4 * var(--strong-road-px)), calc(4 * var(--strong-road-px))); }
+    .strong-road-item img.strong-road-item-img-fate { transform: translate(calc(10 * var(--strong-road-px)), calc(12 * var(--strong-road-px))); }
+    .strong-road-close-btn { top: calc(12 * var(--strong-road-px)); right: calc(12 * var(--strong-road-px)); width: calc(36 * var(--strong-road-px)); height: calc(36 * var(--strong-road-px)); font-size: calc(16 * var(--strong-road-px)); }
+    @media (hover: hover) and (pointer: fine) {
+      html:not(.android-webview) .element-tower-battle-mode .element-tower-battle-unit.player .element-tower-player-info.battle-mobile-hpbox { position: fixed !important; top: 0 !important; left: 43% !important; right: auto !important; width: 33% !important; height: 7% !important; }
+      html:not(.android-webview) .element-tower-battle-mode .element-tower-player-info .battle-player-portrait { top: -10% !important; right: -16% !important; width: 24% !important; height: auto !important; aspect-ratio: 1 / 1; padding: 2.5% !important; box-sizing: border-box; }
+      html:not(.android-webview) .element-tower-battle-mode .element-tower-player-info .battle-player-elements .element-icon { width: 6% !important; height: auto !important; min-width: 0 !important; aspect-ratio: 1 / 1; }
+      html:not(.android-webview) .element-tower-battle-mode .battle-mobile-root .battle-mobile-attacker { top: 2vh !important; right: 1.5vw !important; width: min(18vw, 30vh) !important; max-width: min(18vw, 30vh) !important; }
+      html:not(.android-webview) .element-tower-battle-mode .battle-mobile-root .battle-command-layout { position: relative !important; top: 0 !important; right: 0 !important; width: 100% !important; max-width: 100% !important; }
+      html:not(.android-webview) .element-tower-battle-mode .battle-mobile-root .battle-mobile-actions { width: 100% !important; height: auto !important; aspect-ratio: 1 / 1 !important; }
+      html:not(.android-webview) .element-tower-battle-mode .battle-mobile-root .battle-command-actions-panel .battle-mobile-btns { display: block !important; }
+      html:not(.android-webview) .element-tower-battle-mode .battle-mobile-root .battle-mobile-skills { top: calc(min(18vw, 30vh) + 8px) !important; right: 0 !important; width: 100% !important; max-width: 100% !important; }
+      html:not(.android-webview) .element-tower-battle-mode .battle-speed-floating { left: 2vw !important; top: 3vh !important; }
+    }
+    .element-tower-unit-hit-area { position: absolute; z-index: 150; pointer-events: auto; border: 0; padding: 0; background: transparent; cursor: pointer; }
+    .element-tower-battle-layout .element-tower-battle-unit-visual.element-tower-stage-selected .battle-stage-popover { opacity: 1 !important; transform: translate(0, 0); }
+    .element-tower-battle-layout { --tower-stage-px: min(.07905vw, .128866vh); }
+    .element-tower-battle-unit.player, .element-tower-battle-unit.shura { z-index: 2; pointer-events: none; }
+    .element-tower-battle-unit.player .element-tower-battle-unit-visual, .element-tower-battle-unit.shura .element-tower-battle-unit-visual { pointer-events: none; }
+    .element-tower-battle-unit.player .element-tower-player-info { pointer-events: auto; }
+    .element-tower-battle-unit-visual .battle-stage-popover { gap: calc(4 * var(--tower-stage-px)); min-width: calc(76 * var(--tower-stage-px)); margin-left: calc(8 * var(--tower-stage-px)); }
+    .element-tower-battle-unit .battle-stage-popover-row { min-width: calc(68 * var(--tower-stage-px)); padding: calc(3 * var(--tower-stage-px)) calc(6 * var(--tower-stage-px)); border-width: calc(1 * var(--tower-stage-px)); border-radius: calc(5 * var(--tower-stage-px)); font-size: calc(13 * var(--tower-stage-px)); }
+    html.android-webview .element-tower-battle-unit.player .battle-stage-popover, html.android-webview .element-tower-battle-unit.shura .battle-stage-popover { opacity: 0; }
+    html.android-webview .element-tower-battle-unit-visual.element-tower-stage-selected .battle-stage-popover { opacity: 1 !important; }
+    @media (hover: none) and (pointer: coarse) {
+      .element-tower-battle-unit.player .battle-stage-popover, .element-tower-battle-unit.shura .battle-stage-popover { opacity: 0; }
+      .element-tower-battle-unit-visual.element-tower-stage-selected .battle-stage-popover { opacity: 1 !important; }
+    }
+    .element-tower-battle-unit-visual .battle-pet-img.element-tower-ally-image { pointer-events: auto; cursor: pointer; }
+    .element-tower-battle-layout .element-tower-battle-unit.element-tower-unit-selected { z-index: 300 !important; }
+    .element-tower-challenge-btn { --tower-entry-px: min(1px, .07905vw, .128866vh); min-width: calc(210 * var(--tower-entry-px)); padding: calc(12 * var(--tower-entry-px)) calc(28 * var(--tower-entry-px)); border-width: calc(2 * var(--tower-entry-px)); font-size: calc(23 * var(--tower-entry-px)); }
+    html.android-webview.android-landscape .battle-scene-overlay:not(.element-tower-battle-mode) .battle-mobile-target-sprite .battle-stage-popover { right: calc(2% - 7vw); }
+    @media (hover: none) and (pointer: coarse) and (orientation: landscape) {
+      .battle-scene-overlay:not(.element-tower-battle-mode) .battle-mobile-target-sprite .battle-stage-popover { right: calc(2% - 7vw); }
+    }
   </style>
 </head>
 <body class="text-slate-800 min-h-screen">
@@ -13115,6 +13695,24 @@
       <img v-if="homeDisplayBadge.imageSrc" class="guardian-badge-thumb" :src="homeDisplayBadge.imageSrc" :alt="homeDisplayBadge.name" @error="withFallback">
       <div v-else class="guardian-badge-thumb guardian-badge-text-mark" :class="'is-' + (homeDisplayBadge.tone || 'blue')">
         {{ homeDisplayBadge.name }}
+      </div>
+    </div>
+    <div class="home-player-move-area" @click="moveHomePlayer" aria-label="移动角色">
+      <div class="home-player-character" :style="{ left: homePlayerPosition.x + '%', top: homePlayerPosition.y + '%' }">
+        <div class="home-player-character-name">{{ authUser && authUser.username ? authUser.username : (authUsername || '游客') }}</div>
+        <div class="home-player-character-stage">
+          <div v-for="(layer, idx) in outfitRenderLayers" :key="'home_player_layer_' + idx" class="home-player-character-layer" :style="{ zIndex: layer.z, left: (layer.l || 0) + '%', top: (layer.t || 0) + '%', width: (layer.w || 100) + '%' }">
+            <img v-if="layer.imageSrc" :src="layer.imageSrc" alt="" draggable="false">
+          </div>
+        </div>
+      </div>
+      <div v-for="player in homeOtherPlayers" :key="'home_other_player_' + player.id" class="home-player-character is-other" :style="{ left: player.x + '%', top: player.y + '%' }" @click.stop="openHomePlayerInfoCard(player)" :title="'查看 ' + player.name + ' 的信息卡'">
+        <div class="home-player-character-name">{{ player.name }}</div>
+        <div class="home-player-character-stage">
+          <div v-for="(layer, idx) in (player.outfitLayers || outfitRenderLayers)" :key="'home_other_layer_' + player.id + '_' + idx" class="home-player-character-layer" :style="{ zIndex: layer.z, left: (layer.l || 0) + '%', top: (layer.t || 0) + '%', width: (layer.w || 100) + '%' }">
+            <img v-if="layer.imageSrc" :src="layer.imageSrc" alt="" draggable="false">
+          </div>
+        </div>
       </div>
     </div>
     <div class="home-action-grid">
@@ -13795,6 +14393,9 @@
           <button @click="setBag2EnhanceTab('gear')" class="bag2-side-btn bag2-gear-btn" :class="{ active: bag2EnhanceTab === 'gear' }">
             <img src="./resource/背包ui/装备.png" alt="装备">
           </button>
+          <button @click="setBag2EnhanceTab('awaken')" class="bag2-side-btn" :class="{ active: bag2EnhanceTab === 'awaken' }">
+            <img src="./resource/背包ui/觉醒.png" alt="觉醒">
+          </button>
         </template>
       </div>
 
@@ -13937,7 +14538,7 @@
                 </button>
               </div>
             </template>
-            <template v-else>
+            <template v-else-if="bag2EnhanceTab === 'gear'">
               <div class="bag2-enhance-section-title">装备仓库</div>
               <div class="bag2-enhance-toolbar">
                 <button @click="bag2GearFilter='all'" class="bag2-enhance-chip" :class="{ 'is-active': bag2GearFilter === 'all' }">全部</button>
@@ -13961,6 +14562,24 @@
                 <div v-if="filteredGearInventoryRows.length <= 0" class="text-center text-xs font-black text-sky-700 py-3">当前筛选下没有装备。</div>
               </div>
             </template>
+            <template v-else-if="bag2EnhanceTab === 'awaken'">
+              <div class="bag2-enhance-section-title">觉醒仓库</div>
+              <div class="bag2-gear-list">
+                <div v-for="item in bag2AwakenItemRows" :key="'bag2_awaken_'+item.id" class="bag2-gear-list-card">
+                  <img :src="item.id.startsWith('element_stone_') ? './resource/' + item.name + '.png' : item.image" @error="withFallback" class="bag2-gear-list-img" :alt="item.name">
+                  <div>
+                    <div class="bag2-gear-list-name">{{ item.name }}</div>
+                    <div class="bag2-gear-list-desc">{{ item.desc }}</div>
+                    <div class="bag2-gear-list-meta">库存 {{ item.count }}<template v-if="item.id.startsWith('element_stone_')">｜可用 {{ item.available }}<span v-if="bag2DisplayPet && bag2DisplayPet.elementStoneId === item.id">｜已装配</span></template></div>
+                  </div>
+                  <div v-if="item.id.startsWith('element_stone_')" class="bag2-gear-list-actions bag2-element-stone-actions">
+                    <button v-if="bag2DisplayPet && bag2DisplayPet.elementStoneId === item.id" type="button" @click="unequipSelectedPetElementStone(petId(bag2DisplayPet))" :aria-label="'卸下' + item.name" class="h-8 px-3 rounded-lg bg-rose-50 text-rose-600 font-black">卸下</button>
+                    <button v-else type="button" @click="equipElementStoneToSelectedPet(item.id, petId(bag2DisplayPet))" :disabled="item.available <= 0" :aria-label="'装配' + item.name" class="h-8 px-3 rounded-lg bg-sky-600 text-white font-black disabled:opacity-50 disabled:cursor-not-allowed">装配</button>
+                  </div>
+                </div>
+                <div v-if="bag2AwakenItemRows.length <= 0" class="text-center text-xs font-black text-sky-700 py-3">暂无觉醒道具。</div>
+              </div>
+            </template>
           </div>
         </template>
       </div>
@@ -13982,11 +14601,28 @@
         <button @click="toggleBag2SortMode" class="bag2-action-btn bag2-sort-btn" :class="{ active: bag2SortMode }" title="排序">
           <img src="./resource/背包ui/排序.png" alt="排序">
         </button>
+        <button @click="updateCurrentTeam" class="bag2-action-btn bag2-sort-btn bag2-update-team-btn" title="更新队伍">
+          <img src="./resource/背包ui/更新队伍.png" alt="更新队伍">
+        </button>
       </div>
 
       <div v-if="bag2SortMode" class="bag2-sorting-hint">
         <span v-if="bag2SortFirstSlotIdx < 0">点击选择要交换的亚比</span>
         <span v-else>点击另一个亚比完成交换</span>
+      </div>
+
+      <div class="bag2-team-presets">
+        <button v-for="i in 3" :key="'bag2_team_preset_'+i"
+          @pointerdown.prevent="teamPresetPressStart(i - 1)"
+          @pointerup.prevent="teamPresetPressEnd(i - 1)"
+          @pointerleave="teamPresetPressCancel()"
+          @pointercancel="teamPresetPressCancel()"
+          @contextmenu.prevent
+          class="bag2-team-preset-btn"
+          :class="{ 'is-saved': !!teamPresetRows[i - 1], 'is-applied': isTeamPresetApplied(i - 1) }"
+          :title="teamPresetRows[i - 1] ? `配队${i}（${teamPresetSavedCount(i - 1)}只）｜点击切换，长按更新` : `配队${i}｜点击保存当前配队`">
+          配队{{ i }}
+        </button>
       </div>
 
       <div class="bag2-slots">
@@ -14525,14 +15161,14 @@
       <div class="info-card-outfit-card">
         <img src="./resource/信息卡/服装卡底图.png" class="info-card-card-bg" alt="">
         <button type="button" class="info-card-name-bar">
-          <span class="info-card-name-text">{{ authUser && authUser.username ? authUser.username : (authUsername || '游客') }}</span>
+          <span class="info-card-name-text">{{ infoCardDisplayName }}</span>
         </button>
-        <div v-if="equippedBadge" class="info-card-equipped-badge" :title="equippedBadge.name">
+        <div v-if="equippedBadge && !infoCardViewingOther" class="info-card-equipped-badge" :title="equippedBadge.name">
           <img v-if="equippedBadge.imageSrc" :src="equippedBadge.imageSrc" :alt="equippedBadge.name" draggable="false" @error="(e) => { e.target.parentElement.style.display = 'none'; }">
           <span v-else class="info-card-equipped-badge-text">{{ equippedBadge.name }}</span>
         </div>
         <div class="info-card-outfit-stage">
-          <div v-for="(layer, idx) in outfitRenderLayers" :key="idx" class="info-card-outfit-layer" :style="{ zIndex: layer.z, left: (layer.l || 0) + '%', top: (layer.t || 0) + '%', width: (layer.w || 100) + '%' }">
+          <div v-for="(layer, idx) in infoCardDisplayOutfitLayers" :key="idx" class="info-card-outfit-layer" :style="{ zIndex: layer.z, left: (layer.l || 0) + '%', top: (layer.t || 0) + '%', width: (layer.w || 100) + '%' }">
             <img v-if="layer.imageSrc" :src="layer.imageSrc" alt="" draggable="false">
           </div>
         </div>
@@ -14544,7 +15180,7 @@
           <button type="button" class="info-card-tab-btn" :class="{ active: infoCardTab === 'info' }" @click="infoCardTab = 'info'">
             <img src="./resource/信息卡/信息按钮.png" alt="信息">
           </button>
-          <button type="button" class="info-card-tab-btn" :class="{ active: infoCardTab === 'bag' }" @click="infoCardTab = 'bag'">
+          <button v-if="!infoCardViewingOther" type="button" class="info-card-tab-btn" :class="{ active: infoCardTab === 'bag' }" @click="infoCardTab = 'bag'">
             <img src="./resource/信息卡/背包按钮.png" alt="背包">
           </button>
         </div>
@@ -14554,15 +15190,15 @@
         <!-- 信息标签页：仅在信息界面底图对应位置填数据，不加标签与底色 -->
         <div v-show="infoCardTab === 'info'" class="info-card-info-stage">
           <img src="./resource/信息卡/信息界面底图.png?v=20260917b" class="info-card-info-bg" alt="">
-          <img v-if="dexLevelImageSrc" :src="dexLevelImageSrc" class="icv-dex-level" :alt="'图鉴等级' + dexLevel + '级'" draggable="false">
-          <span class="icv icv-name" :title="authUser && authUser.username ? authUser.username : (authUsername || '游客')">{{ authUser && authUser.username ? authUser.username : (authUsername || '游客') }}</span>
-          <span class="icv icv-id" :title="authUser && authUser.id ? authUser.id : ''">{{ authUser && authUser.id ? authUser.id : '——' }}</span>
-          <span class="icv icv-age" :title="playerStarAge + ' 天'">{{ playerStarAge }} 天</span>
-          <span class="icv icv-title">{{ playerTitle }}</span>
-          <span class="icv icv-talent">{{ maxPetTalentGrade }}</span>
-          <span class="icv icv-level">{{ maxPetLevel }}</span>
+          <img v-if="infoCardDisplayDexLevelImage" :src="infoCardDisplayDexLevelImage" class="icv-dex-level" alt="图鉴等级" draggable="false">
+          <span class="icv icv-name" :title="infoCardDisplayName">{{ infoCardDisplayName }}</span>
+          <span class="icv icv-id" :title="infoCardDisplayId">{{ infoCardDisplayId }}</span>
+          <span class="icv icv-age" :title="infoCardDisplayAge">{{ infoCardDisplayAge }}</span>
+          <span class="icv icv-title">{{ infoCardDisplayTitle }}</span>
+          <span class="icv icv-talent">{{ infoCardDisplayTalent }}</span>
+          <span class="icv icv-level">{{ infoCardDisplayLevel }}</span>
           <span class="icv icv-capture">——</span>
-          <span class="icv icv-count">{{ warehouseCount + (state && state.bagPetIds ? state.bagPetIds.filter(Boolean).length : 0) }}</span>
+          <span class="icv icv-count">{{ infoCardDisplayCount }}</span>
           <button type="button" class="ic-chal-arrow ic-chal-prev" @click="infoCardChallengePage = Math.max(0, infoCardChallengePage - 1)" :disabled="infoCardChallengePage <= 0" aria-label="上一组"></button>
           <button type="button" class="ic-chal-arrow ic-chal-next" @click="infoCardChallengePage = Math.min(infoCardChallengePageCount - 1, infoCardChallengePage + 1)" :disabled="infoCardChallengePage >= infoCardChallengePageCount - 1" aria-label="下一组"></button>
           <div class="ic-chal-track">
@@ -14570,22 +15206,22 @@
               <img v-if="tier && tier.cover" :src="tier.cover" :alt="tier.title" draggable="false" @error="(e) => { e.target.style.display = 'none'; }">
             </div>
           </div>
-          <div class="ic-stat ic-stat-1"><b>{{ activatedDexCount }}</b><span>图鉴激活</span></div>
-          <div class="ic-stat ic-stat-2"><b>{{ maxBagBattlePower }}</b><span>最大战斗力</span></div>
-          <div class="ic-stat ic-stat-3"><b>{{ pvpWinCount }}</b><span>PVP获胜次数</span></div>
-          <div class="ic-stat ic-stat-4"><b>{{ timeTunnelMaxClearedFloor }}</b><span>时空隧道层数</span></div>
-          <button type="button" @click="triggerLocalSaveImport" class="ic-save ic-save-import">
+          <div class="ic-stat ic-stat-1"><b>{{ infoCardViewingOther ? (homeInfoCardPlayer.activatedDexCount || '—') : activatedDexCount }}</b><span>图鉴激活</span></div>
+          <div class="ic-stat ic-stat-2"><b>{{ infoCardViewingOther ? (homeInfoCardPlayer.maxBattlePower || '—') : maxBagBattlePower }}</b><span>最大战斗力</span></div>
+          <div class="ic-stat ic-stat-3"><b>{{ infoCardViewingOther ? (homeInfoCardPlayer.pvpWins || '—') : pvpWinCount }}</b><span>PVP获胜次数</span></div>
+          <div class="ic-stat ic-stat-4"><b>{{ infoCardViewingOther ? (homeInfoCardPlayer.timeTunnelMaxClearedFloor || '—') : timeTunnelMaxClearedFloor }}</b><span>时空隧道层数</span></div>
+          <button v-if="!infoCardViewingOther" type="button" @click="triggerLocalSaveImport" class="ic-save ic-save-import">
             <img src="./resource/信息卡/导入存档按钮.png" alt="导入存档">
           </button>
-          <button type="button" @click="exportLocalSave" class="ic-save ic-save-export">
+          <button v-if="!infoCardViewingOther" type="button" @click="exportLocalSave" class="ic-save ic-save-export">
             <img src="./resource/信息卡/导出存档按钮.png" alt="导出存档">
           </button>
-          <button type="button" @click="logoutCurrentAccount" class="ic-logout">
+          <button v-if="!infoCardViewingOther" type="button" @click="logoutCurrentAccount" class="ic-logout">
             <img src="./resource/信息卡/退出登录按钮.png" alt="退出登录">
           </button>
         </div>
         <!-- 背包标签页 -->
-        <div v-show="infoCardTab === 'bag'" class="info-card-bag-stage">
+        <div v-show="infoCardTab === 'bag' && !infoCardViewingOther" class="info-card-bag-stage">
           <div class="info-card-bag-toolbar">
             <div class="info-card-filter">
               <button type="button" class="info-card-filter-btn" @click.stop="infoCardBagFilterOpen = !infoCardBagFilterOpen">
@@ -14650,13 +15286,74 @@
             <img src="./resource/元素塔按钮.png" alt="元素塔">
             <div class="strong-road-item-label">元素塔</div>
           </button>
+          <button @click="openBattleSimulationSettings(); closeStrongRoadPanel()" class="strong-road-item">
+            <img src="./resource/对战模拟.png" alt="对战模拟">
+            <div class="strong-road-item-label">对战模拟</div>
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <div v-if="showElementTowerPanel" class="element-tower-overlay" @click="closeElementTowerPanel">
+  <div v-if="showBattleSimulationSettings" class="fixed inset-0 z-[145] bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4" @click="closeBattleSimulationSettings">
+    <div class="w-full rounded-3xl border border-cyan-200/70 bg-slate-900 p-5 text-cyan-50 shadow-2xl" style="width: 50%; max-width: 50%; min-width: 0;" @click.stop>
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <h2 class="text-xl font-black">对战模拟设置</h2>
+        <button type="button" class="h-9 px-3 rounded-xl bg-slate-700 font-black" @click="closeBattleSimulationSettings">关闭</button>
+      </div>
+      <div class="grid gap-3">
+        <label class="grid gap-1 text-sm font-black">玄天水晶等级
+          <select v-model.number="battleSimulationLevel" class="rounded-xl bg-slate-800 border border-cyan-300/50 px-3 py-2 text-cyan-50"><option v-for="level in battleSimulationLevelOptions" :key="'sim_level_'+level" :value="level">{{ level }}级</option></select>
+        </label>
+        <label class="grid gap-1 text-sm font-black">增伤buff
+          <select v-model.number="battleSimulationDamageBoost" class="rounded-xl bg-slate-800 border border-cyan-300/50 px-3 py-2 text-cyan-50"><option v-for="value in battleSimulationBuffOptions" :key="'sim_boost_'+value" :value="value">{{ value }}%</option></select>
+        </label>
+        <label class="grid gap-1 text-sm font-black">减伤buff
+          <select v-model.number="battleSimulationDamageReduction" class="rounded-xl bg-slate-800 border border-cyan-300/50 px-3 py-2 text-cyan-50"><option v-for="value in battleSimulationBuffOptions" :key="'sim_reduce_'+value" :value="value">{{ value }}%</option></select>
+        </label>
+      </div>
+      <div class="mt-4 rounded-xl bg-slate-800/80 px-3 py-2 text-xs font-bold leading-5 text-cyan-100/80">体力固定1000万，学习力全为0，天赋全为30，最多进行10回合。</div>
+      <button type="button" class="mt-4 w-full rounded-xl bg-cyan-500 px-4 py-3 font-black text-slate-950 hover:bg-cyan-300" @click="startBattleSimulation">开始模拟对战</button>
+    </div>
+  </div>
+
+  <div v-if="showElementTowerPanel" class="element-tower-overlay" :class="{ 'app-layer-under-modal': showBag2Panel || showBagPanel || showWarehousePanel || showNewWarehousePanel }">
     <img src="./resource/元素塔背景.png" alt="元素塔" class="element-tower-bg">
+    <div class="element-tower-ui">
+      <div class="element-tower-topbar">
+        <div class="element-tower-floor-actions">
+          <div class="element-tower-floor-card"><div>当前层数：第{{ elementTowerCurrentFloor }}层</div><div>最高到达：第{{ elementTowerState.maxFloor }}层</div></div>
+          <button type="button" class="element-tower-exchange-btn" @click.stop="openElementTowerExchange" aria-haspopup="dialog">元素石兑换</button>
+        </div>
+        <div class="element-tower-tools">
+          <div class="element-tower-elements"><span>今日可用系别</span><span v-for="element in elementTowerDailyElements" :key="'tower_el_'+element" class="element-tower-element-icon"><img :src="petElementIconSrc(element)" :alt="element" :title="element"></span></div>
+          <button type="button" class="element-tower-tool-btn" @click.stop="openBagPanel" title="亚比背包"><img src="./resource/ui/背景/亚比背包.png" alt="背包"></button>
+          <button type="button" class="element-tower-tool-btn" @click.stop="openNewWarehousePanel" title="亚比仓库"><img src="./resource/ui/背景/亚比仓库.png" alt="仓库"></button>
+          <button type="button" class="element-tower-close-btn" @click.stop="closeElementTowerPanel" title="关闭">×</button>
+        </div>
+      </div>
+      <div class="element-tower-boss-preview"><div v-for="(boss, bossIndex) in elementTowerBossRows" :key="'tower_boss_'+bossIndex+'_'+boss.dexId+'_'+boss.name" class="element-tower-boss-card"><img :src="boss.image" :alt="boss.name"><div>{{ boss.name }}</div></div></div>
+      <div class="element-tower-bottom"><div class="element-tower-rule">Boss：Lv.150 · 体力40000 · 天赋除体力外62 · 学习力除体力外102 · 能力+80% · 伤害抗性50% · 增伤40%</div><button type="button" class="element-tower-challenge-btn" @click.stop="startElementTowerChallenge">挑战第{{ elementTowerCurrentFloor }}层</button></div>
+    </div>
+    <teleport to="body">
+    <div v-if="elementTowerExchangeOpen" class="element-tower-exchange-mask app-top-dialog-overlay" @click.self="closeElementTowerExchange" @keydown.esc.stop="closeElementTowerExchange">
+      <section class="element-tower-exchange-dialog" role="dialog" aria-modal="true" aria-labelledby="element-tower-exchange-title" @vue:mounted="$event.el.querySelector('button').focus()" @vue:unmounted="$event.el.ownerDocument.querySelector('.element-tower-exchange-btn')?.focus()" @keydown.tab="(event) => { const buttons = event.currentTarget.querySelectorAll('button:not(:disabled)'); const active = event.currentTarget.ownerDocument.activeElement; if (event.shiftKey && active === buttons[0]) { event.preventDefault(); buttons[buttons.length - 1].focus(); } else if (!event.shiftKey && active === buttons[buttons.length - 1]) { event.preventDefault(); buttons[0].focus(); } }">
+        <div class="element-tower-exchange-header">
+          <h2 id="element-tower-exchange-title">元素石兑换</h2>
+          <button type="button" class="element-tower-close-btn" @click="closeElementTowerExchange" aria-label="关闭元素石兑换" autofocus>×</button>
+        </div>
+        <p class="element-tower-exchange-balance" aria-live="polite">元素碎片：{{ elementTowerFragmentCount }} · 每种元素石不限兑换次数</p>
+        <div class="element-tower-exchange-grid">
+          <article v-for="stone in elementStoneExchangeRows" :key="'tower_exchange_'+stone.id" class="element-tower-exchange-card">
+            <img :src="'./resource/' + stone.name + '.png'" @error="withFallback" :alt="stone.name">
+            <h3>{{ stone.name }}</h3>
+            <div class="element-tower-exchange-meta">消耗：元素碎片 × {{ stone.cost }}<br>持有：{{ stone.count }}<br>兑换次数：无限</div>
+            <button type="button" class="element-tower-exchange-action" @click="redeemElementStone(stone.id)" :disabled="stone.disabled" :aria-label="'兑换' + stone.name">兑换</button>
+          </article>
+        </div>
+      </section>
+    </div>
+    </teleport>
   </div>
 
   <div v-if="showFateGatePanel" class="fate-gate-overlay" @click="closeFateGatePanel">
@@ -17160,7 +17857,83 @@
     </div>
   </div>
 
-<div v-cloak v-if="battleScene && battleScene.open" class="battle-scene-overlay battle-render-safe fixed inset-0 z-[110] bg-slate-950/90 backdrop-blur-sm" @click="closeBattleScene">
+<div v-cloak v-if="battleScene && battleScene.open" :class="['battle-scene-overlay battle-render-safe fixed inset-0 z-[110] bg-slate-950/90 backdrop-blur-sm', battleScene.mode === 'elementTower' ? 'element-tower-battle-mode' : '']" @click="battleScene.mode !== 'elementTower' && closeBattleScene()">
+  <div v-if="battleScene.mode === 'elementTower'" :class="['element-tower-battle-layout', battleScene.elementTowerPendingSkill ? 'is-target-selecting' : '']" @click.stop>
+    <div v-for="entry in elementTowerBattleUnits" :key="'tower_unit_'+entry.id" :class="['element-tower-battle-unit', entry.side === 'attacker' ? 'player' : (entry.side === 'elementTowerAlly' ? 'shura' : (entry.side === 'target' ? 'boss-one' : 'boss-two')), battleScene.elementTowerPendingSkill && (entry.side === 'target' || entry.side === 'elementTowerTargetAlly') && Number(entry.unit.hp) > 0 ? 'is-targetable' : '', elementTowerStageUnitId === entry.id ? 'element-tower-unit-selected' : '']" @click.stop="(entry.side === 'target' || entry.side === 'elementTowerTargetAlly') ? selectElementTowerTarget(entry.id) : null">
+      <div class="element-tower-battle-unit-visual battle-stage-hover-zone" :class="{ 'element-tower-stage-selected': elementTowerStageUnitId === entry.id }" tabindex="0">
+        <div class="battle-pet-visual-anchor">
+          <div class="battle-stage-popover" :style="elementTowerStagePopoverStyle(entry.unit, entry.side)">
+            <span v-for="row in elementTowerUnitStages(entry.unit)" :key="entry.id + '_stage_' + row.key" class="battle-stage-popover-row" :class="row.value > 0 ? 'stage-up' : (row.value < 0 ? 'stage-down' : 'stage-zero')">{{ row.text }}</span>
+          </div>
+          <div v-if="elementTowerUnitLiveSide(entry.unit) === 'attacker' && battleScene.fxAttackerSkillText" class="text-sm font-black whitespace-nowrap battle-skill-float battle-pet-skill-float battle-attacker-skill-float" :style="elementTowerUnitSkillFloatStyle(entry.unit, entry.side)">{{ battleScene.fxAttackerSkillText }}</div>
+          <div v-if="elementTowerUnitLiveSide(entry.unit) === 'target' && battleScene.fxTargetSkillText" class="text-sm font-black whitespace-nowrap battle-skill-float battle-pet-skill-float battle-target-skill-float" :style="elementTowerUnitSkillFloatStyle(entry.unit, entry.side)">{{ battleScene.fxTargetSkillText }}</div>
+          <img :src="elementTowerUnitImage(entry.unit, entry.side)" :style="elementTowerUnitImageStyle(entry.unit, entry.side)" :alt="entry.unit.name" :class="['battle-pet-img', (entry.side === 'attacker' || entry.side === 'elementTowerAlly') ? 'element-tower-ally-image' : '']" @click="(entry.side === 'attacker' || entry.side === 'elementTowerAlly') && toggleElementTowerStage(entry.id)">
+          <div v-for="(hit, idx) in (elementTowerUnitComboFx(entry.unit)?.comboHits || [])" :key="entry.id + '_combo_' + elementTowerUnitComboFx(entry.unit).seq + '_' + idx" class="battle-pet-value-float text-3xl font-black text-rose-200 [text-shadow:0_2px_10px_rgba(0,0,0,.45)] combo-hit-pop" :style="[elementTowerUnitComboFloatStyle(entry.unit, entry.side, 'damage'), { animationDelay: (idx*250)+'ms' }]">{{ hit }}</div>
+          <div v-if="elementTowerUnitComboFx(entry.unit)" :key="entry.id + '_combo_total_' + elementTowerUnitComboFx(entry.unit).seq" class="battle-pet-value-float text-5xl font-black text-amber-300 [text-shadow:0_3px_16px_rgba(0,0,0,.5)] combo-total-pop" :style="elementTowerUnitComboFloatStyle(entry.unit, entry.side, 'total')">{{ elementTowerUnitValueFx(entry.unit, 'damage') }}</div>
+          <div v-else-if="elementTowerUnitValueFx(entry.unit, 'damage')" class="element-tower-value-float element-tower-value-damage battle-damage-pop" :style="elementTowerUnitValueFxStyle(entry.unit, entry.side, 0)">
+            <span v-for="tag in elementTowerUnitValueFxTags(entry.unit)" :key="entry.id + '_damage_tag_' + tag" class="element-tower-value-tag" :class="tag === '微弱' ? 'element-tower-value-tag-weak' : (tag === '克制' ? 'element-tower-value-tag-strong' : (tag === '无效' ? 'element-tower-value-tag-invalid' : 'element-tower-value-tag-crit'))">{{ tag }}</span>
+            <span>{{ elementTowerUnitValueFx(entry.unit, 'damage') }}</span>
+          </div>
+          <div v-if="elementTowerUnitValueFx(entry.unit, 'heal')" class="element-tower-value-float element-tower-value-heal battle-damage-pop" :style="elementTowerUnitValueFxStyle(entry.unit, entry.side, 1)">{{ elementTowerUnitValueFx(entry.unit, 'heal') }}</div>
+          <img v-if="elementTowerUnitLiveSide(entry.unit) === 'attacker' && battleScene.attackerTransformFx" :key="'tower_transform_attacker_' + battleScene.attackerTransformSeq" :src="battleScene.attackerTransformFx" class="battle-transform-effect-gif" :style="elementTowerUnitFxStyle(entry.unit, entry.side, 'transform')" alt="">
+          <img v-if="elementTowerUnitLiveSide(entry.unit) === 'target' && battleScene.targetTransformFx" :key="'tower_transform_target_' + battleScene.targetTransformSeq" :src="battleScene.targetTransformFx" class="battle-transform-effect-gif" :style="elementTowerUnitFxStyle(entry.unit, entry.side, 'transform')" alt="">
+          <img v-if="battleVisualReady && battleScene.skillEffectFx && battleScene.skillEffectFx.side === elementTowerUnitLiveSide(entry.unit)" :key="'tower_skill_fx_' + battleScene.skillEffectFx.seq" :src="battleScene.skillEffectFx.src" class="battle-skill-effect-gif" :style="elementTowerUnitFxStyle(entry.unit, entry.side, 'skill')" alt="">
+          <img v-if="battleVisualReady && battleScene.statusEffectFxBySide && battleScene.statusEffectFxBySide['unit:' + entry.id]" :key="'tower_status_fx_' + battleScene.statusEffectFxBySide['unit:' + entry.id].seq" :src="battleScene.statusEffectFxBySide['unit:' + entry.id].src" class="battle-status-effect-gif" :style="elementTowerUnitFxStyle(entry.unit, entry.side, 'status')" alt="">
+          <img v-if="battleVisualReady && battleScene.moraleEffectFx && battleScene.moraleEffectFx.side === elementTowerUnitLiveSide(entry.unit)" :key="'tower_morale_fx_' + battleScene.moraleEffectFx.seq" :src="battleScene.moraleEffectFx.src" class="battle-status-effect-gif battle-morale-effect-gif" :style="elementTowerUnitFxStyle(entry.unit, entry.side, 'status')" alt="">
+          <img v-if="battleVisualReady && battleScene.stageChangeFx && battleScene.stageChangeFx[elementTowerUnitLiveSide(entry.unit)]" :key="'tower_stage_fx_' + battleScene.stageChangeFx[elementTowerUnitLiveSide(entry.unit)].seq" :src="battleScene.stageChangeFx[elementTowerUnitLiveSide(entry.unit)].src" class="battle-stage-change-fx" :style="elementTowerUnitFxStyle(entry.unit, entry.side, 'stage')" alt="">
+        </div>
+      </div>
+      <div v-if="entry.side === 'attacker'" class="element-tower-player-info battle-mobile-attacker-card battle-mobile-hpbox">
+        <div class="battle-player-hp-topline">
+          <div class="battle-player-portrait">
+            <img :src="battleScene.attackerStaticImage || entry.unit.image" :alt="entry.unit.name">
+          </div>
+          <div class="battle-player-hp-main">
+            <div class="battle-player-name-row">
+              <div class="battle-player-name">{{ entry.unit.name }}</div>
+              <div class="battle-player-level">Lv.{{ entry.unit.level }}</div>
+            </div>
+            <div class="battle-player-hp-track">
+              <div class="battle-player-hp-fill" :style="{ width: hpPercent(entry.unit.hp, entry.unit.maxHp) + '%' }"></div>
+              <div class="battle-player-hp-text">HP：{{ entry.unit.hp }}/{{ entry.unit.maxHp }}</div>
+            </div>
+          </div>
+          <div class="battle-player-status">
+              <button v-for="status in elementTowerUnitStatusBadges(entry.unit)" :key="entry.id + '_status_' + status.key" type="button" @click.stop="openElementTowerEffectList(entry)" :title="`${status.desc}｜${status.durationLabel || ('剩余' + status.turns + '回合')}`" class="battle-effect-badge bg-rose-500/70 text-white">{{ status.label }}</button>
+            <button v-for="effect in elementTowerUnitEffects(entry.unit, entry.side)" :key="entry.id + '_effect_' + effect.key" type="button" @click.stop="openElementTowerEffectList(entry)" :title="`${effect.desc}｜${effect.durationLabel || ('剩余' + effect.turns + '回合')}`" class="battle-effect-badge" :class="effect.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ effect.label }}</button>
+          </div>
+        </div>
+        <div class="battle-player-elements">
+          <span v-if="entry.unit.element" class="element-icon battle-player-primary-element" :style="petElementIconStyle(entry.unit.element, 24)" :title="entry.unit.element"></span>
+          <span v-if="entry.unit.subElement" class="element-icon battle-player-sub-element" :style="petElementIconStyle(entry.unit.subElement, 24)" :title="entry.unit.subElement"></span>
+        </div>
+      </div>
+      <div v-else class="battle-target-card-row element-tower-battle-unit-card-row">
+        <div class="battle-target-element-stack">
+          <span v-if="entry.unit.element" class="element-icon" :style="petElementIconStyle(entry.unit.element, 22)" :title="entry.unit.element"></span>
+          <span v-if="entry.unit.subElement" class="element-icon" :style="petElementIconStyle(entry.unit.subElement, 22)" :title="entry.unit.subElement"></span>
+        </div>
+        <div class="battle-mobile-target-card element-tower-battle-unit-card">
+          <div class="battle-target-info-main">
+            <div class="battle-target-info-body">
+              <div class="battle-target-name-row">
+                <div class="battle-target-name">{{ entry.unit.name }}</div>
+                <div class="battle-target-level">Lv.{{ entry.unit.level }}</div>
+              </div>
+              <div class="battle-target-hp-track">
+                <div class="battle-target-hp-fill" :style="{ width: hpPercent(entry.unit.hp, entry.unit.maxHp) + '%' }"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="entry.side !== 'attacker'" class="battle-target-status battle-target-status-outside">
+        <button v-for="status in elementTowerUnitStatusBadges(entry.unit)" :key="entry.id + '_status_' + status.key" type="button" @click.stop="openElementTowerEffectList(entry)" :title="`${status.desc}｜${status.durationLabel || ('剩余' + status.turns + '回合')}`" class="battle-effect-badge bg-rose-500/70 text-white">{{ status.label }}</button>
+        <button v-for="effect in elementTowerUnitEffects(entry.unit, entry.side)" :key="entry.id + '_effect_' + effect.key" type="button" @click.stop="openElementTowerEffectList(entry)" :title="`${effect.desc}｜${effect.durationLabel || ('剩余' + effect.turns + '回合')}`" class="battle-effect-badge" :class="effect.tone === 'debuff' ? 'bg-emerald-500/70 text-white' : 'bg-rose-500/70 text-white'">{{ effect.label }}</button>
+      </div>
+    </div>
+    <div v-if="battleScene.elementTowerPendingSkill" class="element-tower-battle-prompt">已选择「{{ battleScene.elementTowerPendingSkill.name }}」，请点击目标 Boss</div>
+  </div>
   <div class="relative w-full h-full overflow-hidden bg-slate-950 battle-mobile-root" @click.stop>
     <div class="battle-bg-layer" :style="{ backgroundImage: `url(${battleBackground.src})` }"></div>
     <div v-if="battleScene.shengyuBackground" :key="'shengyu_bg_' + battleScene.shengyuBackground.seq" :class="['battle-shengyu-bg-layer', { 'battle-shengyu-bg-layer-mobile': isMobileClient, 'battle-shengyu-bg-layer-persistent': battleScene.shengyuBackground.entryComplete }]" :style="battleShengyuBackgroundStyle()">
@@ -17185,7 +17958,7 @@
     <div v-if="battleScene.fxSkillText" class="hidden absolute top-6 right-6 z-30 rounded-2xl border border-cyan-300/60 bg-cyan-400/25 px-3 py-1 text-[11px] font-black text-cyan-100 whitespace-nowrap shadow-[0_8px_24px_rgba(34,211,238,0.25)] battle-skill-float">{{ battleScene.fxSkillText }}</div>
     <div v-if="battleScene.shengyuDomainLabel" class="absolute top-4 left-1/2 z-30 -translate-x-1/2 rounded-full border border-amber-200/70 bg-slate-950/75 px-3 py-1 text-xs font-black text-amber-100 shadow-lg whitespace-nowrap">当前圣域：{{ battleScene.shengyuDomainLabel }}</div>
 
-    <div class="absolute left-3 right-3 md:left-8 md:right-auto top-3 md:top-8 w-auto md:w-[22%] md:min-w-[280px] battle-mobile-wrap battle-mobile-target">
+    <div v-if="battleScene.mode !== 'elementTower'" class="absolute left-3 right-3 md:left-8 md:right-auto top-3 md:top-8 w-auto md:w-[22%] md:min-w-[280px] battle-mobile-wrap battle-mobile-target">
       <div class="battle-target-card-row">
         <div class="battle-target-element-stack">
           <span class="element-icon" :style="petElementIconStyle(battleScene.targetElement || '普通系', 28)" :title="battleScene.targetElement || '普通系'"></span>
@@ -17365,7 +18138,7 @@
           </div>
         </div>
       </div>
-      <div class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3 battle-mobile-attacker-card battle-mobile-hpbox">
+      <div v-if="battleScene.mode !== 'elementTower'" class="rounded-2xl border border-cyan-200/30 bg-slate-900/45 p-3 battle-mobile-attacker-card battle-mobile-hpbox">
         <div class="battle-player-hp-topline">
           <div class="battle-player-portrait">
             <img :src="battleScene.attackerStaticImage" @error="withStaticPetFallback" alt="">
@@ -17402,7 +18175,7 @@
           </div>
         </div>
       </div>
-      <div class="battle-mobile-attacker-main">
+      <div v-if="battleScene.mode !== 'elementTower'" class="battle-mobile-attacker-main">
       <div
         :class="['relative h-[300px] flex items-end justify-start battle-mobile-sprite battle-mobile-attacker-visual battle-stage-hover-zone', battleScene.fxAttackerShake && !battleScene.fxAttackerDefeated ? 'battle-shake-left' : '', isBattleStageVisibleSide('attacker') ? 'battle-stage-visible' : '', battleStagePinnedSide === 'attacker' ? 'battle-stage-pinned' : '']"
         @mouseenter="showBattleStageSide('attacker')"
@@ -17470,8 +18243,8 @@
     <div class="battle-effect-list-dialog w-full max-w-2xl max-h-[82vh] overflow-hidden rounded-3xl border border-sky-300 bg-sky-50 shadow-2xl" @click.stop>
       <div class="battle-effect-list-header flex items-start justify-between gap-3 border-b border-cyan-200/20 px-5 py-4">
         <div>
-          <div class="text-xs font-black tracking-[0.24em] text-sky-600">{{ battleEffectListSide === 'target' ? '敌方亚比' : '我方亚比' }}</div>
-          <h3 class="mt-1 text-xl font-black text-sky-950">{{ battleEffectListSide === 'target' ? battleScene.targetName : battleScene.attackerName }}的效果列表</h3>
+          <div class="text-xs font-black tracking-[0.24em] text-sky-600">{{ elementTowerEffectListUnit ? (elementTowerEffectListUnit.side === 'target' || elementTowerEffectListUnit.side === 'elementTowerTargetAlly' ? '敌方亚比' : '我方亚比') : (battleEffectListSide === 'target' ? '敌方亚比' : '我方亚比') }}</div>
+          <h3 class="mt-1 text-xl font-black text-sky-950">{{ elementTowerEffectListUnit ? elementTowerEffectListUnit.unit.name : (battleEffectListSide === 'target' ? battleScene.targetName : battleScene.attackerName) }}的效果列表</h3>
         </div>
         <button type="button" class="h-9 px-3 rounded-xl border border-sky-500 bg-sky-100 text-slate-950 text-sm font-black" @click.stop="closeBattleEffectList">关闭</button>
       </div>
@@ -17615,13 +18388,13 @@
         获得 <span class="hcoin-display"><img src="./resource/小图标/h币.png" alt="H币"><span>+{{ battleResult.hCoinGain }}</span></span>
       </div>
       <div v-if="battleResult.teamBossSettle" class="rounded-2xl border border-orange-200 bg-orange-50 p-3">
-        <div class="text-sm font-black text-orange-800 mb-1">本次挑战各亚比伤害：</div>
+        <div class="text-sm font-black text-orange-800 mb-1">{{ battleResult.battleSimulationSettle ? '本次模拟各亚比伤害：' : '本次挑战各亚比伤害：' }}</div>
         <div v-for="(row, idx) in (battleResult.teamBossDamageByPet || [])" :key="'tbd_'+(row.id || idx)" class="flex items-center gap-2 py-1 border-t border-orange-100 first:border-t-0">
           <img :src="row.image" @error="withFallback" class="w-9 h-9 object-contain rounded-lg border border-slate-200 bg-white shrink-0">
           <span class="min-w-0 flex-1 text-sm font-black text-slate-800 truncate">{{ row.name }}</span>
           <span class="text-sm font-black text-orange-700">{{ row.damage }}</span>
         </div>
-        <div class="mt-2 pt-2 border-t border-orange-200 text-sm font-black text-orange-800">本次挑战总伤害：{{ battleResult.teamBossDamage }}</div>
+        <div class="mt-2 pt-2 border-t border-orange-200 text-sm font-black text-orange-800">{{ battleResult.battleSimulationSettle ? '本次模拟总伤害：' : '本次挑战总伤害：' }}{{ battleResult.teamBossDamage }}</div>
       </div>
       <div v-if="battleResult.expMultiplier > 1" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-black text-emerald-800">
         经验倍率：本场经验 ×{{ battleResult.expMultiplier }}

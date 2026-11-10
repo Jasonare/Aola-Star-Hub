@@ -68,6 +68,14 @@ const STATIC_RESOURCE_PREFIXES = [
   "resource/time-tunnel-environments/",
   "resource/type/",
   "resource/type-transparent/",
+  "resource/元素塔按钮.png",
+  "resource/元素塔背景.png",
+  "resource/水元素石.png",
+  "resource/火元素石.png",
+  "resource/木元素石.png",
+  "resource/土元素石.png",
+  "resource/电元素石.png",
+  "resource/冰元素石.png",
   "resource/ui/",
   "vendor/",
   "resource/地台boss/",
@@ -75,6 +83,8 @@ const STATIC_RESOURCE_PREFIXES = [
   "resource/提升/"
 ];
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
+const HOME_ONLINE_TTL_MS = 90 * 1000;
+const HOME_ONLINE_DIR = path.join(DATA_DIR, "online-players");
 const PORT = Number(process.env.PORT) || 3030;
 const sessions = new Map();
 
@@ -454,7 +464,7 @@ const authHeaders = (token) => ({
 
 const createSession = (user) => {
   const token = crypto.randomBytes(32).toString("hex");
-  sessions.set(token, { userId: user.id, expiresAt: Date.now() + SESSION_TTL_MS });
+  sessions.set(token, { userId: user.id, expiresAt: Date.now() + SESSION_TTL_MS, lastSeenAt: Date.now() });
   return token;
 };
 
@@ -1045,8 +1055,99 @@ const currentUser = (req) => {
     return null;
   }
   session.expiresAt = Date.now() + SESSION_TTL_MS;
+  session.lastSeenAt = Date.now();
   const db = usersDb();
-  return db.users.find((u) => u.id === session.userId) || null;
+  const user = db.users.find((u) => u.id === session.userId) || null;
+  updateOnlinePresence(user);
+  return user;
+};
+
+const onlineUsers = () => {
+  const now = Date.now();
+  const db = usersDb();
+  const usersById = new Map(db.users.map((user) => [String(user.id), user]));
+  const seen = new Set();
+  const result = [];
+  ensureDir(HOME_ONLINE_DIR);
+  let entries = [];
+  try { entries = fs.readdirSync(HOME_ONLINE_DIR); } catch {}
+  entries.forEach((entry) => {
+    if (!entry.endsWith(".json")) return;
+    const file = path.join(HOME_ONLINE_DIR, entry);
+    const presence = readJsonFile(file, null);
+    const userId = String(presence && presence.userId || "");
+    const lastSeenAt = Number(presence && presence.lastSeenAt || 0);
+    if (!userId || now - lastSeenAt > HOME_ONLINE_TTL_MS) {
+      try { fs.unlinkSync(file); } catch {}
+      return;
+    }
+    const user = usersById.get(userId);
+    if (!user || seen.has(userId)) return;
+    seen.add(userId);
+    result.push({
+      ...publicUser(user),
+      position: sanitizeOnlinePlayerPosition(presence.position),
+      outfitLayers: sanitizeOnlinePlayerLayers(presence.outfitLayers)
+    });
+  });
+  sessions.forEach((session, token) => {
+    if (!session || now > Number(session.expiresAt) || now - Number(session.lastSeenAt || 0) > HOME_ONLINE_TTL_MS || seen.has(String(session.userId))) {
+      if (!session || now > Number(session.expiresAt) || now - Number(session.lastSeenAt || 0) > HOME_ONLINE_TTL_MS) sessions.delete(token);
+      return;
+    }
+    const user = usersById.get(String(session.userId));
+    if (!user) return;
+    seen.add(String(user.id));
+    result.push(publicUser(user));
+  });
+  return result;
+};
+
+const sanitizeOnlinePlayerPosition = (value) => {
+  if (!value || typeof value !== "object") return null;
+  const x = Number(value.x);
+  const y = Number(value.y);
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+  return {
+    x: Math.max(10, Math.min(90, x)),
+    y: Math.max(18, Math.min(94, y))
+  };
+};
+
+const sanitizeOnlinePlayerLayers = (value) => {
+  if (!Array.isArray(value)) return [];
+  return value.slice(0, 64).map((layer) => {
+    if (!layer || typeof layer !== "object") return null;
+    const imageSrc = String(layer.imageSrc || "").trim();
+    if (!imageSrc || imageSrc.length > 512 || !imageSrc.startsWith("./resource/")) return null;
+    const numberOrDefault = (raw, fallback) => Number.isFinite(Number(raw)) ? Number(raw) : fallback;
+    return {
+      imageSrc,
+      z: numberOrDefault(layer.z, 0),
+      l: numberOrDefault(layer.l, 0),
+      t: numberOrDefault(layer.t, 0),
+      w: Math.max(0, numberOrDefault(layer.w, 100))
+    };
+  }).filter(Boolean);
+};
+
+const updateOnlinePresence = (user, snapshot = {}) => {
+  if (!user || !user.id) return;
+  const userId = String(user.id);
+  const file = path.join(HOME_ONLINE_DIR, `${encodeURIComponent(userId)}.json`);
+  try {
+    const previous = readJsonFile(file, {}) || {};
+    const hasPosition = Object.prototype.hasOwnProperty.call(snapshot, "position");
+    const hasOutfitLayers = Object.prototype.hasOwnProperty.call(snapshot, "outfitLayers");
+    const position = hasPosition
+      ? sanitizeOnlinePlayerPosition(snapshot.position)
+      : sanitizeOnlinePlayerPosition(previous.position);
+    const outfitLayers = hasOutfitLayers
+      ? sanitizeOnlinePlayerLayers(snapshot.outfitLayers)
+      : sanitizeOnlinePlayerLayers(previous.outfitLayers);
+    ensureDir(HOME_ONLINE_DIR);
+    fs.writeFileSync(file, JSON.stringify({ userId, lastSeenAt: Date.now(), position, outfitLayers }), "utf8");
+  } catch {}
 };
 
 const readBody = (req) => new Promise((resolve, reject) => {
@@ -1836,6 +1937,7 @@ const eliteTournamentPetSnapshot = (pet, index) => ({
   extraSkills: Array.isArray(pet && pet.extraSkills) ? pet.extraSkills.map((name) => safeTeamText(name, 64)).filter(Boolean).slice(0, 8) : [],
   equippedItemId: safeTeamText(pet && pet.equippedItemId, 80),
   equippedTraitKey: safeTeamText(pet && pet.equippedTraitKey, 80),
+  elementStoneId: ["element_stone_wood", "element_stone_water", "element_stone_fire", "element_stone_earth", "element_stone_ice", "element_stone_electric"].includes(String(pet && pet.elementStoneId || "")) ? pet.elementStoneId : "",
   skinKey: safeTeamText(pet && pet.skinKey, 80),
   qixingSeal: pet && pet.qixingSeal && typeof pet.qixingSeal === "object" ? pet.qixingSeal : {}
 });
@@ -2005,6 +2107,7 @@ const applyEliteTournamentForcedSwitch = (snapshot, side, petId) => {
   snapshot[`${prefix}State`] = unit.battleState && typeof unit.battleState === "object" ? unit.battleState : {};
   snapshot[`${prefix}Skills`] = Array.isArray(unit.skills) ? unit.skills : [];
   snapshot[`${prefix}BattleItemId`] = safeTeamText(unit.battleItemId, 80);
+  snapshot[`${prefix}ElementStoneId`] = safeTeamText(unit.elementStoneId, 80);
   snapshot[`${prefix}QixingSealLevel`] = Math.max(1, safeNonNegInt(unit.qixingSealLevel, 1));
   snapshot[`${prefix}QixingSealTraitKey`] = safeTeamText(unit.qixingSealTraitKey, 80);
   snapshot[`fx${upper}Defeated`] = false;
@@ -2258,6 +2361,21 @@ const handleApi = async (req, res) => {
     if (req.method === "GET" && req.url === "/api/auth/me") {
       const user = currentUser(req);
       return sendJson(res, 200, { ok: true, user: user ? publicUser(user) : null });
+    }
+    if (req.method === "POST" && pathname === "/api/online-players") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      const body = await readBody(req);
+      const snapshot = {};
+      if (body && Object.prototype.hasOwnProperty.call(body, "position")) snapshot.position = body.position;
+      if (body && Object.prototype.hasOwnProperty.call(body, "outfitLayers")) snapshot.outfitLayers = body.outfitLayers;
+      updateOnlinePresence(user, snapshot);
+      return sendJson(res, 200, { ok: true, players: onlineUsers() });
+    }
+    if (req.method === "GET" && pathname === "/api/online-players") {
+      const user = requireUser(req, res);
+      if (!user) return;
+      return sendJson(res, 200, { ok: true, players: onlineUsers() });
     }
     if (req.method === "GET" && pathname === "/api/mid-autumn/state") {
       const user = requireUser(req, res);

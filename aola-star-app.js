@@ -199,6 +199,11 @@ const LOGIN_LOADING_SLIDE_SRCS = [
 const RELEASE_NOTES_V0120 = {
   title: "Aola Star Hub-debug-V0.12.0版本更新内容：",
   items: [
+    "亚比背包新增配队功能，支持多队配置；",
+    "玩家角色支持显示在主页面；",
+    "亚比动画清晰度全面优化；",
+    "新增副本元素塔以及元素石兑换入口；",
+    "新增对战模拟功能，支持自定义配置；",
     "图鉴开放到2113；",
     "版本BOSS圣域·幻极、影武王登场；",
     "新增BOSS：圣域·炎魔将、圣域·赫提、圣域·火花龙、疾影侠x；",
@@ -2170,6 +2175,55 @@ const STUDY_BATTLEFIELDS = [
   { key: "speed", label: "速度", guardianName: "毛毛球" }
 ];
 const TIME_TUNNEL_OPEN_MAX_FLOOR = 55;
+const ELEMENT_TOWER_FLOORS = [
+  { floor: 1, enemies: [{ dexId: 3 }, { dexId: 6 }] },
+  { floor: 2, enemies: [{ dexId: 9 }, { dexId: 63 }] },
+  { floor: 3, enemies: [{ dexId: 87 }, { dexId: 90 }] },
+  { floor: 4, enemies: [{ dexId: 93 }, { dexId: 96 }] },
+  { floor: 5, enemies: [{ dexId: 99 }, { dexId: 108 }] },
+  { floor: 6, enemies: [{ dexId: 472 }, { dexId: 469 }] },
+  { floor: 7, enemies: [{ dexId: 278 }, { dexId: 290 }] },
+  { floor: 8, enemies: [{ dexId: 105 }, { dexId: 111 }] },
+  { floor: 9, enemies: [{ dexId: 731 }, { dexId: 728 }] },
+  { floor: 10, enemies: [{ dexId: 1122 }, { dexId: 1124 }] }
+];
+const ELEMENT_TOWER_FRAGMENT_ITEM_ID = "element_tower_fragment";
+const ELEMENT_STONES = [
+  { id: "element_stone_wood", element: "木系", name: "木元素石" },
+  { id: "element_stone_water", element: "水系", name: "水元素石" },
+  { id: "element_stone_fire", element: "火系", name: "火元素石" },
+  { id: "element_stone_earth", element: "土系", name: "土元素石" },
+  { id: "element_stone_ice", element: "冰系", name: "冰元素石" },
+  { id: "element_stone_electric", element: "电系", name: "电元素石" }
+];
+const ELEMENT_STONE_BY_ID = new Map(ELEMENT_STONES.map((stone) => [stone.id, stone]));
+const ELEMENT_TOWER_MAX_FLOOR = ELEMENT_TOWER_FLOORS.length;
+const ELEMENT_TOWER_DAILY_ELEMENT_COUNT = 3;
+const ELEMENT_TOWER_BOSS_HP = 40000;
+const ELEMENT_TOWER_BOSS_LEVEL = 150;
+const ELEMENT_TOWER_BOSS_DAMAGE_REDUCTION = 0.5;
+const ELEMENT_TOWER_BOSS_DAMAGE_BOOST = 0.4;
+const ELEMENT_TOWER_BOSS_ABILITY_BOOST = 0.8;
+const ELEMENT_TOWER_BOSS_TALENT = { hp: 0, atk: 62, def: 62, spAtk: 62, spDef: 62, speed: 62 };
+const ELEMENT_TOWER_BOSS_STUDY = { hp: 0, atk: 102, def: 102, spAtk: 102, spDef: 102, speed: 102 };
+const ELEMENT_TOWER_SHURA_DEX_ID = 731;
+const ELEMENT_TOWER_SHURA_LEVEL = 100;
+const ELEMENT_TOWER_SHURA_DAMAGE_REDUCTION = 0.3;
+const ELEMENT_TOWER_SHURA_DAMAGE_BOOST = 0.3;
+const ELEMENT_TOWER_SHURA_ABILITY_BOOST = 0.6;
+const ELEMENT_TOWER_SHURA_TALENT = { hp: 0, atk: 62, def: 62, spAtk: 62, spDef: 62, speed: 62 };
+const ELEMENT_TOWER_SHURA_STUDY = { hp: 0, atk: 102, def: 102, spAtk: 102, spDef: 102, speed: 102 };
+const ELEMENT_TOWER_SHURA_SKILL_WEIGHTS = [
+  { name: "五色光环", weight: 0.25 },
+  { name: "战魂之怒", weight: 0.3 },
+  { name: "修罗流光斩", weight: 0.3 },
+  { name: "明镜止水", weight: 0.15 }
+];
+const elementTowerPetAllowed = (pet, elements) => {
+  const allowed = Array.isArray(elements) ? elements.map(normalizeElementName).filter(Boolean) : [];
+  if (!pet || allowed.length === 0) return false;
+  return allowed.includes(normalizeElementName(pet.element)) || allowed.includes(normalizeElementName(pet.subElement));
+};
 const TIME_TUNNEL_ENHANCED_FLOORS = new Set([
   11, 12, 13, 14,
   16, 17, 18, 19,
@@ -3268,12 +3322,33 @@ const clearBattleFloatTextIfExpired = (scene, force = false) => {
   scene.comboTotalOnTarget = "";
   scene.comboTotalDelayOnAttacker = 0;
   scene.comboTotalDelayOnTarget = 0;
+  if (scene.elementTowerValueFxByUnit && typeof scene.elementTowerValueFxByUnit === "object") {
+    if (force) scene.elementTowerValueFxByUnit = {};
+    else Object.keys(scene.elementTowerValueFxByUnit).forEach((id) => {
+      const entry = scene.elementTowerValueFxByUnit[id];
+      if (!entry || Date.now() >= (Number(entry.until) || 0)) delete scene.elementTowerValueFxByUnit[id];
+    });
+  }
   scene._floatTextUntil = 0;
   if (scene._floatTextTimer) {
     clearTimeout(scene._floatTextTimer);
     scene._floatTextTimer = null;
   }
   return true;
+};
+const recordElementTowerValueFx = (scene, unitId, kind, value, tags = null, hits = null) => {
+  if (!scene || scene.mode !== "elementTower" || !unitId || !kind || value === undefined || value === null || value === "") return;
+  if (!scene.elementTowerValueFxByUnit || typeof scene.elementTowerValueFxByUnit !== "object") scene.elementTowerValueFxByUnit = {};
+  const entry = scene.elementTowerValueFxByUnit[unitId] || { damage: "", damageTags: [], heal: "", pp: "", seq: 0, until: 0 };
+  entry[kind] = String(value);
+  if (kind === "damage") {
+    entry.damageTags = Array.isArray(tags) ? tags.filter(Boolean) : [];
+    entry.comboHits = Array.isArray(hits) ? hits.slice() : [];
+  }
+  entry.seq = (Number(entry.seq) || 0) + 1;
+  entry.until = Date.now() + battleSceneDelayMs(scene, BATTLE_FLOAT_TEXT_DURATION_MS_GLOBAL);
+  scene.elementTowerValueFxByUnit[unitId] = entry;
+  markBattleFloatText(scene);
 };
     const showBattleActionNotice = (scene, side, text) => {
   if (!scene || !text) return;
@@ -4283,7 +4358,14 @@ const applyStatusTurns = (state, status, turns, scene = null, side = "") => {
 const parseSkillElement = (typeText) => parseSkillTypeMeta(typeText).element || "未知系";
 const getSkillBattleElement = (skill) => {
   const hit = parseSkillEffects(skill).find((e) => normalize(e && e.kind) === "overrideElement" && normalizeElementName(e && e.element));
-  return hit ? normalizeElementName(hit.element) : parseSkillElement(skill && skill.type);
+  if (hit) return normalizeElementName(hit.element);
+  const element = parseSkillElement(skill && skill.type);
+  return element !== "未知系" ? element : normalizeElementName(skill && skill.element) || element;
+};
+const elementStoneDamageFactor = (scene, side, skillElement) => {
+  const id = normalize(side === "target" ? scene && scene.targetElementStoneId : scene && scene.attackerElementStoneId);
+  const stone = ELEMENT_STONE_BY_ID.get(id);
+  return stone && normalizeElementName(stone.element) === normalizeElementName(skillElement) ? 1.25 : 1;
 };
 const parseFixedDamageAmount = (skill, actorLevel = 1) => {
   const desc = normalize(skill && skill.desc).replace(/％/g, "%");
@@ -4436,7 +4518,17 @@ const getBattleAbilityStat = (scene, side, key, options = {}) => {
   }
   return val;
 };
-const getBattleActionSpeed = (scene, side) => getBattleAbilityStat(scene, side, "speed");
+const getBattleActionSpeed = (scene, side) => {
+  if (scene && scene.mode === "elementTower" && (side === "elementTowerAlly" || side === "elementTowerTargetAlly")) {
+    const unit = side === "elementTowerAlly" ? scene.elementTowerAlly : scene.elementTowerEnemyPartner;
+    const state = unit && unit.battleState ? unit.battleState : createBattleState();
+    const base = Math.max(1, Number(unit && unit.ability && unit.ability.speed) || 1);
+    const boost = Math.max(0, Number(state.baseBoost && state.baseBoost.speed) || 0);
+    const stage = Math.floor(Number(state.stages && state.stages.speed) || 0);
+    return Math.max(1, Math.floor((base + boost) * stageMultiplier(stage)));
+  }
+  return getBattleAbilityStat(scene, side === "target" ? "target" : "attacker", "speed");
+};
 const hasStageGuard = (scene, side, delta) => {
   const state = getSideState(scene, side);
   return (state.timedEffects || []).some((e) => {
@@ -4688,6 +4780,7 @@ const transferStatusesByMode = (scene, fromSide, toSide, status = "all") => {
 };
 const applyInstantKoToSide = (scene, side) => {
   if (!scene) return false;
+  if (scene.mode === "elementTower" && side === "target") return false;
   const hpKey = side === "attacker" ? "attackerHp" : "targetHp";
   const before = Math.max(0, Number(scene[hpKey]) || 0);
   if (before <= 0) return false;
@@ -4782,6 +4875,18 @@ const battleUnitIdleBattleImage = (unit) => {
   const visualDexId = Number(unit.battleVisualDexId) || Number(unit.originalBattleVisualDexId) || Number(unit.dexId) || Number(unit.baseDexId) || 0;
   return petBattleIdleImage(visualDexId, "attacker", battleUnitBattleImage(unit), battleUnitUsesDarkGuardianAwakenedAnimation(unit));
 };
+    const elementTowerUnitIdleImage = (unit, side) => {
+      if (!unit) return "";
+      if (side === "target" || side === "elementTowerTargetAlly") {
+        return petBattleIdleImage(
+          Number(unit.battleVisualDexId) || Number(unit.dexId) || 0,
+          "target",
+          battleUnitBattleImage(unit),
+          battleUnitUsesDarkGuardianAwakenedAnimation(unit)
+        );
+      }
+      return battleUnitIdleBattleImage(unit);
+    };
 const battleSkinConfigForSide = (scene, side) => {
   if (!scene) return null;
   const safeSide = side === "target" ? "target" : "attacker";
@@ -4800,6 +4905,7 @@ const applyBattleUnitToAttackerSide = (scene, unit) => {
     scene._attackerTransformTimer = null;
   }
   scene.currentAttackerId = unit.id;
+  if (scene.mode === "elementTower" && Array.isArray(scene.team) && scene.team.some((member) => member && member.id === unit.id)) scene.elementTowerPlayerId = unit.id;
   scene.attackerDexId = Number(unit.dexId) || 0;
   scene.attackerBaseDexId = Number(unit.baseDexId) || Number(unit.dexId) || 0;
   scene.attackerName = unit.name;
@@ -4809,6 +4915,7 @@ const applyBattleUnitToAttackerSide = (scene, unit) => {
   scene.attackerElement = unit.element;
   scene.attackerSubElement = unit.subElement;
   scene.attackerBattleItemId = normalize(unit.battleItemId);
+  scene.attackerElementStoneId = normalize(unit.elementStoneId);
   scene.attackerQixingSealLevel = normalize(unit.battleItemId) === QIXING_SEAL_ITEM_ID ? clamp(Math.floor(Number(unit.qixingSealLevel) || 1), 1, QIXING_SEAL_MAX_LEVEL) : 1;
   scene.attackerQixingSealTraitKey = normalize(unit.qixingSealTraitKey);
   scene.attackerBattleVisualDexId = Number(unit.battleVisualDexId) || Number(unit.dexId) || 0;
@@ -4854,6 +4961,7 @@ const applyBattleUnitToTargetSide = (scene, unit) => {
   scene.targetElement = unit.element;
   scene.targetSubElement = unit.subElement;
   scene.targetBattleItemId = normalize(unit.battleItemId);
+  scene.targetElementStoneId = normalize(unit.elementStoneId);
   scene.targetQixingSealLevel = normalize(unit.battleItemId) === QIXING_SEAL_ITEM_ID ? clamp(Math.floor(Number(unit.qixingSealLevel) || 1), 1, QIXING_SEAL_MAX_LEVEL) : 1;
   scene.targetQixingSealTraitKey = normalize(unit.qixingSealTraitKey);
   scene.targetAbility = unit.ability;
@@ -4994,6 +5102,10 @@ const damageSideByMaxHpRatio = (scene, side, ratio) => {
   scene[hpKey] = Math.max(0, before - damage);
   const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
   recordBattleDamageTakenThisTurn(scene, side, actual);
+  if (actual > 0 && scene.mode === "elementTower") {
+    const unitId = side === "attacker" ? scene.currentAttackerId : scene.currentTargetId;
+    recordElementTowerValueFx(scene, unitId, "damage", `-${actual}`);
+  }
   if (side === "attacker" && Array.isArray(scene.team)) {
     const idx = scene.team.findIndex((u) => u && u.id === scene.currentAttackerId);
     if (idx >= 0) scene.team[idx].hp = clamp(Number(scene.attackerHp) || 0, 0, Number(scene.team[idx].maxHp) || 1);
@@ -5009,28 +5121,96 @@ const healSideByFlatAmount = (scene, side, amount) => {
   const maxHp = Math.max(1, Number(scene && scene[maxHpKey]) || 1);
   const val = Math.max(1, Math.floor(Number(amount) || 0));
   scene[hpKey] = clamp(before + val, 0, maxHp);
+  const actual = Math.max(0, (Number(scene[hpKey]) || 0) - before);
+  if (actual > 0 && scene.mode === "elementTower") {
+    const unitId = side === "attacker" ? scene.currentAttackerId : scene.currentTargetId;
+    recordElementTowerValueFx(scene, unitId, "heal", `+${actual}`);
+  }
   if (side === "attacker" && Array.isArray(scene.team)) {
     const idx = scene.team.findIndex((u) => u && u.id === scene.currentAttackerId);
     if (idx >= 0) scene.team[idx].hp = clamp(Number(scene.attackerHp) || 0, 0, Number(scene.team[idx].maxHp) || 1);
   }
   syncBattleUiHpForSide(scene, side);
-  return { shown: val, actual: Math.max(0, (Number(scene[hpKey]) || 0) - before) };
+  return { shown: val, actual };
 };
 const battleSkillListForSide = (scene, side) => (
   side === "attacker" ? (Array.isArray(scene.skills) ? scene.skills : []) : (Array.isArray(scene.targetSkills) ? scene.targetSkills : [])
 );
+const captureElementTowerBattleSide = (scene, side) => {
+  const keys = side === "attacker"
+    ? ["currentAttackerId", "attackerDexId", "attackerBaseDexId", "attackerName", "attackerImage", "attackerStaticImage", "attackerLevel", "attackerElement", "attackerSubElement", "attackerBattleItemId", "attackerElementStoneId", "attackerQixingSealLevel", "attackerQixingSealTraitKey", "attackerBattleVisualDexId", "attackerOriginalBattleVisualDexId", "attackerSkinBattleVisualDexId", "attackerSkinActivated", "attackerSkinKey", "attackerPreSkinDexId", "attackerTransformingSkin", "attackerTransformFx", "attackerTransformSeq", "attackerTransformUnitId", "attackerAbility", "attackerHp", "attackerMaxHp", "uiAttackerHp", "uiAttackerMaxHp", "attackerState", "skills"]
+    : ["currentTargetId", "targetDexId", "targetName", "targetImage", "targetStaticImage", "targetLevel", "targetElement", "targetSubElement", "targetBattleItemId", "targetElementStoneId", "targetQixingSealLevel", "targetQixingSealTraitKey", "targetAbility", "targetHp", "targetMaxHp", "uiTargetHp", "uiTargetMaxHp", "targetState", "targetSkills"];
+  return Object.fromEntries(keys.map((key) => [key, scene && scene[key]]));
+};
+const restoreElementTowerBattleSide = (scene, snapshot) => {
+  if (!scene || !snapshot) return;
+  Object.entries(snapshot).forEach(([key, value]) => { scene[key] = value; });
+};
+const elementTowerSideUnits = (scene, side) => {
+  if (!scene || scene.mode !== "elementTower") return [];
+  if (side === "attacker") {
+    const active = (scene.team || []).find((unit) => unit && String(unit.id) === String(scene.currentAttackerId))
+      || (scene.team || []).find((unit) => unit && Number(unit.hp) > 0);
+    return [active, scene.elementTowerAlly].filter((unit) => unit && Number(unit.hp) > 0);
+  }
+  return [scene.targetTeam && scene.targetTeam[0], scene.elementTowerEnemyPartner]
+    .filter((unit) => unit && Number(unit.hp) > 0);
+};
+const syncElementTowerUnitFromProjection = (scene, side, unit) => {
+  if (!scene || !unit) return;
+  if (side === "attacker") {
+    unit.hp = clamp(Number(scene.attackerHp) || 0, 0, Number(unit.maxHp) || 1);
+    unit.battleState = normalizeBattleState(scene.attackerState);
+    unit.skills = Array.isArray(scene.skills) ? scene.skills : unit.skills;
+    if (String(unit.id) === String(scene.currentAttackerId)) syncActivePetFromBattleScene(scene);
+  } else {
+    unit.hp = clamp(Number(scene.targetHp) || 0, 0, Number(unit.maxHp) || 1);
+    unit.battleState = normalizeBattleState(scene.targetState);
+    unit.skills = Array.isArray(scene.targetSkills) ? scene.targetSkills : unit.skills;
+    if (String(unit.id) === String(scene.currentTargetId)) syncPvpTargetFromBattleScene(scene);
+  }
+};
+const withElementTowerProjectedUnit = (scene, side, unit, callback) => {
+  if (!scene || !unit || typeof callback !== "function") return undefined;
+  const snapshot = side === "attacker" ? captureElementTowerBattleSide(scene, "attacker") : captureElementTowerBattleSide(scene, "target");
+  if (side === "attacker") applyBattleUnitToAttackerSide(scene, unit);
+  else applyBattleUnitToTargetSide(scene, unit);
+  let result;
+  try { result = callback(); } finally {
+    syncElementTowerUnitFromProjection(scene, side, unit);
+    restoreElementTowerBattleSide(scene, snapshot);
+  }
+  return result;
+};
 const changeSideAllSkillPp = (scene, side, amount) => {
   const delta = Math.floor(Number(amount) || 0);
   if (!delta) return 0;
   let changed = 0;
-  battleSkillListForSide(scene, side).forEach((s) => {
+  const units = scene && scene.mode === "elementTower" ? elementTowerSideUnits(scene, side) : [];
+  const lists = scene && scene.mode === "elementTower"
+    ? units.map((unit) => Array.isArray(unit.skills) ? unit.skills : [])
+    : [battleSkillListForSide(scene, side)];
+  const changedByUnit = new Map();
+  lists.forEach((list, index) => list.forEach((s) => {
     if (!s) return;
     const before = Math.max(0, Number(s.pp) || 0);
     const max = Math.max(before, Number(s.ppMax) || before || 0);
     const next = delta > 0 ? Math.min(max, before + delta) : Math.max(0, before + delta);
     s.pp = next;
     changed += Math.abs(next - before);
-  });
+    if (units[index]) changedByUnit.set(units[index].id, (changedByUnit.get(units[index].id) || 0) + Math.abs(next - before));
+  }));
+  if (scene && scene.mode === "elementTower") {
+    changedByUnit.forEach((unitChanged, unitId) => {
+      if (unitChanged > 0) recordElementTowerValueFx(scene, unitId, "pp", `PP${delta > 0 ? "+" : "-"}${unitChanged}`);
+    });
+    const live = side === "attacker" ? scene.currentAttackerId : scene.currentTargetId;
+    const active = elementTowerSideUnits(scene, side).find((unit) => String(unit.id) === String(live));
+    if (active) {
+      if (side === "attacker") scene.skills = active.skills;
+      else scene.targetSkills = active.skills;
+    }
+  }
   return changed;
 };
 const addOnDamagedEffect = (scene, side, effect) => {
@@ -5862,6 +6042,20 @@ const buildTimedEffectBadges = (scene, side) => {
   if (shieldHeartSource > 0) {
     fxBadges.unshift({ key: "shield_heart_source", label: "圣盾心源", turns: 1, durationLabel: "当前数值", desc: `当前拥有${shieldHeartSource}点圣盾心源。`, tone: "buff" });
   }
+  const elementStoneId = normalize(side === "target" ? scene && scene.targetElementStoneId : scene && scene.attackerElementStoneId);
+  const elementStone = ELEMENT_STONE_BY_ID.get(elementStoneId);
+  const sideSkills = side === "target" ? scene && scene.targetSkills : scene && scene.skills;
+  if (elementStone && Array.isArray(sideSkills) && sideSkills.some((skill) => normalizeElementName(getSkillBattleElement(skill)) === normalizeElementName(elementStone.element))) {
+    const elementName = normalizeElementName(elementStone.element);
+    fxBadges.unshift({
+      key: `element_stone_damage_${elementStoneId}`,
+      label: `${elementName}系技能增伤25%`,
+      turns: 1,
+      durationLabel: "整场有效",
+      desc: `装备${elementStone.name}：${elementName}系技能伤害提升25%。`,
+      tone: "buff"
+    });
+  }
   const sacredArmor = (sideState.onDamagedEffects || []).find((effect) => normalize(effect && effect.kind) === "healFlat"
     && normalize(effect && effect.trigger) === "attacked" && Number(effect && effect.turns) > 0);
   if (sacredArmor) {
@@ -5890,7 +6084,7 @@ const buildTimedEffectBadges = (scene, side) => {
     }
   }
   if (side === "target") {
-    const challengeRatio = clamp(Number(scene && scene.targetChallengeDamageReductionRatio) || 0, 0, 0.95);
+    const challengeRatio = clamp(Number(scene && scene.targetChallengeDamageReductionRatio) || 0, 0, scene && scene.guardianMeta && scene.guardianMeta.simulationBoss ? 2 : 0.95);
     if (challengeRatio > 0) {
       const pct = Math.round(challengeRatio * 100);
       const weeklyMeta = scene && scene.guardianMeta && typeof scene.guardianMeta === "object" ? scene.guardianMeta : {};
@@ -6010,7 +6204,8 @@ const getDamageReductionFactor = (scene, side, atkKind = "all") => {
   const state = getSideState(scene, side);
   if (hasBattleTimedEffectKind(scene, side, "shengyuShengwuBatiState")) return 0;
   const hasChallengeResistanceUp = side === "attacker" && hasChallengeRoadRandomBuff(scene, "ally_resistance_up");
-  const challengeBaseRatio = side === "target" ? clamp(Number(scene && scene.targetChallengeDamageReductionRatio) || 0, 0, 0.95) : 0;
+  const simulationReduction = Boolean(scene && scene.guardianMeta && scene.guardianMeta.simulationBoss);
+  const challengeBaseRatio = side === "target" ? clamp(Number(scene && scene.targetChallengeDamageReductionRatio) || 0, 0, simulationReduction ? 2 : 0.95) : 0;
   const timeTunnelLianglongRatio = getTimeTunnelFloor30LianglongDamageReductionRatio(scene, side);
   const traitKey = side === "attacker" ? scene && scene.attackerQixingSealTraitKey : scene && scene.targetQixingSealTraitKey;
   const traitLevel = side === "attacker" ? scene && scene.attackerQixingSealLevel : scene && scene.targetQixingSealLevel;
@@ -6044,7 +6239,7 @@ const getDamageReductionFactor = (scene, side, atkKind = "all") => {
       }
     }
   });
-  const ratio = clamp(Math.max(challengeBaseRatio, regularRatio) + stackRatio + timeTunnelLianglongRatio, 0, 0.95);
+  const ratio = clamp(Math.max(challengeBaseRatio, regularRatio) + stackRatio + timeTunnelLianglongRatio, 0, simulationReduction ? 1 : 0.95);
   return 1 - ratio;
 };
 const getDamageShieldAmount = (scene, side) => {
@@ -6226,7 +6421,7 @@ const setBattleShengyuDomain = (scene, side, options = {}) => {
     activatedTurn: Math.max(1, Number(scene.turnCount) || 1),
     forceUntilTurn: options.force ? Math.max(1, Math.floor(Number(options.forceUntilTurn) || 0)) : 0
   };
-  if (changed || options.replay) {
+  if (changed || (options.replay && scene.mode !== "elementTower")) {
     scene.shengyuDomainAnimationSeq = Math.max(0, Number(scene.shengyuDomainAnimationSeq) || 0) + 1;
   }
   syncBattleShengyuDomainBuffEffects(scene);
@@ -6953,6 +7148,10 @@ const applyDirectHpDamage = (scene, side, amount) => {
   scene[hpKey] = Math.max(hasLastStandEffect(scene, side) && before > 0 ? 1 : 0, before - damage);
   const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
   recordBattleDamageTakenThisTurn(scene, side, actual);
+  if (actual > 0 && scene.mode === "elementTower") {
+    const unitId = side === "attacker" ? scene.currentAttackerId : scene.currentTargetId;
+    recordElementTowerValueFx(scene, unitId, "damage", `-${actual}`);
+  }
   if (side === "target") recordTeamBossDamage(scene, actual);
   if (side === "attacker" && Array.isArray(scene.team)) {
     syncActivePetFromBattleScene(scene);
@@ -6962,7 +7161,7 @@ const applyDirectHpDamage = (scene, side, amount) => {
   return actual;
 };
 const recordTeamBossDamage = (scene, amount) => {
-  if (!scene || !scene.guardianMeta || (!scene.guardianMeta.teamBoss && !scene.guardianMeta.midAutumnBoss)) return;
+  if (!scene || !scene.guardianMeta || (!scene.guardianMeta.teamBoss && !scene.guardianMeta.midAutumnBoss && !scene.guardianMeta.simulationBoss)) return;
   const actual = Math.max(0, Math.floor(Number(amount) || 0));
   if (actual <= 0) return;
   const isMidAutumnBoss = Boolean(scene.guardianMeta.midAutumnBoss);
@@ -7664,7 +7863,7 @@ const hasDirectDamageSuppressedEffect = (skill) => parseSkillEffects(skill).some
   "drainRemainingHpRatio"
 ].includes(normalize(e && e.kind)));
 const hasDiminishingGateEffect = (skill) => parseSkillEffects(skill).some((e) => normalize(e && e.kind) === "diminishingSuccessGate");
-const isGuardianBossProtectedTarget = (scene, side) => scene && (scene.mode === "guardian" || scene.mode === "boss" || scene.mode === "weeklyBoss" || scene.mode === "timeTunnel") && side === "target";
+const isGuardianBossProtectedTarget = (scene, side) => scene && (scene.mode === "guardian" || scene.mode === "boss" || scene.mode === "weeklyBoss" || scene.mode === "timeTunnel" || scene.mode === "elementTower") && side === "target";
 const isBossLikeProtectedTarget = (scene, side) => scene && side === "target" && (isGuardianBossProtectedTarget(scene, side) || scene.mode === "equipmentDungeon");
 const BOSS_ADJUSTED_STATUS_KEYS = new Set(["poison", "burn", "freeze", "leech", "bind", "weak", "confuse", "curse"]);
 const BOSS_STATUS_CONFLICT_MAP = {
@@ -7684,7 +7883,7 @@ const BOSS_STATUS_STAT_REDUCTION_KEYS = {
   bind: ["spDef"],
   poison: ["def"]
 };
-const isBossAdjustedStatusScene = (scene) => Boolean(scene && (scene.mode === "boss" || scene.mode === "weeklyBoss"));
+const isBossAdjustedStatusScene = (scene) => Boolean(scene && (scene.mode === "boss" || scene.mode === "weeklyBoss" || scene.mode === "elementTower"));
 const canApplyPersistentCurse = (scene, side) => isBossAdjustedStatusScene(scene) && isGuardianBossProtectedTarget(scene, side);
 const canApplyStatusToBossTarget = (scene, side, status) => {
   if (!isGuardianBossProtectedTarget(scene, side)) return true;
@@ -7838,7 +8037,7 @@ const calcBattleDirectDamage = ({
   const traitDamageFactor = normalize(actorSide === "attacker" ? scene && scene.attackerBattleItemId : scene && scene.targetBattleItemId) === QIXING_SEAL_ITEM_ID
     ? 1 + clamp(Number(traitRule.damageBonus) || 0, 0, 9)
     : 1;
-  return Math.max(1, Math.floor(one * reduceFactor * traitDamageFactor));
+  return Math.max(1, Math.floor(one * reduceFactor * traitDamageFactor * elementStoneDamageFactor(scene, actorSide, skillElement)));
 };
 const cloneSkillEffectList = (effects) => JSON.parse(JSON.stringify(Array.isArray(effects) ? effects : []));
 const MANUAL_SKILL_EFFECT_OVERRIDES = Object.freeze({
@@ -10838,9 +11037,14 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
   let diminishingGateChecked = false;
   let diminishingGateSuccess = true;
   const chanceFailKeys = new Set();
+  const isElementTowerAdditionalTarget = scene.mode === "elementTower" && Boolean(skill && skill._elementTowerAdditionalTarget);
   effects.forEach((e) => {
     if (scene && scene.ended) return;
     if (!shouldApplySkillEffectByCondition(scene, actor, e)) return;
+    if (isElementTowerAdditionalTarget) {
+      const effectTarget = normalize(e && (e.target || e.to)) || "self";
+      if (effectTarget === "self" || normalize(e && e.kind) === "healFlatTeam") return;
+    }
     if (normalize(e && e.shengyuDomain) && !isBattleShengyuDomainActive(scene, e.shengyuDomain)) return;
     if (normalize(e && e.kind) === "diminishingSuccessGate") {
       if (!diminishingGateChecked) {
@@ -12180,7 +12384,21 @@ const applySkillEffects = (scene, actor, skill, didHit) => {
       const side = e.target === "self" ? actor : (actor === "attacker" ? "target" : "attacker");
       const who = side === "attacker" ? scene.attackerName : scene.targetName;
       const val = Math.max(1, Number(e.amount) || 0);
-      if (side === "attacker" && Array.isArray(scene.team)) {
+      if (scene.mode === "elementTower") {
+        let healedTotal = 0;
+        elementTowerSideUnits(scene, side).forEach((unit) => {
+          const actual = withElementTowerProjectedUnit(scene, side, unit, () => healSideByFlatAmount(scene, side, val).actual) || 0;
+          if (actual > 0) {
+            healedTotal += actual;
+          }
+        });
+        if (healedTotal > 0) {
+          if (side === "attacker") scene.healOnAttacker = `+${healedTotal}`;
+          else scene.healOnTarget = `+${healedTotal}`;
+          markBattleFloatText(scene);
+        }
+        logs.push(`${who}使我方全体回复 ${val} 点体力`);
+      } else if (side === "attacker" && Array.isArray(scene.team)) {
         let healedActive = 0;
         scene.team.forEach((u) => {
           const before = clamp(Number(u.hp) || 0, 0, Number(u.maxHp) || 1);
@@ -13760,6 +13978,7 @@ const applyEndTurnStatus = (scene, side, options = {}) => {
     scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - dmg);
     if (!options.permanent && !(status === "bind" && state.zenDingBindAppliedTurn > 0)) state.statuses[status] = Math.max(0, state.statuses[status] - 1);
     totalDamage += actual;
+    if (actual > 0 && scene.mode === "elementTower") recordElementTowerValueFx(scene, side === "attacker" ? scene.currentAttackerId : scene.currentTargetId, "damage", `-${actual}`);
     if (side === "target") recordTeamBossDamage(scene, actual);
     if (actual > 0) damageStatusTriggered = true;
     if (actual > 0) triggeredStatuses.push({ status, label, damaged: true });
@@ -13858,6 +14077,7 @@ const applyEndTurnStatus = (scene, side, options = {}) => {
     scene[hpKey] = Math.max(0, (Number(scene[hpKey]) || 0) - dmg);
     state.statuses.leech = Math.max(0, state.statuses.leech - 1);
     totalDamage += actual;
+    if (actual > 0 && scene.mode === "elementTower") recordElementTowerValueFx(scene, side === "attacker" ? scene.currentAttackerId : scene.currentTargetId, "damage", `-${actual}`);
     if (side === "target") recordTeamBossDamage(scene, actual);
     if (actual > 0) damageStatusTriggered = true;
     if (actual > 0) triggeredStatuses.push({ status: "leech", label: "寄生", damaged: true });
@@ -13868,6 +14088,7 @@ const applyEndTurnStatus = (scene, side, options = {}) => {
       const healToOpp = Math.min(actual, Math.max(0, (Number(scene[oppMaxHpKey]) || 0) - (Number(scene[oppHpKey]) || 0)));
       scene[oppHpKey] = clamp((Number(scene[oppHpKey]) || 0) + healToOpp, 0, Number(scene[oppMaxHpKey]) || 0);
       if (healToOpp > 0) {
+        if (scene.mode === "elementTower") recordElementTowerValueFx(scene, oppSide === "attacker" ? scene.currentAttackerId : scene.currentTargetId, "heal", `+${healToOpp}`);
         totalHealOpp += healToOpp;
         pushBattleLog(scene, `寄生生效：${actorName}成功被扣取 ${actual}，${oppName}回复 ${healToOpp}`);
       }
@@ -15579,6 +15800,7 @@ createApp({
         equippedOutfitItemIds: ["novice_top", "novice_pants", "novice_shoes", "novice_face", "novice_hair", "novice_headwear"],
         targetLevel: 10,
         timeTunnelMaxClearedFloor: 0,
+        elementTower: { date: "", dailyElements: [], maxFloor: 0 },
         pvpWinCount: 0,
         timeTunnelRewardClaimedFloors: [],
         battleLog: [],
@@ -15725,6 +15947,7 @@ createApp({
           equippedItemInstanceId: normalize(p.equippedItemInstanceId),
           equippedGearId: legacyGearId,
           equippedGearIds,
+          elementStoneId: ELEMENT_STONE_BY_ID.has(normalize(p.elementStoneId)) ? normalize(p.elementStoneId) : "",
           skinKey: PET_SKIN_CONFIG_BY_KEY.has(normalize(p.skinKey)) ? normalize(p.skinKey) : "",
           darkGuardianAwakenedAnimation: (Number(currentDex.dexId) === DARK_GUARDIAN_AWAKENING_STONE_DEX_ID || normalize(currentDex.name) === "黑暗守卫") && Boolean(p.darkGuardianAwakenedAnimation),
           source: normalize(p.source),
@@ -15858,6 +16081,14 @@ createApp({
         source[QIXING_SEAL_ITEM_ID] = 0;
         return source;
       })();
+      const allocatedElementStones = {};
+      activePets.forEach((pet) => {
+        const id = pet.elementStoneId;
+        if (!id) return;
+        const used = allocatedElementStones[id] || 0;
+        if (used >= Math.max(0, Math.floor(Number(items[id]) || 0))) pet.elementStoneId = "";
+        else allocatedElementStones[id] = used + 1;
+      });
       const midAutumnBigMooncakeEarned = Math.max(
         0,
         Math.floor(Number(loaded.midAutumnBigMooncakeEarned) || 0),
@@ -16342,6 +16573,17 @@ createApp({
         selectedPetId: activePets.some((p) => p.id === loaded.selectedPetId) ? loaded.selectedPetId : ((activePets[0] && activePets[0].id) || ""),
         targetLevel: clamp(Number(loaded.targetLevel) || 10, 1, 100),
         timeTunnelMaxClearedFloor: readSavedTimeTunnelMaxClearedFloor(loaded),
+        elementTower: (() => {
+          const source = loaded.elementTower && typeof loaded.elementTower === "object" ? loaded.elementTower : {};
+          const dailyElements = Array.from(new Set((Array.isArray(source.dailyElements) ? source.dailyElements : [])
+            .map(normalizeElementName)
+            .filter((element) => element && element !== "未知系" && element !== "?系" && element !== "普通系" && element !== "毒系" && PET_TYPE_ICON[element]))).slice(0, ELEMENT_TOWER_DAILY_ELEMENT_COUNT);
+          return {
+            date: normalize(source.date),
+            dailyElements,
+            maxFloor: clamp(Math.floor(Number(source.maxFloor) || 0), 0, ELEMENT_TOWER_MAX_FLOOR)
+          };
+        })(),
         pvpWinCount: Math.max(0, Math.floor(Number(loaded.pvpWinCount) || 0)),
         timeTunnelRewardClaimedFloors,
         battleLog: sanitizeBattleLog(loaded.battleLog),
@@ -16431,7 +16673,7 @@ createApp({
     };
     const readSessionMode = () => {
       try {
-        const mode = localStorage.getItem(SESSION_MODE_KEY);
+        const mode = sessionStorage.getItem(SESSION_MODE_KEY);
         return mode === "guest" || mode === "user" ? mode : "";
       } catch {
         return "";
@@ -16439,17 +16681,19 @@ createApp({
     };
     const writeSessionMode = (mode) => {
       try {
-        if (mode) localStorage.setItem(SESSION_MODE_KEY, mode);
-        else localStorage.removeItem(SESSION_MODE_KEY);
+        if (mode) sessionStorage.setItem(SESSION_MODE_KEY, mode);
+        else sessionStorage.removeItem(SESSION_MODE_KEY);
+        localStorage.removeItem(SESSION_MODE_KEY);
       } catch {}
     };
     const readAuthToken = () => {
-      try { return localStorage.getItem(AUTH_TOKEN_KEY) || ""; } catch { return ""; }
+      try { return sessionStorage.getItem(AUTH_TOKEN_KEY) || ""; } catch { return ""; }
     };
     const writeAuthToken = (token) => {
       try {
-        if (token) localStorage.setItem(AUTH_TOKEN_KEY, token);
-        else localStorage.removeItem(AUTH_TOKEN_KEY);
+        if (token) sessionStorage.setItem(AUTH_TOKEN_KEY, token);
+        else sessionStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(AUTH_TOKEN_KEY);
       } catch {}
     };
     const readRememberLogin = () => {
@@ -16528,6 +16772,8 @@ createApp({
     const authReady = ref(false);
     const authUser = ref(null);
     const authUsername = ref("");
+    const homePlayerPosition = ref({ x: 50, y: 58 });
+    const homeInfoCardPlayer = ref(null);
     const authPassword = ref("");
     const authCaptcha = ref("");
     const authError = ref("");
@@ -16557,6 +16803,7 @@ createApp({
     const warehouseSortMode = ref("created");
     const bag2SortMode = ref(false);
     const bag2SortFirstSlotIdx = ref(-1);
+    const activeTeamPresetIdx = ref(-1);
     const showBag2StudyPanel = ref(false);
     const showBag2SkillReplacePanel = ref(false);
     const showBag2AbilitySkillPanel = ref(false);
@@ -16591,6 +16838,8 @@ createApp({
     const battleStagePinnedSide = ref("");
     const battleStageHiddenSides = ref([]);
     const battleEffectListSide = ref("");
+    const elementTowerEffectListUnit = ref(null);
+    const elementTowerStageUnitId = ref("");
     const showChallengeRoadPanel = ref(false);
     const showGuardianPanel = showChallengeRoadPanel;
     const showBossPanel = showChallengeRoadPanel;
@@ -16883,6 +17132,108 @@ createApp({
       { name: "雷霆使者", level: 88 }
     ]);
     const teamMembers = ref([]);
+    const onlinePlayers = ref([]);
+    const onlinePlayersRequestSeq = ref(0);
+    const homePlayerOutfitLayers = ref([]);
+    const HOME_PLAYER_POSITION_KEY = "aola_home_player_position_v1";
+    const homePlayerStorageKey = () => {
+      const userId = normalize(authUser.value && authUser.value.id);
+      const username = normalize(authUser.value && authUser.value.username) || normalize(authUsername.value);
+      return `${HOME_PLAYER_POSITION_KEY}:${userId || username || "guest"}`;
+    };
+    const initializeHomePlayerPosition = () => {
+      const key = homePlayerStorageKey();
+      try {
+        const raw = JSON.parse(localStorage.getItem(key) || "null");
+        if (raw && Number.isFinite(Number(raw.x)) && Number.isFinite(Number(raw.y))) {
+          homePlayerPosition.value = { x: clamp(Number(raw.x), 10, 90), y: clamp(Number(raw.y), 18, 94) };
+          return;
+        }
+      } catch {}
+      const next = { x: 20 + Math.random() * 60, y: 34 + Math.random() * 44 };
+      homePlayerPosition.value = next;
+      try { localStorage.setItem(key, JSON.stringify(next)); } catch {}
+    };
+    const publishOnlinePlayerSnapshot = async () => {
+      if (!authUser.value || playMode.value !== "user") return false;
+      try {
+        await apiJson("/api/online-players", {
+          method: "POST",
+          body: JSON.stringify({
+            position: homePlayerPosition.value,
+            outfitLayers: homePlayerOutfitLayers.value
+          })
+        });
+        return true;
+      } catch {
+        return false;
+      }
+    };
+    const refreshOnlinePlayers = async () => {
+      const requestSeq = onlinePlayersRequestSeq.value + 1;
+      onlinePlayersRequestSeq.value = requestSeq;
+      if (!authUser.value || playMode.value !== "user") {
+        onlinePlayers.value = [];
+        return false;
+      }
+      try {
+        const data = await apiJson("/api/online-players", {
+          method: "POST",
+          body: JSON.stringify({
+            position: homePlayerPosition.value,
+            outfitLayers: homePlayerOutfitLayers.value
+          })
+        });
+        if (requestSeq !== onlinePlayersRequestSeq.value || !authUser.value || playMode.value !== "user") return false;
+        onlinePlayers.value = Array.isArray(data && data.players) ? data.players : [];
+        return true;
+      } catch {
+        return false;
+      }
+    };
+    const homeOtherPlayers = computed(() => {
+      const myId = normalize(authUser.value && authUser.value.id);
+      const myName = normalize(authUser.value && authUser.value.username) || normalize(authUsername.value);
+      const hashPosition = (value, offset) => {
+        const text = normalize(value) || "player";
+        let hash = 0;
+        for (let i = 0; i < text.length; i++) hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0;
+        return 18 + (Math.abs(hash + offset) % 64);
+      };
+      const merged = [];
+      const seen = new Set();
+      (Array.isArray(onlinePlayers.value) ? onlinePlayers.value : []).forEach((member) => {
+        const id = normalize(member && (member.userId || member.id));
+        const name = normalize(member && (member.name || member.username));
+        const key = id || name;
+        if (!member || !key || seen.has(key)) return;
+        seen.add(key);
+        merged.push(member);
+      });
+      return merged
+        .filter((member) => {
+          const memberId = normalize(member && (member.userId || member.id));
+          const memberName = normalize(member && (member.name || member.username));
+          return member && (!myId || !memberId || memberId !== myId) && (!myName || !memberName || memberName !== myName);
+        })
+        .slice(0, 8)
+        .map((member, index) => ({
+          ...member,
+          id: normalize(member.userId || member.id || member.name || `home_player_${index}`),
+          name: normalize(member.name || member.username) || "玩家",
+          x: Number.isFinite(Number(member.position && member.position.x))
+            ? clamp(Number(member.position.x), 10, 90)
+            : hashPosition(member.userId || member.id || member.name || index, 11),
+          y: Number.isFinite(Number(member.position && member.position.y))
+            ? clamp(Number(member.position.y), 18, 94)
+            : 36 + (hashPosition(member.userId || member.id || member.name || index, 29) % 45),
+          outfitLayers: Array.isArray(member.outfitLayers) && member.outfitLayers.length > 0
+            ? member.outfitLayers
+            : null
+        }));
+    });
+    watch([authUser, authUsername], initializeHomePlayerPosition, { immediate: true });
+    watch(authUser, () => { void refreshOnlinePlayers(); }, { immediate: true });
     const showTeamMemberInfo = ref(false);
     const selectedTeamMemberInfo = ref(null);
     const teamHistory = ref([
@@ -17758,7 +18109,7 @@ createApp({
       }
     ]);
     const allHcoinShopItems = computed(() => shopItems.value.concat(skillShopItems.value, bundleShopItems.value, skinShopItems.value));
-    const itemCatalog = computed(() => initialOnlyItems.concat(shopItems.value, skillShopItems.value, gearShopItems.value, skinShopItems.value, [{ id: SKIN_FRAGMENT_ITEM_ID, name: SKIN_FRAGMENT_ITEM_NAME, price: 0, desc: "战队BOSS排名奖励，可在战队皮肤商店兑换皮肤" }, { id: MOONLIGHT_KEY_ITEM_ID, name: "月光钥匙", image: "./resource/月光宝盒.jpg", price: 0, desc: "首次在挑战之路击败神武月获得的双节联动纪念道具" }]));
+    const itemCatalog = computed(() => initialOnlyItems.concat(shopItems.value, skillShopItems.value, gearShopItems.value, skinShopItems.value, ELEMENT_STONES.map((stone) => ({ ...stone, image: `./resource/${stone.name}.png`, price: 0, desc: `${stone.element}技能伤害提升25%` })), [{ id: ELEMENT_TOWER_FRAGMENT_ITEM_ID, name: "元素碎片", price: 0, desc: "每100个可兑换一枚元素石" }, { id: SKIN_FRAGMENT_ITEM_ID, name: SKIN_FRAGMENT_ITEM_NAME, price: 0, desc: "战队BOSS排名奖励，可在战队皮肤商店兑换皮肤" }, { id: MOONLIGHT_KEY_ITEM_ID, name: "月光钥匙", image: "./resource/月光宝盒.jpg", price: 0, desc: "首次在挑战之路击败神武月获得的双节联动纪念道具" }]));
     const equipmentDungeonCrystalCount = computed(() => getItemCount(EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID));
     const getTimeTunnelRewardInfo = (floor) => {
       const safeFloor = Math.max(1, Math.floor(Number(floor) || 1));
@@ -18812,7 +19163,7 @@ createApp({
         const id = normalize(it && it.id);
         if (!id) return false;
         if ([QIXING_SEAL_ITEM_ID, QIXING_FRAGMENT_ITEM_ID, WEEKLY_BOSS_MEDAL_ITEM_ID, EQUIPMENT_DUNGEON_CRYSTAL_ITEM_ID, SKIN_FRAGMENT_ITEM_ID].includes(id)) return false;
-        if (PET_GEAR_CONFIG_BY_ID.has(id)) return false;
+        if (PET_GEAR_CONFIG_BY_ID.has(id) || ELEMENT_STONE_BY_ID.has(id) || id === ELEMENT_TOWER_FRAGMENT_ITEM_ID) return false;
         if (getItemCount(id) <= 0) return false;
         if (SKILL_STONE_ITEM_IDS.has(id)) return getItemCount(id) > 0;
         if (id.endsWith("_energy_core") || id.startsWith("retrofit_credential_")) return false;
@@ -18850,10 +19201,10 @@ createApp({
       .filter((it) => {
         const id = normalize(it && it.id);
         if (!id) return false;
-        if (id !== DARK_GUARDIAN_AWAKENING_STONE_ITEM_ID) return false;
+        if (id !== DARK_GUARDIAN_AWAKENING_STONE_ITEM_ID && !ELEMENT_STONE_BY_ID.has(id)) return false;
         return getItemCount(id) > 0;
       })
-      .map((it) => ({ ...it, count: getItemCount(it.id) })));
+      .map((it) => ({ ...it, count: getItemCount(it.id), available: ELEMENT_STONE_BY_ID.has(it.id) ? elementStoneAvailableCount(it.id) : getItemCount(it.id), equipped: ELEMENT_STONE_BY_ID.has(it.id) && selectedPetElementStoneId.value === it.id })));
     const petFeatureText = (pet) => {
       if (!pet) return "";
       const seal = qixingSealForPet(pet) || null;
@@ -20327,6 +20678,8 @@ createApp({
         await syncServerMidAutumnState({ silent: true });
         playMode.value = "user";
         writeSessionMode("user");
+        void refreshOnlinePlayers();
+        await refreshMyTeamFromServer({ silent: true, records: true });
         authError.value = "";
         if (isDesktopRuntime() && Number(maxBagBattlePower.value) > DESKTOP_MAX_BATTLE_POWER_LIMIT) {
           showDesktopPowerBanModal.value = true;
@@ -21022,6 +21375,7 @@ createApp({
       writeBattleSpeed(next);
     }, { immediate: true });
     let timer = null;
+    let onlinePlayersTimer = null;
     let autoSaveTimer = null;
     let autoSaveRunning = false;
     let removeDesktopAutoSaveBeforeClose = null;
@@ -21073,6 +21427,8 @@ createApp({
         nowTs.value = Date.now();
         updateTeamOnlineTaskProgress(nowTs.value);
       }, 1000);
+      onlinePlayersTimer = setInterval(() => { void refreshOnlinePlayers(); }, 5000);
+      void refreshOnlinePlayers();
       updateViewportSize();
       loadBadgeImageManifest();
       loadPetActionLayout();
@@ -21099,6 +21455,7 @@ createApp({
     });
     onBeforeUnmount(() => {
       if (timer) clearInterval(timer);
+      if (onlinePlayersTimer) clearInterval(onlinePlayersTimer);
       stopLoginLoading();
       stopPeriodicAutoSave();
       stopChallengeRecording();
@@ -22222,6 +22579,23 @@ createApp({
       return best > 0 ? talentGradeByTotal(best) : "—";
     });
     const infoCardPvpWins = computed(() => Math.max(0, Math.floor(Number(state.value.pvpWins) || 0)));
+    const infoCardViewingOther = computed(() => Boolean(homeInfoCardPlayer.value));
+    const infoCardDisplayName = computed(() => infoCardViewingOther.value
+      ? (normalize(homeInfoCardPlayer.value && homeInfoCardPlayer.value.name) || "玩家")
+      : (authUser.value && authUser.value.username ? authUser.value.username : (authUsername.value || "游客")));
+    const infoCardDisplayId = computed(() => infoCardViewingOther.value
+      ? (normalize(homeInfoCardPlayer.value && (homeInfoCardPlayer.value.userId || homeInfoCardPlayer.value.id)) || "——")
+      : (authUser.value && authUser.value.id ? authUser.value.id : "——"));
+    const infoCardDisplayAge = computed(() => infoCardViewingOther.value
+      ? `${Math.max(0, Math.floor(Number(homeInfoCardPlayer.value && homeInfoCardPlayer.value.starAge) || 0))} 天`
+      : `${playerStarAge.value} 天`);
+    const infoCardDisplayTitle = computed(() => infoCardViewingOther.value
+      ? (normalize(homeInfoCardPlayer.value && (homeInfoCardPlayer.value.title || homeInfoCardPlayer.value.roleLabel)) || "无称号")
+      : playerTitle.value);
+    const infoCardDisplayTalent = computed(() => infoCardViewingOther.value ? (homeInfoCardPlayer.value.maxPetTalentGrade || "—") : maxPetTalentGrade.value);
+    const infoCardDisplayLevel = computed(() => infoCardViewingOther.value ? (homeInfoCardPlayer.value.maxPetLevel || "—") : maxPetLevel.value);
+    const infoCardDisplayCount = computed(() => infoCardViewingOther.value ? (homeInfoCardPlayer.value.petCount || "—") : (warehouseCount.value + (state.value && state.value.bagPetIds ? state.value.bagPetIds.filter(Boolean).length : 0)));
+    const infoCardDisplayDexLevelImage = computed(() => infoCardViewingOther.value ? "" : dexLevelImageSrc.value);
     const calcPetAbilityByRace = (raceStats, level, talentRaw, studyRaw) => {
       const race = raceStats && typeof raceStats === "object" ? raceStats : createZeroStats();
       const talent = normalizeTalent(talentRaw);
@@ -22490,6 +22864,10 @@ createApp({
     };
     const battleSceneSkills = computed(() => {
       const scene = battleScene.value;
+      if (scene && scene.mode === "elementTower" && scene.elementTowerAlly && scene.currentAttackerId === scene.elementTowerAlly.id) {
+        const player = (scene.team || []).find((unit) => unit && unit.id === scene.elementTowerPlayerId);
+        return player && Array.isArray(player.skills) ? player.skills : [];
+      }
       const controlledSide = scene && scene.mode === "elitePvp" && scene.pvpMeta && scene.pvpMeta.human ? elitePvpControlSide(scene) : "attacker";
       return scene && Array.isArray(controlledSide === "target" ? scene.targetSkills : scene.skills) ? (controlledSide === "target" ? scene.targetSkills : scene.skills) : [];
     });
@@ -22554,6 +22932,99 @@ createApp({
       });
     });
     const battleVisualReady = computed(() => Boolean(battleScene.value && battleScene.value.visualReady));
+    const elementTowerLiveSide = (unit) => {
+      const scene = battleScene.value;
+      if (!scene || !unit) return "";
+      if (unit.id === scene.currentAttackerId) return "attacker";
+      if (unit.id === scene.currentTargetId) return "target";
+      return "";
+    };
+    const elementTowerBattleUnits = computed(() => {
+      const scene = battleScene.value;
+      if (!scene || scene.mode !== "elementTower") return [];
+      const player = (scene.team || []).find((unit) => unit.id === scene.currentAttackerId)
+        || (scene.team || []).find((unit) => unit.id === scene.elementTowerPlayerId)
+        || (scene.team || []).find((unit) => Number(unit.hp) > 0);
+      return [
+        { side: "attacker", unit: player },
+        { side: "elementTowerAlly", unit: scene.elementTowerAlly },
+        { side: "target", unit: scene.targetTeam && scene.targetTeam[0] },
+        { side: "elementTowerTargetAlly", unit: scene.elementTowerEnemyPartner }
+      ].filter((entry) => {
+        if (!entry.unit) return false;
+        if (entry.side === "attacker") return true;
+        const liveSide = elementTowerLiveSide(entry.unit);
+        return Number(liveSide ? scene[liveSide + "Hp"] : entry.unit.hp) > 0;
+      }).map((entry) => {
+        const side = elementTowerLiveSide(entry.unit);
+        const unit = side ? {
+          ...entry.unit,
+          hp: scene[side + "Hp"],
+          maxHp: scene[side + "MaxHp"],
+          battleState: scene[side + "State"]
+        } : entry.unit;
+        return { ...entry, id: unit.id, unit };
+      });
+    });
+    const elementTowerUnitImage = (unit, side) => {
+      const liveSide = elementTowerLiveSide(unit);
+      return liveSide ? battleScene.value[liveSide + "Image"] : elementTowerUnitIdleImage(unit, side);
+    };
+    const elementTowerUnitStages = (unit) => battleStageBadges(normalizeBattleState(unit && unit.battleState));
+    const elementTowerUnitStatusBadges = (unit) => buildStatusBadges(normalizeBattleState(unit && unit.battleState));
+    const elementTowerUnitEffects = (unit, side) => {
+      const scene = battleScene.value;
+      if (!scene || !unit) return [];
+      const safeSide = side === "target" || side === "elementTowerTargetAlly" ? "target" : "attacker";
+      return buildTimedEffectBadges({
+        ...scene,
+        [safeSide + "ElementStoneId"]: unit.elementStoneId,
+        [safeSide === "target" ? "targetSkills" : "skills"]: unit.skills,
+        [safeSide + "State"]: normalizeBattleState(unit.battleState),
+        [safeSide + "DexId"]: unit.dexId,
+        [safeSide + "SkinActivated"]: unit.skinActivated,
+        [safeSide + "SkinKey"]: unit.skinKey,
+        [safeSide + "SkinBattleVisualDexId"]: unit.skinBattleVisualDexId
+      }, safeSide);
+    };
+    const elementTowerUnitValueFx = (unit, kind) => {
+      const scene = battleScene.value;
+      const entry = scene && scene.mode === "elementTower" && scene.elementTowerValueFxByUnit
+        ? scene.elementTowerValueFxByUnit[unit && unit.id]
+        : null;
+      if (!entry || Date.now() >= (Number(entry.until) || 0)) return "";
+      return normalize(entry[kind]);
+    };
+    const elementTowerUnitComboFx = (unit) => {
+      const scene = battleScene.value;
+      const entry = scene && scene.mode === "elementTower" && scene.elementTowerValueFxByUnit && scene.elementTowerValueFxByUnit[unit && unit.id];
+      return entry && Date.now() < (Number(entry.until) || 0) && Array.isArray(entry.comboHits) && entry.comboHits.length ? entry : null;
+    };
+    const elementTowerUnitValueFxTags = (unit) => {
+      const scene = battleScene.value;
+      const entry = scene && scene.mode === "elementTower" && scene.elementTowerValueFxByUnit && scene.elementTowerValueFxByUnit[unit && unit.id];
+      return entry && Date.now() < (Number(entry.until) || 0) && Array.isArray(entry.damageTags) ? entry.damageTags : [];
+    };
+    const elementTowerUnitComboFloatStyle = (unit, side, lane = "damage") => {
+      const style = elementTowerUnitImageStyle(unit, side) || {};
+      const renderW = normalize(style["--battle-pet-render-width"]);
+      const offsetX = normalize(style["--battle-pet-offset-x"]) || "0px";
+      const offsetY = normalize(style["--battle-pet-offset-y"]) || "0px";
+      const topGap = lane === "total" ? "calc(36 * var(--ui-px))" : "calc(8 * var(--ui-px))";
+      return {
+        left: renderW && renderW !== "auto" ? `calc(${offsetX} + (${renderW}) / 2)` : "50%",
+        top: `calc(${offsetY} - ${topGap})`
+      };
+    };
+    const elementTowerUnitValueFxStyle = (unit, side, lane = 0) => {
+      const metrics = elementTowerUnitVisualMetrics(unit, side);
+      if (!metrics) return {};
+      const y = metrics.centerY - metrics.bodyHeight * (1.05 + Math.max(0, Number(lane) || 0) * 0.28);
+      return {
+        left: `${Math.round(metrics.centerX)}px`,
+        top: `${Math.round(y)}px`
+      };
+    };
     const battleAttackerStatusBadges = computed(() => {
       const scene = battleScene.value;
       if (!scene) return [];
@@ -22585,6 +23056,24 @@ createApp({
       return battleStageBadges(normalizeBattleState(scene.targetState));
     });
     const battleEffectListRows = computed(() => {
+      const towerUnit = elementTowerEffectListUnit.value;
+      if (towerUnit) {
+        const state = normalizeBattleState(towerUnit.unit && towerUnit.unit.battleState);
+        const scene = battleScene.value;
+        if (!scene) return [];
+        const side = towerUnit.side === "target" || towerUnit.side === "elementTowerTargetAlly" ? "target" : "attacker";
+        const towerScene = {
+          ...scene,
+          [side + "State"]: state,
+          [side + "DexId"]: towerUnit.unit.dexId,
+          [side + "SkinActivated"]: towerUnit.unit.skinActivated,
+          [side + "SkinKey"]: towerUnit.unit.skinKey,
+          [side + "SkinBattleVisualDexId"]: towerUnit.unit.skinBattleVisualDexId
+        };
+        const statusRows = buildStatusBadges(state, towerScene, side).map((row) => ({ key: `status_${row.key}`, category: "状态", label: row.label, duration: row.key.startsWith("dark_guardian_") ? "战斗内" : (row.durationLabel || `剩余${row.turns}回合`), desc: row.desc, tone: row.key.startsWith("dark_guardian_") ? "buff" : "debuff" }));
+        const timedRows = buildTimedEffectBadges(towerScene, side).map((row) => ({ key: `effect_${row.key}`, category: "效果", label: row.label, duration: row.durationLabel || `剩余${row.turns}回合`, desc: row.desc, tone: row.tone === "debuff" ? "debuff" : "buff" }));
+        return statusRows.concat(timedRows);
+      }
       const side = battleEffectListSide.value === "target" ? "target" : "attacker";
       const scene = battleScene.value;
       if (!scene) return [];
@@ -22609,9 +23098,16 @@ createApp({
       return statusRows.concat(timedRows);
     });
     const openBattleEffectList = (side) => {
+      elementTowerEffectListUnit.value = null;
       battleEffectListSide.value = side === "target" ? "target" : "attacker";
     };
+    const openElementTowerEffectList = (entry) => {
+      if (!entry || !entry.unit) return;
+      elementTowerEffectListUnit.value = entry;
+      battleEffectListSide.value = entry.side === "target" || entry.side === "elementTowerTargetAlly" ? "target" : "attacker";
+    };
     const closeBattleEffectList = () => {
+      elementTowerEffectListUnit.value = null;
       battleEffectListSide.value = "";
     };
     const battleSceneTargetSkills = computed(() => {
@@ -23166,6 +23662,7 @@ createApp({
       const sideCode = side === "target" ? "1" : "2";
       const stateCode = getPetBattleStateCodeByKey(stateKey);
       const sideMeta = petActionLayout.value && petActionLayout.value[id] && petActionLayout.value[id][sideCode];
+      const idle = sideMeta && sideMeta.idle;
       const action = sideMeta && sideMeta.actions && (sideMeta.actions[stateCode] || sideMeta.actions["1"]) || idle;
       const frames = Math.max(0, Math.floor(Number(action && action.frames) || 0));
       return frames > 0 ? Math.max(PET_ANIM_FALLBACK_IDLE_DELAY_MS, frames * PET_ANIM_FRAME_HINT_MS) : PET_ANIM_FALLBACK_IDLE_DELAY_MS;
@@ -23471,6 +23968,151 @@ createApp({
       if (battlePetImageStyleCache.size > 80) battlePetImageStyleCache.delete(battlePetImageStyleCache.keys().next().value);
       return result;
     };
+    const elementTowerUnitImageStyle = (unit, side) => {
+      const liveSide = elementTowerLiveSide(unit);
+      const safeSide = side === "target" || side === "elementTowerTargetAlly" ? "target" : "attacker";
+      const dexId = liveSide ? resolveBattleSideDexId(battleScene.value, liveSide)
+        : Number(unit.skinActivated && unit.skinBattleVisualDexId) || Number(unit.battleVisualDexId) || Number(unit.dexId);
+      const stateCode = liveSide ? getPetBattleStateCode(battleScene.value, liveSide) : "1";
+      const bodyHeight = Math.max(1, Math.min(viewportSize.value.width / 1265, viewportSize.value.height / 776) * 210);
+      const layout = getBattlePetAnimLayoutStyle(dexId, safeSide === "target" ? "1" : "2", stateCode, bodyHeight);
+      if (!layout.renderW) {
+        return {
+          "--battle-pet-render-width": `${Math.round(bodyHeight)}px`,
+          "--battle-pet-render-height": `${Math.round(bodyHeight)}px`,
+          "--battle-pet-offset-x": safeSide === "attacker" ? `${Math.round(bodyHeight * 0.18)}px` : `${Math.round(-bodyHeight * 0.18)}px`,
+          "--battle-pet-offset-y": `${Math.round(-bodyHeight)}px`,
+          "--battle-pet-scale-x": "1",
+          "--battle-pet-clip-top": "0%",
+          "--battle-pet-clip-right": "0%",
+          "--battle-pet-clip-bottom": "0%",
+          "--battle-pet-clip-left": "0%"
+        };
+      }
+      return {
+        "--battle-pet-render-width": layout.renderW,
+        "--battle-pet-render-height": layout.renderH,
+        "--battle-pet-offset-x": layout.offsetX,
+        "--battle-pet-offset-y": layout.offsetY,
+        "--battle-pet-scale-x": "1",
+        "--battle-pet-clip-top": layout.clipTop || "0%",
+        "--battle-pet-clip-right": layout.clipRight || "0%",
+        "--battle-pet-clip-bottom": layout.clipBottom || "0%",
+        "--battle-pet-clip-left": layout.clipLeft || "0%"
+      };
+    };
+    const elementTowerUnitLiveSide = (unit) => elementTowerLiveSide(unit);
+    const elementTowerUnitVisualMetrics = (unit, side) => {
+      const scene = battleScene.value;
+      const liveSide = elementTowerLiveSide(unit);
+      if (!scene || !unit) return null;
+      const safeSide = side === "target" || side === "elementTowerTargetAlly" ? "target" : "attacker";
+      const style = elementTowerUnitImageStyle(unit, side) || {};
+      const renderW = Math.max(1, parseFloat(style["--battle-pet-render-width"]) || 0);
+      const renderH = Math.max(1, parseFloat(style["--battle-pet-render-height"]) || 0);
+      const offsetX = parseFloat(style["--battle-pet-offset-x"]) || 0;
+      const offsetY = parseFloat(style["--battle-pet-offset-y"]) || 0;
+      const dexId = liveSide ? resolveBattleSideDexId(scene, liveSide) : (Number(unit.battleVisualDexId) || Number(unit.dexId) || 0);
+      const sideCode = liveSide ? (liveSide === "target" ? "1" : "2") : (safeSide === "target" ? "1" : "2");
+      const stateCode = liveSide ? getPetBattleStateCode(scene, liveSide) : "1";
+      const meta = getPetActionLayoutMeta(dexId, sideCode, stateCode);
+      if (meta && meta.action && Array.isArray(meta.actionBox)) {
+        const frameW = Math.max(1, Number(meta.action.w) || 1);
+        const scale = renderW / frameW;
+        const bodyCenterX = ((Number(meta.actionBox[0]) || 0) + (Number(meta.actionBox[2]) || frameW)) / 2;
+        const bodyCenterY = ((Number(meta.actionBox[1]) || 0) + (Number(meta.actionBox[3]) || Number(meta.action.h) || 1)) / 2;
+        const bodyHeight = Math.max(1, ((Number(meta.actionBox[3]) || 0) - (Number(meta.actionBox[1]) || 0)) * scale);
+        return {
+          centerX: offsetX + bodyCenterX * scale,
+          centerY: offsetY + bodyCenterY * scale,
+          bodyHeight,
+          bodyWidth: Math.max(1, ((Number(meta.actionBox[2]) || frameW) - (Number(meta.actionBox[0]) || 0)) * scale)
+        };
+      }
+      return {
+        centerX: offsetX + renderW / 2,
+        centerY: offsetY + renderH / 2,
+        bodyHeight: Math.max(1, renderH * 0.65),
+        bodyWidth: renderW
+      };
+    };
+    const elementTowerUnitHitAreaStyle = (unit, side) => {
+      const metrics = elementTowerUnitVisualMetrics(unit, side);
+      if (!metrics) return {};
+      return {
+        left: `${Math.round(metrics.centerX - metrics.bodyWidth / 2)}px`,
+        top: `${Math.round(metrics.centerY - metrics.bodyHeight / 2)}px`,
+        width: `${Math.round(metrics.bodyWidth)}px`,
+        height: `${Math.round(metrics.bodyHeight)}px`
+      };
+    };
+    const elementTowerStagePopoverStyle = (unit, side) => {
+      const metrics = elementTowerUnitVisualMetrics(unit, side);
+      if (!metrics) return {};
+      return {
+        left: `${Math.round(metrics.centerX + metrics.bodyWidth / 2)}px`,
+        top: `${Math.round(metrics.centerY - metrics.bodyHeight / 2)}px`
+      };
+    };
+    const toggleElementTowerStage = (id) => {
+      elementTowerStageUnitId.value = elementTowerStageUnitId.value === id ? "" : id;
+    };
+    const elementTowerUnitSkillFloatStyle = (unit, side) => {
+      const metrics = elementTowerUnitVisualMetrics(unit, side);
+      if (!metrics) return {};
+      const allied = side === "attacker" || side === "elementTowerAlly";
+      return {
+        left: `${Math.round(metrics.centerX + metrics.bodyHeight * (allied ? -0.48 : 0.48))}px`,
+        top: `${Math.round(metrics.centerY - metrics.bodyHeight * 0.5)}px`,
+        transform: allied ? "translate(-100%, -100%)" : "translate(0, -100%)"
+      };
+    };
+    const elementTowerUnitFxStyle = (unit, side, fxType) => {
+      const scene = battleScene.value;
+      const liveSide = elementTowerLiveSide(unit);
+      const metrics = elementTowerUnitVisualMetrics(unit, side);
+      if (!scene || !metrics || (!liveSide && fxType !== "status")) return {};
+      const vw = Math.max(1, Number(viewportSize.value && viewportSize.value.width) || 1700);
+      const bodyHeight = Math.max(1, metrics.bodyHeight);
+      if (fxType === "transform") {
+        const duration = Math.max(120, Number(scene[liveSide + "TransformDurationMs"]) || 1200);
+        const size = clamp(bodyHeight * 3.225, 260, Math.min(vw * 0.86, 1080));
+        return {
+          "--transform-fx-local-x": `${Math.round(metrics.centerX)}px`,
+          "--transform-fx-local-y": `${Math.round(metrics.centerY)}px`,
+          "--transform-fx-size": `${Math.round(size)}px`,
+          "--transform-fx-duration": `${duration}ms`
+        };
+      }
+      if (fxType === "skill") {
+        const duration = Math.max(120, Number(scene.skillEffectFx && scene.skillEffectFx.durationMs) || BATTLE_SKILL_EFFECT_DURATION_MS);
+        const size = clamp(bodyHeight * 2.8, 180, Math.min(vw * 0.78, 900));
+        return {
+          "--skill-fx-local-x": `${Math.round(metrics.centerX)}px`,
+          "--skill-fx-local-y": `${Math.round(metrics.centerY)}px`,
+          "--battle-skill-fx-size": `${Math.round(size)}px`,
+          "--skill-fx-duration": `${duration}ms`
+        };
+      }
+      if (fxType === "status") {
+        const statusFx = scene.statusEffectFxBySide && scene.statusEffectFxBySide[scene.mode === "elementTower" ? `unit:${unit.id}` : liveSide];
+        const duration = Math.max(360, Number(statusFx && statusFx.durationMs) || STATUS_ANIM_DURATION_MS);
+        const size = clamp(bodyHeight * 1.45, 180, Math.min(vw * 0.52, 520));
+        return {
+          "--status-fx-local-x": `${Math.round(metrics.centerX)}px`,
+          "--status-fx-local-y": `${Math.round(metrics.centerY)}px`,
+          "--status-fx-size": `${Math.round(size)}px`,
+          "--status-fx-duration": `${duration}ms`
+        };
+      }
+      const stageSize = clamp(bodyHeight * 0.54, 72, 158);
+      return {
+        "--stage-change-local-x": `${Math.round(metrics.centerX)}px`,
+        "--stage-change-local-y": `${Math.round(metrics.centerY)}px`,
+        "--stage-change-y": `${Math.round(-bodyHeight * 1.08)}px`,
+        "--stage-change-size": `${Math.round(stageSize)}px`
+      };
+    };
     const battlePetValueFloatStyle = (side, lane = "damage") => {
       const style = battlePetImageStyle(side) || {};
       const renderW = normalize(style["--battle-pet-render-width"]);
@@ -23571,7 +24213,7 @@ createApp({
     const bag2FocusPetAnimImageStyle = (petOrDexId) => {
       const dexId = petAnimationLayoutDexId(petOrDexId);
       const panelW = Math.min(window.innerWidth * 0.85, 900);
-      const targetBodyH = Math.max(1, panelW * 0.19);
+      const targetBodyH = Math.max(1, panelW * 0.228);
       const style = dockBagFocusPetAnimStyle(dexId, targetBodyH, targetBodyH * 1.6);
       if (!style.renderW) return {};
       return {
@@ -23697,7 +24339,7 @@ createApp({
         "--pet-anim-clip-left": style.clipLeft || "0%"
       };
     };
-    const timeTunnelEnemyScaleStyle = () => ({ transform: "scale(3)" });
+    const timeTunnelEnemyScaleStyle = () => ({ transform: "scale(1)" });
     const SKILL_STONE_SKILL_EFFECT_ID_BY_SKILL_ID = Object.freeze({
       900401: 9201,
       900402: 9228,
@@ -24000,8 +24642,9 @@ createApp({
     };
     const playNextBattleStatusEffectFx = (scene, side) => {
       if (!scene || scene.ended) return;
-      const safeSide = side === "target" ? "target" : "attacker";
+      const safeSide = scene.mode === "elementTower" && String(side).startsWith("unit:") ? side : (side === "target" ? "target" : "attacker");
       const { slots, queues } = ensureBattleStatusEffectSlots(scene);
+      if (!Array.isArray(queues[safeSide])) queues[safeSide] = [];
       if (slots[safeSide]) return;
       if (scene._battleStatusFxLoading && scene._battleStatusFxLoading[safeSide]) return;
       if (!scene.visualReady) {
@@ -24048,9 +24691,12 @@ createApp({
     };
     const showBattleStatusEffectFx = (scene, side, statuses = []) => {
       if (!scene || !Array.isArray(statuses) || statuses.length === 0) return;
-      const safeSide = side === "target" ? "target" : "attacker";
-      if (scene.moraleEffectFx && scene.moraleEffectFx.side === safeSide && Date.now() < (Number(scene._battleMoraleUntil) || 0)) return;
+      const battleSide = side === "target" ? "target" : "attacker";
+      if (scene.moraleEffectFx && scene.moraleEffectFx.side === battleSide && Date.now() < (Number(scene._battleMoraleUntil) || 0)) return;
+      const unitId = battleSide === "target" ? scene.currentTargetId : scene.currentAttackerId;
+      const safeSide = scene.mode === "elementTower" && unitId ? `unit:${unitId}` : battleSide;
       const { queues } = ensureBattleStatusEffectSlots(scene);
+      if (!Array.isArray(queues[safeSide])) queues[safeSide] = [];
       statuses.forEach((status) => {
         const statusKey = normalize(status && (status.status || status.key));
         const label = normalize(status && status.label) || statusLabel(statusKey) || "";
@@ -24059,6 +24705,7 @@ createApp({
         if (!directSrc && !fileLabel) return;
         queues[safeSide].push({ directSrc, fileLabel, label });
       });
+      if (scene.mode === "elementTower") markBattleVisualHoldMs(scene, (queues[safeSide].length + (scene.statusEffectFxBySide[safeSide] ? 1 : 0)) * (Math.max(650, battleSceneDelayMs(scene, STATUS_ANIM_DURATION_MS, 180)) + 80) / sceneBattleSpeedFactor(scene));
       playNextBattleStatusEffectFx(scene, safeSide);
     };
     const buildFullscreenSkillEffectPlaybackSrc = (src, playbackKey) => {
@@ -24140,12 +24787,19 @@ createApp({
       const domainKey = normalize(domain);
       return domainKey ? (SHENGYU_BACKGROUND_CONFIG_BY_DOMAIN.get(domainKey) || null) : null;
     };
-    const battleShengyuAnimationKey = (scene) => `${normalize(scene && scene.shengyuDomain)}|${normalize(scene && scene.shengyuDomainOwner)}|${Math.max(0, Number(scene && scene.shengyuDomainAnimationSeq) || 0)}`;
+    const battleShengyuAnimationKey = (scene) => {
+      const key = `${normalize(scene && scene.shengyuDomain)}|${normalize(scene && scene.shengyuDomainOwner)}`;
+      return scene && scene.mode === "elementTower" ? key : `${key}|${Math.max(0, Number(scene && scene.shengyuDomainAnimationSeq) || 0)}`;
+    };
     const applyBattleShengyuBackground = (scene, options = {}) => {
       if (!scene || (scene.shengyuBackground && !options.force)) return 0;
       const config = resolveBattleShengyuBackgroundConfig(scene, options.domain || scene.shengyuDomain);
       const entrySrc = config && (config.backgroundSrc || config.animationSrc);
       if (!config || !entrySrc) return 0;
+      if (scene.mode === "elementTower") {
+        if (scene.elementTowerShengyuAnimationPlayed) return 0;
+        scene.elementTowerShengyuAnimationPlayed = true;
+      }
       const configuredDuration = Math.max(120, Number(config.durationMs) || SHENGYU_ENTRY_ANIMATION_DURATION_MS);
       const seq = Date.now() + Math.random();
       const markEntryCompleteAfter = (durationMs) => {
@@ -24204,7 +24858,7 @@ createApp({
     watch(
       () => {
         const scene = battleScene.value;
-        return scene ? `${normalize(scene.shengyuDomain)}|${normalize(scene.shengyuDomainOwner)}|${Math.max(0, Number(scene.shengyuDomainAnimationSeq) || 0)}` : "";
+        return scene ? battleShengyuAnimationKey(scene) : "";
       },
       (signature, previousSignature) => {
         if (!signature || signature === previousSignature) return;
@@ -24414,10 +25068,17 @@ createApp({
       const targetSkill = targetNeedsAutoPpBean(scene)
         ? { name: "__AUTO_PP_BEAN__", pp: 1, ppMax: 1, _autoPpBeanAction: true }
         : pickTargetSkill(scene, battleSceneTargetSkills.value.filter((s) => s.pp > 0));
-      queueBattleTurnActions(scene, [
+      const actions = [
         { side: "attacker", skill },
         { side: "target", skill: targetSkill }
-      ]);
+      ];
+      if (scene.mode === "elementTower") {
+        const shuraSkill = pickElementTowerUnitSkill(scene.elementTowerAlly, ELEMENT_TOWER_SHURA_SKILL_WEIGHTS);
+        const partnerSkill = pickElementTowerUnitSkill(scene.elementTowerEnemyPartner);
+        if (shuraSkill) actions.splice(1, 0, { side: "elementTowerAlly", skill: shuraSkill });
+        if (partnerSkill) actions.push({ side: "elementTowerTargetAlly", skill: partnerSkill });
+      }
+      queueBattleTurnActions(scene, actions);
     };
     const applyAttackerSkinIdleVisual = (scene) => {
       const unit = currentBattleAttackerUnit(scene);
@@ -24761,6 +25422,7 @@ createApp({
         maxHp: ability.hp,
         skills: chosenSkills,
         battleItemId: normalize(pet.equippedItemId),
+        elementStoneId: ELEMENT_STONE_BY_ID.has(normalize(pet.elementStoneId)) ? normalize(pet.elementStoneId) : "",
         qixingSealLevel: normalize(pet.equippedItemId) === QIXING_SEAL_ITEM_ID ? clamp(Math.floor(Number(seal && seal.level) || 1), 1, QIXING_SEAL_MAX_LEVEL) : 1,
         qixingSealTraitKey: normalize(pet.equippedItemId) === QIXING_SEAL_ITEM_ID ? normalizeQixingTraitKey(seal && seal.traitKey) : "",
         skinKey: normalize(pet.skinKey),
@@ -25157,6 +25819,122 @@ const applyBossChainFinalBuff = (scene) => {
       });
       return applyTimeTunnelTargetSkills(target, entry);
     };
+    const buildElementTowerTarget = (enemy) => {
+      const dexId = Number(enemy && enemy.dexId) || 0;
+      const entry = dexById.get(dexId);
+      if (!entry) return null;
+      const target = buildBattleTarget({
+        entry,
+        level: ELEMENT_TOWER_BOSS_LEVEL,
+        talentOverride: ELEMENT_TOWER_BOSS_TALENT,
+        studyOverride: ELEMENT_TOWER_BOSS_STUDY,
+        battleBoostRatio: ELEMENT_TOWER_BOSS_ABILITY_BOOST,
+        displayName: entry.name,
+        displayImage: getTimeTunnelBattleAnimSrc(entry.dexId)
+      });
+      if (!target) return null;
+      const species = getSpeciesByDexId(entry.dexId, entry.name);
+      const race = species && species.raceStats ? species.raceStats : createZeroStats();
+      const calcTowerStat = (base, talent, study) => Math.floor(Math.floor(((safeNonNegInt(base) * 2 + safeNonNegInt(talent) + Math.floor(safeNonNegInt(study) / 4)) * ELEMENT_TOWER_BOSS_LEVEL) / 100 + 5) * 2);
+      const rawAbility = {
+        hp: Math.floor((((safeNonNegInt(race.hp) * 2 + ELEMENT_TOWER_BOSS_TALENT.hp + Math.floor(ELEMENT_TOWER_BOSS_STUDY.hp / 4)) * ELEMENT_TOWER_BOSS_LEVEL) / 100 + ELEMENT_TOWER_BOSS_LEVEL + 10) * 2),
+        atk: calcTowerStat(race.atk, ELEMENT_TOWER_BOSS_TALENT.atk, ELEMENT_TOWER_BOSS_STUDY.atk),
+        def: calcTowerStat(race.def, ELEMENT_TOWER_BOSS_TALENT.def, ELEMENT_TOWER_BOSS_STUDY.def),
+        spAtk: calcTowerStat(race.spAtk, ELEMENT_TOWER_BOSS_TALENT.spAtk, ELEMENT_TOWER_BOSS_STUDY.spAtk),
+        spDef: calcTowerStat(race.spDef, ELEMENT_TOWER_BOSS_TALENT.spDef, ELEMENT_TOWER_BOSS_STUDY.spDef),
+        speed: calcTowerStat(race.speed, ELEMENT_TOWER_BOSS_TALENT.speed, ELEMENT_TOWER_BOSS_STUDY.speed)
+      };
+      BATTLE_ABILITY_KEYS.forEach((key) => {
+        rawAbility[key] = Math.max(1, Math.floor((Number(rawAbility[key]) || 0) * (1 + ELEMENT_TOWER_BOSS_ABILITY_BOOST)));
+      });
+      rawAbility.total = calcAbilityTotal(rawAbility);
+      target.ability = rawAbility;
+      target.level = ELEMENT_TOWER_BOSS_LEVEL;
+      target.hp = ELEMENT_TOWER_BOSS_HP;
+      target.maxHp = ELEMENT_TOWER_BOSS_HP;
+      return target;
+    };
+    const applyElementTowerTargetEffects = (scene) => {
+      if (!scene || scene.mode !== "elementTower") return;
+      addTimedEffect(scene, "target", { kind: "damageBoost", turns: 999, data: { factor: 1 + ELEMENT_TOWER_BOSS_DAMAGE_BOOST, permanent: true, elementTower: true } });
+    };
+    const buildElementTowerShura = () => {
+      const entry = dexById.get(ELEMENT_TOWER_SHURA_DEX_ID);
+      if (!entry) return null;
+      const target = buildBattleTarget({
+        entry,
+        level: ELEMENT_TOWER_SHURA_LEVEL,
+        talentOverride: ELEMENT_TOWER_SHURA_TALENT,
+        studyOverride: ELEMENT_TOWER_SHURA_STUDY,
+        battleBoostRatio: ELEMENT_TOWER_SHURA_ABILITY_BOOST,
+        displayName: entry.name,
+        displayImage: getTimeTunnelBattleAnimSrc(entry.dexId)
+      });
+      if (!target) return null;
+      const species = getSpeciesByDexId(entry.dexId, entry.name);
+      const sourceSkills = Array.isArray(species && species.skills) ? species.skills : [];
+      const skills = ELEMENT_TOWER_SHURA_SKILL_WEIGHTS.map((row) => {
+        const source = sourceSkills.find((skill) => normalizeSkillKey(skill && skill.name) === normalizeSkillKey(row.name)) || pickBossPoolSkillSource(entry.dexId, row.name, species);
+        if (!source) return null;
+        return {
+          skillId: Number(source.skillId) || null,
+          dexId: ELEMENT_TOWER_SHURA_DEX_ID,
+          skillKey: normalize(source.skillKey),
+          name: normalizeSkillKey(source.name),
+          attackTypeCode: Number.isFinite(Number(source.attackTypeCode)) ? Number(source.attackTypeCode) : null,
+          attackTypeLabel: normalize(source.attackTypeLabel),
+          type: buildSkillTypeText(normalize(source.type) || "未知系/普通攻击", source.attackTypeCode, source.attackTypeLabel),
+          power: Number(source.power) > 0 ? Number(source.power) : 0,
+          ppMax: Math.max(1, Number(source.pp) || 10),
+          pp: Math.max(1, Number(source.pp) || 10),
+          level: Math.max(0, Number(source.level) || 0),
+          accuracy: safeSkillAccuracy(source),
+          desc: normalize(source.desc)
+        };
+      }).filter(Boolean);
+      if (skills.length === 0) return null;
+      return {
+        ...target,
+        id: "element_tower_shura",
+        petId: "element_tower_shura",
+        name: "修罗",
+        level: ELEMENT_TOWER_SHURA_LEVEL,
+        image: petBattleIdleImage(ELEMENT_TOWER_SHURA_DEX_ID, "attacker", target.image),
+        skills,
+        battleItemId: QIXING_SEAL_ITEM_ID,
+        qixingSealLevel: QIXING_SEAL_MAX_LEVEL,
+        qixingSealTraitKey: QIXING_TRAIT_KEYS.LEGACY,
+        battleState: createBattleState()
+      };
+    };
+    const pickElementTowerUnitSkill = (unit, weights = null) => {
+      if (!unit || !Array.isArray(unit.skills)) return null;
+      const isEnemyUnit = String(unit.id || "").startsWith("element_tower_enemy_");
+      const usable = unit.skills.filter((skill) => skill && Number(skill.pp) > 0
+        && !(isEnemyUnit && normalizeSkillKey(skill.name).replace(/[\s\u200b\u00a0]/g, "") === "原能暴风圈"));
+      if (usable.length === 0) return null;
+      if (!Array.isArray(weights) || weights.length === 0) return usable[Math.floor(Math.random() * usable.length)];
+      const rows = weights.map((row) => ({ skill: usable.find((skill) => normalizeSkillKey(skill.name) === normalizeSkillKey(row.name)), weight: Math.max(0, Number(row.weight) || 0) })).filter((row) => row.skill && row.weight > 0);
+      const total = rows.reduce((sum, row) => sum + row.weight, 0);
+      if (total <= 0) return usable[Math.floor(Math.random() * usable.length)];
+      let roll = Math.random() * total;
+      for (const row of rows) { roll -= row.weight; if (roll <= 0) return row.skill; }
+      return rows[rows.length - 1].skill;
+    };
+    const captureElementTowerBattleSide = (scene, side) => {
+      const keys = side === "attacker"
+        ? ["currentAttackerId", "attackerDexId", "attackerBaseDexId", "attackerName", "attackerImage", "attackerStaticImage", "attackerLevel", "attackerElement", "attackerSubElement", "attackerBattleItemId", "attackerElementStoneId", "attackerQixingSealLevel", "attackerQixingSealTraitKey", "attackerBattleVisualDexId", "attackerOriginalBattleVisualDexId", "attackerSkinBattleVisualDexId", "attackerSkinActivated", "attackerSkinKey", "attackerPreSkinDexId", "attackerTransformingSkin", "attackerTransformFx", "attackerTransformSeq", "attackerTransformUnitId", "attackerAbility", "attackerHp", "attackerMaxHp", "uiAttackerHp", "uiAttackerMaxHp", "attackerState", "skills"]
+        : ["currentTargetId", "targetDexId", "targetName", "targetImage", "targetStaticImage", "targetLevel", "targetElement", "targetSubElement", "targetBattleItemId", "targetElementStoneId", "targetQixingSealLevel", "targetQixingSealTraitKey", "targetAbility", "targetHp", "targetMaxHp", "uiTargetHp", "uiTargetMaxHp", "targetState", "targetSkills"];
+      return Object.fromEntries(keys.map((key) => [key, scene[key]]));
+    };
+    const restoreElementTowerBattleSide = (scene, snapshot) => {
+      if (!scene || !snapshot) return;
+      if (scene.mode === "elementTower" && scene.elementTowerAlly && scene.currentAttackerId === scene.elementTowerAlly.id && snapshot.currentAttackerId && snapshot.currentAttackerId !== scene.currentAttackerId && scene.forceDefeatSide === "attacker") {
+        scene.forceDefeatSide = "";
+        scene.forceDefeatReason = "";
+      }
+      Object.entries(snapshot).forEach(([key, value]) => { scene[key] = value; });
+    };
     const hasTimeTunnelEnvironmentElement = (unit, environmentElement) => {
       const envElement = normalizeElementName(environmentElement);
       if (!envElement) return false;
@@ -25199,13 +25977,15 @@ const applyBossChainFinalBuff = (scene) => {
       showTimeTunnelEnvironmentPanel.value = true;
       playSceneBgm(TIME_TUNNEL_BGM_SRC);
     };
-    const setupBattleScene = ({ targetEntry, targetLevel, forceTargetHpRace500 = false, targetHpRaceOverride = null, targetHpRaceMultiplier = null, targetTalentOverride = null, targetStudyOverride = null, mode = "normal", guardianMeta = null, autoBattleMeta = null, timeTunnelMeta = null, pvpMeta = null }) => {
+    const setupBattleScene = ({ targetEntry, targetLevel, forceTargetHpRace500 = false, targetHpRaceOverride = null, targetHpRaceMultiplier = null, targetTalentOverride = null, targetStudyOverride = null, targetDisplayName = "", targetDisplayImage = "", mode = "normal", guardianMeta = null, autoBattleMeta = null, timeTunnelMeta = null, pvpMeta = null }) => {
       battlePrepareTrace("setup-start", { mode, targetDexId: Number(targetEntry && targetEntry.dexId) || 0, targetLevel });
       const isHumanElitePvp = mode === "elitePvp" && pvpMeta && pvpMeta.human === true;
       const battleSourcePets = isHumanElitePvp
         ? (Array.isArray(pvpMeta.leftTeam) ? pvpMeta.leftTeam : [])
         : mode === "equipmentDungeon"
         ? bagSlots.value.slice(0, 3).map((slot) => slot && slot.pet).filter((pet) => pet && pet.id)
+        : mode === "elementTower"
+        ? bagPets.value.filter((pet) => elementTowerPetAllowed(pet, timeTunnelMeta && timeTunnelMeta.dailyElements))
         : bagPets.value;
       const team = battleSourcePets.map((pet) => buildBattleUnitFromPet(pet)).filter(Boolean);
       battlePrepareTrace("team-built", {
@@ -25248,6 +26028,8 @@ const applyBossChainFinalBuff = (scene) => {
           })()
         : mode === "timeTunnel"
         ? buildTimeTunnelTarget({ dexId: Number(targetEntry && targetEntry.dexId) || 0, level: targetLevel }, timeTunnelMeta && timeTunnelMeta.floor)
+        : mode === "elementTower"
+        ? buildElementTowerTarget({ dexId: Number(targetEntry && targetEntry.dexId) || 0 })
         : buildBattleTarget({
           entry: effectiveTargetEntry,
           level: targetLevel,
@@ -25257,12 +26039,40 @@ const applyBossChainFinalBuff = (scene) => {
           battleBoostRatio: Number(guardianMeta && guardianMeta.statBoostRatio) || 0,
           talentOverride: targetTalentOverride,
           studyOverride: targetStudyOverride,
-          displayName: mode === "normal" ? effectiveTargetEntry.name : effectiveTargetEntry.name,
-          displayImage: petBattleIdleImage(effectiveTargetEntry.dexId, "target", effectiveTargetEntry.image)
+          displayName: targetDisplayName || effectiveTargetEntry.name,
+          displayImage: targetDisplayImage || petBattleIdleImage(effectiveTargetEntry.dexId, "target", effectiveTargetEntry.image)
         });
       if (!target) {
         showToast("挑战目标缺少可用种族值或技能数据。");
         return false;
+      }
+      const elementTowerShura = mode === "elementTower" ? buildElementTowerShura() : null;
+      if (mode === "elementTower" && !elementTowerShura) {
+        showToast("元素塔人机亚比数据缺失，暂时无法开始挑战。");
+        return false;
+      }
+      const elementTowerPartner = mode === "elementTower" && timeTunnelMeta && Array.isArray(timeTunnelMeta.enemies) && timeTunnelMeta.enemies[1]
+        ? buildElementTowerTarget(timeTunnelMeta.enemies[1])
+        : null;
+      if (mode === "elementTower" && !elementTowerPartner) {
+        showToast("元素塔第二个Boss数据缺失，暂时无法开始挑战。");
+        return false;
+      }
+      if (mode === "elementTower") {
+        target.id = `element_tower_enemy_${Number(target.dexId) || 0}_0`;
+        elementTowerPartner.id = `element_tower_enemy_${Number(elementTowerPartner.dexId) || 0}_1`;
+        elementTowerPartner.ability = { ...(elementTowerPartner.ability || {}), hp: ELEMENT_TOWER_BOSS_HP };
+        elementTowerPartner.ability.total = calcAbilityTotal(elementTowerPartner.ability);
+        elementTowerPartner.hp = ELEMENT_TOWER_BOSS_HP;
+        elementTowerPartner.maxHp = ELEMENT_TOWER_BOSS_HP;
+        elementTowerShura.ability = { ...(elementTowerShura.ability || {}), hp: 3000 };
+        elementTowerShura.ability.total = calcAbilityTotal(elementTowerShura.ability);
+        elementTowerShura.hp = 3000;
+        elementTowerShura.maxHp = 3000;
+        elementTowerShura.battleState.timedEffects.push(
+          { kind: "damageReduction", turns: 999999, data: { ratio: ELEMENT_TOWER_SHURA_DAMAGE_REDUCTION, permanent: true, elementTowerShura: true } },
+          { kind: "damageBoost", turns: 999999, data: { factor: 1 + ELEMENT_TOWER_SHURA_DAMAGE_BOOST, permanent: true, elementTowerShura: true } }
+        );
       }
       battlePrepareTrace("target-built", { targetDexId: Number(target.dexId) || 0, skillCount: Array.isArray(target.skills) ? target.skills.length : 0 });
       if (mode === "timeTunnel" && timeTunnelMeta && timeTunnelMeta.environmentElement) {
@@ -25275,7 +26085,9 @@ const applyBossChainFinalBuff = (scene) => {
       if (mode === "boss" && guardianMeta && Array.isArray(guardianMeta.bossSkillNames)) {
         applyChallengeRoadBossTargetSkills(target, effectiveTargetEntry, guardianMeta.bossSkillNames);
       }
-      const fixedTargetMaxHp = (mode === "boss" || mode === "weeklyBoss" || mode === "equipmentDungeon") ? Math.max(0, Math.floor(Number(guardianMeta && guardianMeta.fixedHp) || 0)) : 0;
+      const fixedTargetMaxHp = mode === "elementTower"
+        ? ELEMENT_TOWER_BOSS_HP
+        : (mode === "boss" || mode === "weeklyBoss" || mode === "equipmentDungeon") ? Math.max(0, Math.floor(Number(guardianMeta && guardianMeta.fixedHp) || 0)) : 0;
       if (fixedTargetMaxHp > 0) {
         target.ability = { ...(target.ability || {}), hp: fixedTargetMaxHp };
         target.ability.total = calcAbilityTotal(target.ability);
@@ -25310,6 +26122,7 @@ const applyBossChainFinalBuff = (scene) => {
         expMultiplier,
         team,
         currentAttackerId: team[0].id,
+        elementTowerPlayerId: mode === "elementTower" ? team[0].id : "",
         attackerDexId: Number(team[0].dexId) || 0,
         attackerBaseDexId: Number(team[0].baseDexId) || Number(team[0].dexId) || 0,
         attackerName: team[0].name,
@@ -25319,6 +26132,7 @@ const applyBossChainFinalBuff = (scene) => {
         attackerElement: team[0].element,
         attackerSubElement: team[0].subElement,
         attackerBattleItemId: normalize(team[0].battleItemId),
+        attackerElementStoneId: normalize(team[0].elementStoneId),
         attackerQixingSealLevel: normalize(team[0].battleItemId) === QIXING_SEAL_ITEM_ID ? clamp(Math.floor(Number(team[0].qixingSealLevel) || 1), 1, QIXING_SEAL_MAX_LEVEL) : 1,
         attackerQixingSealTraitKey: normalize(team[0].qixingSealTraitKey),
         attackerBattleVisualDexId: Number(team[0].battleVisualDexId) || Number(team[0].dexId) || 0,
@@ -25345,9 +26159,10 @@ const applyBossChainFinalBuff = (scene) => {
         targetElement: target.element,
         targetSubElement: target.subElement,
         targetBattleItemId: normalize(guardianMeta && guardianMeta.qixingTraitKey) ? QIXING_SEAL_ITEM_ID : normalize(target.battleItemId),
+        targetElementStoneId: normalize(target.elementStoneId),
         targetQixingSealLevel: normalize(guardianMeta && guardianMeta.qixingTraitKey) ? clamp(Math.floor(Number(guardianMeta && guardianMeta.qixingSealLevel) || 1), 1, QIXING_SEAL_MAX_LEVEL) : 1,
         targetQixingSealTraitKey: normalizeQixingTraitKey(guardianMeta && guardianMeta.qixingTraitKey) || QIXING_TRAIT_KEYS.LEGACY,
-        targetChallengeDamageReductionRatio: (mode === "boss" || mode === "weeklyBoss" || mode === "equipmentDungeon") ? clamp(Number(guardianMeta && guardianMeta.damageReductionRatio) || 0, 0, 0.95) : 0,
+        targetChallengeDamageReductionRatio: mode === "elementTower" ? ELEMENT_TOWER_BOSS_DAMAGE_REDUCTION : (mode === "boss" || mode === "weeklyBoss" || mode === "equipmentDungeon") ? clamp(Number(guardianMeta && (guardianMeta.simulationBoss ? guardianMeta.simulationDamageReduction : guardianMeta.damageReductionRatio)) || 0, 0, guardianMeta && guardianMeta.simulationBoss ? 2 : 0.95) : 0,
         targetCounteredDamageReductionRatio: mode === "equipmentDungeon" ? clamp(Number(guardianMeta && guardianMeta.counteredDamageReductionRatio) || 0, 0, 0.95) : 0,
         targetAbility: target.ability,
         targetHp: target.hp,
@@ -25362,8 +26177,20 @@ const applyBossChainFinalBuff = (scene) => {
           if (guardianMeta && guardianMeta.stageInvertImmune) targetState.timedEffects.push({ kind: "stageInvertImmune", turns: 999999, data: { label: "属性反转免疫" } });
           return targetState;
         })(),
-        targetTeam: pvpTargetTeam,
-        currentTargetId: mode === "elitePvp" && pvpTargetTeam[0] ? pvpTargetTeam[0].id : "",
+        targetTeam: mode === "elementTower" ? [target, elementTowerPartner] : pvpTargetTeam,
+        currentTargetId: mode === "elementTower" ? target.id : (mode === "elitePvp" && pvpTargetTeam[0] ? pvpTargetTeam[0].id : ""),
+        elementTowerAlly: elementTowerShura,
+        elementTowerEnemyPartner: elementTowerPartner,
+        elementTowerActingSpecialSide: "",
+        elementTowerPendingSkill: null,
+        elementTowerPendingTargetId: "",
+         elementTowerValueFxByUnit: {},
+        elementTowerUnits: mode === "elementTower" ? [
+          { id: team[0].id, side: "attacker", unit: team[0] },
+          { id: elementTowerShura.id, side: "elementTowerAlly", unit: elementTowerShura },
+          { id: target.id, side: "target", unit: target },
+          { id: elementTowerPartner.id, side: "elementTowerTargetAlly", unit: elementTowerPartner }
+        ] : [],
         globalTimedEffects: [],
         teamTimedEffects: [],
         skills: team[0].skills,
@@ -25428,6 +26255,16 @@ const applyBossChainFinalBuff = (scene) => {
         nextPetStageBoost: null
       };
       const challengeBuffScene = battleScene.value;
+      if (guardianMeta && guardianMeta.simulationBoss) {
+        const simulationDamageBoost = clamp(Number(guardianMeta.simulationDamageBoost) || 0, 0, 2);
+        if (simulationDamageBoost > 0) addTimedEffect(challengeBuffScene, "target", { kind: "damageBoost", turns: 999999, data: { factor: 1 + simulationDamageBoost, permanent: true, label: `增伤${Math.round(simulationDamageBoost * 100)}%` } });
+        if (simulationDamageBoost > 0 || Number(guardianMeta.simulationDamageReduction) > 0) pushBattleLog(challengeBuffScene, `玄天水晶获得${Math.round(simulationDamageBoost * 100)}%增伤与${Math.round(Number(guardianMeta.simulationDamageReduction) * 100)}%减伤。`);
+      }
+      if (mode === "elementTower") {
+        applyElementTowerTargetEffects(challengeBuffScene);
+        pushBattleLog(challengeBuffScene, `元素塔Boss获得${Math.round(ELEMENT_TOWER_BOSS_DAMAGE_REDUCTION * 100)}%伤害抗性与${Math.round(ELEMENT_TOWER_BOSS_DAMAGE_BOOST * 100)}%增伤。`);
+        pushBattleLog(challengeBuffScene, "修罗加入我方2v2队伍：Lv.100，伤害抗性30%，增伤30%，4级启星之印。每回合按指定概率释放技能。");
+      }
       const challengeBuffKeys = getChallengeRoadRandomBuffKeys(challengeBuffScene);
       if (challengeBuffKeys.size > 0) {
         // 挑战随机Buff统一从 guardianMeta 读取，换宠后效果与展示均可持续整场战斗。
@@ -25475,7 +26312,7 @@ const applyBossChainFinalBuff = (scene) => {
         attackerImage: battleScene.value.attackerImage,
         targetImage: battleScene.value.targetImage
       });
-      const startLog = mode === "guardian" ? "守护者挑战开始。按速度和技能优先度决定先手。" : (mode === "boss" ? "BOSS挑战开始。按速度和技能优先度决定先手。" : (mode === "equipmentDungeon" ? `装备秘境${guardianMeta && guardianMeta.equipmentDungeonDifficultyLabel ? guardianMeta.equipmentDungeonDifficultyLabel : ""}难度开始。仅背包前3只亚比可出战。` : (mode === "timeTunnel" ? `时空隧道第${timeTunnelMeta && timeTunnelMeta.floor ? timeTunnelMeta.floor : 1}层开始。击败本层全部亚比才能开启下一层。` : (mode === "study" ? `${guardianMeta && guardianMeta.label ? guardianMeta.label : ""}学习力战场开始。按速度和技能优先度决定先手。` : "对战开始。按速度和技能优先度决定先手。"))));
+      const startLog = mode === "guardian" ? "守护者挑战开始。按速度和技能优先度决定先手。" : (mode === "boss" ? "BOSS挑战开始。按速度和技能优先度决定先手。" : (mode === "equipmentDungeon" ? `装备秘境${guardianMeta && guardianMeta.equipmentDungeonDifficultyLabel ? guardianMeta.equipmentDungeonDifficultyLabel : ""}难度开始。仅背包前3只亚比可出战。` : (mode === "timeTunnel" ? `时空隧道第${timeTunnelMeta && timeTunnelMeta.floor ? timeTunnelMeta.floor : 1}层开始。击败本层全部亚比才能开启下一层。` : (mode === "elementTower" ? `元素塔第${timeTunnelMeta && timeTunnelMeta.floor ? timeTunnelMeta.floor : 1}层开始，2v2战斗开始。` : (mode === "study" ? `${guardianMeta && guardianMeta.label ? guardianMeta.label : ""}学习力战场开始。按速度和技能优先度决定先手。` : "对战开始。按速度和技能优先度决定先手。")))));
       pushBattleLog(battleScene.value, startLog);
       applyWeeklyBossCounterPetBuff(battleScene.value);
       applyShengyuEntryPassives(battleScene.value);
@@ -25500,7 +26337,7 @@ const applyBossChainFinalBuff = (scene) => {
       if (mode === "timeTunnel") applyTimeTunnelFloor45TargetBuff(battleScene.value);
       if (mode === "timeTunnel") applyTimeTunnelFloor50TargetBuff(battleScene.value);
       if (mode === "timeTunnel") applyTimeTunnelFloor55TargetBuff(battleScene.value);
-      if ((mode === "boss" || mode === "weeklyBoss" || mode === "equipmentDungeon") && battleScene.value.targetChallengeDamageReductionRatio > 0) {
+      if ((mode === "boss" || mode === "weeklyBoss" || mode === "equipmentDungeon" || mode === "elementTower") && battleScene.value.targetChallengeDamageReductionRatio > 0) {
         const counteredText = battleScene.value.targetCounteredDamageReductionRatio > 0 ? `，受到克制伤害时额外减伤${Math.round(battleScene.value.targetCounteredDamageReductionRatio * 100)}%` : "";
         pushBattleLog(battleScene.value, `${battleScene.value.targetName}获得挑战减伤：普通/特殊攻击造成的伤害减少${Math.round(battleScene.value.targetChallengeDamageReductionRatio * 100)}%${counteredText}。`);
       }
@@ -26018,11 +26855,20 @@ const applyBossChainFinalBuff = (scene) => {
       const nextIndex = Math.max(0, Math.floor(Number(meta.index) || 0)) + 1;
       const nextEnemy = enemies[nextIndex];
       if (!nextEnemy) return false;
-      const target = buildTimeTunnelTarget(nextEnemy, meta.floor);
+      const target = scene.mode === "elementTower" ? buildElementTowerTarget(nextEnemy) : buildTimeTunnelTarget(nextEnemy, meta.floor);
       if (!target) return false;
-      if (meta.environmentElement) applyTimeTunnelEnvironmentBuffToUnit(target, meta.environmentElement);
-      applyTimeTunnelFloor50FixedHp(target, meta.floor);
+      if (scene.mode === "timeTunnel") {
+        if (meta.environmentElement) applyTimeTunnelEnvironmentBuffToUnit(target, meta.environmentElement);
+        applyTimeTunnelFloor50FixedHp(target, meta.floor);
+      }
       meta.index = nextIndex;
+      if (scene.mode === "elementTower") {
+        target.id = `element_tower_enemy_${Number(target.dexId) || 0}_${nextIndex}`;
+        target.ability = { ...(target.ability || {}), hp: ELEMENT_TOWER_BOSS_HP };
+        target.ability.total = calcAbilityTotal(target.ability);
+        target.hp = ELEMENT_TOWER_BOSS_HP;
+        target.maxHp = ELEMENT_TOWER_BOSS_HP;
+      }
       scene.targetDexId = target.dexId;
       scene.targetName = target.name;
       scene.targetImage = target.image;
@@ -26036,14 +26882,20 @@ const applyBossChainFinalBuff = (scene) => {
       scene.uiTargetHp = target.hp;
       scene.uiTargetMaxHp = target.maxHp;
       scene.targetState = normalizeBattleState(target.battleState);
+      if (scene.mode === "elementTower") {
+        scene.currentTargetId = target.id;
+        scene.elementTowerEnemyPartner = null;
+        scene.targetTeam = [target];
+      }
       const floor40Buff = getTimeTunnelFloor40BossBuff(scene);
       const floor45Buff = getTimeTunnelFloor45BossBuff(scene);
       const floor50Buff = getTimeTunnelFloor50BossBuff(scene);
       const floor55Buff = getTimeTunnelFloor55BossBuff(scene);
-      const targetStageLevel = floor40Buff ? floor40Buff.stageLevel : (floor45Buff && floor45Buff.stageLevel ? floor45Buff.stageLevel : (floor50Buff && floor50Buff.stageLevel ? floor50Buff.stageLevel : (floor55Buff && floor55Buff.stageLevel ? floor55Buff.stageLevel : 1)));
-      applyStageDelta(scene, "target", ALL_ABILITY_STAGE_KEYS, targetStageLevel);
+      const targetStageLevel = scene.mode === "elementTower" ? 0 : (floor40Buff ? floor40Buff.stageLevel : (floor45Buff && floor45Buff.stageLevel ? floor45Buff.stageLevel : (floor50Buff && floor50Buff.stageLevel ? floor50Buff.stageLevel : (floor55Buff && floor55Buff.stageLevel ? floor55Buff.stageLevel : 1))));
+      if (targetStageLevel > 0) applyStageDelta(scene, "target", ALL_ABILITY_STAGE_KEYS, targetStageLevel);
       scene.targetSkills = target.skills;
       scene.globalTimedEffects = [];
+      if (scene.mode === "elementTower") applyElementTowerTargetEffects(scene);
       scene.fxTargetDefeated = false;
       scene.fxTargetShake = false;
       scene.damageOnTarget = "";
@@ -26052,15 +26904,15 @@ const applyBossChainFinalBuff = (scene) => {
       scene.comboHitsOnTarget = [];
       scene.comboTotalOnTarget = "";
       resetBattleAnimIdle(scene);
-      pushBattleLog(scene, `${target.name} Lv.${target.level} 上场，斗志激发，全属性提升${targetStageLevel}级。`);
-      applyTimeTunnelFloor20TargetBuff(scene);
-      applyTimeTunnelFloor25TargetBuff(scene);
-      applyTimeTunnelFloor30TargetBuff(scene);
-      applyTimeTunnelFloor35TargetBuff(scene);
-      applyTimeTunnelFloor40TargetBuff(scene, { applyStage: false });
-      applyTimeTunnelFloor45TargetBuff(scene, { applyStage: false });
-      applyTimeTunnelFloor50TargetBuff(scene, { applyStage: false });
-      applyTimeTunnelFloor55TargetBuff(scene, { applyStage: false });
+      pushBattleLog(scene, `${target.name} Lv.${target.level} 上场${targetStageLevel > 0 ? `，斗志激发，全属性提升${targetStageLevel}级` : ""}。`);
+      if (scene.mode === "timeTunnel") applyTimeTunnelFloor20TargetBuff(scene);
+      if (scene.mode === "timeTunnel") applyTimeTunnelFloor25TargetBuff(scene);
+      if (scene.mode === "timeTunnel") applyTimeTunnelFloor30TargetBuff(scene);
+      if (scene.mode === "timeTunnel") applyTimeTunnelFloor35TargetBuff(scene);
+      if (scene.mode === "timeTunnel") applyTimeTunnelFloor40TargetBuff(scene, { applyStage: false });
+      if (scene.mode === "timeTunnel") applyTimeTunnelFloor45TargetBuff(scene, { applyStage: false });
+      if (scene.mode === "timeTunnel") applyTimeTunnelFloor50TargetBuff(scene, { applyStage: false });
+      if (scene.mode === "timeTunnel") applyTimeTunnelFloor55TargetBuff(scene, { applyStage: false });
       if (Math.max(1, Math.floor(Number(meta.floor) || 1)) === 25 && Number(target.dexId) === 382) {
         addTimedEffect(scene, "target", { kind: "damageBoost", turns: 999, data: { factor: 1.4, permanent: true } });
         pushBattleLog(scene, `${target.name}承接暗影甲龙的时空余焰，额外获得伤害提升40%。`);
@@ -26213,6 +27065,17 @@ const applyBossChainFinalBuff = (scene) => {
     };
     const resolveBattleDefeatIfNeeded = (scene, reason = "") => {
       if (!scene || scene.ended || scene.pendingFinish) return false;
+      if (scene.mode === "elementTower" && (scene.elementTowerActingSpecialSide || (scene.elementTowerAlly && scene.currentAttackerId === scene.elementTowerAlly.id))) return false;
+      if (scene.mode === "elementTower" && Number(scene.targetHp) <= 0) {
+        syncPvpTargetFromBattleScene(scene);
+        const remaining = (scene.targetTeam || []).find((unit) => unit && Number(unit.hp) > 0);
+        if (remaining) {
+          applyBattleUnitToTargetSide(scene, remaining);
+          scene.forceDefeatSide = "";
+          scene.forceDefeatReason = "";
+          return false;
+        }
+      }
       const tryYingwuKingWeeklyBossRevive = () => {
         if (scene.mode !== "weeklyBoss" || scene.weeklyBossYingwuKingRevived) return false;
         const meta = scene.guardianMeta && typeof scene.guardianMeta === "object" ? scene.guardianMeta : {};
@@ -27241,6 +28104,27 @@ const applyBossChainFinalBuff = (scene) => {
           }
         }
         tickSideEffects(turnEnd, "attacker");
+        if (turnEnd.mode === "elementTower") {
+          const otherBosses = (turnEnd.targetTeam || []).filter((unit) => unit && unit.id !== turnEnd.currentTargetId);
+          [["attacker", turnEnd.elementTowerAlly], ...otherBosses.map((unit) => ["target", unit])].forEach(([side, unit]) => {
+            if (!unit || Number(unit.hp) <= 0) return;
+            const snapshot = captureElementTowerBattleSide(turnEnd, side);
+            if (side === "attacker") applyBattleUnitToAttackerSide(turnEnd, unit);
+            else applyBattleUnitToTargetSide(turnEnd, unit);
+            const fx = applyEndTurnStatus(turnEnd, side);
+            if (side === "attacker") {
+              unit.hp = clamp(Number(turnEnd.attackerHp) || 0, 0, Number(unit.maxHp) || 1);
+              unit.battleState = normalizeBattleState(turnEnd.attackerState);
+              unit.skills = turnEnd.skills;
+            } else {
+              unit.hp = clamp(Number(turnEnd.targetHp) || 0, 0, Number(unit.maxHp) || 1);
+              unit.battleState = normalizeBattleState(turnEnd.targetState);
+              unit.skills = turnEnd.targetSkills;
+            }
+            showBattleStatusEffectFx(turnEnd, side, fx && fx.statuses);
+            restoreElementTowerBattleSide(turnEnd, snapshot);
+          });
+        }
         tickGlobalTimedEffects(turnEnd);
         syncRoundBasedControlDurations(turnEnd);
         if (resolveBattleDefeatIfNeeded(turnEnd)) return false;
@@ -27252,26 +28136,51 @@ const applyBossChainFinalBuff = (scene) => {
       const pa = a && a.skill ? getSkillActionPriority(a.skill) : 0;
       const pb = b && b.skill ? getSkillActionPriority(b.skill) : 0;
       if (pa !== pb) return pb - pa;
-      const sa = getBattleActionSpeed(scene, a.side);
-      const sb = getBattleActionSpeed(scene, b.side);
+      const actionSpeed = (action) => {
+        if (scene.mode === "elementTower" && action.side === "target" && action.sourceUnitId) {
+          const unit = (scene.targetTeam || []).find((row) => row && row.id === action.sourceUnitId);
+          if (unit && unit.id !== scene.currentTargetId) {
+            return getBattleActionSpeed({ ...scene, targetAbility: unit.ability, targetState: unit.battleState }, "target");
+          }
+        }
+        return getBattleActionSpeed(scene, action.side);
+      };
+      const sa = actionSpeed(a);
+      const sb = actionSpeed(b);
       if (sa !== sb) return sb - sa;
       return (Number(a.tie) || 0) - (Number(b.tie) || 0);
     };
     const queueBattleTurnActions = (scene, actions, delayMs = 0) => {
       if (!scene || scene.ended || scene.pendingFinish) return;
-      const ordered = (Array.isArray(actions) ? actions : [])
+      const sourceActions = scene.mode === "elementTower"
+        ? (Array.isArray(actions) ? actions : []).filter((action) => action && !(action.skill && action.skill._elementTowerAdditionalTarget) && !action._elementTowerFollowUp)
+        : (Array.isArray(actions) ? actions : []);
+      const ordered = sourceActions
         .map((a) => {
           if (!a || !a.side) return a;
-          const pool = a.side === "attacker" ? scene.skills : scene.targetSkills;
-          const autoSkill = consumeTurnSequenceAttackSkill(scene, a.side, pool);
+          const isElementTowerSpecial = scene.mode === "elementTower" && ["elementTowerAlly", "elementTowerTargetAlly"].includes(a.side);
+          const pool = a.side === "attacker" || a.side === "elementTowerAlly" ? scene.skills : scene.targetSkills;
+          const autoSkill = isElementTowerSpecial || (scene.mode === "elementTower" && a.side === "target" && a.sourceUnitId !== scene.currentTargetId) ? null : consumeTurnSequenceAttackSkill(scene, a.side, pool);
           if (!autoSkill) return a;
           const who = a.side === "attacker" ? scene.attackerName : scene.targetName;
           pushBattleLog(scene, `${who}延续${autoSkill.name}，本回合自动使用该技能。`);
           return { ...a, skill: autoSkill, autoTurnSequence: true };
         })
-        .filter((a) => a && a.side && a.skill)
-        .map((a) => ({ ...a, tie: Math.random() }))
+        .filter((a) => a && a.side && (a.skill || (scene.mode === "elementTower" && ["elementTowerAlly", "elementTowerTargetAlly"].includes(a.side))))
+        .map((a) => ({ ...a, tie: Number.isFinite(a.tie) ? a.tie : Math.random() }))
         .sort((a, b) => compareBattleActions(scene, a, b));
+      const elementTowerActedUnits = new Set();
+      const elementTowerActorKey = (action) => {
+        if (!action) return "";
+        if (action.side === "attacker") return `unit:${scene.currentAttackerId || "attacker"}`;
+        if (action.side === "target") {
+          const unit = (scene.targetTeam || []).find((row) => row && String(row.id) === String(action.sourceUnitId || scene.currentTargetId || ""));
+          return `unit:${unit && unit.id || action.sourceUnitId || scene.currentTargetId || "target"}`;
+        }
+        if (action.side === "elementTowerAlly") return `unit:${scene.elementTowerAlly && scene.elementTowerAlly.id || "elementTowerAlly"}`;
+        if (action.side === "elementTowerTargetAlly") return `unit:${scene.elementTowerEnemyPartner && scene.elementTowerEnemyPartner.id || "elementTowerTargetAlly"}`;
+        return `side:${action.side}`;
+      };
       const runAt = (index) => {
         const live = battleScene.value;
         if (!live || live !== scene || live.ended || live.pendingFinish) return;
@@ -27280,21 +28189,143 @@ const applyBossChainFinalBuff = (scene) => {
           settleBattleTurn(live);
           return;
         }
+        const elementTowerActor = live.mode === "elementTower" ? elementTowerActorKey(action) : "";
+        if (elementTowerActor && elementTowerActedUnits.has(elementTowerActor)) {
+          runAt(index + 1);
+          return;
+        }
         if (action.side === "attacker" && Math.max(0, Number(live.attackerHp) || 0) <= 0) {
           runAt(index + 1);
           return;
         }
-        if (action.side === "target" && Math.max(0, Number(live.targetHp) || 0) <= 0) {
+        if (live.mode === "elementTower" && action.side === "target" && action.sourceUnitId && !(live.targetTeam || []).some((unit) => unit && unit.id === action.sourceUnitId && Number(unit.hp) > 0)) {
           runAt(index + 1);
           return;
         }
+        if (action.side === "target" && live.mode !== "elementTower" && Math.max(0, Number(live.targetHp) || 0) <= 0) {
+          runAt(index + 1);
+          return;
+        }
+        if (live.mode === "elementTower" && action.targetId) {
+          const requestedTarget = [...(live.targetTeam || []), ...(live.team || [])].find((unit) => unit && String(unit.id) === String(action.targetId));
+          if (requestedTarget && Number(requestedTarget.hp) <= 0) {
+            runAt(index + 1);
+            return;
+          }
+        }
         if (resolveBattleDefeatIfNeeded(live, action.side === "target" ? "" : "我方背包亚比全部倒下")) return;
+        if (live.mode === "elementTower" && action.side === "target" && action.sourceUnitId) {
+          const actor = (live.targetTeam || []).find((unit) => unit && unit.id === action.sourceUnitId && Number(unit.hp) > 0);
+          if (!actor) { runAt(index + 1); return; }
+          if (live.currentTargetId !== actor.id) applyBattleUnitToTargetSide(live, actor);
+        }
+        let elementTowerTargetSnapshot = null;
+        const targetsElementTowerShura = live.mode === "elementTower"
+          && action.targetId
+          && live.elementTowerAlly
+          && String(action.targetId) === String(live.elementTowerAlly.id)
+          && action.side !== "elementTowerAlly"
+          && Number(live.elementTowerAlly.hp) > 0;
+        if (targetsElementTowerShura) {
+          elementTowerTargetSnapshot = captureElementTowerBattleSide(live, "attacker");
+          applyBattleUnitToAttackerSide(live, live.elementTowerAlly);
+          live.elementTowerActingSpecialSide = "elementTowerTargetOverride";
+        }
+        if (live.mode === "elementTower" && action.targetId) {
+          const requestedTarget = (live.targetTeam || []).find((unit) => unit && unit.id === action.targetId && Number(unit.hp) > 0);
+          if (requestedTarget) applyBattleUnitToTargetSide(live, requestedTarget);
+        }
+        if (elementTowerActor && (action.skill || action.usePpBean)) elementTowerActedUnits.add(elementTowerActor);
+        if (live.mode === "elementTower" && (action.side === "elementTowerAlly" || action.side === "elementTowerTargetAlly")) {
+          const isAttackerAlly = action.side === "elementTowerAlly";
+          const unit = isAttackerAlly ? live.elementTowerAlly : live.elementTowerEnemyPartner;
+          if (!unit || Number(unit.hp) <= 0) { runAt(index + 1); return; }
+          const needsPpBean = isAttackerAlly && Array.isArray(unit.skills) && unit.skills.some(Boolean) && unit.skills.every((skill) => !skill || Math.max(0, Number(skill.pp) || 0) === 0);
+          if (action.usePpBean || needsPpBean) {
+            unit.skills.forEach((skill) => { if (skill) skill.pp = Math.min(safeSkillPPMax(skill), Math.max(0, Number(skill.pp) || 0) + 20); });
+            pushBattleLog(live, `${unit.name}使用高级PP豆，各技能恢复最多20点PP。`);
+            runAt(index + 1);
+            return;
+          }
+          if (!action.skill) { runAt(index + 1); return; }
+          const snapshot = captureElementTowerBattleSide(live, isAttackerAlly ? "attacker" : "target");
+          if (isAttackerAlly) {
+            syncActivePetFromBattleScene(live);
+            applyBattleUnitToAttackerSide(live, unit);
+          } else {
+            syncPvpTargetFromBattleScene(live);
+            applyBattleUnitToTargetSide(live, unit);
+          }
+          live.elementTowerActingSpecialSide = action.side;
+          let specialResult;
+          try {
+            specialResult = runBattleSkill(live, isAttackerAlly ? "attacker" : "target", action.skill);
+          } catch (error) {
+            console.error("[ElementTower] 自动行动失败:", error);
+            if (isAttackerAlly) {
+              unit.hp = clamp(Number(live.attackerHp) || 0, 0, Number(unit.maxHp) || 1);
+              unit.battleState = normalizeBattleState(live.attackerState);
+              unit.skills = live.skills;
+            } else {
+              syncPvpTargetFromBattleScene(live);
+            }
+            restoreElementTowerBattleSide(live, snapshot);
+            if (elementTowerTargetSnapshot) {
+              live.elementTowerAlly.hp = clamp(Number(live.attackerHp) || 0, 0, Number(live.elementTowerAlly.maxHp) || 1);
+              live.elementTowerAlly.battleState = normalizeBattleState(live.attackerState);
+              restoreElementTowerBattleSide(live, elementTowerTargetSnapshot);
+            }
+            live.elementTowerActingSpecialSide = "";
+            pushBattleLog(live, `${unit.name}的自动行动发生错误，本次行动跳过。`);
+            runAt(index + 1);
+            return;
+          }
+          live.elementTowerActingSpecialSide = "";
+          if (live.ended || live.pendingFinish || specialResult.ended) {
+            if (isAttackerAlly) {
+              unit.hp = clamp(Number(live.attackerHp) || 0, 0, Number(unit.maxHp) || 1);
+              unit.battleState = normalizeBattleState(live.attackerState);
+              unit.skills = live.skills;
+            } else {
+              syncPvpTargetFromBattleScene(live);
+            }
+            restoreElementTowerBattleSide(live, snapshot);
+            if (elementTowerTargetSnapshot) {
+              live.elementTowerAlly.hp = clamp(Number(live.attackerHp) || 0, 0, Number(live.elementTowerAlly.maxHp) || 1);
+              live.elementTowerAlly.battleState = normalizeBattleState(live.attackerState);
+              restoreElementTowerBattleSide(live, elementTowerTargetSnapshot);
+            }
+            return;
+          }
+          runAfterBattleVisuals(live, () => {
+            if (isAttackerAlly) {
+              syncPvpTargetFromBattleScene(live);
+              live.elementTowerAlly.hp = clamp(Number(live.attackerHp) || 0, 0, Number(live.elementTowerAlly.maxHp) || 1);
+              live.elementTowerAlly.battleState = normalizeBattleState(live.attackerState);
+              live.elementTowerAlly.skills = live.skills;
+            }
+            else syncPvpTargetFromBattleScene(live);
+            if (elementTowerTargetSnapshot) {
+              live.elementTowerAlly.hp = clamp(Number(live.attackerHp) || 0, 0, Number(live.elementTowerAlly.maxHp) || 1);
+              live.elementTowerAlly.battleState = normalizeBattleState(live.attackerState);
+              restoreElementTowerBattleSide(live, elementTowerTargetSnapshot);
+            }
+            restoreElementTowerBattleSide(live, snapshot);
+            resetBattleAnimIdle(live);
+            runAt(index + 1);
+          }, Math.max(BATTLE_FLOAT_TEXT_DURATION_MS, Number(specialResult && specialResult.visualDelayMs) || 0, BATTLE_COUNTER_ATTACK_DELAY_MS));
+          return;
+        }
         if (!action.skill) {
           runAt(index + 1);
           return;
         }
         if (action.side === "target" && (action.skill._autoPpBeanAction || useTargetAutoPpBeanAsAction(live))) {
           if (action.skill._autoPpBeanAction) useTargetAutoPpBeanAsAction(live);
+          if (elementTowerTargetSnapshot) {
+            restoreElementTowerBattleSide(live, elementTowerTargetSnapshot);
+            live.elementTowerActingSpecialSide = "";
+          }
           setTimeout(() => runAt(index + 1), battleSceneDelayMs(live, BATTLE_FLOAT_TEXT_DURATION_MS, 120));
           return;
         }
@@ -27307,11 +28338,27 @@ const applyBossChainFinalBuff = (scene) => {
           && ordered.slice(index + 1).some((nextAction) => nextAction && nextAction.side === "target" && nextAction.skill);
         const result = runBattleSkill(live, action.side, action.skill);
         live._targetActionPendingAfterCurrentAttacker = false;
-        if (live.ended || live.pendingFinish || result.ended) return;
+        if (live.ended || live.pendingFinish || result.ended) {
+          if (elementTowerTargetSnapshot) {
+            live.elementTowerAlly.hp = clamp(Number(live.attackerHp) || 0, 0, Number(live.elementTowerAlly.maxHp) || 1);
+            live.elementTowerAlly.battleState = normalizeBattleState(live.attackerState);
+            restoreElementTowerBattleSide(live, elementTowerTargetSnapshot);
+          }
+          live.elementTowerActingSpecialSide = "";
+          return;
+        }
         if (Array.isArray(result.followUpActions) && result.followUpActions.length > 0) {
           ordered.splice(index + 1, 0, ...result.followUpActions.map((followUp) => ({ ...followUp, tie: Math.random() })));
         }
-        runAfterBattleVisuals(live, () => runAt(index + 1), Math.max(BATTLE_FLOAT_TEXT_DURATION_MS, Number(result && result.visualDelayMs) || 0, BATTLE_COUNTER_ATTACK_DELAY_MS));
+        runAfterBattleVisuals(live, () => {
+          if (elementTowerTargetSnapshot) {
+            live.elementTowerAlly.hp = clamp(Number(live.attackerHp) || 0, 0, Number(live.elementTowerAlly.maxHp) || 1);
+            live.elementTowerAlly.battleState = normalizeBattleState(live.attackerState);
+            restoreElementTowerBattleSide(live, elementTowerTargetSnapshot);
+            live.elementTowerActingSpecialSide = "";
+          }
+          runAt(index + 1);
+        }, Math.max(BATTLE_FLOAT_TEXT_DURATION_MS, Number(result && result.visualDelayMs) || 0, BATTLE_COUNTER_ATTACK_DELAY_MS));
       };
       setTimeout(() => runAt(0), battleSceneDelayMs(scene, Math.max(0, Number(delayMs) || 0), 0));
     };
@@ -27342,12 +28389,16 @@ const applyBossChainFinalBuff = (scene) => {
         return { ended: false, skipped: true, visualDelayMs: BATTLE_FLOAT_TEXT_DURATION_MS };
       }
       const guardianBossBlocked = isSkillBlockedByGuardianBoss(scene, actorSide, skill);
-      skill.pp = Math.max(0, Number(skill.pp) - 1);
+       const isElementTowerAdditionalTarget = scene.mode === "elementTower" && Boolean(skill._elementTowerAdditionalTarget);
+       if (!isElementTowerAdditionalTarget) {
+         skill.pp = Math.max(0, Number(skill.pp) - 1);
+         if (scene.mode === "elementTower") recordElementTowerValueFx(scene, isAttacker ? scene.currentAttackerId : scene.currentTargetId, "pp", "PP-1");
+       }
       if (skill._turnSequenceSourceSkill && skill._turnSequenceSourceSkill !== skill) {
         skill._turnSequenceSourceSkill.pp = skill.pp;
       }
-      markOncePerBattleSkillUsed(scene, actorSide, skill);
-      triggerLowShengyuDomainOnSkillUse(scene, actorSide, skill);
+       if (!isElementTowerAdditionalTarget) markOncePerBattleSkillUsed(scene, actorSide, skill);
+       if (!isElementTowerAdditionalTarget) triggerLowShengyuDomainOnSkillUse(scene, actorSide, skill);
       const stageTotalsBeforeSkill = battleStageTotalsSnapshot(scene);
 
       scene.fxSkillText = skill.name;
@@ -27403,15 +28454,19 @@ const applyBossChainFinalBuff = (scene) => {
       }
       const actorLevel = isAttacker ? scene.attackerLevel : scene.targetLevel;
       const defenderLevel = isAttacker ? scene.targetLevel : scene.attackerLevel;
-      const fixedDamage = Math.max(0, Math.floor(calcBattleFixedDamageAmount(scene, actorSide, skill, actorLevel, defenderLevel) * getWeeklyBossUnharmedDamageBoostFactor(scene, actorSide)));
+      const stoneDamageFactor = elementStoneDamageFactor(scene, actorSide, getSkillBattleElement(skill));
+      const fixedDamage = Math.max(0, Math.floor(calcBattleFixedDamageAmount(scene, actorSide, skill, actorLevel, defenderLevel) * getWeeklyBossUnharmedDamageBoostFactor(scene, actorSide) * stoneDamageFactor));
       const dynamicPower = getSkillDynamicPower(scene, actorSide, targetSide, skill);
       const powerOverride = getSkillPowerOverride(skill);
       const turnSequencePower = Number(skill && skill._turnSequenceAuto ? skill.power : 0) || 0;
       const skillElement = getSkillBattleElement(skill);
       const elementFactorForEffectGate = getElementFactorAgainstElements(skillElement, targetElements);
       const hasUsablePower = fixedDamage > 0 || Number(skill.power) > 0 || Number(dynamicPower) > 0 || Number(powerOverride) > 0 || turnSequencePower > 0 || hasSkillEffectKind(skill, "multiHit");
-      const isStatusAnim = suppressDirectDamage || hasDiminishingSelfEffect || atkKind === "status" || !hasUsablePower;
-      const actionStateKey = isStatusAnim ? "status" : "atk";
+      const forceElementTowerShuraAttackAnim = scene.mode === "elementTower"
+        && scene.elementTowerActingSpecialSide === "elementTowerAlly"
+        && (atkKind === "physical" || atkKind === "special" || Number(skill && skill.power) > 0);
+      const isStatusAnim = !forceElementTowerShuraAttackAnim && (suppressDirectDamage || hasDiminishingSelfEffect || atkKind === "status" || !hasUsablePower);
+      const actionStateKey = forceElementTowerShuraAttackAnim ? "atk" : (isStatusAnim ? "status" : "atk");
       const actionSrcForDelay = BATTLE_IDLE_USES_ACTION_SVG ? getBattleSidePetAnimPath(scene, actorSide, actionStateKey) : "";
       const effectSrcForDelay = getBattleSkillEffectPath(skill, actionSeq);
       const estimatedActionMs = actionSrcForDelay ? petAnimPlayMs(estimatePetBattleAnimDurationMs(actorDexIdForDelay, actorSide, actionStateKey)) : 0;
@@ -27438,6 +28493,7 @@ const applyBossChainFinalBuff = (scene) => {
           if (!live || live !== scene || live.ended) return;
           if (isAttacker) scene.damageOnTarget = "无效";
           else scene.damageOnAttacker = "无效";
+          if (scene.mode === "elementTower") recordElementTowerValueFx(scene, targetSide === "target" ? scene.currentTargetId : scene.currentAttackerId, "damage", "无效");
           markBattleFloatText(scene);
           flushAfterDamageFloat(scene);
         };
@@ -27553,6 +28609,7 @@ const applyBossChainFinalBuff = (scene) => {
           if (!live || live !== scene || live.ended) return;
           if (isAttacker) scene.damageOnTarget = "无效";
           else scene.damageOnAttacker = "无效";
+          if (scene.mode === "elementTower") recordElementTowerValueFx(scene, targetSide === "target" ? scene.currentTargetId : scene.currentAttackerId, "damage", "无效");
           markBattleFloatText(scene);
           flushAfterDamageFloat(scene);
         };
@@ -27583,8 +28640,10 @@ const applyBossChainFinalBuff = (scene) => {
           const showImmuneVisual = () => {
             const live = battleScene.value;
             if (!live || live !== scene || live.ended) return;
+            const immuneUnitId = targetSide === "target" ? scene.currentTargetId : scene.currentAttackerId;
             if (isAttacker) scene.damageOnTarget = "无效";
             else scene.damageOnAttacker = "无效";
+            if (scene.mode === "elementTower") recordElementTowerValueFx(scene, immuneUnitId, "damage", "无效", ["无效"]);
             markBattleFloatText(scene);
           };
           scheduleBattleSkillEffectVisual(scene, actorSide, targetSide, skill, atkKind, actionStateKey, actionSeq, showImmuneVisual);
@@ -27686,7 +28745,7 @@ const applyBossChainFinalBuff = (scene) => {
           });
           let perHitTriggeredFixedDamage = 0;
           if (bonusFixedPerHit && Math.random() <= bonusFixedPerHit.chance) {
-            one += bonusFixedPerHit.amount;
+            one += Math.floor(bonusFixedPerHit.amount * stoneDamageFactor);
           }
           perHitStatusFixedDamageEffects.forEach((e) => {
             const side = normalize(e.target) === "self" ? actorSide : targetSide;
@@ -27699,7 +28758,7 @@ const applyBossChainFinalBuff = (scene) => {
               applyBossStatusApplicationRules(scene, side, status);
               pushBattleLog(scene, `${skill.name}第${i + 1}击触发，${side === "attacker" ? scene.attackerName : scene.targetName}陷入${statusLabel(status)}${state.statuses[status]}回合。`);
             }
-            if (status && Math.max(0, Number(state.statuses && state.statuses[status]) || 0) > 0) perHitTriggeredFixedDamage += Math.max(1, Math.floor(Number(e.amount) || 1));
+            if (status && Math.max(0, Number(state.statuses && state.statuses[status]) || 0) > 0) perHitTriggeredFixedDamage += Math.max(1, Math.floor((Number(e.amount) || 1) * stoneDamageFactor));
           });
           attackFixedEffects.forEach((effect) => {
             const amount = Math.max(0, Math.floor(Number(effect.data && effect.data.amount) || 0));
@@ -27727,7 +28786,7 @@ const applyBossChainFinalBuff = (scene) => {
               const baseAmount = normalize(e.kind) === "bonusfixeddamagebyselfhplost"
                 ? (Math.max(1, Number(e.min) || 20) + (Math.max(Math.max(1, Number(e.min) || 20), Number(e.max) || 200) - Math.max(1, Number(e.min) || 20)) * lostHpRatio)
                 : (Number(e.amount) || 1);
-              const fixedAmount = Math.max(1, Math.floor(baseAmount * multiplier));
+              const fixedAmount = Math.max(1, Math.floor(baseAmount * multiplier * stoneDamageFactor));
               one += fixedAmount;
               if (e.splitDamageDisplay) splitFixedDamage += fixedAmount;
               if (multiplier > 1) pushBattleLog(scene, `${skill.name}对${targetName}触发克制强化，固定伤害和效果概率翻倍。`);
@@ -27737,7 +28796,7 @@ const applyBossChainFinalBuff = (scene) => {
             if (e.requireHit && !hitOk) return;
             const count = countBattleStatuses(scene, targetSide);
             if (count <= 0) return;
-            const amount = Math.max(1, Math.floor(Number(e.amountPerStatus) || Number(e.amount) || 1)) * count;
+            const amount = Math.max(1, Math.floor((Number(e.amountPerStatus) || Number(e.amount) || 1) * count * stoneDamageFactor));
             one += amount;
             pushBattleLog(scene, `${targetName}身上的不良状态使${skill.name}追加${amount}点伤害。`);
           });
@@ -27748,7 +28807,7 @@ const applyBossChainFinalBuff = (scene) => {
             if (!status) return;
             const statuses = getSideState(scene, side).statuses || {};
             if (Math.max(0, Number(statuses[status]) || 0) <= 0) return;
-            one += Math.max(1, Math.floor(Number(e.amount) || 1));
+            one += Math.max(1, Math.floor((Number(e.amount) || 1) * stoneDamageFactor));
           });
           const shield = useDamageShieldAmount(scene, targetSide, one);
           if (shield.amount > 0) {
@@ -28054,6 +29113,11 @@ const applyBossChainFinalBuff = (scene) => {
           isComboSkill = false;
           splitDamageDisplay = null;
         }
+        const damageRelationTag = compareElementLabel(elementFactor);
+        const damageFloatTags = [
+          damageRelationTag === "克制" || damageRelationTag === "微弱" || damageRelationTag === "无效" ? damageRelationTag : "",
+          (targetSide === "target" ? scene.critOnTarget : scene.critOnAttacker) ? "暴击" : ""
+        ].filter(Boolean);
         const showDamageVisual = () => {
           const live = battleScene.value;
           if (!live || live !== scene || live.ended) return;
@@ -28096,6 +29160,10 @@ const applyBossChainFinalBuff = (scene) => {
               scene.damageOnTarget = `-${selfPowerDamage}`;
             }
           }
+          if (scene.mode === "elementTower") {
+            const hitUnitId = targetSide === "target" ? scene.currentTargetId : scene.currentAttackerId;
+            if (damage > 0) recordElementTowerValueFx(scene, hitUnitId, "damage", isComboSkill || splitDamageDisplay ? `总-${damage}` : `-${damage}`, damageFloatTags, isComboSkill || splitDamageDisplay ? comboHitList : null);
+          }
           markBattleFloatText(scene);
           if (Number(scene.attackerHp) <= 0 || Number(scene.targetHp) <= 0) markBattleVisualHoldMs(scene, BATTLE_FLOAT_TEXT_DURATION_MS + BATTLE_DAMAGE_FLOAT_SETTLE_MS);
           flushAfterDamageFloat(scene);
@@ -28115,7 +29183,9 @@ const applyBossChainFinalBuff = (scene) => {
               if (attackerDelayFx) {
                 applyDelayedDamageBuffer(scene, "attacker", selfPowerDamage);
               } else {
+                const beforeSelfAttackerHp = Math.max(0, Number(scene.attackerHp) || 0);
                 scene.attackerHp = Math.max(hasLastStandEffect(scene, "attacker") && scene.attackerHp > 0 ? 1 : 0, scene.attackerHp - selfPowerDamage);
+                if (scene.mode === "elementTower") recordElementTowerValueFx(scene, scene.currentAttackerId, "damage", `-${Math.max(0, beforeSelfAttackerHp - scene.attackerHp)}`);
                 recordBattleDamageTakenThisTurn(scene, "attacker", selfPowerDamage);
                 applyBattleDamageToActivePet(scene);
                 clearSleepAfterDamage(scene, "attacker");
@@ -28129,7 +29199,7 @@ const applyBossChainFinalBuff = (scene) => {
             if (attackerDelayFx) {
               applyDelayedDamageBuffer(scene, "attacker", damage);
             } else {
-              scene.attackerHp = Math.max(hasLastStandEffect(scene, "attacker") && scene.attackerHp > 0 ? 1 : 0, scene.attackerHp - damage);
+                scene.attackerHp = Math.max(hasLastStandEffect(scene, "attacker") && scene.attackerHp > 0 ? 1 : 0, scene.attackerHp - damage);
               recordBattleDamageTakenThisTurn(scene, "attacker", damage);
               applyBattleDamageToActivePet(scene);
               if (damage > 0) clearSleepAfterDamage(scene, "attacker");
@@ -28139,7 +29209,9 @@ const applyBossChainFinalBuff = (scene) => {
               if (targetDelayFx) {
                 applyDelayedDamageBuffer(scene, "target", selfPowerDamage);
               } else {
+                const beforeSelfTargetHp = Math.max(0, Number(scene.targetHp) || 0);
                 scene.targetHp = Math.max(hasLastStandEffect(scene, "target") && scene.targetHp > 0 ? 1 : 0, scene.targetHp - selfPowerDamage);
+                if (scene.mode === "elementTower") recordElementTowerValueFx(scene, scene.currentTargetId, "damage", `-${Math.max(0, beforeSelfTargetHp - scene.targetHp)}`, damageFloatTags);
                 recordBattleDamageTakenThisTurn(scene, "target", selfPowerDamage);
                 recordTeamBossDamage(scene, selfPowerDamage);
                 clearSleepAfterDamage(scene, "target");
@@ -28558,7 +29630,23 @@ const applyBossChainFinalBuff = (scene) => {
             if (expMultiplier > 1) pushBattleLog(scene, `经验倍率已结算，本场经验 ×${expMultiplier}。`);
           }
         }
-        if (scene.mode === "timeTunnel") {
+        if (scene.mode === "elementTower") {
+          const floor = Math.max(1, Math.floor(Number(scene.timeTunnelMeta && scene.timeTunnelMeta.floor) || 1));
+          if (!state.value.elementTower || typeof state.value.elementTower !== "object") state.value.elementTower = {};
+          const previousFloor = Math.max(0, Math.floor(Number(state.value.elementTower.maxFloor) || 0));
+          state.value.elementTower.maxFloor = Math.max(previousFloor, floor);
+          unlockText = `元素塔第${floor}层挑战成功。`;
+          if (floor > previousFloor && floor <= ELEMENT_TOWER_MAX_FLOOR) {
+            const rewardId = floor === 10 ? "element_stone_water" : ELEMENT_TOWER_FRAGMENT_ITEM_ID;
+            const count = floor === 10 ? 1 : floor <= 5 ? 20 : 25;
+            const label = floor === 10 ? "水元素石" : "元素碎片";
+            addItemCount(rewardId, count);
+            unlockText += ` 首次通关获得${label}×${count}。`;
+            queueRewardFlyToasts([`获取${label}×${count}！`]);
+          }
+          pushBattleLog(scene, unlockText);
+          autoSaveCurrentProgress({ notify: false });
+        } else if (scene.mode === "timeTunnel") {
           const floor = Math.max(1, Math.floor(Number(scene.timeTunnelMeta && scene.timeTunnelMeta.floor) || 1));
           hCoinGain = floor * 300;
           const nextTimeTunnelMaxClearedFloor = Math.max(timeTunnelMaxClearedFloor.value, floor);
@@ -28645,7 +29733,10 @@ const applyBossChainFinalBuff = (scene) => {
             unlockText = `${target.name} 守护者全阶段挑战成功，亚比蛋已获取过，不重复发放。`;
           }
           completeClaimedTeamTaskByTrigger("challengeRoadNormalWin");
-        } else if (scene.mode === "boss") {
+          } else if (scene.guardianMeta && scene.guardianMeta.simulationBoss) {
+            hCoinGain = 0;
+            unlockText = `对战模拟结束，玄天水晶${win ? "已被击败" : "未被击败"}。`;
+          } else if (scene.mode === "boss") {
           hCoinGain = 2000;
           markDefeatedDex(target.dexId);
           if (!state.value.activatedDexIds.includes(target.dexId)) state.value.activatedDexIds.push(target.dexId);
@@ -28830,7 +29921,7 @@ const applyBossChainFinalBuff = (scene) => {
       if (scene.mode === "normal" && scene.guardianMeta && scene.guardianMeta.dexChallenge) {
         grantZongziReward(scene, 1, `${target.name}图鉴挑战${win ? "完成" : "结束"}`);
       }
-      if (win && scene.mode === "timeTunnel") {
+      if (win && ["timeTunnel", "elementTower"].includes(scene.mode)) {
         autoSaveCurrentProgress({ notify: false });
       }
       scene.ended = true;
@@ -28855,12 +29946,13 @@ const applyBossChainFinalBuff = (scene) => {
         repeatDexId: scene.mode === "normal" && !scene.autoBattleMeta ? Number(scene.targetDexId) || 0 : 0,
         repeatTargetLevel: scene.mode === "normal" && !scene.autoBattleMeta ? Math.max(1, Math.floor(Number(scene.targetLevel) || 1)) : 0
       };
-      if (scene.guardianMeta && scene.guardianMeta.teamBoss) {
+      if (scene.guardianMeta && (scene.guardianMeta.teamBoss || scene.guardianMeta.simulationBoss)) {
         const totalDamage = Math.max(0, Math.floor(Number(scene.totalDamageToTarget) || 0));
         const damageByPet = scene.teamBossDamageByPet && typeof scene.teamBossDamageByPet === "object" ? scene.teamBossDamageByPet : {};
         battleResult.value.teamBossSettle = true;
         battleResult.value.teamBossDamageLimitExceeded = Boolean(scene.teamBossDamageLimitExceeded);
         battleResult.value.teamBossDamage = totalDamage;
+        battleResult.value.battleSimulationSettle = Boolean(scene.guardianMeta.simulationBoss);
         battleResult.value.teamBossDamageByPet = (Array.isArray(scene.team) ? scene.team : [])
           .map((unit) => {
             const unitId = normalize(unit && unit.id);
@@ -28871,7 +29963,7 @@ const applyBossChainFinalBuff = (scene) => {
               damage: Math.max(0, Math.floor(Number(damageByPet[unitId]) || 0))
             };
           })
-          .filter((row) => row.damage > 0)
+          .filter((row) => row.damage > 0 || scene.guardianMeta.simulationBoss)
           .sort((a, b) => b.damage - a.damage || String(a.name).localeCompare(String(b.name), "zh-Hans-CN"));
       }
       battleResult.value.bossDamageLimitExceeded = Boolean(scene.teamBossDamageLimitExceeded || scene.midAutumnBossDamageLimitExceeded);
@@ -28931,6 +30023,99 @@ const applyBossChainFinalBuff = (scene) => {
       });
       state.value.battleLog = sanitizeBattleLog(state.value.battleLog).slice(0, 30);
     };
+    const elementTowerSkillHitsAllTargets = (skill) => {
+      const desc = normalize(skill && skill.desc);
+      if (parseSkillEffects(skill).some((effect) => normalize(effect && effect.kind) === "healFlatTeam")) return false;
+      const effects = parseSkillEffects(skill);
+      return /(?:对方|敌方)(?:全体|全场)|(?:攻击|伤害|撞击|给予|给)[^。；，\n]{0,8}(?:对方|敌方)(?:全体|全场)/.test(desc)
+        || (/(?:全体|全场)/.test(desc) && effects.some((effect) => {
+          const target = normalize(effect && (effect.target || effect.to));
+          const kind = normalize(effect && effect.kind);
+          return target === "opponent" || ["damage", "damageFlat", "damagePercent", "status"].includes(kind);
+        }));
+    };
+    const elementTowerSkillNeedsTarget = (skill) => {
+      if (!skill) return false;
+      const effects = parseSkillEffects(skill);
+      const selfAbilityStageOnly = effects.length > 0 && effects.every((effect) => {
+        const target = normalize(effect && (effect.target || effect.to)) || "self";
+        const applyTo = normalize(effect && effect.applyTo);
+        const kind = normalize(effect && effect.kind);
+        const keys = Array.isArray(effect && effect.keys) ? effect.keys : [];
+        return target === "self"
+          && (!applyTo || applyTo === "self")
+          && ["stage", "critStage", "timedStage", "delayedStage", "delayedDonghuangLight", "timedRandomStage", "onAttackRandomStage", "onHitRandomStage"].includes(kind)
+          && keys.length > 0
+          && Number(effect && effect.delta) > 0;
+      });
+      if (selfAbilityStageOnly) return false;
+      if (parseSkillAttackKind(skill) !== "status") return true;
+      return effects.some((effect) => {
+        const target = normalize(effect && (effect.target || effect.to)) || "self";
+        const kind = normalize(effect && effect.kind);
+        return target === "opponent"
+          || ["damage", "damageFlat", "damagePercent", "status", "stage", "clearStage", "statusShield", "attackImmunity"].includes(kind);
+      });
+    };
+    const selectElementTowerTarget = (unitId) => {
+      const scene = battleScene.value;
+      if (!scene || scene.mode !== "elementTower" || !scene.elementTowerPendingSkill || scene.isActing !== true) return;
+      const target = (scene.targetTeam || []).find((unit) => unit && unit.id === String(unitId || "") && Number(unit.hp) > 0);
+      if (!target) return;
+      scene.elementTowerPendingTargetId = target.id;
+      const skill = scene.elementTowerPendingSkill;
+      scene.elementTowerPendingSkill = null;
+      queueElementTowerTurn(scene, { side: "attacker", skill, targetId: target.id });
+    };
+    const queueElementTowerTurn = (scene, playerAction) => {
+      if (!scene || scene.mode !== "elementTower") return;
+      const targetSkill = pickElementTowerUnitSkill(scene.targetTeam && scene.targetTeam[0]);
+      const partnerSkill = pickElementTowerUnitSkill(scene.elementTowerEnemyPartner);
+      const shura = scene.elementTowerAlly;
+      const shuraNeedsPp = shura && Number(shura.hp) > 0 && Array.isArray(shura.skills) && shura.skills.length > 0 && shura.skills.every((skill) => !skill || Number(skill.pp) <= 0);
+      const shuraSkill = shuraNeedsPp ? null : pickElementTowerUnitSkill(shura, ELEMENT_TOWER_SHURA_SKILL_WEIGHTS);
+      const livingPlayer = (scene.team || []).find((unit) => unit && String(unit.id) === String(scene.currentAttackerId) && Number(unit.hp) > 0)
+        || (scene.team || []).find((unit) => unit && Number(unit.hp) > 0);
+      const livingAllies = [livingPlayer, scene.elementTowerAlly].filter((unit) => unit && Number(unit.hp) > 0);
+      const pickBossTargetId = () => {
+        if (livingAllies.length <= 1) return livingAllies[0] ? livingAllies[0].id : scene.currentAttackerId;
+        return livingAllies[Math.floor(Math.random() * livingAllies.length)].id;
+      };
+      const actions = [playerAction];
+      const addAllTargetAction = (action, targetId, groupKey) => {
+        if (!action || !targetId || !elementTowerSkillHitsAllTargets(action.skill)) return;
+        actions.push({ ...action, targetId, elementTowerAllTargetGroup: groupKey, skill: { ...action.skill, _elementTowerAdditionalTarget: true } });
+      };
+      if (targetSkill) {
+        const targetId = pickBossTargetId();
+        const action = { side: "target", skill: targetSkill, sourceUnitId: scene.targetTeam[0].id, targetId, elementTowerAllTargetGroup: `target_${scene.turnCount}` };
+        actions.push(action);
+        const otherAlly = livingAllies.find((unit) => unit && String(unit.id) !== String(targetId));
+        addAllTargetAction(action, otherAlly && otherAlly.id, action.elementTowerAllTargetGroup);
+      }
+      if (shuraNeedsPp) {
+        actions.push({ side: "elementTowerAlly", usePpBean: true });
+      } else if (shuraSkill) {
+        const targetId = scene.currentTargetId || ((scene.targetTeam || []).find((unit) => unit && Number(unit.hp) > 0) || {}).id;
+        const action = { side: "elementTowerAlly", skill: shuraSkill, targetId, elementTowerAllTargetGroup: `shura_${scene.turnCount}` };
+        actions.push(action);
+        const otherBoss = (scene.targetTeam || []).find((unit) => unit && Number(unit.hp) > 0 && String(unit.id) !== String(targetId));
+        addAllTargetAction(action, otherBoss && otherBoss.id, action.elementTowerAllTargetGroup);
+      }
+      if (partnerSkill) {
+        const targetId = pickBossTargetId();
+        const action = { side: "elementTowerTargetAlly", skill: partnerSkill, targetId, elementTowerAllTargetGroup: `partner_${scene.turnCount}` };
+        actions.push(action);
+        const otherAlly = livingAllies.find((unit) => unit && String(unit.id) !== String(targetId));
+        addAllTargetAction(action, otherAlly && otherAlly.id, action.elementTowerAllTargetGroup);
+      }
+      if (playerAction && elementTowerSkillHitsAllTargets(playerAction.skill)) {
+        const targetId = playerAction.targetId || scene.currentTargetId;
+        const otherBoss = (scene.targetTeam || []).find((unit) => unit && Number(unit.hp) > 0 && String(unit.id) !== String(targetId));
+        addAllTargetAction(playerAction, otherBoss && otherBoss.id, playerAction.elementTowerAllTargetGroup || `player_${scene.turnCount}`);
+      }
+      queueBattleTurnActions(scene, actions);
+    };
     const castBattleSkill = (skillName) => {
       const scene = battleScene.value;
       if (!scene || !scene.open || scene.ended || scene.isActing || scene.pendingFinish) return;
@@ -28953,7 +30138,18 @@ const applyBossChainFinalBuff = (scene) => {
         return;
       }
       if (autoSkill) pushBattleLog(scene, `${scene.attackerName}延续${skill.name}，本回合自动使用该技能。`);
+      if (scene.mode === "elementTower" && elementTowerSkillNeedsTarget(skill)) {
+        scene.isActing = true;
+        scene.elementTowerPendingSkill = skill;
+        scene.elementTowerPendingTargetId = "";
+        pushBattleLog(scene, `${scene.attackerName}选择了${skill.name}，请点击要攻击的 Boss。`);
+        return;
+      }
       scene.isActing = true;
+      if (scene.mode === "elementTower") {
+        queueElementTowerTurn(scene, { side: "attacker", skill, targetId: scene.currentTargetId });
+        return;
+      }
       const targetSkill = targetNeedsAutoPpBean(scene)
         ? { name: "__AUTO_PP_BEAN__", pp: 1, ppMax: 1, _autoPpBeanAction: true }
         : pickTargetSkill(scene, battleSceneTargetSkills.value.filter((s) => s.pp > 0));
@@ -29111,6 +30307,7 @@ const applyBossChainFinalBuff = (scene) => {
         scene._petAnimAttackerPlayLock = false;
       }
       battleScene.value = null;
+      elementTowerStageUnitId.value = "";
       battleLogCollapsed.value = false;
       battleStageHoverSide.value = "";
       battleStagePinnedSide.value = "";
@@ -29926,6 +31123,20 @@ const applyBossChainFinalBuff = (scene) => {
       });
       return layers.sort((a, b) => (a.z - b.z) || ((a.tie || 0) - (b.tie || 0)));
     });
+    watch(outfitRenderLayers, (layers) => {
+      homePlayerOutfitLayers.value = (Array.isArray(layers) ? layers : []).map((layer) => ({
+        imageSrc: layer.imageSrc || "",
+        z: layer.z,
+        l: layer.l,
+        t: layer.t,
+        w: layer.w
+      })).filter((layer) => layer.imageSrc);
+      void publishOnlinePlayerSnapshot();
+    }, { immediate: true, deep: true });
+    const infoCardDisplayOutfitLayers = computed(() => {
+      const otherLayers = homeInfoCardPlayer.value && homeInfoCardPlayer.value.outfitLayers;
+      return Array.isArray(otherLayers) && otherLayers.length > 0 ? otherLayers : outfitRenderLayers.value;
+    });
     const outfitBagItems = computed(() => Object.keys(OUTFIT_ITEMS).map((id) => ({
       id, name: OUTFIT_ITEMS[id].name || id, icon: OUTFIT_ITEMS[id].icon || ""
     })));
@@ -29987,11 +31198,31 @@ const applyBossChainFinalBuff = (scene) => {
       showToast(idx >= 0 ? `已脱下 ${OUTFIT_ITEMS[itemId].name}` : `已穿戴 ${OUTFIT_ITEMS[itemId].name}`);
     };
     const openInfoCardPanel = () => {
+      homeInfoCardPlayer.value = null;
       renameUsernameInput.value = authUser.value ? normalize(authUser.value.username || authUsername.value) : "";
+      showInfoCardPanel.value = true;
+    };
+    const moveHomePlayer = (event) => {
+      const target = event && event.currentTarget;
+      if (!target || !event) return;
+      const rect = target.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      homePlayerPosition.value = {
+        x: clamp(((event.clientX - rect.left) / rect.width) * 100, 10, 90),
+        y: clamp(((event.clientY - rect.top) / rect.height) * 100, 18, 94)
+      };
+      try { localStorage.setItem(homePlayerStorageKey(), JSON.stringify(homePlayerPosition.value)); } catch {}
+      void publishOnlinePlayerSnapshot();
+    };
+    const openHomePlayerInfoCard = (player) => {
+      if (!player) return;
+      homeInfoCardPlayer.value = player;
+      infoCardTab.value = "info";
       showInfoCardPanel.value = true;
     };
     const closeInfoCardPanel = () => {
       showInfoCardPanel.value = false;
+      homeInfoCardPlayer.value = null;
     };
     const submitRenameUsername = async () => {
       if (!authUser.value || renameUsernameLoading.value) return;
@@ -30023,18 +31254,99 @@ const applyBossChainFinalBuff = (scene) => {
       }
     };
     const showStrongRoadPanel = ref(false);
+    const showBattleSimulationSettings = ref(false);
+    const battleSimulationLevelOptions = [1, 40, 60, 100];
+    const battleSimulationBuffOptions = Array.from({ length: 21 }, (_, index) => index * 10);
+    const battleSimulationLevel = ref(100);
+    const battleSimulationDamageBoost = ref(0);
+    const battleSimulationDamageReduction = ref(0);
     const openStrongRoadPanel = () => {
       showStrongRoadPanel.value = true;
     };
     const closeStrongRoadPanel = () => {
       showStrongRoadPanel.value = false;
     };
+    const openBattleSimulationSettings = () => {
+      showBattleSimulationSettings.value = true;
+    };
+    const closeBattleSimulationSettings = () => {
+      showBattleSimulationSettings.value = false;
+    };
     const showElementTowerPanel = ref(false);
+    const elementTowerExchangeOpen = ref(false);
+    const elementTowerFragmentCount = computed(() => getItemCount(ELEMENT_TOWER_FRAGMENT_ITEM_ID));
+    const elementStoneExchangeRows = computed(() => ELEMENT_STONES.map((stone) => {
+      const icon = `./resource/${stone.name}.png`;
+      const availableCount = elementStoneAvailableCount(stone.id);
+      return {
+        ...stone, icon, image: icon, cost: 100, count: getItemCount(stone.id),
+        availableCount, available: availableCount, disabled: elementTowerFragmentCount.value < 100
+      };
+    }));
+    const openElementTowerExchange = () => { elementTowerExchangeOpen.value = true; };
+    const closeElementTowerExchange = () => { elementTowerExchangeOpen.value = false; };
+    const redeemElementStone = (itemId) => {
+      const stone = ELEMENT_STONE_BY_ID.get(normalize(itemId));
+      if (!stone) return showToast("元素石不存在。");
+      if (elementTowerFragmentCount.value < 100) return showToast("元素碎片不足100个。");
+      addItemCount(ELEMENT_TOWER_FRAGMENT_ITEM_ID, -100);
+      addItemCount(stone.id, 1);
+      showToast(`兑换成功，获得${stone.name}×1。`);
+      autoSaveCurrentProgress({ notify: false });
+    };
+    const ensureElementTowerState = () => {
+      const current = state.value.elementTower && typeof state.value.elementTower === "object" ? state.value.elementTower : {};
+      const today = localDateKey();
+      const dailyElementsValid = Array.isArray(current.dailyElements)
+        && current.dailyElements.length === ELEMENT_TOWER_DAILY_ELEMENT_COUNT
+        && current.dailyElements.every((element) => element && element !== "未知系" && element !== "?系" && element !== "普通系" && element !== "毒系" && PET_TYPE_ICON[element]);
+      if (normalize(current.date) !== today || !dailyElementsValid) {
+        const pool = ELEMENT_NAMES.filter((element) => element && element !== "未知系" && element !== "?系" && element !== "普通系" && element !== "毒系" && PET_TYPE_ICON[element]).slice();
+        for (let i = pool.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+        current.date = today;
+        current.dailyElements = pool.slice(0, ELEMENT_TOWER_DAILY_ELEMENT_COUNT);
+      }
+      current.maxFloor = clamp(Math.floor(Number(current.maxFloor) || 0), 0, ELEMENT_TOWER_MAX_FLOOR);
+      state.value.elementTower = current;
+      return current;
+    };
+    const elementTowerState = computed(() => ensureElementTowerState());
+    const elementTowerCurrentFloor = computed(() => Math.min(ELEMENT_TOWER_MAX_FLOOR, Math.max(1, elementTowerState.value.maxFloor + 1)));
+    const elementTowerDailyElements = computed(() => elementTowerState.value.dailyElements.slice(0, ELEMENT_TOWER_DAILY_ELEMENT_COUNT));
+    const elementTowerBossRows = computed(() => {
+      const row = ELEMENT_TOWER_FLOORS.find((item) => item.floor === elementTowerCurrentFloor.value) || ELEMENT_TOWER_FLOORS[0];
+      return row.enemies.map((enemy) => {
+        const entry = dexById.get(Number(enemy.dexId));
+        return entry ? { ...entry, image: petBattleIdleImage(entry.dexId, "target", entry.image) } : { dexId: enemy.dexId, name: `亚比${enemy.dexId}`, image: PLACEHOLDER };
+      });
+    });
     const openElementTowerPanel = () => {
+      ensureElementTowerState();
       showElementTowerPanel.value = true;
     };
     const closeElementTowerPanel = () => {
       showElementTowerPanel.value = false;
+    };
+    const startElementTowerChallenge = () => {
+      const tower = ensureElementTowerState();
+      if (tower.maxFloor >= ELEMENT_TOWER_MAX_FLOOR) return showToast("元素塔已全部通关。");
+      const floor = Math.min(ELEMENT_TOWER_MAX_FLOOR, Math.max(1, tower.maxFloor + 1));
+      const cfg = ELEMENT_TOWER_FLOORS.find((item) => item.floor === floor);
+      const eligiblePets = bagPets.value.filter((pet) => elementTowerPetAllowed(pet, tower.dailyElements));
+      if (!eligiblePets.length) return showToast(`当前每日系别为${tower.dailyElements.join("、")}，背包中没有符合系别的亚比。`);
+      if (!cfg) return showToast("元素塔已全部通关。");
+      const enemies = cfg.enemies.map((enemy) => {
+        const entry = dexById.get(Number(enemy.dexId));
+        return entry ? { dexId: Number(enemy.dexId), level: ELEMENT_TOWER_BOSS_LEVEL, entry, name: entry.name, image: petBattleIdleImage(entry.dexId, "target", entry.image) } : null;
+      }).filter(Boolean);
+      if (enemies.length !== cfg.enemies.length) return showToast("元素塔挑战目标数据缺失。");
+      const first = enemies[0];
+      const meta = { floor, index: 0, dailyElements: tower.dailyElements.slice(), enemies: enemies.map((enemy) => ({ dexId: enemy.dexId, level: enemy.level })) };
+      showElementTowerPanel.value = false;
+      startBattlePrepare(`正在进入元素塔第${floor}层...`, first.entry, ELEMENT_TOWER_BOSS_LEVEL, () => setupBattleScene({ targetEntry: first.entry, targetLevel: ELEMENT_TOWER_BOSS_LEVEL, mode: "elementTower", timeTunnelMeta: meta }), { targets: enemies.map((enemy) => ({ entry: { ...enemy.entry, image: enemy.image }, level: enemy.level })) });
     };
     const showFateGatePanel = ref(false);
     const fateGateDoors = FATE_GATE_ORDER.map((key, index) => ({ ...FATE_GATE_CONFIG[key], index: index + 1 }));
@@ -30283,6 +31595,7 @@ const applyBossChainFinalBuff = (scene) => {
       const ids = Array.from({ length: 6 }, (_, j) => normalize(state.value.bagPetIds && state.value.bagPetIds[j]) || "");
       if (!ids.some((id) => id)) { showToast("当前背包没有亚比，无法保存配队"); return; }
       state.value.teamPresets.splice(i, 1, ids);
+      activeTeamPresetIdx.value = i;
       saveState(state.value);
       showToast(`已保存当前配队到配队${i + 1}`);
     };
@@ -30292,15 +31605,28 @@ const applyBossChainFinalBuff = (scene) => {
       if (i < 0 || i > 2) return;
       const row = teamPresetRows.value[i];
       if (!row) { saveTeamPreset(i); return; }
-      if (isTeamPresetApplied(i)) { showToast(`当前已是配队${i + 1}，长按可更新`); return; }
+      if (isTeamPresetApplied(i)) {
+        activeTeamPresetIdx.value = i;
+        showToast(`当前已是配队${i + 1}，长按可更新`);
+        return;
+      }
       const ownedIds = new Set((Array.isArray(state.value.activePets) ? state.value.activePets : []).map((p) => normalize(p && p.id)).filter(Boolean));
       const missing = row.filter((id) => normalize(id) && !ownedIds.has(normalize(id)));
       if (missing.length > 0) { showToast(`配队${i + 1}中有亚比已不在背包，无法切换`); return; }
       state.value.bagPetIds = row.map((id) => normalize(id) || "");
+      activeTeamPresetIdx.value = i;
       const firstId = state.value.bagPetIds.find((id) => id) || "";
       if (firstId) { state.value.selectedPetId = firstId; state.value.selectedAttackerId = firstId; }
       saveState(state.value);
       showToast(`已切换到配队${i + 1}`);
+    };
+    const updateCurrentTeam = () => {
+      const appliedIdx = teamPresetRows.value.findIndex((row, idx) => row && isTeamPresetApplied(idx));
+      const trackedIdx = Number(activeTeamPresetIdx.value);
+      const idx = trackedIdx >= 0 && trackedIdx <= 2
+        ? trackedIdx
+        : (appliedIdx >= 0 ? appliedIdx : 0);
+      saveTeamPreset(idx);
     };
     let teamPresetPressTimer = 0;
     let teamPresetPressFired = false;
@@ -31651,6 +32977,33 @@ const applyBossChainFinalBuff = (scene) => {
       autoSaveCurrentProgress({ silent: true });
       qixingGachaDrawing.value = false;
     };
+    const selectedPetElementStoneId = computed(() => normalize(selectedPet.value && selectedPet.value.elementStoneId));
+    const elementStoneAvailableCount = (itemId) => {
+      const id = normalize(itemId);
+      if (!ELEMENT_STONE_BY_ID.has(id)) return 0;
+      const equipped = safeActivePets.value.filter((pet) => normalize(pet.elementStoneId) === id).length;
+      return Math.max(0, Math.floor(getItemCount(id)) - equipped);
+    };
+    const equipElementStoneToSelectedPet = (itemId, targetPetId = "") => {
+      const id = normalize(itemId);
+      const stone = ELEMENT_STONE_BY_ID.get(id);
+      const pet = bagPets.value.find((row) => row && row.id === (targetPetId || (selectedPet.value && selectedPet.value.id)));
+      if (!pet) return showToast("请先选择背包亚比。");
+      if (!stone) return showToast("元素石不存在。");
+      if (normalize(pet.elementStoneId) === id) return showToast(`${petDisplayName(pet)} 已装备${stone.name}。`);
+      if (elementStoneAvailableCount(id) <= 0) return showToast(`${stone.name}可用数量不足。`);
+      pet.elementStoneId = id;
+      showToast(`${petDisplayName(pet)} 已装备${stone.name}。`);
+      autoSaveCurrentProgress({ notify: false });
+    };
+    const unequipSelectedPetElementStone = (targetPetId = "") => {
+      const pet = bagPets.value.find((row) => row && row.id === (targetPetId || (selectedPet.value && selectedPet.value.id)));
+      if (!pet) return showToast("请先选择背包亚比。");
+      if (!normalize(pet.elementStoneId)) return showToast("当前亚比没有装备元素石。");
+      pet.elementStoneId = "";
+      showToast(`${petDisplayName(pet)} 已卸下元素石。`);
+      autoSaveCurrentProgress({ notify: false });
+    };
     const equipPetItemToSelectedPet = (itemId, petId = "") => {
       const id = normalize(String(itemId || ""));
       const pet = bagPets.value.find((p) => p && p.id === (petId || (selectedPet.value && selectedPet.value.id) || shopTargetPetId.value));
@@ -32661,7 +34014,7 @@ const applyBossChainFinalBuff = (scene) => {
       study: pet && pet.study && typeof pet.study === "object" ? { ...pet.study } : {},
       equippedSkills: Array.isArray(pet && pet.equippedSkills) ? pet.equippedSkills.slice(0, 4) : [],
       extraSkills: Array.isArray(pet && pet.extraSkills) ? pet.extraSkills.slice(0, 8) : [],
-      equippedItemId: normalize(pet && pet.equippedItemId), equippedTraitKey: normalize(pet && pet.equippedTraitKey),
+      equippedItemId: normalize(pet && pet.equippedItemId), equippedTraitKey: normalize(pet && pet.equippedTraitKey), elementStoneId: normalize(pet && pet.elementStoneId),
       skinKey: normalize(pet && pet.skinKey), qixingSeal: pet && pet.qixingSeal && typeof pet.qixingSeal === "object" ? { ...pet.qixingSeal } : {}
       };
     };
@@ -33065,6 +34418,39 @@ const applyBossChainFinalBuff = (scene) => {
           teamBossEndTurnStatuses: ["freeze", "paralyze", "burn", "bind"],
           bossSkillNames: TEAM_BOSS_SKILL_POOL,
           teamBossSkillSequence: TEAM_BOSS_SKILL_SEQUENCE
+        }
+      }));
+    };
+    const startBattleSimulation = () => {
+      if (!Array.isArray(bagPets.value) || bagPets.value.length === 0) {
+        showToast("背包中没有可出战亚比。");
+        return;
+      }
+      const source = dexById.get(1978) || dexEntries.value.find((entry) => Number(entry && entry.dexId) === 1978) || null;
+      if (!source) {
+        showToast("玄天水晶目标数据缺失，暂时无法开始模拟对战。");
+        return;
+      }
+      const targetEntry = { ...source, dexId: 1978, name: "玄天水晶" };
+      const level = clamp(Math.floor(Number(battleSimulationLevel.value) || 100), 1, 100);
+      const damageBoost = clamp(Number(battleSimulationDamageBoost.value) || 0, 0, 200) / 100;
+      const damageReduction = clamp(Number(battleSimulationDamageReduction.value) || 0, 0, 200) / 100;
+      showBattleSimulationSettings.value = false;
+      startBattlePrepare(`正在进入对战模拟：玄天水晶 Lv.${level}...`, targetEntry, level, () => setupBattleScene({
+        targetEntry,
+        targetLevel: level,
+        targetDisplayName: "玄天水晶",
+        targetDisplayImage: petBattleIdleImage(1978, "target", targetEntry.image),
+        targetTalentOverride: createUniformTalent30(),
+        targetStudyOverride: createZeroStats(),
+        mode: "boss",
+        guardianMeta: {
+          simulationBoss: true,
+          fixedHp: 10000000,
+          simulationDamageReduction: damageReduction,
+          simulationDamageBoost: damageBoost,
+          battleTurnLimit: 10,
+          bossSkillNames: Array.isArray(source.skills) ? source.skills.slice(0, 4).map((skill) => skill.name) : []
         }
       }));
     };
@@ -34313,6 +35699,8 @@ const applyBossChainFinalBuff = (scene) => {
       authReady,
       authUser,
       authUsername,
+      homePlayerPosition,
+      homeOtherPlayers,
       authPassword,
       authCaptcha,
       authError,
@@ -34517,12 +35905,24 @@ const applyBossChainFinalBuff = (scene) => {
       showBag2Panel,
       bag2Loading,
       showInfoCardPanel,
+      homeInfoCardPlayer,
+      infoCardViewingOther,
+      infoCardDisplayName,
+      infoCardDisplayId,
+      infoCardDisplayAge,
+      infoCardDisplayTitle,
+      infoCardDisplayTalent,
+      infoCardDisplayLevel,
+      infoCardDisplayCount,
+      infoCardDisplayDexLevelImage,
       infoCardStarAge,
       infoCardPetCount,
       infoCardHighestLevel,
       infoCardHighestTalentGrade,
       infoCardPvpWins,
       openInfoCardPanel,
+      moveHomePlayer,
+      openHomePlayerInfoCard,
       closeInfoCardPanel,
       submitRenameUsername,
       infoCardTab,
@@ -34542,6 +35942,7 @@ const applyBossChainFinalBuff = (scene) => {
       infoCardChallengeVisible,
       pvpWinCount,
       outfitRenderLayers,
+      infoCardDisplayOutfitLayers,
       outfitBagItems,
       infoCardBagPageCount,
       infoCardBagVisibleItems,
@@ -34567,9 +35968,26 @@ const applyBossChainFinalBuff = (scene) => {
       showStrongRoadPanel,
       openStrongRoadPanel,
       closeStrongRoadPanel,
+      showBattleSimulationSettings,
+      battleSimulationLevelOptions,
+      battleSimulationBuffOptions,
+      battleSimulationLevel,
+      battleSimulationDamageBoost,
+      battleSimulationDamageReduction,
+      openBattleSimulationSettings,
+      closeBattleSimulationSettings,
+      startBattleSimulation,
       showElementTowerPanel,
+      elementTowerExchangeOpen, elementStoneExchangeRows, elementTowerFragmentCount,
+      openElementTowerExchange, closeElementTowerExchange, redeemElementStone,
+      selectedPetElementStoneId, elementStoneAvailableCount, equipElementStoneToSelectedPet, unequipSelectedPetElementStone,
+      elementTowerCurrentFloor,
+      elementTowerState,
+      elementTowerDailyElements,
+      elementTowerBossRows,
       openElementTowerPanel,
       closeElementTowerPanel,
+      startElementTowerChallenge,
       showFateGatePanel,
       fateGateDoors,
       fateGatePendingRewards,
@@ -34628,6 +36046,7 @@ const applyBossChainFinalBuff = (scene) => {
       teamPresetRows,
       teamPresetSavedCount,
       isTeamPresetApplied,
+      updateCurrentTeam,
       teamPresetPressStart,
       teamPresetPressEnd,
       teamPresetPressCancel,
@@ -34955,8 +36374,14 @@ const applyBossChainFinalBuff = (scene) => {
       battleAttackerTimedEffects,
       battleTargetTimedEffects,
       battleEffectListSide,
+      elementTowerEffectListUnit,
+      elementTowerStageUnitId,
+      toggleElementTowerStage,
+      elementTowerUnitHitAreaStyle,
+      elementTowerStagePopoverStyle,
       battleEffectListRows,
       openBattleEffectList,
+      openElementTowerEffectList,
       closeBattleEffectList,
       battleAttackerStageText,
       battleTargetStageText,
@@ -35024,6 +36449,21 @@ const applyBossChainFinalBuff = (scene) => {
       showGuardianChallengePanel,
       showBossChallengePanel,
       challengeRoadBuffDraft,
+      elementTowerUnitImage,
+      elementTowerUnitStatusBadges,
+      elementTowerBattleUnits,
+      elementTowerUnitStages,
+      elementTowerUnitEffects,
+      elementTowerUnitValueFx,
+      elementTowerUnitValueFxTags,
+      elementTowerUnitComboFx,
+      elementTowerUnitComboFloatStyle,
+      elementTowerUnitValueFxStyle,
+      elementTowerUnitImageStyle,
+      elementTowerUnitLiveSide,
+      elementTowerUnitSkillFloatStyle,
+      elementTowerUnitFxStyle,
+      selectElementTowerTarget,
       challengeRoadBuffDraftStyle,
       challengeRoadTiers,
       challengeRoadTabs: CHALLENGE_ROAD_TABS,
