@@ -204,7 +204,7 @@ const RELEASE_NOTES_V0120 = {
     "亚比动画清晰度全面优化；",
     "新增副本元素塔以及元素石兑换入口；",
     "新增对战模拟功能，支持自定义配置；",
-    "图鉴开放到2113；",
+    "图鉴开放到2123；",
     "版本BOSS圣域·幻极、影武王登场；",
     "新增BOSS：圣域·炎魔将、圣域·赫提、圣域·火花龙、疾影侠x；",
     "圣盾奇凌王加强，加入到重铸荣光挑战；",
@@ -282,7 +282,8 @@ const BOSS_NAMES = [
   "圣羽凌风", "噬星白虎", "夜羽银风", "飓焰朱雀", "断空翼皇",
   "天苍霜龙", "创世星灵", "克劳斯", "斗焰吉拉", "皇极兔", "圣渊露龙", "星宇侠X",
   "龙·帝卡", "裂空菲洛", "爆裂侠X", "天辉侠X", "帝夜奇纳", "司马懿", "达力戈", "艾恩", "源",
-  "天极鲸", "圣纹艾恩", "龙·冰罗皇", "无念", "辉刃艾恩", "梅卡", "圣域·幻雷", "圣域·幻炎", "圣域·幻流", "圣域·幻冥", "圣域·幻光", "魔多", "上古星龙", "煌炎战神", "圣域·炎魔将", "圣域·赫提", "圣域·火花龙", "疾影侠X"
+  "天极鲸", "圣纹艾恩", "龙·冰罗皇", "无念", "辉刃艾恩", "梅卡", "圣域·幻雷", "圣域·幻炎", "圣域·幻流", "圣域·幻冥", "圣域·幻光", "魔多", "上古星龙", "煌炎战神", "圣域·炎魔将", "圣域·赫提", "圣域·火花龙", "疾影侠X",
+  "圣域·风灵将", "圣域·金战士", "圣域·木面侠"
 ];
 const BOSS_DEX_ENTRIES = [
   { dexId: 177, name: "骰子大王" }, { dexId: 215, name: "青龙灵兽" }, { dexId: 290, name: "七星神龙" }, { dexId: 305, name: "龙族大法师" },
@@ -335,6 +336,10 @@ BOSS_DEX_ENTRIES.push({ dexId: 2050, name: "煌炎战神" });
 BOSS_DEX_ENTRIES.push({ dexId: 2108, name: "圣域·炎魔将" });
 BOSS_DEX_ENTRIES.push({ dexId: 2109, name: "圣域·赫提" });
 BOSS_DEX_ENTRIES.push({ dexId: 2110, name: "圣域·火花龙" });
+BOSS_DEX_ENTRIES.push({ dexId: 2120, name: "圣域·风灵将" });
+BOSS_DEX_ENTRIES.push({ dexId: 2121, name: "圣域·金战士" });
+BOSS_DEX_ENTRIES.push({ dexId: 2122, name: "圣域·木面侠" });
+BOSS_DEX_ENTRIES.push({ dexId: 2082, name: "剑帝修纳" });
 BOSS_DEX_ENTRIES.push({ dexId: 2111, name: "疾影侠X" });
 const BOSS_DEX_ID_TO_NAME = new Map(BOSS_DEX_ENTRIES.map((entry) => [entry.dexId, entry.name]));
 const CHALLENGE_ROAD_COVER_SRC_1 = encodeAssetSrc("./resource/boss-level/1-first.png");
@@ -500,7 +505,7 @@ const CHALLENGE_ROAD_TIERS = [
     subtitle: "圣域爆发",
     cover: CHALLENGE_ROAD_COVER_SRC_6,
     guardianNames: [],
-    bossNames: ["圣域·幻雷", "圣域·幻炎", "圣域·幻流", "圣域·幻冥", "圣域·幻光", "君芒艾恩", "煌炎战神", "圣域·炎魔将", "圣域·赫提", "圣域·火花龙"]
+    bossNames: ["圣域·幻雷", "圣域·幻炎", "圣域·幻流", "圣域·幻冥", "圣域·幻光", "君芒艾恩", "煌炎战神", "圣域·炎魔将", "圣域·赫提", "圣域·火花龙", "圣域·风灵将", "圣域·金战士", "圣域·木面侠", "剑帝修纳"]
   }
 ];
 const QIXING_SEAL_ITEM_ID = "qixing_seal";
@@ -1714,51 +1719,27 @@ const QIXING_GACHA_PHASES = [
 ];
 const QIXING_GACHA_PHASE_BY_KEY = new Map(QIXING_GACHA_PHASES.map((phase) => [phase.key, phase]));
 const WEEKLY_BOSS_CONFIG = {
-  key: "shengyu_huanji_2107_202610",
-  dexId: 2107,
-  name: "圣域·幻极",
-  level: 100,
-  hpRaceMultiplier: 15,
-  statBoostRatio: 0.4,
-  dailyAttempts: 5,
-  fixedHp: 20000,
-  damageReductionRatio: 0.2,
-  honorBadgeId: "weekly_boss_shengyu_huanji_2107_honor",
-  honorBadgeName: "圣域·幻极专属黑金徽章"
-};
-const WEEKLY_BOSS_CONFIGS = [
-  {
-    ...WEEKLY_BOSS_CONFIG,
-    weeklyRuleKind: "shengyuhuanji",
-    lowHpKind: "shengyuhuanji",
-    skillWeights: [
-      { name: "幻灵碎魂", weight: 25 },
-      { name: "幻灵意志", weight: 15 },
-      { name: "幻灵结界", weight: 30 },
-      { name: "幻灵绝杀", weight: 30 }
-    ],
-    difficultyRules: {
-      normal: { qixingSealLevel: 1, lowHpThreshold: 0.1, lowHpHealToRatio: 0.3, lowHpStatDrainStep: 0.05, maxLowHpStatDrainRatio: 0.15, instantKoInterval: 10 },
-      hard: { qixingSealLevel: 2, lowHpThreshold: 0.2, lowHpHealToRatio: 0.4, lowHpStatDrainStep: 0.08, maxLowHpStatDrainRatio: 0.24, instantKoInterval: 8 },
-      nightmare: { qixingSealLevel: 4, lowHpThreshold: 0.3, lowHpHealToRatio: 0.5, lowHpStatDrainStep: 0.1, maxLowHpStatDrainRatio: 0.3, instantKoInterval: 6 }
-    }
-  },
-  {
-    key: "yingwu_king_2113_202610", dexId: 2113, name: "影武王", level: 100, hpRaceMultiplier: 15, statBoostRatio: 0.4, dailyAttempts: 5, fixedHp: 20000, damageReductionRatio: 0.2,
-    honorBadgeId: "weekly_boss_yingwu_king_2113_honor", honorBadgeName: "影武王专属黑金徽章", weeklyRuleKind: "yingwuking", lowHpKind: "yingwukingrevive",
-    skillWeights: [{ name: "影武道化", weight: 20 }, { name: "战争涡轮", weight: 20 }, { name: "皇冠之墓", weight: 30 }, { name: "灵魂祭品", weight: 30 }],
-    difficultyRules: {
-      normal: { qixingSealLevel: 1, reviveRatio: 0.3 },
-      hard: { qixingSealLevel: 2, reviveRatio: 0.3 },
-      nightmare: { qixingSealLevel: 4, reviveRatio: 0.3, preventStatReduction: true }
-    }
+  key: "dragon_douluo_mingwang_2114", dexId: 2114, name: "龙·斗罗明王",
+  level: 100, hpRaceMultiplier: 15, statBoostRatio: 0.4, dailyAttempts: 5, fixedHp: 20000,
+  honorBadgeId: "weekly_boss_dragon_douluo_mingwang_2114_honor",
+  honorBadgeName: "龙·斗罗明王专属黑金徽章",
+  lowHpKind: "dragonDouluoMingwang",
+  skillWeights: [
+    { name: "狂龙重拳", weight: 30 }, { name: "龙魂连击", weight: 25 },
+    { name: "战龙领域", weight: 20 }, { name: "龙魂破", weight: 25 }
+  ],
+  difficultyRules: {
+    normal: { qixingSealLevel: 4, openingResistance: 0.2, lowHpThreshold: 0.1, lowHpHealToRatio: 0.3, lowHpAccuracyCritDebuff: 2, lowHpStatDrainStep: 0.1, maxLowHpStatDrainRatio: 0.1 },
+    hard: { qixingSealLevel: 4, openingResistance: 0.3, lowHpThreshold: 0.2, lowHpHealToRatio: 0.4, lowHpAccuracyCritDebuff: 4, lowHpStatDrainStep: 0.1, maxLowHpStatDrainRatio: 0.2 },
+    nightmare: { qixingSealLevel: 4, openingResistance: 0.4, lowHpThreshold: 0.3, lowHpHealToRatio: 0.5, lowHpAccuracyCritDebuff: 6, lowHpStatDrainStep: 0.1, maxLowHpStatDrainRatio: 0.3 }
   }
-];
+};
+const WEEKLY_BOSS_CONFIGS = [WEEKLY_BOSS_CONFIG];
 const normalizeWeeklyBossConstKey = (value) => String(value || "").replace(/[\u200b\u00a0]/g, "").trim();
 const WEEKLY_BOSS_CONFIG_BY_KEY = new Map(WEEKLY_BOSS_CONFIGS.map((config) => [config.key, config]));
 const WEEKLY_BOSS_DEX_IDS = new Set(WEEKLY_BOSS_CONFIGS.map((config) => Number(config.dexId) || 0));
 const WEEKLY_BOSS_NAME_SET = new Set(WEEKLY_BOSS_CONFIGS.map((config) => normalizeWeeklyBossConstKey(config.name)).filter(Boolean));
-const WEEKLY_BOSS_ATTEMPT_GROUP_KEY = "weekly_boss_shengyu_huanji_yingwu_king_separate_v2";
+const WEEKLY_BOSS_ATTEMPT_GROUP_KEY = "weekly_boss_dragon_douluo_mingwang_attempts";
 const WEEKLY_BOSS_EXTRA_ATTEMPT_MAX = 3;
 const WEEKLY_BOSS_EXTRA_ATTEMPT_COST = 10000;
 const getWeeklyBossConfigByKey = (key) => WEEKLY_BOSS_CONFIG_BY_KEY.get(normalizeWeeklyBossConstKey(key)) || WEEKLY_BOSS_CONFIG;
@@ -1814,11 +1795,12 @@ const WEEKLY_BOSS_HISTORY_CONFIGS = [
     honorBadgeName: "傲月武神专属黑金徽章"
   },
   {
-    key: WEEKLY_BOSS_CONFIG.key,
-    dexId: WEEKLY_BOSS_CONFIG.dexId,
-    name: WEEKLY_BOSS_CONFIG.name,
-    honorBadgeId: WEEKLY_BOSS_CONFIG.honorBadgeId,
-    honorBadgeName: WEEKLY_BOSS_CONFIG.honorBadgeName
+    key: "shengyu_huanji_2107_202610", dexId: 2107, name: "圣域·幻极",
+    honorBadgeId: "weekly_boss_shengyu_huanji_2107_honor", honorBadgeName: "圣域·幻极专属黑金徽章"
+  },
+  {
+    key: "yingwu_king_2113_202610", dexId: 2113, name: "影武王",
+    honorBadgeId: "weekly_boss_yingwu_king_2113_honor", honorBadgeName: "影武王专属黑金徽章"
   },
   {
     key: "storm_dragon_2033",
@@ -1828,14 +1810,13 @@ const WEEKLY_BOSS_HISTORY_CONFIGS = [
     honorBadgeName: "风暴龙专属黑金徽章"
   }
 ];
-const WEEKLY_BOSS_MEDAL_ITEM_ID = "weekly_boss_medal_shengyu_huanji_yingwu_king_202610";
-const WEEKLY_BOSS_MEDAL_MAX = 50;
+const WEEKLY_BOSS_MEDAL_ITEM_ID = "weekly_boss_medal_dragon_douluo_mingwang_2114";
 const WEEKLY_BOSS_EGG_EXCHANGE_COST = 50;
-const WEEKLY_BOSS_REWARD_STATE_VERSION = "shengyu_huanji_yingwu_king_reset_v1";
+const WEEKLY_BOSS_REWARD_STATE_VERSION = "dragon_douluo_mingwang_2114_v1";
 const WEEKLY_BOSS_DIFFICULTY_OPTIONS = [
-  { key: "normal", label: "普通", tone: "normal", fixedHp: 20000, damageReductionRatio: 0.2, statBoostRatio: 0.4, rewardMedals: [5, 15], rewardHCoins: 2000, divinePetKeyCount: 5, blackgoldBadge: false },
-  { key: "hard", label: "困难", tone: "hard", fixedHp: 30000, damageReductionRatio: 0.3, statBoostRatio: 0.5, rewardMedals: [15, 25], rewardHCoins: 5000, divinePetKeyCount: 10, blackgoldBadge: false },
-  { key: "nightmare", label: "噩梦", tone: "nightmare", fixedHp: 40000, damageReductionRatio: 0.4, statBoostRatio: 0.7, rewardMedals: [50, 50], rewardHCoins: 8000, divinePetKeyCount: 15, blackgoldBadge: true }
+  { key: "normal", label: "普通", tone: "normal", fixedHp: 20000, damageReductionRatio: 0.4, statBoostRatio: 0.4, rewardMedals: [5, 15], rewardHCoins: 20000, divinePetKeyCount: 5, blackgoldBadge: false },
+  { key: "hard", label: "困难", tone: "hard", fixedHp: 30000, damageReductionRatio: 0.6, statBoostRatio: 0.5, rewardMedals: [15, 25], rewardHCoins: 40000, divinePetKeyCount: 10, blackgoldBadge: false },
+  { key: "nightmare", label: "噩梦", tone: "nightmare", fixedHp: 40000, damageReductionRatio: 0.8, statBoostRatio: 0.7, rewardMedals: [50, 50], rewardHCoins: 80000, divinePetKeyCount: 15, blackgoldBadge: true }
 ];
 const WEEKLY_BOSS_DIFFICULTY_BY_KEY = new Map(WEEKLY_BOSS_DIFFICULTY_OPTIONS.map((option) => [option.key, option]));
 const MONTHLY_SIGN_DAYS = 28;
@@ -1917,7 +1898,7 @@ const MONTHLY_SIGN_PET_DEX_IDS = new Set(MONTHLY_SIGN_SUPREME_MILESTONE_REWARDS.
 const monthlySignMonthKeyOf = (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 const monthlySignDayOf = (date = new Date()) => clamp(date.getDate(), 1, MONTHLY_SIGN_DAYS);
 const EXCLUDED_BOSS_DEX_IDS = new Set([729, 1514, 1700, 1808, 1898]);
-const VIEW_ONLY_DEX_IDS = new Set([2059, 2060, 2083]);
+const VIEW_ONLY_DEX_IDS = new Set([2059, 2060, 2083, DRAGON_FORM_MINGWANG_SKIN_DEX_ID]);
 const DEX_CHALLENGE_FORBIDDEN_DEX_IDS = new Set();
 const BOSS_FIXED_SKILL_BY_TURN = {
   624: { 1: "寒冰之镜" },
@@ -1995,6 +1976,31 @@ const BOSS_WEIGHTED_PREFERRED_SKILL = {
   1927: { skillName: "真·血印", weightMultiplier: 12 }
 };
 const CHALLENGE_ROAD_BOSS_SKILL_POOLS = {
+  2082: {
+    skills: ["圣刃断云殇", "剑灵幻无壁", "苍焰流空斩", "剑心极无双"],
+    weights: [
+      { name: "圣刃断云殇", weight: 20 }, { name: "剑灵幻无壁", weight: 28 },
+      { name: "苍焰流空斩", weight: 32 }, { name: "剑心极无双", weight: 20 }
+    ]
+  },
+  2120: {
+    skills: ["风木之境", "芳香气息", "灵风之心"],
+    weights: [
+      { name: "风木之境", weight: 40 }, { name: "芳香气息", weight: 25 }, { name: "灵风之心", weight: 35 }
+    ]
+  },
+  2121: {
+    skills: ["绿叶风暴", "春木之歌", "金甲铁拳"],
+    weights: [
+      { name: "绿叶风暴", weight: 30 }, { name: "春木之歌", weight: 50 }, { name: "金甲铁拳", weight: 20 }
+    ]
+  },
+  2122: {
+    skills: ["春木之歌", "森罗荆棘", "万物生长"],
+    weights: [
+      { name: "春木之歌", weight: 40 }, { name: "森罗荆棘", weight: 40 }, { name: "万物生长", weight: 20 }
+    ]
+  },
   2387: {
     skills: REINCARNATION_DREAM_BOSS_SKILL_NAMES
   },
@@ -2154,18 +2160,18 @@ const CHALLENGE_ROAD_BOSS_SKILL_POOLS = {
     ]
   }
 };
-const LEGACY_BOSS_DEX_IDS = new Set([2082, 2098, 2104]);
-const LEGACY_BOSS_NAMES = new Set(["剑帝修纳", "傲月武神", "圣·二郎真君"]);
+const LEGACY_BOSS_DEX_IDS = new Set([2098, 2104]);
+const LEGACY_BOSS_NAMES = new Set(["傲月武神", "圣·二郎真君"]);
 const EXCLUDED_GUARDIAN_NAMES = ["魔灯鬼王"];
 const EXCLUDED_BOSS_NAMES = ["冰山修罗", "神照修罗王", "黯天凯撒皇", "雷霆仔仔", "雷霆小子", "战魂猛犸"];
 const SHOP_EGG_NAMES = [
   "阿努比斯", "寒冰公主", "花冠公主", "燕尾怪盗", "黑暗守卫", "变异库斯特", "星云大圣", "暗影夜蝠",
   "宇宙侠", "冰霜射手", "爆裂侠", "怒风侠", "天辉侠", "霸气侠", "圣盾奇凌王", "炫光金小问", "炫光电子鼠", "烈魄", "光焰疾蝠", "酷魔兔",
-  "酷小黑", "狂狮"
+  "酷小黑", "狂狮", "球球小黑"
 ];
 const SHOP_EGG_EXCLUDED_NAMES = new Set(["爆裂侠X", "天辉侠X"]);
 const SHOP_EGG_EXCLUDED_DEX_IDS = new Set([1767]);
-const SHOP_EGG_DEX_IDS = new Set([1736,1746,1782,1834,1645,1678,1680,1728,1881,948,1296,1298,1300,1307,1662,2024,2072,2085,2089,2095,2106,2101]);
+const SHOP_EGG_DEX_IDS = new Set([1736,1746,1782,1834,1645,1678,1680,1728,1881,948,1296,1298,1300,1307,1662,2024,2072,2085,2089,2095,2106,2101,2117]);
 const STUDY_BATTLEFIELDS = [
   { key: "atk", label: "攻击", guardianName: "朵朵兔" },
   { key: "spAtk", label: "特攻", guardianName: "闪光河豚" },
@@ -2530,7 +2536,7 @@ const DEFAULT_BATTLE_BG_SRC = encodeAssetSrc("./resource/战斗背景.png");
 const STAR_DOMAIN_BATTLE_BG_SRC = encodeAssetSrc("./resource/ui/star_domain.png");
 const GUARDIAN_LEVELS = [30, 40, 50, 60, 70, 80, 90, 100];
 const EXTRA_GUARDIAN_LEVELS = [100];
-const MAX_OPEN_CHALLENGE_DEX_ID = 2113;
+const MAX_OPEN_CHALLENGE_DEX_ID = 2123;
 const isDexChallengeOpen = (dexId) => {
   const id = Number(dexId) || 0;
   return id > 0 && id <= MAX_OPEN_CHALLENGE_DEX_ID;
@@ -2722,12 +2728,14 @@ const NO_EGG_ACTION_DEX_IDS = new Set([
 ]);
 const canObtainEggByActionDexId = (dexId) => {
   const id = Number(dexId) || 0;
+  if (id === DRAGON_FORM_MINGWANG_SKIN_DEX_ID) return false;
   if (id === REINCARNATION_DREAM_BOSS_DEX_ID) return true;
   if (EXTRA_PERSIST_DEX_IDS.has(id)) return true;
   return isDexChallengeOpen(id) && (!NO_EGG_ACTION_DEX_IDS.has(id) || SHOP_EGG_DEX_IDS.has(id));
 };
 const canDropEggByActionDexId = (dexId) => {
   const id = Number(dexId) || 0;
+  if (id === DRAGON_FORM_MINGWANG_SKIN_DEX_ID) return false;
   if (id === REINCARNATION_DREAM_BOSS_DEX_ID) return true;
   return isDexChallengeOpen(id) && !NO_EGG_ACTION_DEX_IDS.has(id);
 };
@@ -2766,10 +2774,12 @@ const CHALLENGE_ROAD_RANDOM_BUFFS = {
     { key: "boss_status_immune", name: "BOSS异常免疫", desc: "BOSS免疫异常状态" },
     { key: "boss_special_immune", name: "BOSS特攻免疫", desc: "BOSS每回合70%概率免疫特攻伤害" },
     { key: "boss_physical_immune", name: "BOSS物攻免疫", desc: "BOSS每回合70%概率免疫物攻伤害" },
-    { key: "ally_random_status", name: "异常反噬", desc: "每回合末己方随机增加1到2个异常" },
-    { key: "ally_clear_pp", name: "PP枯竭", desc: "每回合末30%概率清空己方所有技能PP" },
+    { key: "ally_random_status", name: "异常反噬", desc: "每回合末25%概率使己方随机增加1到3个异常" },
+    { key: "ally_clear_pp", name: "PP枯竭", desc: "每回合末20%概率清空己方所有技能PP" },
     { key: "ally_clear_stage", name: "属性清除", desc: "每回合末20%概率清除己方全部属性增益" },
-    { key: "boss_restore_stage", name: "属性复原", desc: "每回合末BOSS有20%概率恢复被削弱的属性" }
+    { key: "boss_restore_stage", name: "属性复原", desc: "每回合末BOSS有20%概率恢复被削弱的属性" },
+    { key: "both_hp_loss", name: "全场失血", desc: "每两回合末，双方在场亚比各扣除250点体力" },
+    { key: "ally_stage_lock", name: "己方属性封锁", desc: "每回合末20%概率禁止己方提升属性2回合" }
   ]
 };
 const getChallengeRoadRandomBuffKeys = (scene) => new Set(((scene && scene.guardianMeta && scene.guardianMeta.challengeRoadBuffs) || []).map((item) => normalize(item && item.key)).filter(Boolean));
@@ -4010,9 +4020,9 @@ const studyTotal = (study) => {
   const s = normalizeStudy(study);
   return STAT_KEYS.reduce((sum, key) => sum + (Number(s[key]) || 0), 0);
 };
-const calcAbilityStat = (base, talent, study, level, nature = 1) => {
+const calcAbilityStat = (base, talent, study, level, nature = 1, talentCap = 62) => {
   const b = safeNonNegInt(base);
-  const t = clamp(safeNonNegInt(talent), 0, 62);
+  const t = clamp(safeNonNegInt(talent), 0, talentCap);
   const ev = clamp(safeNonNegInt(study), 0, 255);
   const lv = clamp(safeNonNegInt(level, 1), 1, 100);
   const n = Number(nature);
@@ -4341,6 +4351,7 @@ const parseSkillAttackKind = (skillOrType) => {
 };
 const defaultStatusTurns = (status) => DEFAULT_STATUS_TURNS_BY_KEY[normalize(status)] || 1;
 const applyStatusTurns = (state, status, turns, scene = null, side = "") => {
+  if (side === "target" && scene?.guardianMeta?.dragonDouluoMingwang) return 0;
   const key = normalize(status);
   if (!key) return 0;
   const currentTurns = Math.max(0, Math.floor(Number(state.statuses[key]) || 0));
@@ -4491,6 +4502,7 @@ const battleStageTotalsSnapshot = (scene) => ({
   target: battleStageTotal(scene, "target")
 });
 const getBattleAbilityStat = (scene, side, key, options = {}) => {
+  const protectsBaseStats = side === "target" && scene?.guardianMeta?.dragonDouluoMingwang;
   const ability = side === "attacker" ? scene.attackerAbility : scene.targetAbility;
   const state = getSideState(scene, side);
   const base = Math.max(1, Number(ability && ability[key]) || 1);
@@ -4504,7 +4516,9 @@ const getBattleAbilityStat = (scene, side, key, options = {}) => {
     const d = e.data || {};
     const keys = Array.isArray(d.keys) ? d.keys : [];
     if (!keys.includes(key)) return;
-    val = Math.max(1, Math.floor(val * clamp(Number(d.factor) || 1, 0.01, 3)));
+    const factor = clamp(Number(d.factor) || 1, 0.01, 3);
+    if (protectsBaseStats && factor < 1) return;
+    val = Math.max(1, Math.floor(val * factor));
   });
   const statuses = state.statuses || {};
   const reduced = isBossAdjustedStatusScene(scene) && side === "target" && Object.keys(BOSS_STATUS_STAT_REDUCTION_KEYS).some((statusKey) => (
@@ -4514,7 +4528,10 @@ const getBattleAbilityStat = (scene, side, key, options = {}) => {
   if (reduced) val = Math.max(1, Math.floor(val * 0.8));
   if (key === "def") {
     const hasDefenseHalve = (state.timedEffects || []).some((e) => normalize(e && e.kind) === "defenseHalve");
-    if (hasDefenseHalve) val = Math.max(1, Math.floor(val * 0.5));
+    if (hasDefenseHalve && !protectsBaseStats) val = Math.max(1, Math.floor(val * 0.5));
+  }
+  if (side === "attacker" && scene?.guardianMeta?.dragonDouluoMingwang && ["atk", "spAtk", "def", "spDef"].includes(key)) {
+    val = Math.max(1, Math.floor(val * (1 - (Number(scene.weeklyBossNewStatDrainRatio) || 0))));
   }
   return val;
 };
@@ -5094,11 +5111,14 @@ const advanceTurnSequenceAttackEffect = (scene, side, skill, didApply) => {
   cleanupExpiredEffects(getSideState(scene, side));
 };
 const damageSideByMaxHpRatio = (scene, side, ratio) => {
-  const hpKey = side === "attacker" ? "attackerHp" : "targetHp";
   const maxHpKey = side === "attacker" ? "attackerMaxHp" : "targetMaxHp";
   const maxHp = Math.max(1, Number(scene && scene[maxHpKey]) || 1);
-  const before = Math.max(0, Number(scene && scene[hpKey]) || 0);
   const damage = Math.max(1, Math.floor(maxHp * clamp(Number(ratio) || 0, 0.01, 1)));
+  return damageSideByFlatAmount(scene, side, damage);
+};
+const damageSideByFlatAmount = (scene, side, damage) => {
+  const hpKey = side === "attacker" ? "attackerHp" : "targetHp";
+  const before = Math.max(0, Number(scene && scene[hpKey]) || 0);
   scene[hpKey] = Math.max(0, before - damage);
   const actual = Math.max(0, before - (Number(scene[hpKey]) || 0));
   recordBattleDamageTakenThisTurn(scene, side, actual);
@@ -7269,6 +7289,7 @@ const isWeeklyBossCounterPetActive = (scene, side = "attacker") => {
   return ids.some((id) => Number(id) === counterDexId);
 };
 const hasStatusShield = (scene, side, status = "") => {
+  if (side === "target" && scene?.guardianMeta?.dragonDouluoMingwang) return true;
   if (isWeeklyBossCounterPetActive(scene, side)) return true;
   if (side === "target" && hasChallengeRoadRandomBuff(scene, "boss_status_immune")) return true;
   const state = getSideState(scene, side);
@@ -7886,6 +7907,7 @@ const BOSS_STATUS_STAT_REDUCTION_KEYS = {
 const isBossAdjustedStatusScene = (scene) => Boolean(scene && (scene.mode === "boss" || scene.mode === "weeklyBoss" || scene.mode === "elementTower"));
 const canApplyPersistentCurse = (scene, side) => isBossAdjustedStatusScene(scene) && isGuardianBossProtectedTarget(scene, side);
 const canApplyStatusToBossTarget = (scene, side, status) => {
+  if (side === "target" && scene?.guardianMeta?.dragonDouluoMingwang) return false;
   if (!isGuardianBossProtectedTarget(scene, side)) return true;
   const key = normalize(status);
   if (key === "mihuan" || key === "deepMihuan") return true;
@@ -19636,10 +19658,9 @@ createApp({
       state.value.weeklyBossRewardState = row;
       return row;
     };
-    const weeklyBossMedalCount = computed(() => Math.min(WEEKLY_BOSS_MEDAL_MAX, getItemCount(WEEKLY_BOSS_MEDAL_ITEM_ID)));
+    const weeklyBossMedalCount = computed(() => getItemCount(WEEKLY_BOSS_MEDAL_ITEM_ID));
     const addWeeklyBossMedals = (amount) => {
-      const current = weeklyBossMedalCount.value;
-      const gain = Math.max(0, Math.min(WEEKLY_BOSS_MEDAL_MAX - current, Math.floor(Number(amount) || 0)));
+      const gain = Math.max(0, Math.floor(Number(amount) || 0));
       if (gain > 0) addItemCount(WEEKLY_BOSS_MEDAL_ITEM_ID, gain);
       return gain;
     };
@@ -22147,26 +22168,9 @@ createApp({
       const medalText = medalRange[0] === medalRange[1] ? `${medalRange[0]}个` : `${medalRange[0]}-${medalRange[1]}个`;
       const keyText = `神宠之匙×${option.divinePetKeyCount}`;
       const badgeText = option.blackgoldBadge ? `，首次通关噩梦额外获得${config.honorBadgeName}` : "";
-      const earlyChance = clamp(Number(rule.earlyStealChance) || 0, 0, 1);
-      const lateChance = clamp(Number(rule.lateStealChance) || 0, 0, 1);
-      const turnStartSkipChance = clamp(Number(rule.turnStartSkipChance) || 0, 0, 1);
-      const chanceText = (chance) => chance >= 1 ? "必定" : `${Math.round(chance * 100)}%概率`;
-      const challengeBuffText = normalize(config.weeklyRuleKind) === "shengyuhuanji"
-        ? "挑战Buff：每回合15%概率强制触发幻灵圣域，可覆盖中级、高级圣域3回合；幻灵提升30%伤害抗性并于回合末回复200点体力，极幻惊天在幻灵圣域中每回合初有30%概率触发。"
-        : normalize(config.weeklyRuleKind) === "yingwuking"
-          ? "挑战Buff：每回合15%概率强制触发圣战圣域，可覆盖中级、高级圣域3回合；全场亚比体力每降低10%提升10%伤害，圣武霸体在圣战圣域中每回合初有30%概率触发。"
-          : "";
-      let mechanicText = normalize(config.weeklyRuleKind) === "shengyuhuanji"
-        ? `固定体力${option.fixedHp}，自带${Math.round((Number(option.damageReductionRatio) || 0) * 100)}%减伤与${qixingSealLevel}级启星之印。体力首次低于${Math.round((Number(rule.lowHpThreshold) || 0) * 100)}%时恢复至${Math.round((Number(rule.lowHpHealToRatio) || 0) * 100)}%，之后每回合吸取对方双攻${Math.round((Number(rule.lowHpStatDrainStep) || 0) * 100)}%数值（上限${Math.round((Number(rule.maxLowHpStatDrainRatio) || 0) * 100)}%）；体力首次低于20%或10%时必定释放幻灵绝杀，每${Math.max(1, Math.floor(Number(rule.instantKoInterval) || 1))}回合其秒杀概率增加5%。${WEEKLY_BOSS_FORBIDDEN_TEXT}天赋除体力外均为100，除体力外学习力均为200，能力数值提升${Math.round((Number(option.statBoostRatio) || 0) * 100)}%。`
-        : normalize(config.weeklyRuleKind) === "yingwuking"
-        ? `固定体力${option.fixedHp}，自带${Math.round((Number(option.damageReductionRatio) || 0) * 100)}%减伤与${qixingSealLevel}级启星之印${rule.preventStatReduction ? "，能力等级不可被降低" : ""}。死亡时以最大体力30%复活，整场仅一次。${WEEKLY_BOSS_FORBIDDEN_TEXT}天赋除体力外均为100，除体力外学习力均为200，能力数值提升${Math.round((Number(option.statBoostRatio) || 0) * 100)}%。`
-        : normalize(config.weeklyRuleKind) === "aoyueWushen"
-        ? `体力${option.fixedHp}，自带${Math.round((Number(option.damageReductionRatio) || 0) * 100)}%减伤。${turnStartSkipChance > 0 ? `每回合初${chanceText(turnStartSkipChance)}令对方本回合无法行动；` : ""}每回合末${chanceText(Number(rule.fearChance) || 0)}令对方害怕；对方害怕时，单体攻击附加${Math.floor(Number(rule.fearSingleFixedDamage) || 0)}点固伤，多段攻击每段附加${Math.floor(Number(rule.fearMultiFixedDamagePerHit) || 0)}点固伤。前4回合每回合${chanceText(earlyChance)}吸取对方暴击、双攻各1级，并叠加${Math.round((Number(rule.earlyDamageReductionStep) || 0) * 100)}%减伤（上限${Math.round((Number(rule.maxEarlyDamageReductionRatio) || 0) * 100)}%）；第5回合后每回合${chanceText(lateChance)}吸取对方命中、速度、双防各1级，并叠加${Math.round((Number(rule.lateDamageBoostStep) || 0) * 100)}%增伤（上限${Math.round((Number(rule.maxLateDamageBoostRatio) || 0) * 100)}%）。生命首次低于${Math.round((Number(rule.lowHpThreshold) || 0.5) * 100)}%后，每回合回复${Math.floor(Number(rule.lowHpHealPerTurn) || 0)}点体力，无视护属降低对方命中、闪避${Math.floor(Number(rule.lowHpAccuracyEvasionDebuff) || 0)}级，并每回合吸取对方双防、双攻、速度${Math.round((Number(rule.lowHpStatDrainStep) || 0) * 100)}%数值（上限${Math.round((Number(rule.maxLowHpStatDrainRatio) || 0) * 100)}%）。${WEEKLY_BOSS_FORBIDDEN_TEXT}天赋除体力外均为60，除体力外学习力均为102，能力数值提升${Math.round((Number(option.statBoostRatio) || 0) * 100)}%。`
-        : normalize(config.weeklyRuleKind) === "erlangZhenjun"
-        ? `圣·二郎真君体力${option.fixedHp}，自带${Math.round((Number(option.damageReductionRatio) || 0) * 100)}%减伤；每回合${chanceText(Number(rule.bindChance) || 0)}令对方束缚，对方束缚时自身技能${chanceText(Number(rule.bindSkillDebuffChance) || 0)}降低对方全属性1级。前4回合每回合${chanceText(earlyChance)}吸取对方命中、速度、双防各1级或提升自身对应属性1级，并提升伤害${Math.round((Number(rule.earlyDamageBoostStep) || 0) * 100)}%；第5回合后每回合${chanceText(lateChance)}吸取对方暴击、双攻各1级。生命首次低于50%后，每回合回复${Math.floor(Number(rule.lowHpHealPerTurn) || 0)}点体力，无视护属降低对方命中、暴击${Math.floor(Number(rule.lowHpAccuracyCritDebuff) || 0)}级，并每回合吸取对方双防、双攻、速度5%数值（上限${Math.round((Number(rule.maxLowHpStatDrainRatio) || 0) * 100)}%）。${WEEKLY_BOSS_FORBIDDEN_TEXT}天赋除体力外均为60，除体力外学习力均为102，能力数值提升${Math.round((Number(option.statBoostRatio) || 0) * 100)}%。`
-        : `体力${option.fixedHp}。${WEEKLY_BOSS_FORBIDDEN_TEXT}`;
-      if (normalize(config.weeklyRuleKind) === "erlangZhenjun" && Number(rule.earlyDamageBoostStep) <= 0) mechanicText = mechanicText.replace("并提升伤害0%；", "");
-      return `版本BOSS：${config.name} ${option.label}难度，${mechanicText}${challengeBuffText ? ` ${challengeBuffText}` : ""}胜利获得${medalText}版本BOSS勋章、${option.rewardHCoins}H币、${keyText}${badgeText}。勋章上限${WEEKLY_BOSS_MEDAL_MAX}个，${WEEKLY_BOSS_EGG_EXCHANGE_COST}个可兑换${config.name}亚比蛋。`;
+      const percent = (ratio) => Math.round(ratio * 100) + "%";
+      const skills = config.skillWeights.map(({ name, weight }) => name + " " + weight + "%").join("、");
+      return `版本BOSS：${config.name} ${option.label}难度。固定体力${option.fixedHp}，自带${percent(option.damageReductionRatio)}减伤与${qixingSealLevel}级启星之印。除体力外天赋均为100、学习力均为200，能力数值提升${percent(option.statBoostRatio)}。挑战Buff：开局获得${percent(rule.openingResistance)}伤害抗性，免疫能力数值削减、所有异常与属性倒置。体力首次低于${percent(rule.lowHpThreshold)}时回复至${percent(rule.lowHpHealToRatio)}，降低对方命中、暴击各${rule.lowHpAccuracyCritDebuff}级，并吸取对方双攻、双防各10%数值；之后每回合末再吸取10%，累计上限${percent(rule.maxLowHpStatDrainRatio)}。每回合选招：${skills}。${WEEKLY_BOSS_FORBIDDEN_TEXT}每日该难度首胜获得${medalText}版本BOSS勋章、${option.rewardHCoins}H币、${keyText}${badgeText}。${WEEKLY_BOSS_EGG_EXCHANGE_COST}个勋章可兑换${config.name}亚比蛋。`;
     });
     const challengeRoadBuffDraftStyle = computed(() => ({
       width: challengeRoadBuffDraft.value.slots.length > 1 ? "672px" : "448px",
@@ -22596,17 +22600,17 @@ createApp({
     const infoCardDisplayLevel = computed(() => infoCardViewingOther.value ? (homeInfoCardPlayer.value.maxPetLevel || "—") : maxPetLevel.value);
     const infoCardDisplayCount = computed(() => infoCardViewingOther.value ? (homeInfoCardPlayer.value.petCount || "—") : (warehouseCount.value + (state.value && state.value.bagPetIds ? state.value.bagPetIds.filter(Boolean).length : 0)));
     const infoCardDisplayDexLevelImage = computed(() => infoCardViewingOther.value ? "" : dexLevelImageSrc.value);
-    const calcPetAbilityByRace = (raceStats, level, talentRaw, studyRaw) => {
+    const calcPetAbilityByRace = (raceStats, level, talentRaw, studyRaw, useRawStats = false) => {
       const race = raceStats && typeof raceStats === "object" ? raceStats : createZeroStats();
-      const talent = normalizeTalent(talentRaw);
-      const study = normalizeStudy(studyRaw);
+      const talent = useRawStats ? talentRaw : normalizeTalent(talentRaw);
+      const study = useRawStats ? studyRaw : normalizeStudy(studyRaw);
       return {
         hp: calcAbilityHp(race.hp, talent.hp, study.hp, level),
-        atk: calcAbilityStat(race.atk, talent.atk, study.atk, level, 1),
-        def: calcAbilityStat(race.def, talent.def, study.def, level, 1),
-        spAtk: calcAbilityStat(race.spAtk, talent.spAtk, study.spAtk, level, 1),
-        spDef: calcAbilityStat(race.spDef, talent.spDef, study.spDef, level, 1),
-        speed: calcAbilityStat(race.speed, talent.speed, study.speed, level, 1)
+        atk: calcAbilityStat(race.atk, talent.atk, study.atk, level, 1, useRawStats ? 100 : 62),
+        def: calcAbilityStat(race.def, talent.def, study.def, level, 1, useRawStats ? 100 : 62),
+        spAtk: calcAbilityStat(race.spAtk, talent.spAtk, study.spAtk, level, 1, useRawStats ? 100 : 62),
+        spDef: calcAbilityStat(race.spDef, talent.spDef, study.spDef, level, 1, useRawStats ? 100 : 62),
+        speed: calcAbilityStat(race.speed, talent.speed, study.speed, level, 1, useRawStats ? 100 : 62)
       };
     };
     const peakTalent = () => ({ hp: 62, atk: 62, def: 62, spAtk: 62, spDef: 62, speed: 62 });
@@ -23256,7 +23260,7 @@ createApp({
       16324: { w: 1234, h: 1110, x: 68, y: 176, width: 1073, height: 697 }
     });
     const PET_ACTION_LAYOUT_URL = "./pet-action-layout.json";
-    const PET_ACTION_LAYOUT_CACHE_VERSION = "20261013_legacy_erlang_action_scale_v1";
+    const PET_ACTION_LAYOUT_CACHE_VERSION = "20261111_dragon_douluo_layout";
     const EXPANDED_IDLE_CANVAS_START_DEX_ID = 2099;
     const BATTLE_DAMAGE_VISUAL_DELAY_MS = 900;
     const BATTLE_SKILL_EFFECT_DURATION_MS = 900;
@@ -23619,10 +23623,11 @@ createApp({
       "--battle-pet-clip-bottom": "0%",
       "--battle-pet-clip-left": "0%"
     });
-    // 2099-2113 的 idle 与战斗动作来自不同尺寸的原始画布；战斗状态需按各自主体边界缩放。
+    // 原始动作画布尺寸不一，按各动作的主体边界缩放。
     const NORMALIZED_BATTLE_ACTION_DEX_IDS = new Set([
       ...Array.from({ length: 2098 }, (_, index) => index + 1),
-      2099, 2100, 2101, 2102, 2103, 2104, 2105, 2106, 2107, 2108, 2109, 2110, 2111, 2112, 2113
+      2099, 2100, 2101, 2102, 2103, 2104, 2105, 2106, 2107, 2108, 2109, 2110, 2111, 2112, 2113,
+      2114, 2120, 2121, 2122
     ]);
     const NORMALIZED_BATTLE_ACTION_STATE_CODES = new Set(["2", "4", "6"]);
     const BATTLE_ACTION_BASE_LAYOUT_OVERRIDES = Object.freeze({
@@ -25435,7 +25440,7 @@ createApp({
         }
       };
     };
-    const buildBattleTarget = ({ entry, level, forceHpRace500 = false, hpRaceOverride = null, hpRaceMultiplier = null, battleBoostRatio = 0, talentOverride = null, studyOverride = null, displayName = "", displayImage = "" }) => {
+    const buildBattleTarget = ({ entry, level, forceHpRace500 = false, hpRaceOverride = null, hpRaceMultiplier = null, battleBoostRatio = 0, talentOverride = null, studyOverride = null, useRawStats = false, displayName = "", displayImage = "" }) => {
       if (!entry) return null;
       const species = getSpeciesByDexId(entry.dexId, entry.name);
       if (!species || !species.raceStats) return null;
@@ -25453,7 +25458,7 @@ createApp({
         spDef: safeNonNegInt(species.raceStats.spDef),
         speed: safeNonNegInt(species.raceStats.speed)
       };
-      const baseAbility = calcPetAbilityByRace(race, level, talentOverride || createUniformTalent30(), studyOverride || createZeroStats());
+      const baseAbility = calcPetAbilityByRace(race, level, talentOverride || createUniformTalent30(), studyOverride || createZeroStats(), useRawStats);
       const boostRatio = Number(battleBoostRatio) || 0;
       const ability = boostRatio > 0
         ? (() => {
@@ -26039,6 +26044,7 @@ const applyBossChainFinalBuff = (scene) => {
           battleBoostRatio: Number(guardianMeta && guardianMeta.statBoostRatio) || 0,
           talentOverride: targetTalentOverride,
           studyOverride: targetStudyOverride,
+          useRawStats: Boolean(guardianMeta?.dragonDouluoMingwang),
           displayName: targetDisplayName || effectiveTargetEntry.name,
           displayImage: targetDisplayImage || petBattleIdleImage(effectiveTargetEntry.dexId, "target", effectiveTargetEntry.image)
         });
@@ -26081,6 +26087,9 @@ const applyBossChainFinalBuff = (scene) => {
       if (mode === "timeTunnel") applyTimeTunnelFloor50FixedHp(target, timeTunnelMeta && timeTunnelMeta.floor);
       if (guardianMeta && guardianMeta.equipmentDungeon) {
         applyEquipmentDungeonTargetSkills(target, effectiveTargetEntry, guardianMeta.equipmentDungeonSkillNames);
+      }
+      if (mode === "weeklyBoss" && guardianMeta?.dragonDouluoMingwang) {
+        applyChallengeRoadBossTargetSkills(target, effectiveTargetEntry, guardianMeta.weeklyBossSkillWeights.map(({ name }) => name));
       }
       if (mode === "boss" && guardianMeta && Array.isArray(guardianMeta.bossSkillNames)) {
         applyChallengeRoadBossTargetSkills(target, effectiveTargetEntry, guardianMeta.bossSkillNames);
@@ -26174,6 +26183,9 @@ const applyBossChainFinalBuff = (scene) => {
         teamBossDamageByPet: {},
         targetState: (() => {
           const targetState = normalizeBattleState(target.battleState);
+          if (guardianMeta?.openingResistance > 0) {
+            targetState.timedEffects.push({ kind: "damageReduction", turns: 999999, data: { ratio: guardianMeta.openingResistance, permanent: true, stackWithChallenge: true, label: "开场伤害抗性" } });
+          }
           if (guardianMeta && guardianMeta.stageInvertImmune) targetState.timedEffects.push({ kind: "stageInvertImmune", turns: 999999, data: { label: "属性反转免疫" } });
           return targetState;
         })(),
@@ -26498,18 +26510,20 @@ const applyBossChainFinalBuff = (scene) => {
       const previous = clamp(Number(scene.weeklyBossNewStatDrainRatio) || 0, 0, cap);
       const next = Math.min(cap, previous + step);
       if (next <= previous) return false;
-      const keys = ["atk", "spAtk"];
+      const absorbedRatio = Math.round((next - previous) * 100) / 100;
+      const dragonBoss = Boolean(scene.guardianMeta?.dragonDouluoMingwang);
+      const keys = dragonBoss ? ["atk", "spAtk", "def", "spDef"] : ["atk", "spAtk"];
       const targetState = getSideState(scene, "target");
-      upsertWeeklyBossPermanentEffect(scene, "attacker", "abilityStatFactor", { keys, factor: 1 - next, drainRatio: next, stackable: false }, "weeklyBossNewDoubleAttackDrain");
+      if (!dragonBoss) upsertWeeklyBossPermanentEffect(scene, "attacker", "abilityStatFactor", { keys, factor: 1 - next, drainRatio: next, stackable: false }, "weeklyBossNewDoubleAttackDrain");
       if (!targetState.baseBoost || typeof targetState.baseBoost !== "object") targetState.baseBoost = { atk: 0, def: 0, spAtk: 0, spDef: 0, speed: 0 };
       const absorbed = keys.map((key) => {
-        const gained = Math.max(1, Math.floor(Math.max(1, Number(scene.attackerAbility && scene.attackerAbility[key]) || 1) * (next - previous)));
+        const gained = Math.max(1, Math.floor(Math.max(1, Number(scene.attackerAbility && scene.attackerAbility[key]) || 1) * absorbedRatio));
         targetState.baseBoost[key] = Math.max(0, Math.floor(Number(targetState.baseBoost[key]) || 0) + gained);
         return `${battleStatLabel(key)}${gained}`;
       });
       scene.weeklyBossNewStatDrainRatio = next;
       syncActivePetFromBattleScene(scene);
-      pushBattleLog(scene, `第${turn}回合，${scene.targetName}吸取${scene.attackerName}双攻各${Math.round((next - previous) * 100)}%数值（当前${Math.round(next * 100)}%）：${absorbed.join("、")}。`);
+      pushBattleLog(scene, `第${turn}回合，${scene.targetName}吸取${scene.attackerName}${dragonBoss ? "双攻、双防" : "双攻"}各${Math.round((next - previous) * 100)}%数值（当前${Math.round(next * 100)}%）：${absorbed.join("、")}。`);
       return true;
     };
     const triggerNewWeeklyBossTurnStartEffectIfNeeded = (scene) => {
@@ -26534,7 +26548,7 @@ const applyBossChainFinalBuff = (scene) => {
       }
     };
     const triggerNewWeeklyBossEndTurnEffectIfNeeded = (scene) => {
-      if (!isNewWeeklyBossScene(scene) || !scene.weeklyBossNewLowHpActivated) return;
+      if (!scene?.weeklyBossNewLowHpActivated || (!isNewWeeklyBossScene(scene) && !scene.guardianMeta?.dragonDouluoMingwang)) return;
       const turn = weeklyBossRuleTurn(scene);
       if (Math.floor(Number(scene.weeklyBossNewEndTurnResolved) || 0) === turn) return;
       scene.weeklyBossNewEndTurnResolved = turn;
@@ -26753,6 +26767,17 @@ const applyBossChainFinalBuff = (scene) => {
       const rule = (config.difficultyRules && config.difficultyRules[difficultyKey]) || {};
       const lowHpThreshold = clamp(Number(rule.lowHpThreshold) || 0.3, 0.01, 1);
       if (hpRatio >= lowHpThreshold) return false;
+      if (config.lowHpKind === "dragonDouluoMingwang") {
+        scene.weeklyBossLowHpBuffed = true;
+        scene.weeklyBossNewLowHpActivated = true;
+        const turn = weeklyBossRuleTurn(scene);
+        scene.weeklyBossNewEndTurnResolved = turn;
+        const healed = healSideByFlatAmount(scene, "target", Math.floor(scene.targetMaxHp * rule.lowHpHealToRatio) - scene.targetHp).actual;
+        applyStageDelta(scene, "attacker", ["accuracy", "critStage"], -rule.lowHpAccuracyCritDebuff);
+        pushBattleLog(scene, `${scene.targetName}触发低体力挑战Buff，恢复${healed}点体力，并尝试降低对方命中、暴击各${rule.lowHpAccuracyCritDebuff}级。`);
+        applyNewWeeklyBossStatDrain(scene, rule, turn);
+        return true;
+      }
       if (normalize(config.lowHpKind) === "shengyuhuanji") {
         const maxHp = Math.max(1, Number(scene.targetMaxHp) || 1);
         const before = Math.max(0, Number(scene.targetHp) || 0);
@@ -28059,8 +28084,17 @@ const applyBossChainFinalBuff = (scene) => {
       if (buffs.has("boss_random_status")) applyRandomStatuses("target", 1 + Math.floor(Math.random() * 3));
       if (buffs.has("ally_stage_guard") && Math.random() < 0.35) addTimedEffect(scene, "attacker", { kind: "stageGuard", turns: 4, data: { mode: "all", label: "挑战之路属性守护" } });
       if (buffs.has("boss_stage_lock") && Math.random() < 0.35) addTimedEffect(scene, "target", { kind: "stageGuard", turns: 4, data: { mode: "buff", label: "挑战之路属性封锁" } });
-      if (buffs.has("ally_random_status")) applyRandomStatuses("attacker", 1 + Math.floor(Math.random() * 2));
-      if (buffs.has("ally_clear_pp") && Math.random() < 0.3) changeSideAllSkillPp(scene, "attacker", -9999);
+      if (buffs.has("ally_random_status") && Math.random() < 0.25) applyRandomStatuses("attacker", 1 + Math.floor(Math.random() * 3));
+      if (buffs.has("ally_clear_pp") && Math.random() < 0.2) changeSideAllSkillPp(scene, "attacker", -9999);
+      if (buffs.has("both_hp_loss") && scene.turnCount % 2 === 0) {
+        const allyLoss = damageSideByFlatAmount(scene, "attacker", 250).actual;
+        const bossLoss = damageSideByFlatAmount(scene, "target", 250).actual;
+        pushBattleLog(scene, `挑战随机Buff【全场失血】生效，${scene.attackerName}扣除${allyLoss}点体力，${scene.targetName}扣除${bossLoss}点体力。`);
+      }
+      if (buffs.has("ally_stage_lock") && Math.random() < 0.2) {
+        // 己方效果会在本次回合结算中先扣除1回合。
+        addTimedEffect(scene, "attacker", { kind: "stageGuard", turns: 3, data: { mode: "buff", label: "挑战之路己方属性封锁" } });
+      }
       if (buffs.has("ally_clear_stage") && Math.random() < 0.2) clearStageByMode(scene, "attacker", "positive", ALL_ABILITY_STAGE_KEYS);
       if (buffs.has("boss_restore_stage") && Math.random() < 0.2) {
         const restored = clearStageByMode(scene, "target", "negative", ALL_ABILITY_STAGE_KEYS);
@@ -28095,6 +28129,7 @@ const applyBossChainFinalBuff = (scene) => {
           triggerNewWeeklyBossEndTurnEffectIfNeeded(turnEnd);
           applyEquipmentDungeonEndTurnEffects(turnEnd);
           applyChallengeRoadRandomBuffEndTurn(turnEnd);
+          if (turnEnd.guardianMeta?.dragonDouluoMingwang) triggerWeeklyBossLowHpBuffIfNeeded(turnEnd);
           applyShengyuEndTurnPassives(turnEnd).forEach((fx) => showBattleStatusEffectFx(turnEnd, fx.side, [fx]));
           const teamBossEndTurnStatusFx = applyTeamBossEndTurnRandomStatus(turnEnd);
           if (teamBossEndTurnStatusFx) showBattleStatusEffectFx(turnEnd, teamBossEndTurnStatusFx.side, [teamBossEndTurnStatusFx]);
@@ -29817,9 +29852,7 @@ const applyBossChainFinalBuff = (scene) => {
             medalGain = addWeeklyBossMedals(medalRoll);
             if (medalGain > 0) {
               rewardTexts.push(`版本BOSS勋章×${medalGain}`);
-              pushBattleLog(scene, `获得 版本BOSS勋章×${medalGain}（当前${weeklyBossMedalCount.value}/${WEEKLY_BOSS_MEDAL_MAX}）。`);
-            } else if (medalRoll > 0) {
-              pushBattleLog(scene, `版本BOSS勋章已达上限${WEEKLY_BOSS_MEDAL_MAX}个，本次不再增加。`);
+              pushBattleLog(scene, `获得 版本BOSS勋章×${medalGain}（当前${weeklyBossMedalCount.value}个）。`);
             }
             if (Math.max(0, Math.floor(Number(difficulty.divinePetKeyCount) || 0)) > 0) {
               const keyCount = Math.max(0, Math.floor(Number(difficulty.divinePetKeyCount) || 0));
@@ -35581,13 +35614,16 @@ const applyBossChainFinalBuff = (scene) => {
         targetLevel: config.level,
         forceTargetHpRace500: false,
         targetHpRaceMultiplier: config.hpRaceMultiplier,
-        targetTalentOverride: { hp: 0, atk: 60, def: 60, spAtk: 60, spDef: 60, speed: 60 },
-        targetStudyOverride: { hp: 0, atk: 102, def: 102, spAtk: 102, spDef: 102, speed: 102 },
+        targetTalentOverride: { hp: 0, atk: 100, def: 100, spAtk: 100, spDef: 100, speed: 100 },
+        targetStudyOverride: { hp: 0, atk: 200, def: 200, spAtk: 200, spDef: 200, speed: 200 },
         mode: "weeklyBoss",
         guardianMeta: {
           fixedHp: Math.max(1, Math.floor(Number(difficulty.fixedHp) || config.fixedHp)),
           damageReductionRatio: clamp(Number(difficulty.damageReductionRatio) || 0, 0, 0.95),
           statBoostRatio: Number(difficulty.statBoostRatio) || config.statBoostRatio,
+          dragonDouluoMingwang: true,
+          stageInvertImmune: true,
+          openingResistance: weeklyBossRule.openingResistance,
           weeklyBossKey: config.key,
           weeklyBossDexId: config.dexId,
           weeklyBossCounterDexId: config.counterDexId,
@@ -35614,6 +35650,7 @@ const applyBossChainFinalBuff = (scene) => {
       const rootInfo = getChainStageInfoByDexId(rawHatchDex.dexId, rawHatchDex.name);
       const rootDexId = Number(rootInfo.rootDexId) || Number(rawHatchDex.dexId) || 0;
       const hatchDex = dexById.get(rootDexId) || rawHatchDex;
+      if (Number(hatchDex.dexId) === DRAGON_FORM_MINGWANG_SKIN_DEX_ID) return showToast("龙态明王仅作为皮肤使用，无法孵化为亚比。");
       const species = getSpeciesByDexId(hatchDex.dexId, hatchDex.name);
       if (!species) return showToast("孵化失败：缺少亚比数据。");
 
