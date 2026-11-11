@@ -15907,6 +15907,7 @@
           <div class="inline-flex max-w-full overflow-x-auto rounded-xl border border-slate-200 bg-slate-50 p-1">
             <button @click="shopTab='shop'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='shop' ? 'bg-emerald-600 text-white' : 'text-slate-600'">亚比商店</button>
             <button @click="shopTab='eggs'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='eggs' ? 'bg-violet-600 text-white' : 'text-slate-600'">亚比蛋购买</button>
+            <button @click="shopTab='outfits'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='outfits' ? 'bg-pink-600 text-white' : 'text-slate-600'">服装</button>
             <button @click="shopTab='skillStones'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='skillStones' ? 'bg-amber-500 text-slate-950' : 'text-slate-600'">&#25216;&#33021;&#30707;&#21830;&#24215;</button>
             <button @click="shopTab='bundles'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='bundles' ? 'bg-cyan-500 text-slate-950' : 'text-slate-600'">道具礼包</button>
             <button @click="shopTab='gear'" class="h-8 px-4 rounded-xl text-xs font-black" :class="shopTab==='gear' ? 'gear-shop-tab-active bg-sky-600 text-white' : 'text-slate-600'">装备商店</button>
@@ -16021,6 +16022,18 @@
             <button @click="openSkinPreview(it.id)" class="skin-shop-view h-9 px-3 rounded-xl text-sm font-black">查看</button>
             <button @click="buySkinShopItem(it.id)" :disabled="!shopItemCanBuy(it)" class="skin-shop-buy h-9 px-4 rounded-xl text-white text-sm font-black disabled:opacity-45">购买</button>
           </div>
+        </div>
+      </div>
+      <div v-else-if="shopTab==='outfits'" class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
+        <div v-for="suit in shopOutfitSuits" :key="suit.key" class="rounded-2xl border border-pink-100 bg-pink-50 p-3 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <img :src="suit.icon" alt="" class="h-12 w-12 object-contain">
+            <div class="text-sm font-black text-slate-900">{{ suit.name }}</div>
+          </div>
+          <button @click="buyOutfitSuit(suit.key)" :disabled="suit.owned || state.hCoins < suit.price" class="h-9 px-3 rounded-xl bg-pink-600 text-white text-xs font-black disabled:opacity-50">
+            <span v-if="suit.owned">已拥有</span>
+            <span v-else class="hcoin-display"><img src="./resource/小图标/h币.png" alt="H币"><span>{{ suit.price }}</span></span>
+          </button>
         </div>
       </div>
       <div v-else-if="shopTab==='eggs'" class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 scrollbar">
@@ -16674,8 +16687,36 @@
     </div>
   </div>
 
-  <div v-if="showWeeklyBossPanel && weeklyBossEntry" class="fixed inset-0 z-40 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="closeWeeklyBossPanel">
-    <div class="weekly-boss-modal w-full max-w-5xl rounded-3xl border border-yellow-200/60 p-3 md:p-4 shadow-2xl max-h-[92vh] overflow-y-auto app-modal" @click.stop>
+  <div v-if="showWeeklyBossPanel && weeklyBossEntry" class="fixed inset-0 z-40 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-3 md:p-4" @click="showWeeklyBossMedalShop ? (showWeeklyBossMedalShop = false) : closeWeeklyBossPanel()">
+    <div v-if="showWeeklyBossMedalShop" class="app-modal w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-3xl bg-white p-4 shadow-2xl space-y-3" @click.stop>
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h3 class="text-lg font-black text-slate-900">徽章商店</h3>
+          <p class="text-xs font-bold text-amber-700">版本 BOSS 勋章 {{ weeklyBossMedalCount }} 个</p>
+        </div>
+        <button @click="showWeeklyBossMedalShop = false" class="h-8 rounded-lg bg-slate-100 px-3 text-xs font-black text-slate-700">返回版本 BOSS</button>
+      </div>
+      <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+        <div class="text-[10px] font-black text-emerald-700">亚比蛋</div>
+        <button @click="exchangeWeeklyBossEgg" :disabled="!weeklyBossEggExchangeAvailable" class="mt-2 h-9 w-full rounded-lg bg-emerald-500 text-white text-xs font-black disabled:opacity-50">
+          {{ weeklyBossEggExchanged ? '已兑换亚比蛋' : '50勋章兑换'+weeklyBossEntry.name+'亚比蛋' }}
+        </button>
+      </div>
+      <div class="rounded-xl border border-sky-200 bg-sky-50 p-3">
+        <div class="text-xs font-black text-sky-900">寒冰战神套装</div>
+        <p v-if="!weeklyBossOutfitUnlocked" class="mt-1 text-xs text-slate-600">通关版本 BOSS 噩梦难度后，开放部件兑换。</p>
+        <div v-else class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div v-for="part in weeklyBossOutfitParts" :key="part.id" class="flex items-center gap-2 rounded-lg bg-white p-2">
+            <img :src="part.icon" alt="" class="h-8 w-8 object-contain">
+            <span class="flex-1 text-xs font-bold text-slate-900">{{ part.name }}</span>
+            <button @click="exchangeWeeklyBossOutfitPart(part.id)" :disabled="part.owned || weeklyBossMedalCount < weeklyBossOutfitPartCost" class="shrink-0 rounded-lg bg-sky-600 px-2 py-1 text-xs font-black text-white disabled:opacity-50">
+              {{ part.owned ? '已拥有' : weeklyBossOutfitPartCost + '勋章兑换' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else class="weekly-boss-modal w-full max-w-5xl rounded-3xl border border-yellow-200/60 p-3 md:p-4 shadow-2xl max-h-[92vh] overflow-y-auto app-modal" @click.stop>
       <div class="flex items-center justify-between mb-3 text-white">
         <div>
           <div class="text-[11px] font-black text-yellow-200">版本BOSS</div>
@@ -16766,12 +16807,7 @@
               <div class="text-[10px] font-black text-yellow-700">版本BOSS勋章</div>
               <div class="text-2xl font-black text-slate-900">{{ weeklyBossMedalCount }} 个</div>
             </div>
-            <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 col-span-2">
-              <div class="text-[10px] font-black text-emerald-700">勋章兑换</div>
-              <button @click="exchangeWeeklyBossEgg" :disabled="!weeklyBossEggExchangeAvailable" class="mt-2 h-9 w-full rounded-lg bg-emerald-500 text-white text-xs font-black disabled:opacity-50">
-                {{ weeklyBossEggExchanged ? '已兑换亚比蛋' : '50勋章兑换'+weeklyBossEntry.name+'亚比蛋' }}
-              </button>
-            </div>
+            <button @click="showWeeklyBossMedalShop = true" class="col-span-2 h-10 rounded-xl bg-emerald-600 text-sm font-black text-white hover:bg-emerald-700">徽章商店</button>
           </div>
           <button @click="openWeeklyBossBuffDraft" :disabled="bagPets.length===0 || weeklyBossAttemptsLeft<=0" class="h-11 w-full rounded-xl bg-yellow-400 text-slate-950 font-black shadow-lg disabled:opacity-50">抽取Buff并进入{{ selectedWeeklyBossDifficultyOption.label }}挑战</button>
           <div class="flex items-center gap-3 pt-1">

@@ -15775,6 +15775,7 @@ createApp({
         fateGate: { currentGate: "white", pendingRewards: [], purpleOpenCount: 0, purpleLingfengPityCount: 0 },
         qixingGacha: { pity: 0, pityByKey: { phase1_ice_princess: 0, phase2_lingfeng_trait: 0, [STAR_GOD_EYE_LIMITED_KEY]: 0, [QIXING_LIANGYI_LIMITED_KEY]: 0, [QIXING_SACRED_HEART_LIMITED_KEY]: 0, phase2_donghuang_taiyi_egg: 0, phase2_donghuang_taichu: 0, energy_core_nian_beast: 0, energy_core_dragon_mage: 0, energy_core_sacred_shield_qiling_king: 0, energy_core_heixiaowen: 0 }, limitedEggs: {}, donghuangRewardStateVersion: QIXING_DONGHUANG_REWARD_STATE_VERSION },
         equippedBadgeId: "",
+        ownedOutfitItemIds: [],
         equippedOutfitItemIds: ["novice_top", "novice_pants", "novice_shoes", "novice_face", "novice_hair", "novice_headwear"],
         targetLevel: 10,
         timeTunnelMaxClearedFloor: 0,
@@ -16536,7 +16537,8 @@ createApp({
           };
         })(),
         equippedBadgeId: normalize(loaded.equippedBadgeId),
-        equippedOutfitItemIds: Array.isArray(loaded.equippedOutfitItemIds) ? loaded.equippedOutfitItemIds.flatMap((id) => String(id) === "novice" ? ["novice_top", "novice_pants", "novice_shoes", "novice_face", "novice_hair", "novice_headwear"] : String(id) === "if_rightArm" ? ["if_top"] : [String(id)]).filter(Boolean) : [],
+        ownedOutfitItemIds: Array.isArray(loaded.ownedOutfitItemIds) ? [...new Set(loaded.ownedOutfitItemIds.filter((id) => typeof id === "string"))] : [],
+        equippedOutfitItemIds: Array.isArray(loaded.equippedOutfitItemIds) ? loaded.equippedOutfitItemIds.flatMap((id) => String(id) === "novice" ? ["novice_top", "novice_pants", "novice_shoes", "novice_face", "novice_hair", "novice_headwear"] : String(id) === "if_rightArm" ? ["if_top"] : [String(id)]).filter((id) => id.startsWith("novice_") || (Array.isArray(loaded.ownedOutfitItemIds) && loaded.ownedOutfitItemIds.includes(id))) : [],
         selectedDexId: dexEntries.some((d) => d.dexId === Number(loaded.selectedDexId)) ? Number(loaded.selectedDexId) : null,
         challengeFormIndex: clamp(Number(loaded.challengeFormIndex) || 0, 0, 2),
         selectedAttackerId,
@@ -16797,6 +16799,10 @@ createApp({
     const showRetroGloryPanel = ref(false);
     const showReincarnationDreamPanel = ref(false);
     const showWeeklyBossPanel = ref(false);
+    const showWeeklyBossMedalShop = ref(false);
+    watch(showWeeklyBossPanel, (open) => {
+      if (!open) showWeeklyBossMedalShop.value = false;
+    }, { flush: "sync" });
     const showEquipmentDungeonPanel = ref(false);
     const equipmentDungeonView = ref("map");
     const equipmentDungeonHoverRegionKey = ref("");
@@ -29698,6 +29704,13 @@ const applyBossChainFinalBuff = (scene) => {
           } else {
             unlockText = `${target.name} BOSS挑战成功，亚比蛋已获取过，不重复发放。`;
           }
+          if (scene.guardianMeta?.challengeRoadTierKey) {
+            const outfitDrop = rollChallengeRoadOutfitDrop(bossDifficultyKey);
+            if (outfitDrop) {
+              unlockText += ` 获得${outfitDrop}！`;
+              pushBattleLog(scene, `挑战之路掉落：${outfitDrop}。`);
+            }
+          }
           if (bossDifficultyKey === "hard") completeClaimedTeamTaskByTrigger("challengeRoadHardWin");
           else if (bossDifficultyKey === "nightmare") completeClaimedTeamTaskByTrigger("challengeRoadNightmareWin");
           else completeClaimedTeamTaskByTrigger("challengeRoadNormalWin");
@@ -30987,6 +31000,53 @@ const applyBossChainFinalBuff = (scene) => {
     ];
     // 服饰冲突判定：部件槽位与素材文件夹一一对应（1头盔、2头发、3表情、2右臂、3右手武器、4上衣、6左臂、7翅膀、1鞋子、2裤子），
     // 同一文件夹内的服饰互斥，同一时刻只会真正装备一件；coverSlots 声明跨文件夹覆盖（如天使莱特头盔覆盖头发），冲突双向生效。
+    const OUTFIT_SHOP_PRICE = 88888;
+    const WEEKLY_BOSS_OUTFIT_PART_COST = 25;
+    const OUTFIT_DROP_CHANCES = { normal: 0.005, hard: 0.013, nightmare: 0.02 };
+    const outfitSuitItemIds = (suit) => Object.keys(OUTFIT_ITEMS).filter((id) => id.startsWith(suit.prefix));
+    const ownsOutfitItem = (id) => Boolean(OUTFIT_ITEMS[id]) && (id.startsWith("novice_") || (state.value.ownedOutfitItemIds || []).includes(id));
+    const grantOutfitItems = (ids) => {
+      const added = ids.filter((id) => OUTFIT_ITEMS[id] && !ownsOutfitItem(id));
+      if (added.length > 0) state.value.ownedOutfitItemIds = [...(state.value.ownedOutfitItemIds || []), ...added];
+      return added.length;
+    };
+    const shopOutfitSuits = computed(() => OUTFIT_SUITS.filter((suit) => suit.key === "fashion" || suit.key === "pink").map((suit) => {
+      const ids = outfitSuitItemIds(suit);
+      return { ...suit, icon: OUTFIT_ITEMS[ids[0]].icon, owned: ids.every(ownsOutfitItem), price: OUTFIT_SHOP_PRICE };
+    }));
+    const buyOutfitSuit = (key) => {
+      const suit = shopOutfitSuits.value.find((entry) => entry.key === key);
+      if (!suit || suit.owned) return;
+      if ((Number(state.value.hCoins) || 0) < suit.price) return showToast("H币不足。");
+      state.value.hCoins -= suit.price;
+      grantOutfitItems(outfitSuitItemIds(suit));
+      saveState(state.value);
+      showToast(`已购买${suit.name}，可在信息卡穿戴。`);
+    };
+    const rollChallengeRoadOutfitDrop = (difficulty) => {
+      const chance = OUTFIT_DROP_CHANCES[difficulty] || 0;
+      if (chance <= 0 || Math.random() >= chance) return "";
+      const available = OUTFIT_SUITS
+        .filter((suit) => ["angel", "icefist", "woodmask"].includes(suit.key))
+        .flatMap(outfitSuitItemIds)
+        .filter((id) => !ownsOutfitItem(id));
+      if (available.length === 0) return "";
+      const id = available[Math.floor(Math.random() * available.length)];
+      grantOutfitItems([id]);
+      return OUTFIT_ITEMS[id].name;
+    };
+    const weeklyBossOutfitUnlocked = computed(() => isWeeklyBossDifficultyCleared("nightmare"));
+    const weeklyBossOutfitParts = computed(() => outfitSuitItemIds(OUTFIT_SUITS.find((suit) => suit.key === "ice")).map((id) => ({
+      id, name: OUTFIT_ITEMS[id].name, icon: OUTFIT_ITEMS[id].icon, owned: ownsOutfitItem(id)
+    })));
+    const exchangeWeeklyBossOutfitPart = (id) => {
+      const part = weeklyBossOutfitParts.value.find((item) => item.id === id);
+      if (!part || part.owned || !weeklyBossOutfitUnlocked.value) return;
+      if (!consumeItemCount(WEEKLY_BOSS_MEDAL_ITEM_ID, WEEKLY_BOSS_OUTFIT_PART_COST)) return showToast("版本BOSS勋章不足。");
+      grantOutfitItems([id]);
+      saveState(state.value);
+      showToast(`已兑换${part.name}，可在信息卡穿戴。`);
+    };
     const outfitItemsConflict = (a, b) => {
       if (!a || !b) return false;
       const aSlots = new Set((a.parts || []).map((p) => p.slot));
@@ -31002,7 +31062,7 @@ const applyBossChainFinalBuff = (scene) => {
     const normalizeEquippedOutfitItemIds = (ids) => {
       const kept = [];
       (Array.isArray(ids) ? ids : []).forEach((id) => {
-        if (!OUTFIT_ITEMS[id]) return;
+        if (!ownsOutfitItem(id)) return;
         for (let i = kept.length - 1; i >= 0; i--) {
           if (outfitItemsConflict(OUTFIT_ITEMS[id], OUTFIT_ITEMS[kept[i]])) kept.splice(i, 1);
         }
@@ -31041,7 +31101,7 @@ const applyBossChainFinalBuff = (scene) => {
       const otherLayers = homeInfoCardPlayer.value && homeInfoCardPlayer.value.outfitLayers;
       return Array.isArray(otherLayers) && otherLayers.length > 0 ? otherLayers : outfitRenderLayers.value;
     });
-    const outfitBagItems = computed(() => Object.keys(OUTFIT_ITEMS).map((id) => ({
+    const outfitBagItems = computed(() => Object.keys(OUTFIT_ITEMS).filter(ownsOutfitItem).map((id) => ({
       id, name: OUTFIT_ITEMS[id].name || id, icon: OUTFIT_ITEMS[id].icon || ""
     })));
     // 背包筛选：all=全部 / equipped=已装备 / 套装key=整套；纯视图状态，不改原始物品数据。
@@ -31084,7 +31144,7 @@ const applyBossChainFinalBuff = (scene) => {
       return slots;
     });
     const toggleOutfitItem = (itemId) => {
-      if (!OUTFIT_ITEMS[itemId]) return;
+      if (!ownsOutfitItem(itemId)) return;
       // 基于规范化后的装备列表操作，保证同一文件夹只会真正装备一件。
       const ids = equippedOutfitItemIds.value.slice();
       const idx = ids.indexOf(itemId);
@@ -35777,6 +35837,12 @@ const applyBossChainFinalBuff = (scene) => {
       outfitRenderLayers,
       infoCardDisplayOutfitLayers,
       outfitBagItems,
+      shopOutfitSuits,
+      buyOutfitSuit,
+      weeklyBossOutfitUnlocked,
+      weeklyBossOutfitParts,
+      weeklyBossOutfitPartCost: WEEKLY_BOSS_OUTFIT_PART_COST,
+      exchangeWeeklyBossOutfitPart,
       infoCardBagPageCount,
       infoCardBagVisibleItems,
       infoCardBagSlots,
@@ -36248,6 +36314,7 @@ const applyBossChainFinalBuff = (scene) => {
       showGuardianPanel,
       showBossPanel,
       showWeeklyBossPanel,
+      showWeeklyBossMedalShop,
       showQixingGachaPanel,
       showStudyPanel,
       showTimeTunnelPanel,

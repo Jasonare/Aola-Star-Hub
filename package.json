@@ -58,6 +58,7 @@
       "resource/pet-state/**/*",
       "resource/hub 守护者联盟勋章/**/*",
       "resource/勋章/**/*",
+      "resource/信息卡/服装/**/*",
       "resource/装备/**/*",
       "resource/战队武器.png",
       "resource/战队护盾.png",
