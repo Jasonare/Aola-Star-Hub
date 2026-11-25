@@ -66,6 +66,7 @@ const STATIC_RESOURCE_PREFIXES = [
   "resource/scene/",
   "resource/shengyu/",
   "resource/time-tunnel-environments/",
+  "resource/132.mp4",
   "resource/type/",
   "resource/type-transparent/",
   "resource/元素塔按钮.png",
@@ -963,7 +964,15 @@ const normalizeSaveForUser = (user, payload) => {
   const save = payload && typeof payload.save === "object" && !Array.isArray(payload.save) ? payload.save : null;
   if (!save) return payload;
   const backfilledPayload = backfillAlhub666MistDragonEgg(payload);
-  const warehouseNormalizedPayload = normalizeWarehouseSlotsInSavePayload(backfilledPayload);
+  let warehouseNormalizedPayload = normalizeWarehouseSlotsInSavePayload(backfilledPayload);
+  const items = warehouseNormalizedPayload?.save?.items;
+  if (items && Object.prototype.hasOwnProperty.call(items, "equipment_dungeon_sss_clear_card")) {
+    const nextItems = { ...items };
+    const oldCount = Math.max(0, Math.floor(Number(nextItems.equipment_dungeon_sss_clear_card) || 0));
+    nextItems.equipment_dungeon_sweep_ticket = Math.max(0, Math.floor(Number(nextItems.equipment_dungeon_sweep_ticket) || 0)) + oldCount;
+    delete nextItems.equipment_dungeon_sss_clear_card;
+    warehouseNormalizedPayload = { ...warehouseNormalizedPayload, save: { ...warehouseNormalizedPayload.save, items: nextItems } };
+  }
   const backfilledSave = warehouseNormalizedPayload && warehouseNormalizedPayload.save && typeof warehouseNormalizedPayload.save === "object" && !Array.isArray(warehouseNormalizedPayload.save)
     ? warehouseNormalizedPayload.save
     : save;
@@ -1843,12 +1852,39 @@ const serveStatic = (req, res) => {
       ".svg": "image/svg+xml; charset=utf-8",
       ".gif": "image/gif",
       ".ogg": "audio/ogg",
+      ".mp4": "video/mp4",
       ".zip": "application/zip"
     };
-    res.writeHead(200, {
+    const headers = {
       "Content-Type": typeMap[ext] || "application/octet-stream",
       ...staticCacheHeaders(ext)
-    });
+    };
+    if (ext === ".mp4") {
+      headers["Accept-Ranges"] = "bytes";
+      headers["Content-Length"] = stat.size;
+      const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || "");
+      if (req.method === "GET" && range && (range[1] || range[2])) {
+        const start = range[1] ? Number(range[1]) : Math.max(0, stat.size - Number(range[2]));
+        const end = range[1] && range[2] ? Math.min(Number(range[2]), stat.size - 1) : stat.size - 1;
+        if (start > end) {
+          res.writeHead(416, { ...headers, "Content-Range": `bytes */${stat.size}`, "Content-Length": 0 });
+          res.end();
+          return;
+        }
+        res.writeHead(206, {
+          ...headers,
+          "Content-Range": `bytes ${start}-${end}/${stat.size}`,
+          "Content-Length": end - start + 1
+        });
+        fs.createReadStream(full, { start, end }).pipe(res);
+        return;
+      }
+    }
+    res.writeHead(200, headers);
+    if (req.method === "HEAD") {
+      res.end();
+      return;
+    }
     fs.createReadStream(full).pipe(res);
   });
 };
